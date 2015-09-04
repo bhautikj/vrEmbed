@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  <script src="js/three.min.js"></script>
+  <script src="js/panorama.js"></script>
+  <script src="js/spritegui.js"></script>
+  <script>
+    //[sphere panorama control]
+    window.addEventListener("load", function () {
+      "use strict";
+      
+      var separation = 0;
+      var vp = viewportSize();
+
+      var w=0.5*vp.width;
+      var h=vp.height*1.2;
+
+      var viewportHeight = h*1.2;
+      var viewportWidth  = w*1.2;
+      
+
+      //[prepare screen]
+      stereoScene.init(w,h,separation, 'sphere');
+      
+      mouseController.init(); 
+      gyroSensor.init();
+      accSensor.init();    
+      
+      // setup scene
+      var sceneSet = [     
+//           {
+//             images: {left:"cubetex.jpg",right:"cubetex.jpg"},
+//             fov: {left:{w:360,h:180}, right:{w:360,h:180}},
+//           },      
+          {
+            images: {left:"img/left15.jpg",right:"img/right15.jpg"},
+            fov: {left:{w:360,h:180}, right:{w:360,h:180}}
+          },
+          {
+            images: {left:"img/left16.jpg",right:"img/right16.jpg"},
+            fov: {left:{w:360,h:180}, right:{w:360,h:180}}
+          },
+          {
+            images: {left:"img/left17.jpg",right:"img/right17.jpg"},
+            fov: {left:{w:360,h:180}, right:{w:360,h:180}}
+          },
+          {
+            images: {left:"img/left14.jpg",right:"img/right14.jpg"},
+            fov: {left:{w:360,h:180}, right:{w:360,h:180}}
+          },
+          {
+            images: {left:"img/left12.jpg",right:"img/right12.jpg"},
+            fov: {left:{w:360,h:180}, right:{w:360,h:180}}
+          },
+          {
+            images: {left:"img/left120.jpg",right:"img/right120.jpg"},
+            fov: {left:{w:120,h:120}, right:{w:120,h:120}},
+          },
+      ];
+      var bsw = new basicSceneWrangler();
+      bsw.initScenes(sceneSet);
+
+      //[prepare gui]
+      var gui = new panoGUI();
+      var circleTrigger = new createPanoGUITriggerCircleSimple(gui,"circ", -70, 0, 40, 1500, "Next", bsw.next);
+      gui.addTrigger(circleTrigger.trigger);
+      mouseController.setGUI(gui);
+      gyroSensor.setGUI(gui);
+      
+      stereoScene.addRenderCallback(gui.renderCallback);
+      stereoScene.addRenderCallback(circleTrigger.onRenderCallback);
+    
+      stereoScene.addSprite( gui.countdownSprite.sprite );
+      stereoScene.addSprite( circleTrigger.textSprite.sprite );
+
+     
+      
+      //[play animation]
+      var loop = function loop() {
+          requestAnimationFrame(loop);
+          stereoScene.render();
+      };
+      loop();
+      
+    }, false);
+  </script>
+</head>
+<body>
+  <div id="status"></div>
+  <div id="log"></div> 
+  <div id="container"></div>
+</body>
+</html>
