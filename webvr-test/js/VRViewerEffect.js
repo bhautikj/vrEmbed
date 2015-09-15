@@ -1,6 +1,19 @@
+/**
+ * @author bhautikj / https://github.com/bhautikj
+ * @author dmarcos / https://github.com/dmarcos
+ * @author mrdoob / http://mrdoob.com
+ *
+ * Based heavily on VREffect.js: https://github.com/dmarcos/vrwebgl/blob/master/template/js/VREffect.js
+ * WebVR Spec: http://mozvr.github.io/webvr-spec/webvr.html
+ *
+ * Firefox: http://mozvr.com/downloads/
+ * Chromium: https://drive.google.com/folderview?id=0BzudLt22BqGRbW9WTHMtOWMzNjQ&usp=sharing#list
+ *
+ */
+
 THREE.VRViewerCameraRig = function ( parentTransform ) {
   var _topTransform;
-  var _availableModes;
+  var _availableModes = [];
   var _scale;
   
   //
@@ -18,7 +31,7 @@ THREE.VRViewerCameraRig = function ( parentTransform ) {
   var _transformPanoCameraL, _transformPanoCameraL;
   var _primaryCamera;
   
-  function setupClassicStereoCam( eyeTranslationL, eyeTranslationR, eyeFOVL, eyeFOVL ) {
+  this.setupClassicStereoCam = function( eyeTranslationL, eyeTranslationR, eyeFOVL, eyeFOVR ) {
     // setup camera params
     _eyeTranslationL = eyeTranslationL;
     _eyeTranslationR = eyeTranslationR;
@@ -42,7 +55,7 @@ THREE.VRViewerCameraRig = function ( parentTransform ) {
     _availableModes.push("classicStereo");
   }
   
-  function setupPanoStereoCam( primaryCamera = 'left' ) {
+  this.setupPanoStereoCam = function( primaryCamera ) {
     _primaryCamera = primaryCamera;
     _availableModes.push("panoStereo");
   }
@@ -53,14 +66,15 @@ THREE.VRViewerCameraRig = function ( parentTransform ) {
     _scale = 1.0;
   }
   
-    
+  init();
+  _topTransform = parentTransform;
 };
 
 THREE.VRViewerEffect = function ( renderer, onError ) {
 
   var vrHMD;
-  var eyeTranslationL, eyeFOVL;
-  var eyeTranslationR, eyeFOVR;
+  var vrCameraRig;
+  var vrTopTransform;
 
   function gotVRDevices( devices ) {
 
@@ -75,20 +89,19 @@ THREE.VRViewerEffect = function ( renderer, onError ) {
           var eyeParamsL = vrHMD.getEyeParameters( 'left' );
           var eyeParamsR = vrHMD.getEyeParameters( 'right' );
 
-          eyeTranslationL = eyeParamsL.eyeTranslation;
-          eyeTranslationR = eyeParamsR.eyeTranslation;
-          eyeFOVL = eyeParamsL.recommendedFieldOfView;
-          eyeFOVR = eyeParamsR.recommendedFieldOfView;
+          vrCameraRig.setupClassicStereoCam( eyeParamsL.eyeTranslation, 
+                                             eyeParamsR.eyeTranslation, 
+                                             eyeParamsL.recommendedFieldOfView, 
+                                             eyeParamsR.recommendedFieldOfView);
 
         } else {
 
           // TODO: This is an older code path and not spec compliant.
           // It should be removed at some point in the near future.
-          eyeTranslationL = vrHMD.getEyeTranslation( 'left' );
-          eyeTranslationR = vrHMD.getEyeTranslation( 'right' );
-          eyeFOVL = vrHMD.getRecommendedEyeFieldOfView( 'left' );
-          eyeFOVR = vrHMD.getRecommendedEyeFieldOfView( 'right' );
-
+          vrCameraRig.setupClassicStereoCam( vrHMD.getEyeTranslation( 'left' ), 
+                                             vrHMD.getEyeTranslation( 'right' ), 
+                                             vrHMD.getRecommendedEyeFieldOfView( 'left' ), 
+                                             vrHMD.getRecommendedEyeFieldOfView( 'right' ));
         }
 
         break; // We keep the first we encounter
@@ -106,14 +119,14 @@ THREE.VRViewerEffect = function ( renderer, onError ) {
   }
 
   if ( navigator.getVRDevices ) {
-
+    vrTopTransform = new THREE.Object3D();
+    vrCameraRig = new THREE.VRViewerCameraRig(vrTopTransform);
     navigator.getVRDevices().then( gotVRDevices );
-
   }
 
   //
 
-  this.scale = 1;
+  vrCameraRig.scale = 1;
 
   this.setSize = function( width, height ) {
 
@@ -255,15 +268,15 @@ THREE.VRViewerEffect = function ( renderer, onError ) {
       renderer.clear();
 
       if ( camera.parent === undefined ) camera.updateMatrixWorld();
+      
+      cameraL.projectionMatrix = fovToProjection( vrCameraRig._eyeFOVL, true, camera.near, camera.far );
+      cameraR.projectionMatrix = fovToProjection( vrCameraRig._eyeFOVR, true, camera.near, camera.far );
 
-      cameraL.projectionMatrix = fovToProjection( eyeFOVL, true, camera.near, camera.far );
-      cameraR.projectionMatrix = fovToProjection( eyeFOVR, true, camera.near, camera.far );
+      // copy camera matrix to rig
+      vrCameraRig._topTransform.matrixWorld.copy (camera.matrixWorld);
+      cameraL.matrixWorld.copy (vrCameraRig._transformCameraL);
+      cameraL.matrixWorld.copy (vrCameraRig._transformCameraR);
 
-      camera.matrixWorld.decompose( cameraL.position, cameraL.quaternion, cameraL.scale );
-      camera.matrixWorld.decompose( cameraR.position, cameraR.quaternion, cameraR.scale );
-
-      cameraL.translateX( eyeTranslationL.x * this.scale );
-      cameraR.translateX( eyeTranslationR.x * this.scale );
 
       // render left eye
       renderer.setViewport( 0, 0, size.width, size.height );
