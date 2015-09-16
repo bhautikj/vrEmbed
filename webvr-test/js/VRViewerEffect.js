@@ -12,62 +12,57 @@
  */
 
 THREE.VRViewerCameraRig = function ( parentTransform ) {
-  var _topTransform;
-  var _availableModes = [];
-  var _scale;
+  this._topTransform = new THREE.Object3D();
+  parentTransform.add(this._topTransform);
+  this._availableModes = [];
+  this._availableModes.push("mono");
+  this._scale = 1.0;
   
   //
   // Classic stereo camera setup: parent transform with two child cameras
   //
-  var _transformCameraL, _transformCameraR;
-  var _eyeTranslationL, _eyeFOVL;
-  var _eyeTranslationR, _eyeFOVR;
+  this._transformCameraL = new THREE.Object3D();
+  this._transformCameraR = new THREE.Object3D(); 
+  this._topTransform.add(this._transformCameraL);
+  this._topTransform.add(this._transformCameraR);
+
+  this._eyeTranslationL = 0;  
+  this._eyeFOVL = 0; 
+  this._eyeTranslationR = 0;  
+  this._eyeFOVR = 0; 
 
   //
   // Pano camera setup: two cameras one for each L/R pano object. Slaved to
   // top transform for L/R translation. In the mono case will switch to
   // either left or right as specified by _primaryCamera.
   // 
-  var _transformPanoCameraL, _transformPanoCameraL;
-  var _primaryCamera;
+  this._transformPanoCameraL = new THREE.Object3D(); 
+  this._transformPanoCameraL = new THREE.Object3D(); 
+  this._primaryCamera = 'left';
   
   this.setupClassicStereoCam = function( eyeTranslationL, eyeTranslationR, eyeFOVL, eyeFOVR ) {
     // setup camera params
-    _eyeTranslationL = eyeTranslationL;
-    _eyeTranslationR = eyeTranslationR;
-    _eyeFOVL = eyeFOVL;
-    _eyeFOVR = eyeFOVR;
+    this._eyeTranslationL = eyeTranslationL;
+    this._eyeTranslationR = eyeTranslationR;
+    this._eyeFOVL = eyeFOVL;
+    this._eyeFOVR = eyeFOVR;
     
     // setup init transforms; parent to top transform
-    _transformCameraL = new THREE.Object3D();
-    _transformCameraR = new THREE.Object3D();
-    
-    _topTransform.add(_transformCameraL);
-    _topTransform.add(_transformCameraR);
-    
-    _topTransform.matrixWorld.decompose( _transformCameraL.position, _transformCameraL.quaternion, _transformCameraL.scale );
-    _topTransform.matrixWorld.decompose( _transformCameraR.position, _transformCameraR.quaternion, _transformCameraR.scale );
+    this._transformCameraL.matrix.identity();
+    this._transformCameraR.matrix.identity();
 
     // work out eye translations
-    _transformCameraL.translateX( _eyeTranslationL.x * _scale );
-    _transformCameraR.translateX( _eyeTranslationR.x * _scale );
-    
-    _availableModes.push("classicStereo");
+    this._transformCameraL.translateX( this._eyeTranslationL.x * this._scale);
+    this._transformCameraR.translateX( this._eyeTranslationR.x * this._scale);
+        
+    this._availableModes.push("classicStereo");
   }
   
   this.setupPanoStereoCam = function( primaryCamera ) {
-    _primaryCamera = primaryCamera;
-    _availableModes.push("panoStereo");
+    this._primaryCamera = primaryCamera;
+    this._availableModes.push("panoStereo");
   }
   
-  function init() {
-    _availableModes.push("mono");
-    _topTransform = new THREE.Object3D();
-    _scale = 1.0;
-  }
-  
-  init();
-  _topTransform = parentTransform;
 };
 
 THREE.VRViewerEffect = function ( renderer, onError ) {
@@ -242,53 +237,51 @@ THREE.VRViewerEffect = function ( renderer, onError ) {
 
   var cameraL = new THREE.PerspectiveCamera();
   var cameraR = new THREE.PerspectiveCamera();
-
+  vrCameraRig._transformCameraL.add(cameraL);
+  vrCameraRig._transformCameraR.add(cameraR);
+  
   this.render = function ( scene, camera ) {
-
+    if ( Array.isArray( scene ) ) {
+      onError( 'Multiple scenes not supported in VRViewerEffect' );
+    }
+    
     if ( vrHMD ) {
-
-      var sceneL, sceneR;
-
-      if ( Array.isArray( scene ) ) {
-
-        sceneL = scene[ 0 ];
-        sceneR = scene[ 1 ];
-
-      } else {
-
-        sceneL = scene;
-        sceneR = scene;
-
-      }
-
-      var size = renderer.getSize();
-      size.width /= 2;
-
-      renderer.enableScissorTest( true );
-      renderer.clear();
-
+      //------------------
+      // START CAMERA BLOCK
+      // TODO: pano camera handling
+      //------------------
       if ( camera.parent === undefined ) camera.updateMatrixWorld();
       
       cameraL.projectionMatrix = fovToProjection( vrCameraRig._eyeFOVL, true, camera.near, camera.far );
       cameraR.projectionMatrix = fovToProjection( vrCameraRig._eyeFOVR, true, camera.near, camera.far );
+      camera.matrixWorld.decompose (vrCameraRig._topTransform.position, vrCameraRig._topTransform.quaternion, vrCameraRig._topTransform.scale);
+      vrCameraRig._topTransform.updateMatrixWorld();
+      //------------------
+      // END CAMERA BLOCK
+      //------------------
 
-      // copy camera matrix to rig
-      vrCameraRig._topTransform.matrixWorld.copy (camera.matrixWorld);
-      cameraL.matrixWorld.copy (vrCameraRig._transformCameraL);
-      cameraL.matrixWorld.copy (vrCameraRig._transformCameraR);
-
-
+      //------------------
+      // START RENDER BLOCK
+      // TODO: integrate monocular mode, anaglyph mode
+      //------------------      
+      var size = renderer.getSize();
+      size.width /= 2;
+      // render camera setup
+      renderer.enableScissorTest( true );
+      renderer.clear();
       // render left eye
       renderer.setViewport( 0, 0, size.width, size.height );
       renderer.setScissor( 0, 0, size.width, size.height );
-      renderer.render( sceneL, cameraL );
+      renderer.render( scene, cameraL );
 
       // render right eye
       renderer.setViewport( size.width, 0, size.width, size.height );
       renderer.setScissor( size.width, 0, size.width, size.height );
-      renderer.render( sceneR, cameraR );
-
+      renderer.render( scene, cameraR );
       renderer.enableScissorTest( false );
+      //------------------
+      // END RENDER BLOCK
+      //------------------
 
       return;
 
