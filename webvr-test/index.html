@@ -87,7 +87,7 @@ var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHei
 var controls = new THREE.VRControls(camera);
 
 // Apply VR stereo rendering to renderer.
-var effect = new THREE.VRViewerEffect(renderer);
+var effect = new THREE.VRViewerEffect(renderer, 'classic');
 effect.setSize(window.innerWidth, window.innerHeight);
 
 // Create a VR manager helper to enter and exit VR mode.

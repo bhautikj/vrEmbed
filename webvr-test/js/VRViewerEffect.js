@@ -11,111 +11,65 @@
  *
  */
 
-THREE.VRViewerCameraRig = function ( parentTransform ) {
-  this._topTransform = new THREE.Object3D();
-  parentTransform.add(this._topTransform);
-  this._availableModes = [];
-  this._availableModes.push("mono");
-  this._scale = 1.0;
-  
-  //
-  // Classic stereo camera setup: parent transform with two child cameras
-  //
-  this._transformCameraL = new THREE.Object3D();
-  this._transformCameraR = new THREE.Object3D(); 
-  this._topTransform.add(this._transformCameraL);
-  this._topTransform.add(this._transformCameraR);
-
-  this._eyeTranslationL = 0;  
-  this._eyeFOVL = 0; 
-  this._eyeTranslationR = 0;  
-  this._eyeFOVR = 0; 
-
-  //
-  // Pano camera setup: two cameras one for each L/R pano object. Slaved to
-  // top transform for L/R translation. In the mono case will switch to
-  // either left or right as specified by _primaryCamera.
-  // 
-  this._transformPanoCameraL = new THREE.Object3D(); 
-  this._transformPanoCameraL = new THREE.Object3D(); 
-  this._primaryCamera = 'left';
-  
-  this.setupClassicStereoCam = function( eyeTranslationL, eyeTranslationR, eyeFOVL, eyeFOVR ) {
-    // setup camera params
-    this._eyeTranslationL = eyeTranslationL;
-    this._eyeTranslationR = eyeTranslationR;
-    this._eyeFOVL = eyeFOVL;
-    this._eyeFOVR = eyeFOVR;
-    
-    // setup init transforms; parent to top transform
-    this._transformCameraL.matrix.identity();
-    this._transformCameraR.matrix.identity();
-
-    // work out eye translations
-    this._transformCameraL.translateX( this._eyeTranslationL.x * this._scale);
-    this._transformCameraR.translateX( this._eyeTranslationR.x * this._scale);
-        
-    this._availableModes.push("classicStereo");
-  }
-  
-  this.setupPanoStereoCam = function( primaryCamera ) {
-    this._primaryCamera = primaryCamera;
-    this._availableModes.push("panoStereo");
-  }
-  
-};
-
-THREE.VRViewerEffect = function ( renderer, onError ) {
-
+THREE.VRViewerEffect = function ( renderer, mode, onError ) {
   var vrHMD;
   var vrCameraRig;
   var vrTopTransform;
-
+  var vrMode = mode;
+  var vrViewerPanoScene = 0;
+  
   function gotVRDevices( devices ) {
-
     for ( var i = 0; i < devices.length; i ++ ) {
-
       if ( devices[ i ] instanceof HMDVRDevice ) {
-
         vrHMD = devices[ i ];
-
         if ( vrHMD.getEyeParameters !== undefined ) {
-
-          var eyeParamsL = vrHMD.getEyeParameters( 'left' );
-          var eyeParamsR = vrHMD.getEyeParameters( 'right' );
-
-          vrCameraRig.setupClassicStereoCam( eyeParamsL.eyeTranslation, 
-                                             eyeParamsR.eyeTranslation, 
-                                             eyeParamsL.recommendedFieldOfView, 
-                                             eyeParamsR.recommendedFieldOfView);
-
+          if ( vrMode == 'classic' ) {
+            var eyeParamsL = vrHMD.getEyeParameters( 'left' );
+            var eyeParamsR = vrHMD.getEyeParameters( 'right' );
+            vrCameraRig.setupClassicStereoCam( eyeParamsL.eyeTranslation, 
+                                              eyeParamsR.eyeTranslation, 
+                                              eyeParamsL.recommendedFieldOfView, 
+                                              eyeParamsR.recommendedFieldOfView);
+          } else if ( vrMode == 'panoSphere' || vrMode == 'panoCube' ) {
+            vrCameraRig.setupPanoStereoCam ('left', 
+                                            vrViewerPanoScene.leftView.position, 
+                                            vrViewerPanoScene.rightView.position, 
+                                            eyeParamsL.recommendedFieldOfView, 
+                                            eyeParamsR.recommendedFieldOfView);
+          }
         } else {
-
-          // TODO: This is an older code path and not spec compliant.
-          // It should be removed at some point in the near future.
-          vrCameraRig.setupClassicStereoCam( vrHMD.getEyeTranslation( 'left' ), 
-                                             vrHMD.getEyeTranslation( 'right' ), 
-                                             vrHMD.getRecommendedEyeFieldOfView( 'left' ), 
-                                             vrHMD.getRecommendedEyeFieldOfView( 'right' ));
+          if ( vrMode == 'classic' ) {
+            // TODO: This is an older code path and not spec compliant.
+            // It should be removed at some point in the near future.
+            vrCameraRig.setupClassicStereoCam( vrHMD.getEyeTranslation( 'left' ), 
+                                              vrHMD.getEyeTranslation( 'right' ), 
+                                              vrHMD.getRecommendedEyeFieldOfView( 'left' ), 
+                                              vrHMD.getRecommendedEyeFieldOfView( 'right' ));
+          } else if ( vrMode == 'panoSphere' || vrMode == 'panoCube' ) {
+            vrCameraRig.setupPanoStereoCam ('left', 
+                                            vrViewerPanoScene.leftView.position, 
+                                            vrViewerPanoScene.rightView.position, 
+                                            vrHMD.getRecommendedEyeFieldOfView( 'left' ), 
+                                            vrHMD.getRecommendedEyeFieldOfView( 'right' ));
+          }
         }
-
         break; // We keep the first we encounter
-
       }
-
     }
 
     if ( vrHMD === undefined ) {
-
       if ( onError ) onError( 'HMD not available' );
-
     }
-
   }
 
   if ( navigator.getVRDevices ) {
     vrTopTransform = new THREE.Object3D();
     vrCameraRig = new THREE.VRViewerCameraRig(vrTopTransform);
+    if (vrMode == 'panoSphere') {
+      vrViewerPanoScene = new THREE.VRViewerPanoScene( 'sphere' ); 
+    } else if ( vrMode == 'panoCube' ) {
+      vrViewerPanoScene = new THREE.VRViewerPanoScene( 'cube' ); 
+    }
     navigator.getVRDevices().then( gotVRDevices );
   }
 
@@ -124,9 +78,7 @@ THREE.VRViewerEffect = function ( renderer, onError ) {
   vrCameraRig.scale = 1;
 
   this.setSize = function( width, height ) {
-
     renderer.setSize( width, height );
-
   };
 
   // fullscreen
@@ -138,7 +90,7 @@ THREE.VRViewerEffect = function ( renderer, onError ) {
 
   document.addEventListener( fullscreenchange, function ( event ) {
 
-    isFullscreen = document.mozFullScreenElement || document.webkitFullscreenElement;
+  isFullscreen = document.mozFullScreenElement || document.webkitFullscreenElement;
 
   }, false );
 
@@ -233,13 +185,14 @@ THREE.VRViewerEffect = function ( renderer, onError ) {
 
   }
     
-  // render
 
   var cameraL = new THREE.PerspectiveCamera();
   var cameraR = new THREE.PerspectiveCamera();
+  
   vrCameraRig._transformCameraL.add(cameraL);
   vrCameraRig._transformCameraR.add(cameraR);
   
+  // render
   this.render = function ( scene, camera ) {
     if ( Array.isArray( scene ) ) {
       onError( 'Multiple scenes not supported in VRViewerEffect' );
@@ -248,14 +201,11 @@ THREE.VRViewerEffect = function ( renderer, onError ) {
     if ( vrHMD ) {
       //------------------
       // START CAMERA BLOCK
-      // TODO: pano camera handling
       //------------------
-      if ( camera.parent === undefined ) camera.updateMatrixWorld();
-      
+      if ( camera.parent === undefined ) camera.updateMatrixWorld();      
       cameraL.projectionMatrix = fovToProjection( vrCameraRig._eyeFOVL, true, camera.near, camera.far );
       cameraR.projectionMatrix = fovToProjection( vrCameraRig._eyeFOVR, true, camera.near, camera.far );
-      camera.matrixWorld.decompose (vrCameraRig._topTransform.position, vrCameraRig._topTransform.quaternion, vrCameraRig._topTransform.scale);
-      vrCameraRig._topTransform.updateMatrixWorld();
+      vrCameraRig.update(camera);
       //------------------
       // END CAMERA BLOCK
       //------------------
@@ -295,4 +245,231 @@ THREE.VRViewerEffect = function ( renderer, onError ) {
 
   };  
 
+};
+
+THREE.VRViewerCameraRig = function ( parentTransform ) {
+  this._topTransform = new THREE.Object3D();
+  parentTransform.add(this._topTransform);
+  this._hasMono = true;
+  this._hasClassicStereo = false;
+  this._hasPanoStereo = false;
+  this._scale = 1.0;
+  
+  //
+  // Classic stereo camera setup: parent transform with two child cameras
+  //
+  this._transformCameraL = new THREE.Object3D();
+  this._transformCameraR = new THREE.Object3D(); 
+  this._topTransform.add(this._transformCameraL);
+  this._topTransform.add(this._transformCameraR);
+
+  this._eyeTranslationL = 0;  
+  this._eyeFOVL = 0; 
+  this._eyeTranslationR = 0;  
+  this._eyeFOVR = 0; 
+
+  //
+  // Pano camera setup: two cameras one for each L/R pano object. Slaved to
+  // top transform for L/R translation. In the mono case will switch to
+  // either left or right as specified by _primaryCamera.
+  // 
+  this._panoCameraPosL = new THREE.Vector3(); 
+  this._panoCameraPosR = new THREE.Vector3(); 
+  this._panoCameraScale = new THREE.Vector3(1.0,1.0,1.0);
+  this._panoCameraQuaternion = new THREE.Quaternion();
+  this._panoCameraDummy = new THREE.Vector3(); 
+  this._primaryCamera = 'left';
+  
+  this.setupClassicStereoCam = function( eyeTranslationL, eyeTranslationR, eyeFOVL, eyeFOVR ) {
+    // setup camera params
+    this._eyeTranslationL = eyeTranslationL;
+    this._eyeTranslationR = eyeTranslationR;
+    this._eyeFOVL = eyeFOVL;
+    this._eyeFOVR = eyeFOVR;
+    
+    // setup init transforms; parent to top transform
+    this._transformCameraL.matrix.identity();
+    this._transformCameraR.matrix.identity();
+
+    // work out eye translations
+    this._transformCameraL.translateX( this._eyeTranslationL.x * this._scale);
+    this._transformCameraR.translateX( this._eyeTranslationR.x * this._scale);
+        
+    this._hasClassicStereo = true;
+  };
+  
+  this.setupPanoStereoCam = function( primaryCamera, panoCameraPosL, panoCameraPosR, eyeFOVL, eyeFOVR  ) {
+    this._eyeFOVL = eyeFOVL;
+    this._eyeFOVR = eyeFOVR;
+    this._panoCameraPosL = panoCameraPosL;
+    this._panoCameraPosR = panoCameraPosR;
+    this._primaryCamera = primaryCamera;
+    this._hasPanoStereo = true;
+  };
+  
+  this.update = function (camera) {
+    if (this._hasClassicStereo) {
+      camera.matrixWorld.decompose (this._topTransform.position, this._topTransform.quaternion, this._topTransform.scale);      
+      this._topTransform.updateMatrixWorld();
+      return;
+    }
+    
+    if (this._hasPanoStereo) {
+      camera.matrixWorld.decompose (this._panoCameraDummy, this._panoCameraQuaternion, this._panoCameraDummy); 
+      this._transformCameraL.matrixWorld.compose(this._panoCameraPosL, this._panoCameraQuaternion, this._panoCameraScale);
+      this._transformCameraL.updateMatrixWorld();
+      this._transformCameraR.matrixWorld.compose(this._panoCameraPosR, this._panoCameraQuaternion, this._panoCameraScale);
+      this._transformCameraR.updateMatrixWorld();
+      return;
+    }
+  };
+  
+};
+
+THREE.VRViewerPanoScene = function (sceneType) {
+  this.panoSep = 2000;
+  this.canvasWidth = 0;
+  this.canvasHeight = 0;
+  this.leftMat = new THREE.MeshBasicMaterial();
+  this.rightMat = new THREE.MeshBasicMaterial();
+  this.leftCanvas = document.createElement('canvas');
+  this.rightCanvas = document.createElement('canvas');
+
+  if (this.sceneType == 'sphere'){
+    this.leftGeom = new THREE.SphereGeometry(500, 32, 32); // sphere type
+    this.rightGeom = new THREE.SphereGeometry(500, 32, 32); // sphere type
+    this.leftGeom.applyMatrix(new THREE.Matrix4().makeScale(1, 1, -1)); //surface inside
+    this.leftGeom.applyMatrix(new THREE.Matrix4().makeRotationY(Math.PI*0.5));
+    this.rightGeom.applyMatrix(new THREE.Matrix4().makeScale(1, 1, -1)); //surface inside
+    this.rightGeom.applyMatrix(new THREE.Matrix4().makeRotationY(Math.PI*0.5));
+    this.rightGeom.applyMatrix(new THREE.Matrix4().makeTranslation(this.panoSep,0,0));
+  } else if(this.sceneType == 'cube') {
+    this.leftGeom = THREE.CubeGeometry(500, 500, 500);
+    this.rightGeom = new THREE.CubeGeometry(500, 500, 500);
+    this.leftGeom.applyMatrix(new THREE.Matrix4().makeScale(1, 1, -1)); //surface inside
+    this.rightGeom.applyMatrix(new THREE.Matrix4().makeScale(1, 1, -1)); //surface inside
+    this.leftGeom.applyMatrix(new THREE.Matrix4().makeRotationY(Math.PI));
+    this.rightGeom.applyMatrix(new THREE.Matrix4().makeRotationY(Math.PI));
+    this.rightGeom.applyMatrix(new THREE.Matrix4().makeTranslation(this.panoSep,0,0));
+  }
+  
+  this.leftView = {
+    camera : new THREE.PerspectiveCamera(),
+    background: new THREE.Color().setRGB( 0.5, 0.5, 0.7 ),
+    position: new THREE.Vector3(0, 0, 0),
+  };
+  
+  this.rightView = { 
+    camera: new THREE.PerspectiveCamera(),
+    background: new THREE.Color().setRGB( 0.7, 0.5, 0.5 ),
+    position: new THREE.Vector3(this.panoSep, 0, 0),
+  };
+  
+  this.leftView.camera.position = this.leftView.position;
+  this.rightView.camera.position.x = this.rightView.position;
+
+  this.scene = new THREE.Scene();
+
+  this.sceneType = sceneType;
+  if (this.sceneType == 'sphere'){
+    this.canvasWidth=2048;
+    this.canvasHeight=1024;
+  } else if(this.sceneType == 'cube') {
+    this.canvasWidth=1024;
+    this.canvasHeight=3072;
+    this.setupGeomCubeTex();
+  }
+  
+  // set up scene
+  this.setupMaterials();  
+  this.setupScene();
+  
+  function setupMaterials() {
+    //[panorama image texture]
+    this.leftCanvas.width  = this.canvasWidth;
+    this.leftCanvas.height = this.canvasHeight;
+    this.rightCanvas.width  = this.canvasWidth;
+    this.rightCanvas.height = this.canvasHeight;
+  };
+  
+  
+  function setupGeomCubeTex() {
+    //     Geom cube tex map; numbers in paren are texC array indexes
+    //     (0,1)
+    //     ^
+    //     |  (09)---(10)---(11)
+    //     |   | Front |Left |
+    //     |  (06)---(07)---(08)
+    //     |   | Back |Right |
+    //     V  (03)---(04)---(05)
+    //     |   | Top  |Bottom|
+    //     |  (00)---(01)---(02)
+    //     |
+    //     (0,0)----U-------->(0,1)
+    //     
+    //     Single face:
+    //     0-2  first face:  0,1,2
+    //     |/|  second face: 1,3,2
+    //     1-3
+    
+    var texC = [new THREE.Vector2(0.0, 0.0),
+                 new THREE.Vector2(0.5, 0.0),
+                 new THREE.Vector2(1.0, 0.0),
+                 new THREE.Vector2(0.0, 0.3333333),
+                 new THREE.Vector2(0.5, 0.3333333),
+                 new THREE.Vector2(1.0, 0.3333333),
+                 new THREE.Vector2(0.0, 0.6666666),
+                 new THREE.Vector2(0.5, 0.6666666),
+                 new THREE.Vector2(1.0, 0.6666666),
+                 new THREE.Vector2(0.0, 1.0),
+                 new THREE.Vector2(0.5, 1.0),
+                 new THREE.Vector2(1.0, 1.0)];
+                 
+    this.leftGeom.faceVertexUvs[0] = [];
+    //right
+    this.leftGeom.faceVertexUvs[0][2] = [ texC[10], texC[7], texC[11] ];
+    this.leftGeom.faceVertexUvs[0][3] = [ texC[7], texC[8], texC[11] ];
+    //left
+    this.leftGeom.faceVertexUvs[0][0] = [ texC[7], texC[4], texC[8] ];
+    this.leftGeom.faceVertexUvs[0][1] = [ texC[4], texC[5], texC[8] ];
+    //top
+    this.leftGeom.faceVertexUvs[0][4] = [ texC[3], texC[0], texC[4] ];
+    this.leftGeom.faceVertexUvs[0][5] = [ texC[0], texC[1], texC[4] ];
+    //bottom
+    this.leftGeom.faceVertexUvs[0][6] = [ texC[4], texC[1], texC[5] ];
+    this.leftGeom.faceVertexUvs[0][7] = [ texC[1], texC[2], texC[5] ];
+    //front
+    this.leftGeom.faceVertexUvs[0][10] = [ texC[6], texC[3], texC[7] ];
+    this.leftGeom.faceVertexUvs[0][11] = [ texC[3], texC[4], texC[7] ];
+    //back
+    this.leftGeom.faceVertexUvs[0][8] = [ texC[9], texC[6], texC[10] ];
+    this.leftGeom.faceVertexUvs[0][9] = [ texC[6], texC[7], texC[10] ];
+
+    this.rightGeom.faceVertexUvs[0] = [];
+    //right
+    this.rightGeom.faceVertexUvs[0][2] = [ texC[10], texC[7], texC[11] ];
+    this.rightGeom.faceVertexUvs[0][3] = [ texC[7], texC[8], texC[11] ];
+    //left
+    this.rightGeom.faceVertexUvs[0][0] = [ texC[7], texC[4], texC[8] ];
+    this.rightGeom.faceVertexUvs[0][1] = [ texC[4], texC[5], texC[8] ];
+    //top
+    this.rightGeom.faceVertexUvs[0][4] = [ texC[3], texC[0], texC[4] ];
+    this.rightGeom.faceVertexUvs[0][5] = [ texC[0], texC[1], texC[4] ];
+    //bottom
+    this.rightGeom.faceVertexUvs[0][6] = [ texC[4], texC[1], texC[5] ];
+    this.rightGeom.faceVertexUvs[0][7] = [ texC[1], texC[2], texC[5] ];
+    //front
+    this.rightGeom.faceVertexUvs[0][10] = [ texC[6], texC[3], texC[7] ];
+    this.rightGeom.faceVertexUvs[0][11] = [ texC[3], texC[4], texC[7] ];
+    //back
+    this.rightGeom.faceVertexUvs[0][8] = [ texC[9], texC[6], texC[10] ];
+    this.rightGeom.faceVertexUvs[0][9] = [ texC[6], texC[7], texC[10] ];   
+  };
+  
+  function setupScene() {
+    this.leftObj = new THREE.Mesh(this.leftGeom, this.leftMat);
+    this.scene.add(this.leftObj);
+    this.rightObj = new THREE.Mesh(this.rightGeom, this.rightMat);
+    this.scene.add(this.rightObj);    
+  };
 };
