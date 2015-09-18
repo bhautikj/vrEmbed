@@ -23,9 +23,9 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
       if ( devices[ i ] instanceof HMDVRDevice ) {
         vrHMD = devices[ i ];
         if ( vrHMD.getEyeParameters !== undefined ) {
+          var eyeParamsL = vrHMD.getEyeParameters( 'left' );
+          var eyeParamsR = vrHMD.getEyeParameters( 'right' );
           if ( vrMode == 'classic' ) {
-            var eyeParamsL = vrHMD.getEyeParameters( 'left' );
-            var eyeParamsR = vrHMD.getEyeParameters( 'right' );
             vrCameraRig.setupClassicStereoCam( eyeParamsL.eyeTranslation, 
                                               eyeParamsR.eyeTranslation, 
                                               eyeParamsL.recommendedFieldOfView, 
@@ -62,14 +62,15 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
     }
   }
 
+  if (vrMode == 'panoSphere') {
+    vrViewerPanoScene = new THREE.VRViewerPanoScene( 'sphere' ); 
+  } else if ( vrMode == 'panoCube' ) {
+    vrViewerPanoScene = new THREE.VRViewerPanoScene( 'cube' ); 
+  }
+  
   if ( navigator.getVRDevices ) {
     vrTopTransform = new THREE.Object3D();
     vrCameraRig = new THREE.VRViewerCameraRig(vrTopTransform);
-    if (vrMode == 'panoSphere') {
-      vrViewerPanoScene = new THREE.VRViewerPanoScene( 'sphere' ); 
-    } else if ( vrMode == 'panoCube' ) {
-      vrViewerPanoScene = new THREE.VRViewerPanoScene( 'cube' ); 
-    }
     navigator.getVRDevices().then( gotVRDevices );
   }
 
@@ -241,10 +242,16 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
 
     if ( Array.isArray( scene ) ) scene = scene[ 0 ];
 
+    vrCameraRig.update(camera);
     renderer.render( scene, camera );
 
   };  
-
+  
+  this.updatePanoSceneTexture = function(leftImgSrc, rightImgSrc, fovW, fovH) {
+    if (vrViewerPanoScene != 0) {
+      vrViewerPanoScene.replaceTexture(leftImgSrc, rightImgSrc, fovW, fovH);
+    }
+  };
 };
 
 THREE.VRViewerCameraRig = function ( parentTransform ) {
@@ -365,26 +372,7 @@ THREE.VRViewerPanoScene = function (sceneType) {
     position: new THREE.Vector3(this.panoSep, 0, 0),
   };
   
-  this.leftView.camera.position = this.leftView.position;
-  this.rightView.camera.position.x = this.rightView.position;
-
-  this.scene = new THREE.Scene();
-
-  this.sceneType = sceneType;
-  if (this.sceneType == 'sphere'){
-    this.canvasWidth=2048;
-    this.canvasHeight=1024;
-  } else if(this.sceneType == 'cube') {
-    this.canvasWidth=1024;
-    this.canvasHeight=3072;
-    this.setupGeomCubeTex();
-  }
-  
-  // set up scene
-  this.setupMaterials();  
-  this.setupScene();
-  
-  function setupMaterials() {
+  this.setupMaterials = function() {
     //[panorama image texture]
     this.leftCanvas.width  = this.canvasWidth;
     this.leftCanvas.height = this.canvasHeight;
@@ -392,8 +380,14 @@ THREE.VRViewerPanoScene = function (sceneType) {
     this.rightCanvas.height = this.canvasHeight;
   };
   
+  this.setupScene = function() {
+    this.leftObj = new THREE.Mesh(this.leftGeom, this.leftMat);
+    this.scene.add(this.leftObj);
+    this.rightObj = new THREE.Mesh(this.rightGeom, this.rightMat);
+    this.scene.add(this.rightObj);    
+  };
   
-  function setupGeomCubeTex() {
+  this.setupGeomCubeTex = function() {
     //     Geom cube tex map; numbers in paren are texC array indexes
     //     (0,1)
     //     ^
@@ -466,10 +460,78 @@ THREE.VRViewerPanoScene = function (sceneType) {
     this.rightGeom.faceVertexUvs[0][9] = [ texC[6], texC[7], texC[10] ];   
   };
   
-  function setupScene() {
-    this.leftObj = new THREE.Mesh(this.leftGeom, this.leftMat);
-    this.scene.add(this.leftObj);
-    this.rightObj = new THREE.Mesh(this.rightGeom, this.rightMat);
-    this.scene.add(this.rightObj);    
+  this.replaceTexture = function(leftImgSrc, rightImgSrc, fovW, fovH) {
+    var leftContext = this.leftCanvas.getContext('2d');
+    leftContext.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+    // canvas contents will be used for a texture
+    var leftTex = new THREE.Texture(this.leftCanvas);
+    this.leftMat.map = leftTex;
+    
+    // load an image
+    var leftImg = new Image();
+    leftImg.src = leftImgSrc;
+    // after the image is loaded, this function executes
+    
+    leftImg.onload = (function(mat, cw, ch) {
+      return function() {
+        var destWidth = cw*fovW/360.0;
+        var destHeight = ch*fovH/180.0;
+        var originX = cw*0.5 - 0.5*destWidth;
+        var originY = ch*0.5 - 0.5*destHeight;
+
+        leftContext.drawImage(leftImg, originX, originY, destWidth, destHeight);
+        leftTex.needsUpdate = true;
+        mat.map.needsUpdate = true;              
+      }
+    })(this.leftMat, this.canvasWidth, this.canvasHeight);
+        
+    //var leftMaterial = new THREE.MeshBasicMaterial( {map: leftTex, side:THREE.DoubleSide} );
+    //leftMaterial.transparent = true;
+    
+    var rightContext = this.rightCanvas.getContext('2d');
+    rightContext.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+    // canvas contents will be used for a texture
+    var rightTex = new THREE.Texture(this.rightCanvas);
+    this.rightMat.map = rightTex;
+    
+    var rightImg = new Image();
+    rightImg.src = rightImgSrc;
+    
+    rightImg.onload = (function(mat, cw, ch) {
+      return function() {
+        var destWidth = cw*fovW/360.0;
+        var destHeight = ch*fovH/180.0;
+        var originX = cw*0.5 - 0.5*destWidth;
+        var originY = ch*0.5 - 0.5*destHeight;
+
+        rightContext.drawImage(rightImg, originX, originY, destWidth, destHeight);
+        rightTex.needsUpdate = true;
+        mat.map.needsUpdate = true;              
+      }
+    })(this.rightMat, this.canvasWidth, this.canvasHeight);
+        
+    //var rightMaterial = new THREE.MeshBasicMaterial( {map: rightTex, side:THREE.DoubleSide} );
+    //rightMaterial.transparent = true;
   };
+
+  
+
+  this.leftView.camera.position = this.leftView.position;
+  this.rightView.camera.position.x = this.rightView.position;
+
+  this.scene = new THREE.Scene();
+
+  this.sceneType = sceneType;
+  if (this.sceneType == 'sphere'){
+    this.canvasWidth=2048;
+    this.canvasHeight=1024;
+  } else if(this.sceneType == 'cube') {
+    this.canvasWidth=1024;
+    this.canvasHeight=3072;
+    this.setupGeomCubeTex();
+  }
+  
+  // set up scene
+  this.setupMaterials();  
+  this.setupScene();
 };
