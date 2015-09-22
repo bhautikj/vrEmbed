@@ -119,7 +119,12 @@ effect.setSize(window.innerWidth, window.innerHeight);
 // Create a VR manager helper to enter and exit VR mode.
 var manager = new WebVRManager(renderer, effect, {hideButton: false});
 
-var geometry = new THREE.PlaneBufferGeometry( 1, 1 );
+//----------
+planeCamera = new THREE.Camera();
+// planeCamera.position.z = 2;
+  
+var planeScene = new THREE.Scene();
+
 
 uniforms = {
   iGlobalTime: { type: "f", value: 1.0 },
@@ -136,9 +141,15 @@ var material = new THREE.ShaderMaterial( {
 uniforms.iResolution.value.x = window.innerWidth;
 uniforms.iResolution.value.y = window.innerHeight;
 
-var mesh = new THREE.Mesh( geometry, material );
-mesh.position.z = -8;
-scene.add( mesh );
+var plane = new THREE.PlaneBufferGeometry( window.innerWidth, window.innerHeight );
+quad = new THREE.Mesh( plane, material );
+quad.material.depthTest = false;
+quad.material.depthWrite = false;
+quad.position.z = -10;
+planeScene.add( quad );
+        
+//----------
+
 
 var boxgeom = new THREE.BoxGeometry(0.5, 0.5, 0.5);
 var boxmat = new THREE.MeshNormalMaterial();
@@ -157,10 +168,17 @@ function animate(timestamp) {
 
   // Update VR headset position and apply to camera.
   controls.update();
+  
+  manager.renderer.autoClear = false;
+  manager.renderer.clear();
+
+  //render dummy scene
+  manager.render(planeScene, planeCamera, timestamp);
 
   // Render the scene through the manager.
   manager.render(scene, camera, timestamp);
 
+  
   requestAnimationFrame(animate);
 }
 
