@@ -120,33 +120,32 @@ effect.setSize(window.innerWidth, window.innerHeight);
 var manager = new WebVRManager(renderer, effect, {hideButton: false});
 
 //----------
-planeCamera = new THREE.Camera();
-// planeCamera.position.z = 2;
-  
-var planeScene = new THREE.Scene();
+uniforms= {};
 
+function bj_addBackgroundQuad(scene, uniforms) {
+  uniforms = {
+    iGlobalTime: { type: "f", value: 1.0 },
+    iResolution: { type: "v2", value: new THREE.Vector2() }
+  };
 
-uniforms = {
-  iGlobalTime: { type: "f", value: 1.0 },
-  iResolution: { type: "v2", value: new THREE.Vector2() }
-};
+  var material = new THREE.ShaderMaterial( {
+    uniforms: uniforms,
+    vertexShader: document.getElementById( 'vertexShader' ).textContent,
+    fragmentShader: document.getElementById( 'fragmentShader' ).textContent
 
-var material = new THREE.ShaderMaterial( {
+  } );
+  uniforms.iResolution.value.x = window.innerWidth;
+  uniforms.iResolution.value.y = window.innerHeight;
 
-  uniforms: uniforms,
-  vertexShader: document.getElementById( 'vertexShader' ).textContent,
-  fragmentShader: document.getElementById( 'fragmentShader' ).textContent
+  var plane = new THREE.PlaneBufferGeometry( window.innerWidth, window.innerHeight );
+  quad = new THREE.Mesh( plane, material );
+  quad.material.depthTest = false;
+  quad.material.depthWrite = false;
+  quad.position.z = -10;
+  scene.add( quad );
+}
 
-} );
-uniforms.iResolution.value.x = window.innerWidth;
-uniforms.iResolution.value.y = window.innerHeight;
-
-var plane = new THREE.PlaneBufferGeometry( window.innerWidth, window.innerHeight );
-quad = new THREE.Mesh( plane, material );
-quad.material.depthTest = false;
-quad.material.depthWrite = false;
-quad.position.z = -10;
-planeScene.add( quad );
+bj_addBackgroundQuad(scene, uniforms);
         
 //----------
 
@@ -173,7 +172,7 @@ function animate(timestamp) {
   manager.renderer.clear();
 
   //render dummy scene
-  manager.render(planeScene, planeCamera, timestamp);
+  manager.render(scene, camera, timestamp);
 
   // Render the scene through the manager.
   manager.render(scene, camera, timestamp);
@@ -194,14 +193,19 @@ function onKey(event) {
 
 window.addEventListener('keydown', onKey, true);
 
+function bj_resizeQuad() {
+  uniforms.iResolution.value.x = window.innerWidth;
+  uniforms.iResolution.value.y = window.innerHeight;
+}
+
 // Handle window resizes
 function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
 
   effect.setSize(window.innerWidth, window.innerHeight);
-  uniforms.iResolution.value.x = window.innerWidth;
-  uniforms.iResolution.value.y = window.innerHeight;
+
+  bj_resizeQuad();
 }
 
 window.addEventListener('resize', onWindowResize, false);
