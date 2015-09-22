@@ -40,14 +40,13 @@ body {
 <script id="fragmentShader" type="x-shader/x-fragment">
 
   uniform vec2 iResolution;
-  uniform float iGlobalTime;
+  uniform sampler2D texture1;
       
   void main(void) {
       //uv is between 0 and 1
       vec2 uv = gl_FragCoord.xy / iResolution.xy;
-      vec2 delta = 1.0 / iResolution.xy;
-
-      gl_FragColor = vec4(0, uv.x, uv.y ,1.0);
+      gl_FragColor = texture2D(texture1, uv); // Displays Nothing
+      //gl_FragColor = vec4(0, uv.x, uv.y ,1.0);
   }
 
 </script>
@@ -124,7 +123,7 @@ uniforms= {};
 
 function bj_addBackgroundQuad(scene, uniforms) {
   uniforms = {
-    iGlobalTime: { type: "f", value: 1.0 },
+    texture1: { type: "t", value: THREE.ImageUtils.loadTexture( "left01.jpg" ) },
     iResolution: { type: "v2", value: new THREE.Vector2() }
   };
 
