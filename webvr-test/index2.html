@@ -50,9 +50,12 @@ body {
   void main(void) {
       //uv is between 0 and 1
       vec2 uv = uvOfs + 0.5*gl_FragCoord.xy / iResolution.xy;
-//       uv = uv + ;
+      
+      if (uv.y < 0.0) {
+        uv.y = uv.y*-1.0;
+      }
+      
       gl_FragColor = texture2D(texture1, uv); // Displays Nothing
-      //gl_FragColor = vec4(0, uv.x, uv.y ,1.0);
   }
 
 </script>
