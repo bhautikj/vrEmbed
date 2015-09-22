@@ -23,15 +23,17 @@ body {
 </head>
 
 <body>
-
+<div id="log"></div>
 </body>
 
 <!-- 
   shader scripts 
   -->
 <script id="vertexShader" type="x-shader/x-vertex">
+//   varying vec2 vUv;
 
   void main() {
+//     vUv = uv;
     gl_Position = vec4( position, 1.0 );
   }
 
@@ -41,10 +43,14 @@ body {
 
   uniform vec2 iResolution;
   uniform sampler2D texture1;
-      
+  uniform vec2 uvOfs;
+   
+//   varying vec2 vUv;
+
   void main(void) {
       //uv is between 0 and 1
-      vec2 uv = gl_FragCoord.xy / iResolution.xy;
+      vec2 uv = uvOfs + 0.5*gl_FragCoord.xy / iResolution.xy;
+//       uv = uv + ;
       gl_FragColor = texture2D(texture1, uv); // Displays Nothing
       //gl_FragColor = vec4(0, uv.x, uv.y ,1.0);
   }
@@ -119,14 +125,17 @@ effect.setSize(window.innerWidth, window.innerHeight);
 var manager = new WebVRManager(renderer, effect, {hideButton: false});
 
 //----------
-uniforms= {};
+imgTex = THREE.ImageUtils.loadTexture( "left01.jpg" );
+imgTex.wrapS = THREE.RepeatWrapping;
+imgTex.wrapT = THREE.RepeatWrapping;
+
+uniforms = {
+  texture1: { type: "t", value: imgTex },
+  iResolution: { type: "v2", value: new THREE.Vector2() },
+  uvOfs: { type: "v2", value: new THREE.Vector2() }
+};
 
 function bj_addBackgroundQuad(scene, uniforms) {
-  uniforms = {
-    texture1: { type: "t", value: THREE.ImageUtils.loadTexture( "left01.jpg" ) },
-    iResolution: { type: "v2", value: new THREE.Vector2() }
-  };
-
   var material = new THREE.ShaderMaterial( {
     uniforms: uniforms,
     vertexShader: document.getElementById( 'vertexShader' ).textContent,
@@ -135,6 +144,8 @@ function bj_addBackgroundQuad(scene, uniforms) {
   } );
   uniforms.iResolution.value.x = window.innerWidth;
   uniforms.iResolution.value.y = window.innerHeight;
+  uniforms.uvOfs.value.x = 0.0;
+  uniforms.uvOfs.value.y = 0.0;
 
   var plane = new THREE.PlaneBufferGeometry( window.innerWidth, window.innerHeight );
   quad = new THREE.Mesh( plane, material );
@@ -176,8 +187,18 @@ function animate(timestamp) {
   // Render the scene through the manager.
   manager.render(scene, camera, timestamp);
 
-  
+//   uniforms.iGlobalTime.value += 0.001;
+
   requestAnimationFrame(animate);
+
+  
+  cameraLook = camera.getWorldDirection();
+  anglePitch = Math.atan2(cameraLook.x,cameraLook.z)/(2*Math.PI);
+  angleYaw = 0.5*Math.asin(cameraLook.y)/(0.5*Math.PI);
+  uniforms.uvOfs.value.x = anglePitch;
+  uniforms.uvOfs.value.y = angleYaw;
+  document.getElementById("log").innerHTML = angleYaw;
+
 }
 
 // Kick off animation loop
@@ -192,7 +213,7 @@ function onKey(event) {
 
 window.addEventListener('keydown', onKey, true);
 
-function bj_resizeQuad() {
+function bj_resizeQuad(uniforms) {
   uniforms.iResolution.value.x = window.innerWidth;
   uniforms.iResolution.value.y = window.innerHeight;
 }
@@ -204,7 +225,7 @@ function onWindowResize() {
 
   effect.setSize(window.innerWidth, window.innerHeight);
 
-  bj_resizeQuad();
+  bj_resizeQuad(uniforms);
 }
 
 window.addEventListener('resize', onWindowResize, false);
