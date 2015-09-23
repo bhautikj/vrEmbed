@@ -30,10 +30,8 @@ body {
   shader scripts 
   -->
 <script id="vertexShader" type="x-shader/x-vertex">
-//   varying vec2 vUv;
 
   void main() {
-//     vUv = uv;
     gl_Position = vec4( position, 1.0 );
   }
 
@@ -45,17 +43,16 @@ body {
   uniform sampler2D texture1;
   uniform vec2 uvOfs;
    
-//   varying vec2 vUv;
-
   void main(void) {
       //uv is between 0 and 1
-      vec2 uv = uvOfs + 0.5*gl_FragCoord.xy / iResolution.xy;
+      vec2 uv = gl_FragCoord.xy/iResolution.xy;
+      //gl_FragColor=vec4(uv.x,uv.y,0.0,1.0);
       
-      if (uv.y < 0.0) {
-        uv.y = uv.y*-1.0;
-      }
+      // texture coords are between 0 and 0.5; scale appropriately
+      float textureScaleScalar = 0.5;
+      uv = 0.5*uv;
       
-      gl_FragColor = texture2D(texture1, uv); // Displays Nothing
+      gl_FragColor = texture2D(texture1, uv);
   }
 
 </script>
