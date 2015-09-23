@@ -50,12 +50,12 @@ body {
       vec2 uv = gl_FragCoord.xy/iResolution.xy;
       //gl_FragColor=vec4(uv.x,uv.y,0.0,1.0);
 
-      float theta = atan(gl_FragCoord.y-0.5*iResolution.y, a);
-      theta = theta + uvOfs.y + 0.5*3.142;
+      float theta = atan(gl_FragCoord.y-iResolution.y, a);
+      theta = theta + uvOfs.y + 3.142;
       uv.y = theta/3.142;
 
       float alpha = atan(gl_FragCoord.x-iResolution.x, a);
-      alpha = alpha + uvOfs.x;
+      alpha = alpha + -1.0*uvOfs.x;
       uv.x = alpha/3.142;
       
       // texture coords are between 0 and 0.5; scale appropriately
@@ -157,7 +157,7 @@ uniforms = {
   iResolution: { type: "v2", value: new THREE.Vector2() },
   uvOfs: { type: "v2", value: new THREE.Vector2() },
   a: { type: "f", value: 1.0 },
-  fovv: { type: "f", value: 120 }
+  fovv: { type: "f", value: 30 }
 };
 
 function bj_addBackgroundQuad(scene, uniforms) {
@@ -172,7 +172,8 @@ function bj_addBackgroundQuad(scene, uniforms) {
   uniforms.iResolution.value.y = window.innerHeight;
   uniforms.uvOfs.value.x = 0.0;
   uniforms.uvOfs.value.y = 0.0;
-  uniforms.a.value = 0.5*uniforms.iResolution.value.y/Math.tan(2*Math.radians(uniforms.fovv.value));
+  uniforms.fovv.value=120;
+  uniforms.a.value = 2.0*uniforms.iResolution.value.y/Math.tan(2*Math.radians(uniforms.fovv.value));
   
   var plane = new THREE.PlaneBufferGeometry( window.innerWidth, window.innerHeight );
   quad = new THREE.Mesh( plane, material );
@@ -243,7 +244,7 @@ window.addEventListener('keydown', onKey, true);
 function bj_resizeQuad(uniforms) {
   uniforms.iResolution.value.x = window.innerWidth;
   uniforms.iResolution.value.y = window.innerHeight;
-  uniforms.a.value = 0.5*uniforms.iResolution.value.y/Math.tan(2*Math.radians(uniforms.fovv.value));
+  uniforms.a.value = 2.0*uniforms.iResolution.value.y/Math.tan(2*Math.radians(uniforms.fovv.value));
 }
 
 // Handle window resizes
