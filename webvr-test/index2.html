@@ -49,16 +49,14 @@ body {
       //uv is between 0 and 1
       vec2 uv = gl_FragCoord.xy/iResolution.xy;
       //gl_FragColor=vec4(uv.x,uv.y,0.0,1.0);
-      
-      float theta = atan(gl_FragCoord.y, a);
-      theta = theta + uvOfs.y;
-      float y = theta/3.1415926;
-      //uv.y = y;
-      
-       
-      float alpha = uvOfs.x + uv.x*radians(fovv);
-      float x = 2.0*alpha/6.2831852;
-      uv.x = x;
+
+      float theta = atan(gl_FragCoord.y-0.5*iResolution.y, a);
+      theta = theta + uvOfs.y + 0.5*3.142;
+      uv.y = theta/3.142;
+
+      float alpha = atan(gl_FragCoord.x-iResolution.x, a);
+      alpha = alpha + uvOfs.x;
+      uv.x = alpha/3.142;
       
       // texture coords are between 0 and 0.5; scale appropriately
       float textureScaleScalar = 0.5;
@@ -113,6 +111,19 @@ body {
 </script>
 
 <script>
+/**
+ * util funcs
+ */
+ Math.radians = function(degrees) {
+  return degrees * Math.PI / 180;
+};
+ 
+// Converts from radians to degrees.
+Math.degrees = function(radians) {
+  return radians * 180 / Math.PI;
+};
+</script>
+<script>
 //Setup three.js WebGL renderer
 var renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
@@ -161,7 +172,7 @@ function bj_addBackgroundQuad(scene, uniforms) {
   uniforms.iResolution.value.y = window.innerHeight;
   uniforms.uvOfs.value.x = 0.0;
   uniforms.uvOfs.value.y = 0.0;
-  uniforms.a.value = 0.5*uniforms.iResolution.value.y*Math.tan(0.5*uniforms.fovv.value);
+  uniforms.a.value = 0.5*uniforms.iResolution.value.y/Math.tan(2*Math.radians(uniforms.fovv.value));
   
   var plane = new THREE.PlaneBufferGeometry( window.innerWidth, window.innerHeight );
   quad = new THREE.Mesh( plane, material );
@@ -213,7 +224,7 @@ function animate(timestamp) {
   angleYaw = Math.asin(cameraLook.y);
   uniforms.uvOfs.value.x = anglePitch;
   uniforms.uvOfs.value.y = angleYaw;
-  document.getElementById("log").innerHTML = anglePitch;
+  document.getElementById("log").innerHTML = angleYaw;
 
 }
 
@@ -232,7 +243,7 @@ window.addEventListener('keydown', onKey, true);
 function bj_resizeQuad(uniforms) {
   uniforms.iResolution.value.x = window.innerWidth;
   uniforms.iResolution.value.y = window.innerHeight;
-  uniforms.a.value = 0.5*uniforms.iResolution.value.y*Math.tan(0.5*uniforms.fovv.value);
+  uniforms.a.value = 0.5*uniforms.iResolution.value.y/Math.tan(2*Math.radians(uniforms.fovv.value));
 }
 
 // Handle window resizes
