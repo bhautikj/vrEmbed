@@ -52,15 +52,15 @@ body {
       uv.x = uv.x*fov.x*0.15915 + 0.5 + uvOfs.x;
       
       // uv.x*fov.x/pi
-      uv.y = uv.y*fov.y*0.3183 + 0.5 + uvOfs.y;
+      uv.y = uv.y*fov.y*0.3183  + uvOfs.y;
       
-      if (uv.y<0.0) {
-        uv.y = uv.y*-1.0;
-        uv.x = uv.x+0.5;
-      }
+//       if (uv.y<0.0) {
+//         uv.y = uv.y*-1.0;
+//         uv.x = uv.x+0.5;
+//       }
       
       uv.x = mod (uv.x, 1.0);
-      uv.y = mod (uv.y, 1.0);
+//       uv.y = mod (uv.y, 1.0);
       
       // texture coords are between 0 and 0.5; scale appropriately
       float textureScaleScalar = 1.0;
@@ -177,7 +177,7 @@ function bj_addBackgroundQuad(scene, uniforms) {
     fragmentShader: document.getElementById( 'fragmentShader' ).textContent
 
   } );
-  uniforms.fov.value.x=Math.radians(60);
+  uniforms.fov.value.x=Math.radians(30);
   uniforms.uvOfs.value.x = 0.0;
   uniforms.uvOfs.value.y = 0.0;
 
