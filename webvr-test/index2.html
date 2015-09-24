@@ -30,8 +30,9 @@ body {
   shader scripts 
   -->
 <script id="vertexShader" type="x-shader/x-vertex">
-
+  varying vec2 texCoord;
   void main() {
+    texCoord = position.xy;
     gl_Position = vec4( position, 1.0 );
   }
 
@@ -41,30 +42,35 @@ body {
 
   uniform vec2 iResolution;
   uniform sampler2D texture1;
-  uniform vec2 uvOfs;
-  uniform vec2 fov;
-   
+  uniform mat4 transform;
+  varying vec2 texCoord;
+
+  #define PI 3.141592653589793
+  
   void main(void) {
-      //uv is between 0 and 1
-      vec2 uv = gl_FragCoord.xy/iResolution.xy;
+    //uv is between 0 and 1
+    vec2 uv = gl_FragCoord.xy/iResolution.xy;
+    uv = uv*0.5;
+    uv.y = uv.y*.5;
+    //vec2 uv = texCoord*2.0;
+    //
+    
+    float aspect = iResolution.y/iResolution.x;
+    float scale = 1.0;
+    
+    vec2 rads = vec2(PI * 2., PI);
+    vec2 pnt = (uv - .5) * vec2(scale, scale * aspect);
+    float x2y2 = pnt.x * pnt.x + pnt.y * pnt.y;
+    vec3 _sphere_pnt = vec3(2. * pnt, x2y2 - 1.) / (x2y2 + 1.);
+    vec4 sphere_pnt = vec4(_sphere_pnt, 1.);
+    sphere_pnt *= transform;
+    
+    // Convert to Spherical Coordinates
+    float r = length(sphere_pnt);
+    float lon = atan(sphere_pnt.y, sphere_pnt.x);
+    float lat = acos(sphere_pnt.z / r);
 
-      // exp A: works for x
-      //uv.x = mod(0.5*uv.x + uvOfs.x, 1.0);
-      //uv.y = 0.5 * uv.y;
-
-      float rho = 1.4142;
-      float c = 2.0*atan(rho,2.0);
-      float clat = uvOfs.x;
-      float clong = 0.0;
-      
-      float latcoord = uv.x;
-      float longcoord = uv.y;
-      
-      float lat = asin( cos(c)*sin(clat) + latcoord*sin(c)*cos(clat)/rho);
-      
-      uv.x = lat/(2.0*3.142);
-      
-      gl_FragColor = texture2D(texture1, uv);
+    gl_FragColor = texture2D(texture1, vec2(lon, lat) / rads);
   }
 
 </script>
@@ -156,8 +162,7 @@ imgTex.wrapT = THREE.RepeatWrapping;
 uniforms = {
   texture1: { type: "t", value: imgTex },
   iResolution: { type: "v2", value: new THREE.Vector2() },
-  uvOfs: { type: "v2", value: new THREE.Vector2() },
-  fov: { type: "v2", value: new THREE.Vector2() }
+  transform: { type: "m4", value: new THREE.Matrix4() }
 };
 
 function fovyFromFovx(ix, iy, fovx) {
@@ -174,15 +179,8 @@ function bj_addBackgroundQuad(scene, uniforms) {
     fragmentShader: document.getElementById( 'fragmentShader' ).textContent
 
   } );
-  uniforms.fov.value.x=Math.radians(60);
-  uniforms.uvOfs.value.x = 0.0;
-  uniforms.uvOfs.value.y = 0.0;
-
   uniforms.iResolution.value.x = window.innerWidth;
   uniforms.iResolution.value.y = window.innerHeight;
-  uniforms.fov.value.y=fovyFromFovx(uniforms.iResolution.value.x, 
-                                    uniforms.iResolution.value.y, 
-                                    uniforms.fov.value.x);
 
   var plane = new THREE.PlaneBufferGeometry( window.innerWidth, window.innerHeight );
   quad = new THREE.Mesh( plane, material );
@@ -232,9 +230,19 @@ function animate(timestamp) {
   cameraLook = camera.getWorldDirection();
   anglePitch = Math.atan2(cameraLook.x,cameraLook.z);
   angleYaw = Math.asin(cameraLook.y);
-  uniforms.uvOfs.value.x = anglePitch + Math.PI;
-  uniforms.uvOfs.value.y = angleYaw + 0.5*Math.PI;
-  document.getElementById("log").innerHTML = uniforms.uvOfs.value.x + "," + uniforms.uvOfs.value.y;
+  
+  uniforms.transform.value.extractRotation(camera.matrixWorld); 
+  
+  var fixMat=new THREE.Matrix4();
+
+
+  fixMat.makeRotationX(Math.PI*0.5);
+  uniforms.transform.value.multiply(fixMat);
+  fixMat.makeRotationZ(Math.PI*0.5);
+  uniforms.transform.value.multiply(fixMat);  
+//   uniforms.uvOfs.value.x = anglePitch + Math.PI;
+//   uniforms.uvOfs.value.y = angleYaw + 0.5*Math.PI;
+//   document.getElementById("log").innerHTML = uniforms.uvOfs.value.x + "," + uniforms.uvOfs.value.y;
 
 }
 
@@ -253,7 +261,6 @@ window.addEventListener('keydown', onKey, true);
 function bj_resizeQuad(uniforms) {
   uniforms.iResolution.value.x = window.innerWidth;
   uniforms.iResolution.value.y = window.innerHeight;
-  uniforms.fov.value.y=fovyFromFovx(uniforms.fov.value.x);
 }
 
 // Handle window resizes
