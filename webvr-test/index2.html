@@ -42,24 +42,28 @@ body {
   uniform vec2 iResolution;
   uniform sampler2D texture1;
   uniform vec2 uvOfs;
-  uniform float a;
-  uniform float fovv;
+  uniform vec2 fov;
    
   void main(void) {
       //uv is between 0 and 1
       vec2 uv = gl_FragCoord.xy/iResolution.xy;
-      //gl_FragColor=vec4(uv.x,uv.y,0.0,1.0);
 
-      float theta = atan(gl_FragCoord.y-iResolution.y, a);
-      theta = theta + uvOfs.y + 3.142;
-      uv.y = theta/3.142;
-
-      float alpha = atan(gl_FragCoord.x-iResolution.x, a);
-      alpha = alpha + -1.0*uvOfs.x;
-      uv.x = alpha/3.142;
+      // uv.x*fov.x/2pi
+      uv.x = uv.x*fov.x*0.15915 + 0.5 + uvOfs.x;
+      
+      // uv.x*fov.x/pi
+      uv.y = uv.y*fov.y*0.3183 + 0.5 + uvOfs.y;
+      
+      if (uv.y<0.0) {
+        uv.y = uv.y*-1.0;
+        uv.x = uv.x+0.5;
+      }
+      
+      uv.x = mod (uv.x, 1.0);
+      uv.y = mod (uv.y, 1.0);
       
       // texture coords are between 0 and 0.5; scale appropriately
-      float textureScaleScalar = 0.5;
+      float textureScaleScalar = 1.0;
       uv = textureScaleScalar*uv;
       
       gl_FragColor = texture2D(texture1, uv);
@@ -156,9 +160,14 @@ uniforms = {
   texture1: { type: "t", value: imgTex },
   iResolution: { type: "v2", value: new THREE.Vector2() },
   uvOfs: { type: "v2", value: new THREE.Vector2() },
-  a: { type: "f", value: 1.0 },
-  fovv: { type: "f", value: 30 }
+  fov: { type: "v2", value: new THREE.Vector2() }
 };
+
+function fovyFromFovx(ix, iy, fovx) {
+  var d = ix/(2.0*Math.tan(0.5*fovx));
+  var fovy = 2*Math.atan(0.5*iy/d);
+  return fovy;
+}
 
 function bj_addBackgroundQuad(scene, uniforms) {
   
@@ -168,13 +177,16 @@ function bj_addBackgroundQuad(scene, uniforms) {
     fragmentShader: document.getElementById( 'fragmentShader' ).textContent
 
   } );
-  uniforms.iResolution.value.x = window.innerWidth;
-  uniforms.iResolution.value.y = window.innerHeight;
+  uniforms.fov.value.x=Math.radians(60);
   uniforms.uvOfs.value.x = 0.0;
   uniforms.uvOfs.value.y = 0.0;
-  uniforms.fovv.value=120;
-  uniforms.a.value = 2.0*uniforms.iResolution.value.y/Math.tan(2*Math.radians(uniforms.fovv.value));
-  
+
+  uniforms.iResolution.value.x = window.innerWidth;
+  uniforms.iResolution.value.y = window.innerHeight;
+  uniforms.fov.value.y=fovyFromFovx(uniforms.iResolution.value.x, 
+                                    uniforms.iResolution.value.y, 
+                                    uniforms.fov.value.x);
+
   var plane = new THREE.PlaneBufferGeometry( window.innerWidth, window.innerHeight );
   quad = new THREE.Mesh( plane, material );
   quad.material.depthTest = false;
@@ -223,9 +235,9 @@ function animate(timestamp) {
   cameraLook = camera.getWorldDirection();
   anglePitch = Math.atan2(cameraLook.x,cameraLook.z);
   angleYaw = Math.asin(cameraLook.y);
-  uniforms.uvOfs.value.x = anglePitch;
-  uniforms.uvOfs.value.y = angleYaw;
-  document.getElementById("log").innerHTML = angleYaw;
+  uniforms.uvOfs.value.x = anglePitch/(-2.0*3.142);
+  uniforms.uvOfs.value.y = angleYaw/3.142
+  document.getElementById("log").innerHTML = uniforms.uvOfs.value.x + "," + uniforms.uvOfs.value.y;
 
 }
 
@@ -244,7 +256,7 @@ window.addEventListener('keydown', onKey, true);
 function bj_resizeQuad(uniforms) {
   uniforms.iResolution.value.x = window.innerWidth;
   uniforms.iResolution.value.y = window.innerHeight;
-  uniforms.a.value = 2.0*uniforms.iResolution.value.y/Math.tan(2*Math.radians(uniforms.fovv.value));
+  uniforms.fov.value.y=fovyFromFovx(uniforms.fov.value.x);
 }
 
 // Handle window resizes
