@@ -48,19 +48,8 @@ body {
       //uv is between 0 and 1
       vec2 uv = gl_FragCoord.xy/iResolution.xy;
 
-      // uv.x*fov.x/2pi
-      uv.x = uv.x*fov.x*0.15915 + 0.5 + uvOfs.x;
-      
-      // uv.x*fov.x/pi
-      uv.y = uv.y*fov.y*0.3183  + uvOfs.y;
-      
-//       if (uv.y<0.0) {
-//         uv.y = uv.y*-1.0;
-//         uv.x = uv.x+0.5;
-//       }
-      
-      uv.x = mod (uv.x, 1.0);
-//       uv.y = mod (uv.y, 1.0);
+      uv.x = mod(0.5*uv.x + uvOfs.x, 1.0);
+      uv.y = 0.5 * uv.y;
       
       // texture coords are between 0 and 0.5; scale appropriately
       float textureScaleScalar = 1.0;
@@ -80,7 +69,7 @@ body {
   VRControls.js acquires positional information from connected VR devices and applies the transformations to a three.js camera object.
    -->
 <script src="js-ext/VRControls.js"></script>
-
+e
 <!--
   VREffect.js handles stereo camera setup and rendering.
   -->
@@ -152,7 +141,7 @@ effect.setSize(window.innerWidth, window.innerHeight);
 var manager = new WebVRManager(renderer, effect, {hideButton: false});
 
 //----------
-imgTex = THREE.ImageUtils.loadTexture( "left01.jpg" );
+imgTex = THREE.ImageUtils.loadTexture( "panotest.jpg" );
 imgTex.wrapS = THREE.RepeatWrapping;
 imgTex.wrapT = THREE.RepeatWrapping;
 
@@ -177,7 +166,7 @@ function bj_addBackgroundQuad(scene, uniforms) {
     fragmentShader: document.getElementById( 'fragmentShader' ).textContent
 
   } );
-  uniforms.fov.value.x=Math.radians(30);
+  uniforms.fov.value.x=Math.radians(60);
   uniforms.uvOfs.value.x = 0.0;
   uniforms.uvOfs.value.y = 0.0;
 
