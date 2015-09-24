@@ -48,12 +48,21 @@ body {
       //uv is between 0 and 1
       vec2 uv = gl_FragCoord.xy/iResolution.xy;
 
-      uv.x = mod(0.5*uv.x + uvOfs.x, 1.0);
-      uv.y = 0.5 * uv.y;
+      // exp A: works for x
+      //uv.x = mod(0.5*uv.x + uvOfs.x, 1.0);
+      //uv.y = 0.5 * uv.y;
+
+      float rho = 1.4142;
+      float c = 2.0*atan(rho,2.0);
+      float clat = uvOfs.x;
+      float clong = 0.0;
       
-      // texture coords are between 0 and 0.5; scale appropriately
-      float textureScaleScalar = 1.0;
-      uv = textureScaleScalar*uv;
+      float latcoord = uv.x;
+      float longcoord = uv.y;
+      
+      float lat = asin( cos(c)*sin(clat) + latcoord*sin(c)*cos(clat)/rho);
+      
+      uv.x = lat/(2.0*3.142);
       
       gl_FragColor = texture2D(texture1, uv);
   }
@@ -69,7 +78,6 @@ body {
   VRControls.js acquires positional information from connected VR devices and applies the transformations to a three.js camera object.
    -->
 <script src="js-ext/VRControls.js"></script>
-e
 <!--
   VREffect.js handles stereo camera setup and rendering.
   -->
@@ -224,8 +232,8 @@ function animate(timestamp) {
   cameraLook = camera.getWorldDirection();
   anglePitch = Math.atan2(cameraLook.x,cameraLook.z);
   angleYaw = Math.asin(cameraLook.y);
-  uniforms.uvOfs.value.x = anglePitch/(-2.0*3.142);
-  uniforms.uvOfs.value.y = angleYaw/3.142
+  uniforms.uvOfs.value.x = anglePitch + Math.PI;
+  uniforms.uvOfs.value.y = angleYaw + 0.5*Math.PI;
   document.getElementById("log").innerHTML = uniforms.uvOfs.value.x + "," + uniforms.uvOfs.value.y;
 
 }
