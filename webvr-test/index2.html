@@ -51,11 +51,9 @@ body {
     //uv is between 0 and 1
     vec2 uv = gl_FragCoord.xy/iResolution.xy;
     uv = uv-.5;
-    //vec2 uv = texCoord*2.0;
-    //
     
     float aspect = iResolution.y/iResolution.x;
-    float scale = 1.0;
+    float scale = 0.5;
     
     vec2 rads = vec2(PI * 2., PI);
     vec2 pnt = (uv - .5) * vec2(scale, scale * aspect);
@@ -154,7 +152,7 @@ effect.setSize(window.innerWidth, window.innerHeight);
 var manager = new WebVRManager(renderer, effect, {hideButton: false});
 
 //----------
-imgTex = THREE.ImageUtils.loadTexture( "panotest.jpg" );
+imgTex = THREE.ImageUtils.loadTexture( "left01.jpg" );
 imgTex.wrapS = THREE.RepeatWrapping;
 imgTex.wrapT = THREE.RepeatWrapping;
 
@@ -233,16 +231,10 @@ function animate(timestamp) {
   uniforms.transform.value.extractRotation(camera.matrixWorld); 
   
   var fixMat=new THREE.Matrix4();
-
-
   fixMat.makeRotationX(Math.PI*0.5);
   uniforms.transform.value.multiply(fixMat);
   fixMat.makeRotationZ(Math.PI*0.5);
   uniforms.transform.value.multiply(fixMat);  
-//   uniforms.uvOfs.value.x = anglePitch + Math.PI;
-//   uniforms.uvOfs.value.y = angleYaw + 0.5*Math.PI;
-//   document.getElementById("log").innerHTML = uniforms.uvOfs.value.x + "," + uniforms.uvOfs.value.y;
-
 }
 
 // Kick off animation loop
