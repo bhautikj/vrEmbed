@@ -30,26 +30,37 @@ body {
   shader scripts 
   -->
 <script id="vertexShader" type="x-shader/x-vertex">
-  varying vec2 texCoord;
   void main() {
-    texCoord = position.xy;
     gl_Position = vec4( position, 1.0 );
   }
 
 </script>
 
 <script id="fragmentShader" type="x-shader/x-fragment">
+  #define PI 3.141592653589793
 
   uniform vec2 iResolution;
   uniform sampler2D texture1;
   uniform mat4 transform;
-  varying vec2 texCoord;
-
-  #define PI 3.141592653589793
+  uniform int renderMode;
+  
+  float atan2(in float y, in float x)
+  {
+      return x == 0.0 ? sign(y)*PI/2.0 : atan(y, x);
+  }
   
   void main(void) {
     //uv is between 0 and 1
     vec2 uv = gl_FragCoord.xy/iResolution.xy;
+    
+
+    // mono texture, stereo viewport
+//     if (uv.x<1.){
+//       uv.x = uv.x + 1.;
+//     }
+//     if (uv.x>=1.){
+//       uv.x = uv.x - 0.5;
+//     }
     
     float aspect = iResolution.y/iResolution.x;
     float scale = .5;
@@ -62,8 +73,8 @@ body {
     sphere_pnt *= transform;
     
     // Convert to Spherical Coordinates
-    float r = length(sphere_pnt);
-    float lon = atan(sphere_pnt.y, sphere_pnt.x);
+    float r = length(sphere_pnt);    
+    float lon = atan2(sphere_pnt.y, sphere_pnt.x);
     float lat = 2.0*(acos(sphere_pnt.z / r) - PI*.5) + PI*.5;
 
     gl_FragColor = texture2D(texture1, vec2(lon, lat) / rads);
@@ -151,14 +162,34 @@ effect.setSize(window.innerWidth, window.innerHeight);
 var manager = new WebVRManager(renderer, effect, {hideButton: false});
 
 //----------
-imgTex = THREE.ImageUtils.loadTexture( "left01.jpg" );
+imgTex = THREE.ImageUtils.loadTexture( "panotest.jpg" );
 imgTex.wrapS = THREE.RepeatWrapping;
 imgTex.wrapT = THREE.RepeatWrapping;
+
+// renderMode values
+// --
+// variables: 
+// 0: [one/two] textures (e.g. mono vs stereo textures)
+// 1: [one/two] viewports (e.g. mono vs L/R viewports)
+// 2: [yes/no] analgyph (e.g. full viewport, render analglyph)
+// 
+// Render modes:
+// 0  (000): one texture, one viewport, no anaglyph
+// 1  (001): two textures, one viewport, no anaglyph
+// 2  (010): one texture, two viewports, no anaglyph
+// 3  (011): two textures, two viewports, no anaglyph
+// 4  (100): INVALID MODE one texture, one viewport, anaglyph
+// 5  (101): INVALID MODE two textures, one viewport, anaglyph
+// 6  (110): INVALID MODE one texture, two viewports, anaglyph
+// 7  (111): INVALID MODE two textures, two viewports, anaglyph
+//
+
 
 uniforms = {
   texture1: { type: "t", value: imgTex },
   iResolution: { type: "v2", value: new THREE.Vector2() },
-  transform: { type: "m4", value: new THREE.Matrix4() }
+  transform: { type: "m4", value: new THREE.Matrix4() },
+  renderMode: { type: "i", value: 0 }
 };
 
 function fovyFromFovx(ix, iy, fovx) {
@@ -226,6 +257,8 @@ function animate(timestamp) {
   quat.conjugate();  
   var fixQuat = new THREE.Quaternion();
   fixQuat.setFromAxisAngle( new THREE.Vector3( 1, 0, 0 ), Math.PI / 2 );
+  quat.multiply(fixQuat);
+  fixQuat.setFromAxisAngle( new THREE.Vector3( 0, 0, 1 ), Math.PI / 2 );
   quat.multiply(fixQuat);
   
   uniforms.transform.value.makeRotationFromQuaternion(quat);
