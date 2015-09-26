@@ -53,19 +53,19 @@ body {
     uv = uv-.5;
     
     float aspect = iResolution.y/iResolution.x;
-    float scale = 0.5;
+    float scale = 1.0;
     
-    vec2 rads = vec2(PI * 2., PI);
+    vec2 rads = vec2(PI * 2. , PI) ;
     vec2 pnt = (uv - .5) * vec2(scale, scale * aspect);
     float x2y2 = pnt.x * pnt.x + pnt.y * pnt.y;
     vec3 _sphere_pnt = vec3(2. * pnt, x2y2 - 1.) / (x2y2 + 1.);
-    vec4 sphere_pnt = vec4(_sphere_pnt, .5);
+    vec4 sphere_pnt = vec4(_sphere_pnt, 1.);
     sphere_pnt *= transform;
     
     // Convert to Spherical Coordinates
     float r = length(sphere_pnt);
     float lon = atan(sphere_pnt.y, sphere_pnt.x);
-    float lat = acos(sphere_pnt.z / r);
+    float lat = 2.0*(acos(sphere_pnt.z / r) - PI*.5) + PI*.5;
 
     gl_FragColor = texture2D(texture1, vec2(lon, lat) / rads);
   }
@@ -220,21 +220,23 @@ function animate(timestamp) {
   manager.render(scene, camera, timestamp);
 
 //   uniforms.iGlobalTime.value += 0.001;
+  
+//   cameraLook = camera.getWorldDirection();
+//   anglePitch = Math.atan2(cameraLook.x,cameraLook.z);
+//   angleYaw = Math.asin(cameraLook.y);
+  
+  uniforms.transform.value.extractRotation(camera.matrixWorld); 
 
+//   var fixMat=new THREE.Matrix4();
+//   fixMat.makeRotationX(Math.PI*0.5);
+//   uniforms.transform.value.multiply(fixMat);
+//   fixMat.makeRotationZ(Math.PI*0.5);
+//   uniforms.transform.value.multiply(fixMat);  
+  
   requestAnimationFrame(animate);
 
   
-  cameraLook = camera.getWorldDirection();
-  anglePitch = Math.atan2(cameraLook.x,cameraLook.z);
-  angleYaw = Math.asin(cameraLook.y);
-  
-  uniforms.transform.value.extractRotation(camera.matrixWorld); 
-  
-  var fixMat=new THREE.Matrix4();
-  fixMat.makeRotationX(Math.PI*0.5);
-  uniforms.transform.value.multiply(fixMat);
-  fixMat.makeRotationZ(Math.PI*0.5);
-  uniforms.transform.value.multiply(fixMat);  
+
 }
 
 // Kick off animation loop
