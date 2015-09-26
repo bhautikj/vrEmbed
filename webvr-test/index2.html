@@ -219,22 +219,17 @@ function animate(timestamp) {
   manager.render(scene, camera, timestamp);
 
 //   uniforms.iGlobalTime.value += 0.001;
-  
-//   cameraLook = camera.getWorldDirection();
-//   anglePitch = Math.atan2(cameraLook.x,cameraLook.z);
-//   angleYaw = Math.asin(cameraLook.y);
-  
-//   uniforms.transform.value.extractRotation(camera.matrixWorld); 
+
+  // fix view orientation
   var quat = new THREE.Quaternion();
   quat.setFromRotationMatrix(camera.matrixWorld);
   quat.conjugate();  
+  var fixQuat = new THREE.Quaternion();
+  fixQuat.setFromAxisAngle( new THREE.Vector3( 1, 0, 0 ), Math.PI / 2 );
+  quat.multiply(fixQuat);
+  
   uniforms.transform.value.makeRotationFromQuaternion(quat);
-  
-  var fixMat=new THREE.Matrix4();
-  fixMat.makeRotationX(Math.PI*0.5);
-  uniforms.transform.value.multiply(fixMat);
 
-  
   requestAnimationFrame(animate);
 
   
