@@ -50,13 +50,12 @@ body {
   void main(void) {
     //uv is between 0 and 1
     vec2 uv = gl_FragCoord.xy/iResolution.xy;
-    uv = uv-.5;
     
     float aspect = iResolution.y/iResolution.x;
-    float scale = 1.0;
+    float scale = .5;
     
     vec2 rads = vec2(PI * 2. , PI) ;
-    vec2 pnt = (uv - .5) * vec2(scale, scale * aspect);
+    vec2 pnt = (uv - 1.) * vec2(scale, scale * aspect);
     float x2y2 = pnt.x * pnt.x + pnt.y * pnt.y;
     vec3 _sphere_pnt = vec3(2. * pnt, x2y2 - 1.) / (x2y2 + 1.);
     vec4 sphere_pnt = vec4(_sphere_pnt, 1.);
@@ -225,13 +224,16 @@ function animate(timestamp) {
 //   anglePitch = Math.atan2(cameraLook.x,cameraLook.z);
 //   angleYaw = Math.asin(cameraLook.y);
   
-  uniforms.transform.value.extractRotation(camera.matrixWorld); 
+//   uniforms.transform.value.extractRotation(camera.matrixWorld); 
+  var quat = new THREE.Quaternion();
+  quat.setFromRotationMatrix(camera.matrixWorld);
+  quat.conjugate();  
+  uniforms.transform.value.makeRotationFromQuaternion(quat);
+  
+  var fixMat=new THREE.Matrix4();
+  fixMat.makeRotationX(Math.PI*0.5);
+  uniforms.transform.value.multiply(fixMat);
 
-//   var fixMat=new THREE.Matrix4();
-//   fixMat.makeRotationX(Math.PI*0.5);
-//   uniforms.transform.value.multiply(fixMat);
-//   fixMat.makeRotationZ(Math.PI*0.5);
-//   uniforms.transform.value.multiply(fixMat);  
   
   requestAnimationFrame(animate);
 
