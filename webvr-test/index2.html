@@ -44,11 +44,6 @@ body {
   uniform mat4 transform;
   uniform int renderMode;
   
-  float atan2(in float y, in float x)
-  {
-    return x == 0.0 ? sign(y)*PI/2.0 : atan(y, x);
-  }
-  
   void main(void) {
     //uv is between 0 and 1
     vec2 uv = 0.5*gl_FragCoord.xy/iResolution.xy;
@@ -87,19 +82,21 @@ body {
     
     // Convert to Spherical Coordinates
     float r = length(sphere_pnt);
-    float lon = atan2(sphere_pnt.y, sphere_pnt.x);
-    float lat = 2.0*(acos(sphere_pnt.z / r) - PI*.5) + PI*.5;
     
-
+    float lon = atan(sphere_pnt.y, sphere_pnt.x);
+    
+    float lat = 2.0*(acos(sphere_pnt.z / r) - PI*.5) + PI*.5;
     if (lon<0.0)
       lon += 2.*PI;
 
+    // deal with discontinuity in atan. robust-ish. this 
+    // makes it robusty. Adds robustiness.
     if (abs(sphere_pnt.y)<1e-3 && abs(sphere_pnt.x-1.0)<1.) {
       gl_FragColor = texture2D(texture1, vec2(0, lat/PI));
       return;
-    }
-
-      gl_FragColor = texture2D(texture1, vec2(lon, lat) / rads);
+    } 
+    
+    gl_FragColor = texture2D(texture1, vec2(lon, lat) / rads);
   }
 
 </script>
