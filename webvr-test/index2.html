@@ -46,13 +46,26 @@ body {
   
   float atan2(in float y, in float x)
   {
-      return x == 0.0 ? sign(y)*PI/2.0 : atan(y, x);
+    return x == 0.0 ? sign(y)*PI/2.0 : atan(y, x);
   }
   
   void main(void) {
     //uv is between 0 and 1
-    vec2 uv = gl_FragCoord.xy/iResolution.xy;
+    vec2 uv = 0.5*gl_FragCoord.xy/iResolution.xy;
     
+    /*
+    // TESTRENDER CODE
+    if (uv.x<0.0 && uv.y<0.0)
+      gl_FragColor = vec4 (0.0, 0.0, 0.0, 1.0);   
+    else if (uv.x<1.0 && uv.y<1.0)
+      gl_FragColor = vec4 (1.0, 0.0, 0.0, 1.0);
+    else if (uv.x>1.0 && uv.y<1.0)
+      gl_FragColor = vec4 (0.0, 1.0, 0.0, 1.0);
+    else if (uv.x<1.0 && uv.y>1.0)
+      gl_FragColor = vec4 (0.0, 0.0, 1.0, 1.0);
+    else
+      gl_FragColor = vec4 (1.0, 1.0, 1.0, 1.0);
+    */
 
     // mono texture, stereo viewport
 //     if (uv.x<1.){
@@ -63,21 +76,30 @@ body {
 //     }
     
     float aspect = iResolution.y/iResolution.x;
-    float scale = .5;
+    float scale = 1.;
     
     vec2 rads = vec2(PI * 2. , PI) ;
-    vec2 pnt = (uv - 1.) * vec2(scale, scale * aspect);
+    vec2 pnt = (uv - .5) * vec2(scale, scale * aspect);
     float x2y2 = pnt.x * pnt.x + pnt.y * pnt.y;
     vec3 _sphere_pnt = vec3(2. * pnt, x2y2 - 1.) / (x2y2 + 1.);
     vec4 sphere_pnt = vec4(_sphere_pnt, 1.);
     sphere_pnt *= transform;
     
     // Convert to Spherical Coordinates
-    float r = length(sphere_pnt);    
+    float r = length(sphere_pnt);
     float lon = atan2(sphere_pnt.y, sphere_pnt.x);
     float lat = 2.0*(acos(sphere_pnt.z / r) - PI*.5) + PI*.5;
+    
 
-    gl_FragColor = texture2D(texture1, vec2(lon, lat) / rads);
+    if (lon<0.0)
+      lon += 2.*PI;
+
+    if (abs(sphere_pnt.y)<1e-3 && abs(sphere_pnt.x-1.0)<1.) {
+      gl_FragColor = texture2D(texture1, vec2(0, lat/PI));
+      return;
+    }
+
+      gl_FragColor = texture2D(texture1, vec2(lon, lat) / rads);
   }
 
 </script>
@@ -162,9 +184,10 @@ effect.setSize(window.innerWidth, window.innerHeight);
 var manager = new WebVRManager(renderer, effect, {hideButton: false});
 
 //----------
-imgTex = THREE.ImageUtils.loadTexture( "panotest.jpg" );
-imgTex.wrapS = THREE.RepeatWrapping;
-imgTex.wrapT = THREE.RepeatWrapping;
+imgTex = THREE.ImageUtils.loadTexture( "left01.jpg" );
+// imgTex = THREE.ImageUtils.loadTexture( "panotest.jpg" );
+// imgTex.wrapS = THREE.RepeatWrapping;
+// imgTex.wrapT = THREE.RepeatWrapping;
 
 // renderMode values
 // --
