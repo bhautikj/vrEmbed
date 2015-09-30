@@ -139,8 +139,9 @@ body {
 //WEBVR_FORCE_DISTORTION = true;
 // Override the distortion background color.
 //WEBVR_BACKGROUND_COLOR = new THREE.Vector4(1, 0, 0, 1);
-// Change the tracking prediction mode.
-//WEBVR_PREDICTION_MODE = 2;
+// Change the tracking prediction mode; normally 2 but its laggy as all hell
+// on normal phones so wind it back to 0.
+WEBVR_PREDICTION_MODE = 0;
 // In prediction mode, change how far into the future to predict.
 //WEBVR_PREDICTION_TIME_MS = 100;
 </script>
@@ -211,7 +212,7 @@ uniforms = {
   textureSource: { type: "t", value: imgTex },
   imageResolution: { type: "v2", value: new THREE.Vector2() },
   transform: { type: "m4", value: new THREE.Matrix4() },
-  renderMode: { type: "i", value: 0 }
+  renderMode: { type: "i", value: 2 }
 };
 
 function fovyFromFovx(ix, iy, fovx) {
@@ -267,9 +268,12 @@ function animate(timestamp) {
 
   //render dummy scene
   manager.render(scene, camera, timestamp);
+//   renderer.autoClear = false;
+//   renderer.clear();
+//   renderer.render(scene, camera);
 
-  // Render the scene through the manager.
-  manager.render(scene, camera, timestamp);
+//   // Render the scene through the manager.
+//   manager.render(scene, camera, timestamp);
 
 //   uniforms.iGlobalTime.value += 0.001;
 
