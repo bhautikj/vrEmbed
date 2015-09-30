@@ -212,7 +212,7 @@ uniforms = {
   textureSource: { type: "t", value: imgTex },
   imageResolution: { type: "v2", value: new THREE.Vector2() },
   transform: { type: "m4", value: new THREE.Matrix4() },
-  renderMode: { type: "i", value: 2 }
+  renderMode: { type: "i", value: 0 }
 };
 
 function fovyFromFovx(ix, iy, fovx) {
@@ -237,6 +237,7 @@ function bj_addBackgroundQuad(scene, uniforms) {
   quad = new THREE.Mesh( plane, material );
   quad.material.depthTest = false;
   quad.material.depthWrite = false;
+  quad.position.z -= 2;
   scene.add( quad );
 }
 
@@ -268,12 +269,6 @@ function animate(timestamp) {
 
   //render dummy scene
   manager.render(scene, camera, timestamp);
-//   renderer.autoClear = false;
-//   renderer.clear();
-//   renderer.render(scene, camera);
-
-//   // Render the scene through the manager.
-//   manager.render(scene, camera, timestamp);
 
 //   uniforms.iGlobalTime.value += 0.001;
 
