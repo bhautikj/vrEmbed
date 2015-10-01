@@ -15,9 +15,17 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
   var vrHMD;
   var vrCameraRig;
   var vrTopTransform;
-  var vrMode = mode;
+  var renderMode = mode;
   var vrStereographicProjectionQuad = new THREE.VRStereographicProjectionQuad();
 
+  this.setStereographicProjection = function (textureFile, isStereo) {
+    vrStereographicProjectionQuad.setupProjection(textureFile, window.innerWidth, window.innerHeight, 0);
+  };
+  
+  this.setRenderMode = function (mode) {
+    renderMode = mode;
+  };
+  
   function gotVRDevices( devices ) {
     for ( var i = 0; i < devices.length; i ++ ) {
       if ( devices[ i ] instanceof HMDVRDevice ) {
@@ -25,21 +33,17 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
         if ( vrHMD.getEyeParameters !== undefined ) {
           var eyeParamsL = vrHMD.getEyeParameters( 'left' );
           var eyeParamsR = vrHMD.getEyeParameters( 'right' );
-          if ( vrMode == 'classic' ) {
-            vrCameraRig.setupClassicStereoCam( eyeParamsL.eyeTranslation, 
-                                              eyeParamsR.eyeTranslation, 
-                                              eyeParamsL.recommendedFieldOfView, 
-                                              eyeParamsR.recommendedFieldOfView);
-          } 
+          vrCameraRig.setupClassicStereoCam( eyeParamsL.eyeTranslation, 
+                                            eyeParamsR.eyeTranslation, 
+                                            eyeParamsL.recommendedFieldOfView, 
+                                            eyeParamsR.recommendedFieldOfView);
         } else {
-          if ( vrMode == 'classic' ) {
-            // TODO: This is an older code path and not spec compliant.
-            // It should be removed at some point in the near future.
-            vrCameraRig.setupClassicStereoCam( vrHMD.getEyeTranslation( 'left' ), 
-                                              vrHMD.getEyeTranslation( 'right' ), 
-                                              vrHMD.getRecommendedEyeFieldOfView( 'left' ), 
-                                              vrHMD.getRecommendedEyeFieldOfView( 'right' ));
-          } 
+          // TODO: This is an older code path and not spec compliant.
+          // It should be removed at some point in the near future.
+          vrCameraRig.setupClassicStereoCam( vrHMD.getEyeTranslation( 'left' ), 
+                                            vrHMD.getEyeTranslation( 'right' ), 
+                                            vrHMD.getRecommendedEyeFieldOfView( 'left' ), 
+                                            vrHMD.getRecommendedEyeFieldOfView( 'right' ));
         }
         break; // We keep the first we encounter
       }
@@ -168,7 +172,6 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
     return fovPortToProjection( fovPort, rightHanded, zNear, zFar );
 
   }
-    
 
   var cameraL = new THREE.PerspectiveCamera();
   var cameraR = new THREE.PerspectiveCamera();
@@ -176,13 +179,35 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
   vrCameraRig._transformCameraL.add(cameraL);
   vrCameraRig._transformCameraR.add(cameraR);
   
-  vrStereographicProjectionQuad.setupProjection('left01.jpg', window.innerWidth, window.innerHeight, 0);
   
   // render
   this.render = function ( scene, camera ) {
     if ( Array.isArray( scene ) ) {
       onError( 'Multiple scenes not supported in VRViewerEffect' );
     }
+    
+    // Render modes:
+    // 0  (000): one texture, one viewport, no anaglyph
+    // 1  (001): two textures, one viewport, no anaglyph
+    // 2  (010): one texture, two viewports, no anaglyph
+    // 3  (011): two textures, two viewports, no anaglyph
+    // 4  (100): INVALID MODE one texture, one viewport, anaglyph
+    // 5  (101): two textures, one viewport, anaglyph
+    // 6  (110): INVALID MODE one texture, two viewports, anaglyph
+    // 7  (111): INVALID MODE two textures, two viewports, anaglyph  
+    
+    
+    if (renderMode == 0) {
+      // Regular render mode if not HMD
+      if ( Array.isArray( scene ) ) scene = scene[ 0 ];
+      vrCameraRig.update(camera);
+      // render pano
+      // TODO: only run if mode says yes
+      vrStereographicProjectionQuad.render(camera, renderer);
+      renderer.render( scene, camera );
+      return;
+    }
+    
     
     if ( vrHMD ) {
 
@@ -227,15 +252,6 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
       return;
 
     }
-
-    // Regular render mode if not HMD
-
-    if ( Array.isArray( scene ) ) scene = scene[ 0 ];
-    vrCameraRig.update(camera);
-    // render pano
-    // TODO: only run if mode says yes
-    vrStereographicProjectionQuad.render(camera, renderer);
-    renderer.render( scene, camera );
   };  
 };
 

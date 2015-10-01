@@ -99,11 +99,9 @@ var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHei
 var controls = new THREE.VRControls(camera);
 
 // Apply VR stereo rendering to renderer.
-var effect = new THREE.VRViewerEffect(renderer, 'classic');
+var effect = new THREE.VRViewerEffect(renderer, 0);
 effect.setSize(window.innerWidth, window.innerHeight);
-
-imgTex = THREE.ImageUtils.loadTexture( "left01.jpg" );
-
+effect.setStereographicProjection('left01.jpg', false);
 
 // Create a VR manager helper to enter and exit VR mode.
 var manager = new WebVRManager(renderer, effect, {hideButton: false});
@@ -151,15 +149,15 @@ function animate(timestamp) {
   manager.renderer.autoClear = false;
   manager.renderer.clear();
 
-//   //render dummy scene
-//   if (manager.isVRMode()){ 
-//     manager.render(scene, camera, timestamp);
-//   }
-//   else {
-//     effect.render(scene, camera);
-//   }
+  if (manager.isVRMode()){ 
+    effect.setRenderMode(2);
+  } else {
+    effect.setRenderMode(0);
+  }
+  
   manager.render(scene, camera, timestamp);
-//   uniforms.iGlobalTime.value += 0.001;
+
+  //   uniforms.iGlobalTime.value += 0.001;
 
   requestAnimationFrame(animate);
 }
