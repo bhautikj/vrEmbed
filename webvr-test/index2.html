@@ -121,6 +121,25 @@ cube.position.z = -1;
 // Add cube mesh to your three.js scene
 scene.add(cube);
 
+//override render function
+manager.render = function(scene, camera, timestamp) {
+  if (this.isVRMode()) {
+    this.distorter.preRender();
+    this.effect.render(scene, camera);
+    this.distorter.postRender();
+  } else {
+    // Scene may be an array of two scenes, one for each eye.
+    if (scene instanceof Array) {
+      this.effect.render(scene[0], camera);
+    } else {
+      this.effect.render(scene, camera);
+    }
+  }
+  if (this.input && this.input.setAnimationFrameTime) {
+    this.input.setAnimationFrameTime(timestamp);
+  }
+};
+
 // Request animation frame loop function
 function animate(timestamp) {
   // Apply rotation to cube mesh
@@ -132,10 +151,14 @@ function animate(timestamp) {
   manager.renderer.autoClear = false;
   manager.renderer.clear();
 
-  //render dummy scene
-  //manager.render(scene, camera, timestamp);
-  effect.render(scene, camera);
-
+//   //render dummy scene
+//   if (manager.isVRMode()){ 
+//     manager.render(scene, camera, timestamp);
+//   }
+//   else {
+//     effect.render(scene, camera);
+//   }
+  manager.render(scene, camera, timestamp);
 //   uniforms.iGlobalTime.value += 0.001;
 
   requestAnimationFrame(animate);

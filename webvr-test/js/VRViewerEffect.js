@@ -185,6 +185,7 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
     }
     
     if ( vrHMD ) {
+
       //------------------
       // START CAMERA BLOCK
       //------------------
@@ -200,19 +201,23 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
       // START RENDER BLOCK
       // TODO: integrate monocular mode, anaglyph mode
       //------------------      
+
       var size = renderer.getSize();
       size.width /= 2;
       // render camera setup
       renderer.enableScissorTest( true );
       renderer.clear();
+
       // render left eye
       renderer.setViewport( 0, 0, size.width, size.height );
       renderer.setScissor( 0, 0, size.width, size.height );
+      vrStereographicProjectionQuad.render(cameraL, renderer);
       renderer.render( scene, cameraL );
 
       // render right eye
       renderer.setViewport( size.width, 0, size.width, size.height );
       renderer.setScissor( size.width, 0, size.width, size.height );
+      vrStereographicProjectionQuad.render(cameraR, renderer);
       renderer.render( scene, cameraR );
       renderer.enableScissorTest( false );
       //------------------
