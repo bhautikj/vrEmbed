@@ -16,7 +16,8 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
   var vrCameraRig;
   var vrTopTransform;
   var vrMode = mode;
-  
+  var vrStereographicProjectionQuad = new THREE.VRStereographicProjectionQuad();
+
   function gotVRDevices( devices ) {
     for ( var i = 0; i < devices.length; i ++ ) {
       if ( devices[ i ] instanceof HMDVRDevice ) {
@@ -60,6 +61,7 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
   vrCameraRig.scale = 1;
 
   this.setSize = function( width, height ) {
+    vrStereographicProjectionQuad.resizeViewport(width, height);
     renderer.setSize( width, height );
   };
 
@@ -174,6 +176,8 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
   vrCameraRig._transformCameraL.add(cameraL);
   vrCameraRig._transformCameraR.add(cameraR);
   
+  vrStereographicProjectionQuad.setupProjection('left01.jpg', window.innerWidth, window.innerHeight, 0);
+  
   // render
   this.render = function ( scene, camera ) {
     if ( Array.isArray( scene ) ) {
@@ -223,8 +227,10 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
 
     if ( Array.isArray( scene ) ) scene = scene[ 0 ];
     vrCameraRig.update(camera);
+    // render pano
+    // TODO: only run if mode says yes
+    vrStereographicProjectionQuad.render(camera, renderer);
     renderer.render( scene, camera );
-
   };  
 };
 
@@ -273,4 +279,160 @@ THREE.VRViewerCameraRig = function ( parentTransform ) {
     }
   };
   
+};
+
+//
+// renderMode values
+// --
+// variables: 
+// 0: [one/two] textures (e.g. mono vs stereo textures)
+// 1: [one/two] viewports (e.g. mono vs L/R viewports)
+// 2: [yes/no] analgyph (e.g. full viewport, render analglyph)
+// 
+// Render modes:
+// 0  (000): one texture, one viewport, no anaglyph
+// 1  (001): two textures, one viewport, no anaglyph
+// 2  (010): one texture, two viewports, no anaglyph
+// 3  (011): two textures, two viewports, no anaglyph
+// 4  (100): INVALID MODE one texture, one viewport, anaglyph
+// 5  (101): INVALID MODE two textures, one viewport, anaglyph
+// 6  (110): INVALID MODE one texture, two viewports, anaglyph
+// 7  (111): INVALID MODE two textures, two viewports, anaglyph
+//
+var StereographicProjection = {
+  uniforms: {
+    textureSource: { type: "t", value: 0 },
+    imageResolution: { type: "v2", value: new THREE.Vector2() },
+    transform: { type: "m4", value: new THREE.Matrix4() },
+    renderMode: { type: "i", value: 0 }
+  },
+  
+  vertexShader: [
+    'varying vec2 vUv;',
+    'void main() {',
+    '  vUv = uv;',
+    '  gl_Position = vec4( position, 1.0 );',
+    '}'
+  ].join('\n'),
+
+  fragmentShader: [
+    '#define PI 3.141592653589793',
+    'uniform vec2 imageResolution;',
+    'uniform sampler2D textureSource;',
+    'uniform mat4 transform;',
+    'uniform int renderMode;',
+
+    'varying vec2 vUv;',
+
+    'void main(void) {',
+    '  //normalize uv so it is between 0 and 1',
+    '  vec2 uv = vUv;',
+      
+    '  // Render modes:',
+    '  // 0  (000): one texture, one viewport, no anaglyph',
+    '  // 1  (001): two textures, one viewport, no anaglyph',
+    '  // 2  (010): one texture, two viewports, no anaglyph',
+    '  // 3  (011): two textures, two viewports, no anaglyph',
+    '  // 4  (100): INVALID MODE one texture, one viewport, anaglyph',
+    '  // 5  (101): INVALID MODE two textures, one viewport, anaglyph',
+    '  // 6  (110): INVALID MODE one texture, two viewports, anaglyph',
+    '  // 7  (111): INVALID MODE two textures, two viewports, anaglyph',
+    '  if (renderMode == 2) {',
+    '    // mono texture, stereo viewport',
+    '    if (uv.x<.5){',
+    '      uv.x = uv.x + .5;',
+    '    }',
+    '    if (uv.x>=.5){',
+    '      uv.x = uv.x - 0.5;',
+    '    }',
+    '  }',
+      
+    '  float aspect = imageResolution.y/imageResolution.x;',
+    '  float scale = 1.;',
+      
+    '  vec2 rads = vec2(PI * 2. , PI) ;',
+    '  vec2 pnt = (uv - .5) * vec2(scale, scale * aspect);',
+    '  float x2y2 = pnt.x * pnt.x + pnt.y * pnt.y;',
+    '  vec3 _sphere_pnt = vec3(2. * pnt, x2y2 - 1.) / (x2y2 + 1.);',
+    '  vec4 sphere_pnt = vec4(_sphere_pnt, 1.);',
+    '  sphere_pnt *= transform;',
+      
+    '  // Convert to Spherical Coordinates',
+    '  float r = length(sphere_pnt);',
+      
+    '  float lon = atan(sphere_pnt.y, sphere_pnt.x);',
+      
+    '  float lat = 2.0*(acos(sphere_pnt.z / r) - PI*.5) + PI*.5;',
+    '  if (lon<0.0)',
+    '    lon += 2.*PI;',
+
+    '  // deal with discontinuity in atan. robust-ish. this ',
+    '  // makes it robusty. Adds robustiness.',
+    '  if (abs(sphere_pnt.y)<1e-3 && abs(sphere_pnt.x-1.0)<1.) {',
+    '    gl_FragColor = texture2D(textureSource, vec2(0, lat/PI));',
+    '    return;',
+    '  } ',
+      
+    '  gl_FragColor = texture2D(textureSource, vec2(lon, lat) / rads);',
+    '}',    
+  ].join('\n')
+};
+
+// lifted from https://github.com/borismus/webvr-boilerplate/blob/master/src/cardboard-distorter.js
+var ShaderPass = function(shader) {
+  this.uniforms = THREE.UniformsUtils.clone(shader.uniforms);
+
+  this.material = new THREE.ShaderMaterial({
+    defines: shader.defines || {},
+    uniforms: this.uniforms,
+    vertexShader: shader.vertexShader,
+    fragmentShader: shader.fragmentShader
+  });
+
+  this.material.depthTest = false;
+  this.material.depthWrite = false;
+  
+  this.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+  this.scene  = new THREE.Scene();
+  this.quad = new THREE.Mesh(new THREE.PlaneBufferGeometry(2, 2), null);
+  this.scene.add(this.quad);
+
+  this.render = function(renderFunc) {
+    this.quad.material = this.material;
+    renderFunc(this.scene, this.camera);
+  };
+  
+  this.copyMat = function () {
+    this.quad.material = this.material;
+  };
+};
+
+THREE.VRStereographicProjectionQuad = function () {
+  this.shaderPass = new ShaderPass(StereographicProjection);
+
+  this.resizeViewport = function (resX, resY) {
+    this.shaderPass.uniforms.imageResolution.value.x = resX;
+    this.shaderPass.uniforms.imageResolution.value.y = resY;
+  };
+  
+  this.setupProjection = function (textureSourceFile, initialResolutionX, initialResolutionY, renderMode) {
+    this.shaderPass.uniforms.textureSource.value = THREE.ImageUtils.loadTexture( textureSourceFile );
+    this.resizeViewport(initialResolutionX, initialResolutionY);
+    this.shaderPass.uniforms.renderMode.value = renderMode;
+  };
+    
+  this.render = function(cameraObject, renderer) {
+    var quat = new THREE.Quaternion();
+    quat.setFromRotationMatrix(cameraObject.matrixWorld);
+    quat.conjugate();  
+    var fixQuat = new THREE.Quaternion();
+    fixQuat.setFromAxisAngle( new THREE.Vector3( 1, 0, 0 ), Math.PI / 2 );
+    quat.multiply(fixQuat);
+    fixQuat.setFromAxisAngle( new THREE.Vector3( 0, 0, 1 ), Math.PI / 2 );
+    quat.multiply(fixQuat);
+    
+    this.shaderPass.uniforms.transform.value.makeRotationFromQuaternion(quat);
+    this.shaderPass.copyMat();
+    renderer.render(this.shaderPass.scene, this.shaderPass.camera);
+  };
 };
