@@ -19,7 +19,7 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
   var vrStereographicProjectionQuad = new THREE.VRStereographicProjectionQuad();
 
   this.setStereographicProjection = function (textureFile, isStereo) {
-    vrStereographicProjectionQuad.setupProjection(textureFile, window.innerWidth, window.innerHeight, 0);
+    vrStereographicProjectionQuad.setupProjection(textureFile, window.innerWidth, window.innerHeight);
   };
   
   this.setRenderMode = function (mode) {
@@ -324,8 +324,7 @@ var StereographicProjection = {
   uniforms: {
     textureSource: { type: "t", value: 0 },
     imageResolution: { type: "v2", value: new THREE.Vector2() },
-    transform: { type: "m4", value: new THREE.Matrix4() },
-    renderMode: { type: "i", value: 0 }
+    transform: { type: "m4", value: new THREE.Matrix4() }
   },
   
   vertexShader: [
@@ -341,32 +340,12 @@ var StereographicProjection = {
     'uniform vec2 imageResolution;',
     'uniform sampler2D textureSource;',
     'uniform mat4 transform;',
-    'uniform int renderMode;',
 
     'varying vec2 vUv;',
 
     'void main(void) {',
     '  //normalize uv so it is between 0 and 1',
     '  vec2 uv = vUv;',
-      
-    '  // Render modes:',
-    '  // 0  (000): one texture, one viewport, no anaglyph',
-    '  // 1  (001): two textures, one viewport, no anaglyph',
-    '  // 2  (010): one texture, two viewports, no anaglyph',
-    '  // 3  (011): two textures, two viewports, no anaglyph',
-    '  // 4  (100): INVALID MODE one texture, one viewport, anaglyph',
-    '  // 5  (101): INVALID MODE two textures, one viewport, anaglyph',
-    '  // 6  (110): INVALID MODE one texture, two viewports, anaglyph',
-    '  // 7  (111): INVALID MODE two textures, two viewports, anaglyph',
-    '  if (renderMode == 2) {',
-    '    // mono texture, stereo viewport',
-    '    if (uv.x<.5){',
-    '      uv.x = uv.x + .5;',
-    '    }',
-    '    if (uv.x>=.5){',
-    '      uv.x = uv.x - 0.5;',
-    '    }',
-    '  }',
       
     '  float aspect = imageResolution.y/imageResolution.x;',
     '  float scale = 1.;',
@@ -436,10 +415,9 @@ THREE.VRStereographicProjectionQuad = function () {
     this.shaderPass.uniforms.imageResolution.value.y = resY;
   };
   
-  this.setupProjection = function (textureSourceFile, initialResolutionX, initialResolutionY, renderMode) {
+  this.setupProjection = function (textureSourceFile, initialResolutionX, initialResolutionY) {
     this.shaderPass.uniforms.textureSource.value = THREE.ImageUtils.loadTexture( textureSourceFile );
     this.resizeViewport(initialResolutionX, initialResolutionY);
-    this.shaderPass.uniforms.renderMode.value = renderMode;
   };
     
   this.render = function(cameraObject, renderer) {
