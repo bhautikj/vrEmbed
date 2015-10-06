@@ -19,7 +19,11 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
   var vrStereographicProjectionQuad = new THREE.VRStereographicProjectionQuad();
 
   this.setStereographicProjection = function (textureFile, isStereo) {
-    vrStereographicProjectionQuad.setupProjection(textureFile, window.innerWidth, window.innerHeight);
+//     var tmpLA = new THREE.Vector2(0.0,0.0);
+//     var tmpLB = new THREE.Vector2(1.0,1.0);
+    var tmpLA = new THREE.Vector2(0.25,0.25);
+    var tmpLB = new THREE.Vector2(0.75,0.75);
+    vrStereographicProjectionQuad.setupProjection(textureFile, window.innerWidth, window.innerHeight, tmpLA, tmpLB);
   };
   
   this.setRenderMode = function (mode) {
@@ -252,7 +256,7 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
       return;
 
     }
-  };  
+  }; 
 };
 
 THREE.VRViewerCameraRig = function ( parentTransform ) {
@@ -324,7 +328,9 @@ var StereographicProjection = {
   uniforms: {
     textureSource: { type: "t", value: 0 },
     imageResolution: { type: "v2", value: new THREE.Vector2() },
-    transform: { type: "m4", value: new THREE.Matrix4() }
+    transform: { type: "m4", value: new THREE.Matrix4() },
+    texLA: { type: "v2", value: new THREE.Vector2() },
+    texLB: { type: "v2", value: new THREE.Vector2() }
   },
   
   vertexShader: [
@@ -340,6 +346,8 @@ var StereographicProjection = {
     'uniform vec2 imageResolution;',
     'uniform sampler2D textureSource;',
     'uniform mat4 transform;',
+    'uniform vec2 texLA;',
+    'uniform vec2 texLB;',
 
     'varying vec2 vUv;',
 
@@ -363,8 +371,12 @@ var StereographicProjection = {
     '  float lon = atan(sphere_pnt.y, sphere_pnt.x);',
       
     '  float lat = 2.0*(acos(sphere_pnt.z / r) - PI*.5) + PI*.5;',
-    '  if (lon<0.0)',
-    '    lon += 2.*PI;',
+    '  lon = mod(lon, 2.*PI);',
+
+    '  if (lon<texLA.x || lon>texLB.x*2.0*PI || lat<texLA.y || lat > texLB.y*1.0*PI) {',
+    '    gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0); ',
+    '    return;',
+    '  } ',
 
     '  // deal with discontinuity in atan. robust-ish. this ',
     '  // makes it robusty. Adds robustiness.',
@@ -415,8 +427,10 @@ THREE.VRStereographicProjectionQuad = function () {
     this.shaderPass.uniforms.imageResolution.value.y = resY;
   };
   
-  this.setupProjection = function (textureSourceFile, initialResolutionX, initialResolutionY) {
+  this.setupProjection = function (textureSourceFile, initialResolutionX, initialResolutionY, texLA, texLB) {
     this.shaderPass.uniforms.textureSource.value = THREE.ImageUtils.loadTexture( textureSourceFile );
+    this.shaderPass.uniforms.texLA.value.copy(texLA);
+    this.shaderPass.uniforms.texLB.value.copy(texLB);
     this.resizeViewport(initialResolutionX, initialResolutionY);
   };
     
