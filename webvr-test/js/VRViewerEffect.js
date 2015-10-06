@@ -21,8 +21,8 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
   this.setStereographicProjection = function (textureFile, isStereo) {
 //     var tmpLA = new THREE.Vector2(0.0,0.0);
 //     var tmpLB = new THREE.Vector2(1.0,1.0);
-    var tmpLA = new THREE.Vector2(0.25,0.25);
-    var tmpLB = new THREE.Vector2(0.75,0.75);
+    var tmpLA = new THREE.Vector2(0.25*2.0*Math.PI,0.25*Math.PI);
+    var tmpLB = new THREE.Vector2(0.75*2.0*Math.PI,0.75*Math.PI);
     vrStereographicProjectionQuad.setupProjection(textureFile, window.innerWidth, window.innerHeight, tmpLA, tmpLB);
   };
   
@@ -373,10 +373,12 @@ var StereographicProjection = {
     '  float lat = 2.0*(acos(sphere_pnt.z / r) - PI*.5) + PI*.5;',
     '  lon = mod(lon, 2.*PI);',
 
-    '  if (lon<texLA.x || lon>texLB.x*2.0*PI || lat<texLA.y || lat > texLB.y*1.0*PI) {',
+    '  if (lon<texLA.x || lon>texLB.x || lat<texLA.y || lat > texLB.y) {',
     '    gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0); ',
     '    return;',
     '  } ',
+    
+//     '  lon = lon-texLA.x
 
     '  // deal with discontinuity in atan. robust-ish. this ',
     '  // makes it robusty. Adds robustiness.',
