@@ -378,7 +378,8 @@ var StereographicProjection = {
     '    return;',
     '  } ',
     
-//     '  lon = lon-texLA.x
+    '  lon = (lon-texLA.x)*(2.0*PI)/(texLB.x-texLA.x); ',
+    '  lat = (lat-texLA.y)*(1.0*PI)/(texLB.y-texLA.y); ',
 
     '  // deal with discontinuity in atan. robust-ish. this ',
     '  // makes it robusty. Adds robustiness.',
