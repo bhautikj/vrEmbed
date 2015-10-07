@@ -101,7 +101,16 @@ var controls = new THREE.VRControls(camera);
 // Apply VR stereo rendering to renderer.
 var effect = new THREE.VRViewerEffect(renderer, 0);
 effect.setSize(window.innerWidth, window.innerHeight);
-effect.setStereographicProjection('left01.jpg', false);
+
+var textureDescription = new TextureDescription();
+textureDescription.textureSource = "left01.jpg";
+textureDescription.isStereo = false;
+textureDescription.leftTopLeft = new THREE.Vector2(0.0, 0.0);
+textureDescription.leftBottomRight = new THREE.Vector2(1.0, 1.0);
+textureDescription.rightTopLeft = new THREE.Vector2(0.0, 0.0);
+textureDescription.rightBottomRight = new THREE.Vector2(1.0, 1.0);
+
+effect.setStereographicProjection(textureDescription);
 
 // Create a VR manager helper to enter and exit VR mode.
 var manager = new WebVRManager(renderer, effect, {hideButton: false});

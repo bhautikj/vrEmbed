@@ -11,19 +11,32 @@
  *
  */
 
+TextureDescription = function () {
+  this.textureSource = "";
+  this.isStereo = false;
+  this.leftTopLeft = new THREE.Vector2(0.0, 0.0);
+  this.leftBottomRight = new THREE.Vector2(1.0, 1.0);
+  this.rightTopLeft = new THREE.Vector2(0.0, 0.0);
+  this.rightBottomRight = new THREE.Vector2(1.0, 1.0);
+};
+
 THREE.VRViewerEffect = function ( renderer, mode, onError ) {
   var vrHMD;
   var vrCameraRig;
   var vrTopTransform;
   var renderMode = mode;
   var vrStereographicProjectionQuad = new THREE.VRStereographicProjectionQuad();
-
-  this.setStereographicProjection = function (textureFile, isStereo) {
-//     var tmpLA = new THREE.Vector2(0.0,0.0);
-//     var tmpLB = new THREE.Vector2(1.0,1.0);
-    var tmpLA = new THREE.Vector2(0.25*2.0*Math.PI,0.25*Math.PI);
-    var tmpLB = new THREE.Vector2(0.75*2.0*Math.PI,0.75*Math.PI);
-    vrStereographicProjectionQuad.setupProjection(textureFile, window.innerWidth, window.innerHeight, tmpLA, tmpLB);
+  var textureDesc = [];
+  
+  this.setStereographicProjection = function (textureDescription) {
+    textureDesc.push(textureDescription);
+    
+    var currTextureDesc = textureDescription;
+    vrStereographicProjectionQuad.setupProjection(textureDescription.textureSource, 
+                                                  window.innerWidth, 
+                                                  window.innerHeight, 
+                                                  textureDescription.leftTopLeft, 
+                                                  textureDescription.leftBottomRight);
   };
   
   this.setRenderMode = function (mode) {
@@ -424,7 +437,7 @@ var ShaderPass = function(shader) {
 
 THREE.VRStereographicProjectionQuad = function () {
   this.shaderPass = new ShaderPass(StereographicProjection);
-
+  
   this.resizeViewport = function (resX, resY) {
     this.shaderPass.uniforms.imageResolution.value.x = resX;
     this.shaderPass.uniforms.imageResolution.value.y = resY;
@@ -432,8 +445,10 @@ THREE.VRStereographicProjectionQuad = function () {
   
   this.setupProjection = function (textureSourceFile, initialResolutionX, initialResolutionY, texLA, texLB) {
     this.shaderPass.uniforms.textureSource.value = THREE.ImageUtils.loadTexture( textureSourceFile );
-    this.shaderPass.uniforms.texLA.value.copy(texLA);
-    this.shaderPass.uniforms.texLB.value.copy(texLB);
+    this.shaderPass.uniforms.texLA.value.x = texLA.x*2.0*Math.PI;
+    this.shaderPass.uniforms.texLA.value.y = texLA.y*1.0*Math.PI;
+    this.shaderPass.uniforms.texLB.value.x = texLB.x*2.0*Math.PI;
+    this.shaderPass.uniforms.texLB.value.y = texLB.y*1.0*Math.PI;
     this.resizeViewport(initialResolutionX, initialResolutionY);
   };
     
