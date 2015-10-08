@@ -103,12 +103,26 @@ var effect = new THREE.VRViewerEffect(renderer, 0);
 effect.setSize(window.innerWidth, window.innerHeight);
 
 var textureDescription = new TextureDescription();
-textureDescription.textureSource = "left01.jpg";
+textureDescription.textureSource = "stereograph_a.jpg";
+textureDescription.metaSource = "https://www.flickr.com/photos/127906254@N06/17787986691/";
 textureDescription.isStereo = false;
+//image size: 2048,996
+//0,0
 textureDescription.leftTopLeft = new THREE.Vector2(0.0, 0.0);
-textureDescription.leftBottomRight = new THREE.Vector2(1.0, 1.0);
-textureDescription.rightTopLeft = new THREE.Vector2(0.0, 0.0);
-textureDescription.rightBottomRight = new THREE.Vector2(1.0, 1.0);
+//1010,996
+textureDescription.leftBottomRight = new THREE.Vector2(0.493, 1.0);
+//1018,0
+textureDescription.rightTopLeft = new THREE.Vector2(0.497, 0.0);
+//2028,996
+textureDescription.rightBottomRight = new THREE.Vector2(0.990, 1.0);
+
+// textureDescription.textureSource = "stereograph_b.jpg";
+// textureDescription.metaSource = "https://www.flickr.com/photos/library_of_congress/3253742804/";
+// textureDescription.isStereo = false;
+// textureDescription.leftTopLeft = new THREE.Vector2(0.0, 0.0);
+// textureDescription.leftBottomRight = new THREE.Vector2(1.0, 1.0);
+// textureDescription.rightTopLeft = new THREE.Vector2(0.0, 0.0);
+// textureDescription.rightBottomRight = new THREE.Vector2(1.0, 1.0);
 
 effect.setStereographicProjection(textureDescription);
 

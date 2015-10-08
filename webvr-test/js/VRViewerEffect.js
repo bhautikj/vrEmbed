@@ -11,8 +11,60 @@
  *
  */
 
+/*
+ * Texture transform: viewport-to-viewport
+ *
+ * Sphere
+ * ======
+ * 0------------------------+
+ * |     a-----.            |
+ * |     |  C  |            |
+ * |     .-----b            |
+ * +------------------------1
+ * 
+ * Parameters:
+ * --
+ * fovx: width of image in sphere
+ * fovy: height of image in sphere
+ * 
+ * C: where to place in sphere
+ * => a.x = C.x-0.5*fovx
+ * => b.x = C.x+0.5*fovx
+ * => a.y = C.y-0.5*fovy
+ * => b.y = C.y+0.5*fovy
+ * 
+ * Texture
+ * =======
+ * 0--------+
+ * |  u--.  |
+ * |  |  |  |
+ * |  .--v  |
+ * +--------1
+ * 
+ * Parameters:
+ * --
+ * (u,v): supplied, corners of tex rect
+ * 
+ * Sphere->Texture
+ * ===============
+ * 
+ * For an arbitrary point S on the sphere, 0<X<1, mapping to 
+ * texture coordinate T:
+ * 
+ * Let s = (b-a)
+ * Let t = (v-u)
+ * 
+ * T = ((S-a)/s)*t + u
+ * 
+ * [ t.x  0  u.x ]   [ s.x  0   a.x ] 
+ * [  0  t.y u.y ] * [  0  s.y  b.x ]
+ * [  0   0   1 ]    [  0   0    0  ]
+ * 
+ */
+
 TextureDescription = function () {
   this.textureSource = "";
+  this.metaSource = "";
   this.isStereo = false;
   this.leftTopLeft = new THREE.Vector2(0.0, 0.0);
   this.leftBottomRight = new THREE.Vector2(1.0, 1.0);
