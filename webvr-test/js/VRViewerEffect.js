@@ -57,8 +57,12 @@
  * T = ((S-a)/s)*t + u
  * 
  * [ t.x  0  u.x ]   [ s.x  0   a.x ] 
- * [  0  t.y u.y ] * [  0  s.y  b.x ]
+ * [  0  t.y u.y ] * [  0  s.y  a.y ]
  * [  0   0   1 ]    [  0   0    0  ]
+ * 
+ * [ t.x*s.x    0     u.x + t.x*a.x ]
+ * [   0     t.y*s.y  u.y + t.y*a.y ]
+ * [   0        0           1       ]
  * 
  */
 
