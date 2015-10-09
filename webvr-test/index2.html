@@ -103,21 +103,33 @@ var effect = new THREE.VRViewerEffect(renderer, 0);
 effect.setSize(window.innerWidth, window.innerHeight);
 
 var textureDescription = new TextureDescription();
-textureDescription.textureSource = "stereograph_a.jpg";
-textureDescription.metaSource = "https://www.flickr.com/photos/127906254@N06/17787986691/";
+
+textureDescription.textureSource = "stereograph_c.jpg";
+textureDescription.metaSource = "";
 textureDescription.isStereo = false;
 textureDescription.sphereFOV = new THREE.Vector2(90, 90);
 // in degrees
-textureDescription.sphereCentre = new THREE.Vector2(180.0, 90.0);
-//image size: 2048,996
-//0,0
+textureDescription.sphereCentre = new THREE.Vector2(360.0, 180.0);
+// textureDescription.U = new THREE.Vector2(0.0, 0.0);
+// textureDescription.V = new THREE.Vector2(0.5, 1.0);
 textureDescription.U = new THREE.Vector2(0.0, 0.0);
-//1010,996
-textureDescription.V = new THREE.Vector2(0.493, 1.0);
-//1018,0
-//textureDescription.rightTopLeft = new THREE.Vector2(0.497, 0.0);
-//2028,996
-//textureDescription.rightBottomRight = new THREE.Vector2(0.990, 1.0);
+textureDescription.V = new THREE.Vector2(0.5, 1.0);
+
+// textureDescription.textureSource = "stereograph_a.jpg";
+// textureDescription.metaSource = "https://www.flickr.com/photos/127906254@N06/17787986691/";
+// textureDescription.isStereo = false;
+// textureDescription.sphereFOV = new THREE.Vector2(90, 90);
+// // in degrees
+// textureDescription.sphereCentre = new THREE.Vector2(360.0, 180.0);
+// //image size: 2048,996
+// //0,0
+// textureDescription.U = new THREE.Vector2(0.0, 0.0);
+// //1010,996
+// textureDescription.V = new THREE.Vector2(0.493, 1.0);
+// //1018,0
+// textureDescription.U = new THREE.Vector2(0.497, 0.0);
+// //2028,996
+// textureDescription.V = new THREE.Vector2(0.990, 1.0);
 
 // textureDescription.textureSource = "stereograph_b.jpg";
 // textureDescription.metaSource = "https://www.flickr.com/photos/library_of_congress/3253742804/";

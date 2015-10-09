@@ -449,7 +449,7 @@ var StereographicProjection = {
     '  if (abs(sphere_pnt.y)<1e-3 && abs(sphere_pnt.x-1.0)<1.) ',
     '    lon = 0.0; ',
     
-    '  vec3 sphereCoord = vec3(vec2(lon, lat) / rads, 1.0);',
+    '  vec3 sphereCoord = vec3(vec2(lon, lat) / rads, 1.0);',    
     '  vec3 texCoord = sphereCoord * sphereToTex;',
     
     '  if (texCoord.x<0.0 || texCoord.x>1.0 || texCoord.y<0.0 || texCoord.y>1.0) {',
@@ -506,14 +506,19 @@ THREE.VRStereographicProjectionQuad = function () {
     var fovX = textureDescription.sphereFOV.x/360.0;
     var fovY = textureDescription.sphereFOV.y/180.0;
     var cX = textureDescription.sphereCentre.x/360.0;
-    var cY = textureDescription.sphereCentre.y/360.0;    
+    var cY = textureDescription.sphereCentre.y/180.0;   
+    
     var a = new THREE.Vector2(cX-0.5*fovX, cY-0.5*fovY);
-    var b = new THREE.Vector2(cX+0.5*fovX, cY+0.5*fovY);
-    var s = b.sub(a);
-
-    this.shaderPass.uniforms.sphereToTex.value.set( s.x,  0,  -1.0*a.x,
-                                                   0,  s.y, -1.0*a.y,
-                                                   0,   0,   1.0);
+    
+//     alert(fovX + "," + fovY + "," + -1.0*a.x + "," + -1.0*a.y);
+    
+//     this.shaderPass.uniforms.sphereToTex.value.set( 1.0/fovX,  0,  0.0,
+//                                                    0,  1.0/fovY, 0.0,
+//                                                    -1.0*a.x, -1.0*a.y,   1.0);
+    
+    this.shaderPass.uniforms.sphereToTex.value.set( 360.0/textureDescription.sphereFOV.x,  0.0,  0.0,
+                                                   0.0,  180.0/textureDescription.sphereFOV.y, 0.0,
+                                                   -1.5,   -0.5,   1.0);
     
     var t = textureDescription.V.sub(textureDescription.U);
     this.shaderPass.uniforms.texToUV.value.set( t.x,  0,  -1.0*textureDescription.U.x,
