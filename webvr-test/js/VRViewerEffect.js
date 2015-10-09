@@ -54,15 +54,18 @@
  * Let s = (b-a)
  * Let t = (v-u)
  * 
- * T = ((S-a)/s)*t + u
+ * First transform sphere coord to normalized texture coord using:
  * 
- * [ t.x  0  u.x ]   [ s.x  0   a.x ] 
- * [  0  t.y u.y ] * [  0  s.y  a.y ]
- * [  0   0   1 ]    [  0   0    0  ]
+ *         [ s.x  0   -a.x ] 
+ * n = S * [  0  s.y  -a.y ]
+ *         [  0   0    0   ]
  * 
- * [ t.x*s.x    0     u.x + t.x*a.x ]
- * [   0     t.y*s.y  u.y + t.y*a.y ]
- * [   0        0           1       ]
+ * if n<0 || n>1, don't render it.
+ * 
+ * Then finally convert n to actual uv texture coord using:
+ *         [ t.x  0  u.x ] 
+ * T = n * [  0  t.y u.y ]
+ *         [  0   0   1  ] 
  * 
  */
 
@@ -70,10 +73,13 @@ TextureDescription = function () {
   this.textureSource = "";
   this.metaSource = "";
   this.isStereo = false;
-  this.leftTopLeft = new THREE.Vector2(0.0, 0.0);
-  this.leftBottomRight = new THREE.Vector2(1.0, 1.0);
-  this.rightTopLeft = new THREE.Vector2(0.0, 0.0);
-  this.rightBottomRight = new THREE.Vector2(1.0, 1.0);
+  // in degrees
+  this.sphereFOV = new THREE.Vector2(0.0, 0.0);
+  // in degrees
+  this.sphereCentre = new THREE.Vector2(0.0, 0.0);
+  // in uv coords (0,1)
+  this.U = new THREE.Vector2(0.0, 0.0);
+  this.V = new THREE.Vector2(1.0, 1.0);
 };
 
 THREE.VRViewerEffect = function ( renderer, mode, onError ) {
@@ -85,14 +91,10 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
   var textureDesc = [];
   
   this.setStereographicProjection = function (textureDescription) {
-    textureDesc.push(textureDescription);
-    
-    var currTextureDesc = textureDescription;
-    vrStereographicProjectionQuad.setupProjection(textureDescription.textureSource, 
+    textureDesc.push(textureDescription);    
+    vrStereographicProjectionQuad.setupProjection(textureDescription, 
                                                   window.innerWidth, 
-                                                  window.innerHeight, 
-                                                  textureDescription.leftTopLeft, 
-                                                  textureDescription.leftBottomRight);
+                                                  window.innerHeight);
   };
   
   this.setRenderMode = function (mode) {
@@ -398,8 +400,8 @@ var StereographicProjection = {
     textureSource: { type: "t", value: 0 },
     imageResolution: { type: "v2", value: new THREE.Vector2() },
     transform: { type: "m4", value: new THREE.Matrix4() },
-    texLA: { type: "v2", value: new THREE.Vector2() },
-    texLB: { type: "v2", value: new THREE.Vector2() }
+    sphereToTex: { type: "m3", value: new THREE.Matrix3() },
+    texToUV: { type: "m3", value: new THREE.Matrix3() }
   },
   
   vertexShader: [
@@ -415,8 +417,8 @@ var StereographicProjection = {
     'uniform vec2 imageResolution;',
     'uniform sampler2D textureSource;',
     'uniform mat4 transform;',
-    'uniform vec2 texLA;',
-    'uniform vec2 texLB;',
+    'uniform mat3 sphereToTex;',
+    'uniform mat3 texToUV;',
 
     'varying vec2 vUv;',
 
@@ -442,22 +444,21 @@ var StereographicProjection = {
     '  float lat = 2.0*(acos(sphere_pnt.z / r) - PI*.5) + PI*.5;',
     '  lon = mod(lon, 2.*PI);',
 
-    '  if (lon<texLA.x || lon>texLB.x || lat<texLA.y || lat > texLB.y) {',
+    '  // deal with discontinuity in atan. robust-ish. this ',
+    '  // makes it robusty. Adds robustiness.',
+    '  if (abs(sphere_pnt.y)<1e-3 && abs(sphere_pnt.x-1.0)<1.) ',
+    '    lon = 0.0; ',
+    
+    '  vec3 sphereCoord = vec3(vec2(lon, lat) / rads, 1.0);',
+    '  vec3 texCoord = sphereCoord * sphereToTex;',
+    
+    '  if (texCoord.x<0.0 || texCoord.x>1.0 || texCoord.y<0.0 || texCoord.y>1.0) {',
     '    gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0); ',
     '    return;',
     '  } ',
-    
-    '  lon = (lon-texLA.x)*(2.0*PI)/(texLB.x-texLA.x); ',
-    '  lat = (lat-texLA.y)*(1.0*PI)/(texLB.y-texLA.y); ',
 
-    '  // deal with discontinuity in atan. robust-ish. this ',
-    '  // makes it robusty. Adds robustiness.',
-    '  if (abs(sphere_pnt.y)<1e-3 && abs(sphere_pnt.x-1.0)<1.) {',
-    '    gl_FragColor = texture2D(textureSource, vec2(0, lat/PI));',
-    '    return;',
-    '  } ',
-      
-    '  gl_FragColor = texture2D(textureSource, vec2(lon, lat) / rads);',
+    '  vec3 uvCoord = texCoord * texToUV;',    
+    '  gl_FragColor = texture2D(textureSource, vec2(uvCoord.x, uvCoord.y));',
     '}',    
   ].join('\n')
 };
@@ -499,12 +500,26 @@ THREE.VRStereographicProjectionQuad = function () {
     this.shaderPass.uniforms.imageResolution.value.y = resY;
   };
   
-  this.setupProjection = function (textureSourceFile, initialResolutionX, initialResolutionY, texLA, texLB) {
-    this.shaderPass.uniforms.textureSource.value = THREE.ImageUtils.loadTexture( textureSourceFile );
-    this.shaderPass.uniforms.texLA.value.x = texLA.x*2.0*Math.PI;
-    this.shaderPass.uniforms.texLA.value.y = texLA.y*1.0*Math.PI;
-    this.shaderPass.uniforms.texLB.value.x = texLB.x*2.0*Math.PI;
-    this.shaderPass.uniforms.texLB.value.y = texLB.y*1.0*Math.PI;
+  this.setupProjection = function (textureDescription, initialResolutionX, initialResolutionY) {
+    this.shaderPass.uniforms.textureSource.value = THREE.ImageUtils.loadTexture( textureDescription.textureSource );
+
+    var fovX = textureDescription.sphereFOV.x/360.0;
+    var fovY = textureDescription.sphereFOV.y/180.0;
+    var cX = textureDescription.sphereCentre.x/360.0;
+    var cY = textureDescription.sphereCentre.y/360.0;    
+    var a = new THREE.Vector2(cX-0.5*fovX, cY-0.5*fovY);
+    var b = new THREE.Vector2(cX+0.5*fovX, cY+0.5*fovY);
+    var s = b.sub(a);
+
+    this.shaderPass.uniforms.sphereToTex.value.set( s.x,  0,  -1.0*a.x,
+                                                   0,  s.y, -1.0*a.y,
+                                                   0,   0,   1.0);
+    
+    var t = textureDescription.V.sub(textureDescription.U);
+    this.shaderPass.uniforms.texToUV.value.set( t.x,  0,  -1.0*textureDescription.U.x,
+                                                0,  t.y, -1.0*textureDescription.U.y,
+                                                0,   0,   1.0);
+
     this.resizeViewport(initialResolutionX, initialResolutionY);
   };
     
