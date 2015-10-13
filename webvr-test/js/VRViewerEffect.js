@@ -450,14 +450,14 @@ var StereographicProjection = {
     '    lon = 0.0; ',
     
     '  vec3 sphereCoord = vec3(vec2(lon, lat) / rads, 1.0);',    
-    '  vec3 texCoord = sphereCoord * sphereToTex;',
+    '  vec3 texCoord =  sphereToTex * sphereCoord;',
     
     '  if (texCoord.x<0.0 || texCoord.x>1.0 || texCoord.y<0.0 || texCoord.y>1.0) {',
     '    gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0); ',
     '    return;',
     '  } ',
 
-    '  vec3 uvCoord = texCoord * texToUV;',    
+    '  vec3 uvCoord = texToUV * texCoord ;',    
     '  gl_FragColor = texture2D(textureSource, vec2(uvCoord.x, uvCoord.y));',
     '}',    
   ].join('\n')
@@ -516,14 +516,20 @@ THREE.VRStereographicProjectionQuad = function () {
 //                                                    0,  1.0/fovY, 0.0,
 //                                                    -1.0*a.x, -1.0*a.y,   1.0);
     
-    this.shaderPass.uniforms.sphereToTex.value.set( 360.0/textureDescription.sphereFOV.x,  0.0,  0.0,
-                                                   0.0,  180.0/textureDescription.sphereFOV.y, 0.0,
-                                                   -1.5,   -0.5,   1.0);
+    this.shaderPass.uniforms.sphereToTex.value.set( 360.0/textureDescription.sphereFOV.x,  0.0,  -1.5,
+                                                   0.0,  180.0/textureDescription.sphereFOV.y, -.5,
+                                                   0, 0,   1.0);    //TODO: finalise algebra for this line
     
     var t = textureDescription.V.sub(textureDescription.U);
-    this.shaderPass.uniforms.texToUV.value.set( t.x,  0,  -1.0*textureDescription.U.x,
-                                                0,  t.y, -1.0*textureDescription.U.y,
-                                                0,   0,   1.0);
+//     this.shaderPass.uniforms.texToUV.value.set( t.x,  0,  -1.0*textureDescription.U.x,
+//                                                 0,  t.y, -1.0*textureDescription.U.y,
+//                                                 0,   0,   1.0);
+    //v=1,1
+    //u=.5,0
+    //v-u=.5,1
+        this.shaderPass.uniforms.texToUV.value.set( .5,  0,  .5,
+                                                    0, 1, 0,
+                                                    0, 0,   1.0);
 
     this.resizeViewport(initialResolutionX, initialResolutionY);
   };
