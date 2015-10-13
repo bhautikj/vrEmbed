@@ -45,28 +45,6 @@
  * --
  * (u,v): supplied, corners of tex rect
  * 
- * Sphere->Texture
- * ===============
- * 
- * For an arbitrary point S on the sphere, 0<X<1, mapping to 
- * texture coordinate T:
- * 
- * Let s = (b-a)
- * Let t = (v-u)
- * 
- * First transform sphere coord to normalized texture coord using:
- * 
- *         [ s.x  0   -a.x ] 
- * n = S * [  0  s.y  -a.y ]
- *         [  0   0    0   ]
- * 
- * if n<0 || n>1, don't render it.
- * 
- * Then finally convert n to actual uv texture coord using:
- *         [ t.x  0  u.x ] 
- * T = n * [  0  t.y u.y ]
- *         [  0   0   1  ] 
- * 
  */
 
 TextureDescription = function () {
@@ -78,8 +56,10 @@ TextureDescription = function () {
   // in degrees
   this.sphereCentre = new THREE.Vector2(0.0, 0.0);
   // in uv coords (0,1)
-  this.U = new THREE.Vector2(0.0, 0.0);
-  this.V = new THREE.Vector2(1.0, 1.0);
+  this.U_r = new THREE.Vector2(0.0, 0.0);
+  this.V_r = new THREE.Vector2(1.0, 1.0);
+  this.U_l = new THREE.Vector2(0.0, 0.0);
+  this.V_l = new THREE.Vector2(1.0, 1.0);
 };
 
 THREE.VRViewerEffect = function ( renderer, mode, onError ) {
@@ -402,7 +382,8 @@ var StereographicProjection = {
     transform: { type: "m4", value: new THREE.Matrix4() },
     sphereToTexU: { type: "v2", value: new THREE.Vector2() },
     sphereToTexV: { type: "v2", value: new THREE.Vector2() },
-    texToUV: { type: "m3", value: new THREE.Matrix3() }
+    texToUV_r: { type: "m3", value: new THREE.Matrix3() },
+    texToUV_l: { type: "m3", value: new THREE.Matrix3() }
   },
   
   vertexShader: [
@@ -420,7 +401,8 @@ var StereographicProjection = {
     'uniform mat4 transform;',
     'uniform vec2 sphereToTexU;',
     'uniform vec2 sphereToTexV;',
-    'uniform mat3 texToUV;',
+    'uniform mat3 texToUV_r;',
+    'uniform mat3 texToUV_l;',
 
     'varying vec2 vUv;',
 
@@ -466,7 +448,7 @@ var StereographicProjection = {
     '  } ',
     
     '  vec3 texCoord = vec3(normCoord, 1.0); ',
-    '  vec3 uvCoord = texToUV * texCoord ;',    
+    '  vec3 uvCoord = texToUV_l * texCoord ;',    
     '  gl_FragColor = texture2D(textureSource, vec2(uvCoord.x, uvCoord.y));',
     '}',    
   ].join('\n')
@@ -520,11 +502,16 @@ THREE.VRStereographicProjectionQuad = function () {
     this.shaderPass.uniforms.sphereToTexU.value.set( cX - 0.5*fovX, cY - 0.5*fovY );
     this.shaderPass.uniforms.sphereToTexV.value.set( cX + 0.5*fovX, cY + 0.5*fovY );
     
-    var t = textureDescription.V.sub(textureDescription.U);
-    this.shaderPass.uniforms.texToUV.value.set( t.x,  0,  textureDescription.U.x,
-                                                0, t.y, textureDescription.U.y,
+    var t_r = textureDescription.V_r.sub(textureDescription.U_r);
+    this.shaderPass.uniforms.texToUV_r.value.set( t_r.x,  0,  textureDescription.U_r.x,
+                                                0, t_r.y, textureDescription.U_r.y,
                                                 0, 0,   1.0);
-
+    
+    var t_l = textureDescription.V_l.sub(textureDescription.U_l);
+    this.shaderPass.uniforms.texToUV_l.value.set( t_l.x,  0,  textureDescription.U_l.x,
+                                                0, t_l.y, textureDescription.U_l.y,
+                                                0, 0,   1.0);
+    
     this.resizeViewport(initialResolutionX, initialResolutionY);
   };
     
