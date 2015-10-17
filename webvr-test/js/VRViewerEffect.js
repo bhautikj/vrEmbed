@@ -434,11 +434,11 @@ var StereographicProjection = {
     '    lon = 0.0; ',
     
     '  vec2 sphereCoord = vec2(lon, lat) / rads;',  
-    '  vec2 vu = sphereToTexV - sphereToTexU;',
+    
+//     '  vec2 normCoord = sphereCoord; ',
     '  vec2 normCoord = sphereCoord - sphereToTexU;',
-    '  normCoord.x = mod(normCoord.x, 1.0);',
-    '  normCoord.y = mod(normCoord.y, 1.0);',
-
+    
+    '  vec2 vu = sphereToTexV - sphereToTexU;',
     '  normCoord.x = normCoord.x/vu.x;',
     '  normCoord.y = normCoord.y/vu.y;',
     
@@ -447,6 +447,9 @@ var StereographicProjection = {
     '    return;',
     '  } ',
     
+    '  normCoord.x = mod(normCoord.x, 1.0);',
+    '  normCoord.y = mod(normCoord.y, 1.0);',
+
     '  vec3 texCoord = vec3(normCoord, 1.0); ',
     '  vec3 uvCoord = texToUV_l * texCoord ;',    
     '  gl_FragColor = texture2D(textureSource, vec2(uvCoord.x, uvCoord.y));',
@@ -485,6 +488,7 @@ var ShaderPass = function(shader) {
 
 THREE.VRStereographicProjectionQuad = function () {
   this.shaderPass = new ShaderPass(StereographicProjection);
+  this.textureDescription = 0;
   
   this.resizeViewport = function (resX, resY) {
     this.shaderPass.uniforms.imageResolution.value.x = resX;
@@ -492,16 +496,15 @@ THREE.VRStereographicProjectionQuad = function () {
   };
   
   this.setupProjection = function (textureDescription, initialResolutionX, initialResolutionY) {
+    this.textureDescription = textureDescription;
     this.shaderPass.uniforms.textureSource.value = THREE.ImageUtils.loadTexture( textureDescription.textureSource );
 
     var fovX = textureDescription.sphereFOV.x/360.0;
     var fovY = textureDescription.sphereFOV.y/180.0;
-    var cX = textureDescription.sphereCentre.x/360.0;
-    var cY = textureDescription.sphereCentre.y/180.0;   
         
-    this.shaderPass.uniforms.sphereToTexU.value.set( cX - 0.5*fovX, cY - 0.5*fovY );
-    this.shaderPass.uniforms.sphereToTexV.value.set( cX + 0.5*fovX, cY + 0.5*fovY );
-    
+    this.shaderPass.uniforms.sphereToTexU.value.set( 0.5 - 0.5*fovX, 0.5 - 0.5*fovY );
+    this.shaderPass.uniforms.sphereToTexV.value.set( 0.5 + 0.5*fovX, 0.5 + 0.5*fovY );
+        
     var t_r = textureDescription.V_r.sub(textureDescription.U_r);
     this.shaderPass.uniforms.texToUV_r.value.set( t_r.x,  0,  textureDescription.U_r.x,
                                                 0, t_r.y, textureDescription.U_r.y,
@@ -524,6 +527,16 @@ THREE.VRStereographicProjectionQuad = function () {
     quat.multiply(fixQuat);
     fixQuat.setFromAxisAngle( new THREE.Vector3( 0, 0, 1 ), Math.PI / 2 );
     quat.multiply(fixQuat);
+
+    var pitch = Math.PI * (this.textureDescription.sphereCentre.x / -180.0);
+    var yaw = Math.PI * (this.textureDescription.sphereCentre.y / 180.0);
+//    // pitch adjustment (pi/2 is up, -pi/2 is down)
+   fixQuat.setFromAxisAngle( new THREE.Vector3( 0, 1, 0 ), pitch );
+   quat.multiply(fixQuat);
+
+//    // yaw adjustment (-PI->PI)
+   fixQuat.setFromAxisAngle( new THREE.Vector3( 0, 0, 1 ), yaw );
+   quat.multiply(fixQuat);
     
     this.shaderPass.uniforms.transform.value.makeRotationFromQuaternion(quat);
     this.shaderPass.copyMat();
