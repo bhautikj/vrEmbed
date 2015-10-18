@@ -241,18 +241,23 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
       onError( 'Multiple scenes not supported in VRViewerEffect' );
     }
     
+    finalRenderMode = renderMode;
+    
+    // fallback modes if HMD unavailable
+    if (!vrHMD) {
+      if (renderMode == 2) {
+        finalRenderMode = 0;
+      }
+    }
+    
+    
     // Render modes:
-    // 0  (000): one texture, one viewport, no anaglyph
-    // 1  (001): two textures, one viewport, no anaglyph
-    // 2  (010): one texture, two viewports, no anaglyph
-    // 3  (011): two textures, two viewports, no anaglyph
-    // 4  (100): INVALID MODE one texture, one viewport, anaglyph
-    // 5  (101): two textures, one viewport, anaglyph
-    // 6  (110): INVALID MODE one texture, two viewports, anaglyph
-    // 7  (111): INVALID MODE two textures, two viewports, anaglyph  
+    // 0  (00): one viewport, no anaglyph
+    // 2  (10): two viewports, no anaglyph
+    // 1  (01): one viewport, anaglyph
     
     
-    if (renderMode == 0) {
+    if (finalRenderMode == 0) {
       // Regular render mode if not HMD
       if ( Array.isArray( scene ) ) scene = scene[ 0 ];
       vrCameraRig.update(camera);
@@ -263,32 +268,28 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
       return;
     }
     
+    //------------------
+    // START CAMERA BLOCK
+    //------------------
+    if ( camera.parent === undefined ) camera.updateMatrixWorld();      
+    cameraL.projectionMatrix = fovToProjection( vrCameraRig._eyeFOVL, true, camera.near, camera.far );
+    cameraR.projectionMatrix = fovToProjection( vrCameraRig._eyeFOVR, true, camera.near, camera.far );
+    vrCameraRig.update(camera);
+    //------------------
+    // END CAMERA BLOCK
+    //------------------
     
-    if ( vrHMD ) {
+    //------------------
+    // START RENDER BLOCK
+    //------------------    
+    // render camera setup
+    renderer.enableScissorTest( true );
+    renderer.clear();
+    var size = renderer.getSize();
 
-      //------------------
-      // START CAMERA BLOCK
-      //------------------
-      if ( camera.parent === undefined ) camera.updateMatrixWorld();      
-      cameraL.projectionMatrix = fovToProjection( vrCameraRig._eyeFOVL, true, camera.near, camera.far );
-      cameraR.projectionMatrix = fovToProjection( vrCameraRig._eyeFOVR, true, camera.near, camera.far );
-      vrCameraRig.update(camera);
-      //------------------
-      // END CAMERA BLOCK
-      //------------------
-
-      //------------------
-      // START RENDER BLOCK
-      // TODO: integrate monocular mode, anaglyph mode
-      //------------------      
-
-      var size = renderer.getSize();
-      size.width /= 2;
-      // render camera setup
-      renderer.enableScissorTest( true );
-      renderer.clear();
-
-      // render left eye
+    // two viewport render
+    if ( finalRenderMode == 2 ) {
+      size.width /= 2;      // render left eye
       renderer.setViewport( 0, 0, size.width, size.height );
       renderer.setScissor( 0, 0, size.width, size.height );
       vrStereographicProjectionQuad.render(cameraL, renderer);
@@ -300,13 +301,16 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
       vrStereographicProjectionQuad.render(cameraR, renderer);
       renderer.render( scene, cameraR );
       renderer.enableScissorTest( false );
-      //------------------
-      // END RENDER BLOCK
-      //------------------
 
-      return;
-
+    } else if (finalRenderMode == 1) {
+      // TODO: anagylph, right here!!!
     }
+    //------------------
+    // END RENDER BLOCK
+    //------------------
+
+    return;
+
   }; 
 };
 
@@ -361,19 +365,13 @@ THREE.VRViewerCameraRig = function ( parentTransform ) {
 // renderMode values
 // --
 // variables: 
-// 0: [one/two] textures (e.g. mono vs stereo textures)
-// 1: [one/two] viewports (e.g. mono vs L/R viewports)
-// 2: [yes/no] analgyph (e.g. full viewport, render analglyph)
+// 0: [one/two] viewports (e.g. mono vs L/R viewports)
+// 1: [yes/no] analgyph (e.g. full viewport, render analglyph)
 // 
 // Render modes:
-// 0  (000): one texture, one viewport, no anaglyph
-// 1  (001): two textures, one viewport, no anaglyph
-// 2  (010): one texture, two viewports, no anaglyph
-// 3  (011): two textures, two viewports, no anaglyph
-// 4  (100): INVALID MODE one texture, one viewport, anaglyph
-// 5  (101): INVALID MODE two textures, one viewport, anaglyph
-// 6  (110): INVALID MODE one texture, two viewports, anaglyph
-// 7  (111): INVALID MODE two textures, two viewports, anaglyph
+// 0  (00): one viewport, no anaglyph
+// 2  (10): two viewports, no anaglyph
+// 1  (01): one viewport, anaglyph
 //
 var StereographicProjection = {
   uniforms: {
@@ -411,7 +409,9 @@ var StereographicProjection = {
     '  vec2 uv = vUv;',
       
     '  float aspect = imageResolution.y/imageResolution.x;',
-    '  float scale = 1.;',
+    //FOV: scale = 1.->FOV of ~120
+    //FOV: scale = .5 -> FOV of ~60
+    '  float scale = .625;',
       
     '  vec2 rads = vec2(PI * 2. , PI) ;',
     '  vec2 pnt = (uv - .5) * vec2(scale, scale * aspect);',
