@@ -104,32 +104,37 @@ effect.setSize(window.innerWidth, window.innerHeight);
 
 var textureDescription = new TextureDescription();
 
-textureDescription.textureSource = "stereograph_c.jpg";
+textureDescription.textureSource = "left01.jpg";
 textureDescription.metaSource = "";
-textureDescription.isStereo = true;
-textureDescription.sphereFOV = new THREE.Vector2(90, 90);
+textureDescription.isStereo = false;
+textureDescription.sphereFOV = new THREE.Vector2(360, 180);
 // in degrees
 textureDescription.sphereCentre = new THREE.Vector2(0.0, 0.0);
-// textureDescription.sphereCentre = new THREE.Vector2(180.0, 20.0);
-textureDescription.U_l = new THREE.Vector2(0.0, 0.0);
-textureDescription.V_l = new THREE.Vector2(0.5, 1.0);
-textureDescription.U_r = new THREE.Vector2(0.5, 0.0);
-textureDescription.U_r = new THREE.Vector2(1.0, 1.0);
+textureDescription.U = new THREE.Vector2(0.0, 0.0);
+textureDescription.V = new THREE.Vector2(1.0, 1.0);
+textureDescription.U = new THREE.Vector2(0.0, 0.0);
+textureDescription.V = new THREE.Vector2(1.0, 1.0);
+
+// textureDescription.textureSource = "stereograph_c.jpg";
+// textureDescription.metaSource = "";
+// textureDescription.isStereo = true;
+// textureDescription.sphereFOV = new THREE.Vector2(90, 90);
+// // in degrees
+// textureDescription.sphereCentre = new THREE.Vector2(0.0, 0.0);
+// textureDescription.U_l = new THREE.Vector2(0.0, 0.0);
+// textureDescription.V_l = new THREE.Vector2(0.5, 1.0);
+// textureDescription.U_r = new THREE.Vector2(0.5, 0.0);
+// textureDescription.U_r = new THREE.Vector2(1.0, 1.0);
 
 // textureDescription.textureSource = "stereograph_a.jpg";
 // textureDescription.metaSource = "https://www.flickr.com/photos/127906254@N06/17787986691/";
 // textureDescription.isStereo = true;
 // textureDescription.sphereFOV = new THREE.Vector2(90, 90);
 // // in degrees
-// textureDescription.sphereCentre = new THREE.Vector2(180.0, 90.0);
-// //image size: 2048,996
-// //0,0
+// textureDescription.sphereCentre = new THREE.Vector2(0.0, 0.0);
 // textureDescription.U = new THREE.Vector2(0.0, 0.0);
-// //1010,996
 // textureDescription.V = new THREE.Vector2(0.493, 1.0);
-// //1018,0
 // textureDescription.U = new THREE.Vector2(0.497, 0.0);
-// //2028,996
 // textureDescription.V = new THREE.Vector2(0.990, 1.0);
 
 // textureDescription.textureSource = "stereograph_b.jpg";

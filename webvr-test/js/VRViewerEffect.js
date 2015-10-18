@@ -427,15 +427,17 @@ var StereographicProjection = {
       
     '  float lat = 2.0*(acos(sphere_pnt.z / r) - PI*.5) + PI*.5;',
     '  lon = mod(lon, 2.*PI);',
+    
+    '  vec2 sphereCoord = vec2(lon, lat) / rads;',  
 
     '  // deal with discontinuity in atan. robust-ish. this ',
     '  // makes it robusty. Adds robustiness.',
-    '  if (abs(sphere_pnt.y)<1e-3 && abs(sphere_pnt.x-1.0)<1.) ',
-    '    lon = 0.0; ',
+    '  if (abs(sphere_pnt.y)<1e-3  && abs(sphere_pnt.x-1.0)<1.0) ',
+    '    sphereCoord.x = 0.0; ', 
     
-    '  vec2 sphereCoord = vec2(lon, lat) / rads;',  
+//     '  if (abs(sphere_pnt.y)<1e-3  && abs(sphere_pnt.x)<1e-3) ',
+//     '    sphereCoord.x = 1.0; ', 
     
-//     '  vec2 normCoord = sphereCoord; ',
     '  vec2 normCoord = sphereCoord - sphereToTexU;',
     
     '  vec2 vu = sphereToTexV - sphereToTexU;',
@@ -443,7 +445,7 @@ var StereographicProjection = {
     '  normCoord.y = normCoord.y/vu.y;',
     
     '  if (normCoord.x<0.0 || normCoord.x>1.0 || normCoord.y<0.0 || normCoord.y>1.0) {',
-    '    gl_FragColor = vec4(1.0, 1.0, 0.0, 1.0); ',
+    '    gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0); ',
     '    return;',
     '  } ',
     
@@ -496,8 +498,12 @@ THREE.VRStereographicProjectionQuad = function () {
   };
   
   this.setupProjection = function (textureDescription, initialResolutionX, initialResolutionY) {
+//     this.shaderPass.uniforms.textureSource.value.dispose();
     this.textureDescription = textureDescription;
     this.shaderPass.uniforms.textureSource.value = THREE.ImageUtils.loadTexture( textureDescription.textureSource );
+    this.shaderPass.uniforms.textureSource.value.wrapS = THREE.MirroredRepeatWrapping;
+    this.shaderPass.uniforms.textureSource.value.wrapT = THREE.MirroredRepeatWrapping;
+//     this.shaderPass.uniforms.textureSource.value.needsUpdate = true; 
 
     var fovX = textureDescription.sphereFOV.x/360.0;
     var fovY = textureDescription.sphereFOV.y/180.0;
@@ -533,7 +539,6 @@ THREE.VRStereographicProjectionQuad = function () {
 //    // pitch adjustment (pi/2 is up, -pi/2 is down)
    fixQuat.setFromAxisAngle( new THREE.Vector3( 0, 1, 0 ), pitch );
    quat.multiply(fixQuat);
-
 //    // yaw adjustment (-PI->PI)
    fixQuat.setFromAxisAngle( new THREE.Vector3( 0, 0, 1 ), yaw );
    quat.multiply(fixQuat);
