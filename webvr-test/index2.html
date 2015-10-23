@@ -105,16 +105,16 @@ effect.setSize(window.innerWidth, window.innerHeight);
 
 var textureDescription = new TextureDescription();
 
-textureDescription.textureSource = "left01.jpg";
-textureDescription.metaSource = "";
-textureDescription.isStereo = false;
-textureDescription.sphereFOV = new THREE.Vector2(360, 180);
-// in degrees
-textureDescription.sphereCentre = new THREE.Vector2(0.0, 0.0);
-textureDescription.U = new THREE.Vector2(0.0, 0.0);
-textureDescription.V = new THREE.Vector2(1.0, 1.0);
-textureDescription.U = new THREE.Vector2(0.0, 0.0);
-textureDescription.V = new THREE.Vector2(1.0, 1.0);
+// textureDescription.textureSource = "left01.jpg";
+// textureDescription.metaSource = "";
+// textureDescription.isStereo = false;
+// textureDescription.sphereFOV = new THREE.Vector2(360, 180);
+// // in degrees
+// textureDescription.sphereCentre = new THREE.Vector2(0.0, 0.0);
+// textureDescription.U = new THREE.Vector2(0.0, 0.0);
+// textureDescription.V = new THREE.Vector2(1.0, 1.0);
+// textureDescription.U = new THREE.Vector2(0.0, 0.0);
+// textureDescription.V = new THREE.Vector2(1.0, 1.0);
 
 // textureDescription.textureSource = "stereograph_c.jpg";
 // textureDescription.metaSource = "";
@@ -127,16 +127,16 @@ textureDescription.V = new THREE.Vector2(1.0, 1.0);
 // textureDescription.U_r = new THREE.Vector2(0.5, 0.0);
 // textureDescription.U_r = new THREE.Vector2(1.0, 1.0);
 
-// textureDescription.textureSource = "stereograph_a.jpg";
-// textureDescription.metaSource = "https://www.flickr.com/photos/127906254@N06/17787986691/";
-// textureDescription.isStereo = true;
-// textureDescription.sphereFOV = new THREE.Vector2(90, 90);
-// // in degrees
-// textureDescription.sphereCentre = new THREE.Vector2(0.0, 0.0);
-// textureDescription.U = new THREE.Vector2(0.0, 0.0);
-// textureDescription.V = new THREE.Vector2(0.493, 1.0);
-// textureDescription.U = new THREE.Vector2(0.497, 0.0);
-// textureDescription.V = new THREE.Vector2(0.990, 1.0);
+textureDescription.textureSource = "stereograph_a.jpg";
+textureDescription.metaSource = "https://www.flickr.com/photos/127906254@N06/17787986691/";
+textureDescription.isStereo = true;
+textureDescription.sphereFOV = new THREE.Vector2(90, 90);
+// in degrees
+textureDescription.sphereCentre = new THREE.Vector2(0.0, 0.0);
+textureDescription.U_l = new THREE.Vector2(0.0, 0.0);
+textureDescription.V_l = new THREE.Vector2(0.493, 1.0);
+textureDescription.U_r = new THREE.Vector2(0.497, 0.0);
+textureDescription.V_r = new THREE.Vector2(0.990, 1.0);
 
 // textureDescription.textureSource = "stereograph_b.jpg";
 // textureDescription.metaSource = "https://www.flickr.com/photos/library_of_congress/3253742804/";
@@ -197,7 +197,7 @@ function animate(timestamp) {
   if (manager.isVRMode()){ 
     effect.setRenderMode(2);
   } else {
-    effect.setRenderMode(1);
+    effect.setRenderMode(0);
   }
   
   manager.render(scene, camera, timestamp);

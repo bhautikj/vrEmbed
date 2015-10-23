@@ -433,11 +433,6 @@ var ShaderPassAnaglyph = function(shader) {
   this.material.depthWrite = false;
   
   var params = { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat };
-  this.anaglyphTargetL = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight, params );
-  this.anaglyphTargetR = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight, params );
-  
-  this.material.uniforms[ "mapLeft" ].value = this.anaglyphTargetL;
-  this.material.uniforms[ "mapRight" ].value = this.anaglyphTargetR;  
 
   this.resize = function(width, height) {
     if ( this.anaglyphTargetL ) this.anaglyphTargetL.dispose();
@@ -445,11 +440,14 @@ var ShaderPassAnaglyph = function(shader) {
     
     this.anaglyphTargetL = new THREE.WebGLRenderTarget( width, height, params );
     this.anaglyphTargetR = new THREE.WebGLRenderTarget( width, height, params );
-
+    this.anaglyphTargetL.depthBuffer = false;
+    this.anaglyphTargetR.depthBuffer = false;
+  
     this.material.uniforms[ "mapLeft" ].value = this.anaglyphTargetL;
     this.material.uniforms[ "mapRight" ].value = this.anaglyphTargetR;
   };
 
+  this.resize( window.innerWidth, window.innerHeight);
 
   this.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
   this.scene  = new THREE.Scene();
