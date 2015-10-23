@@ -41,6 +41,11 @@ body {
   -->
 <script src="js/VRViewerEffect.js"></script>
 
+<script>
+  //enable HMD mode without being mobile device
+  //forces WebVRPolyfill.prototype.isCardboardCompatible to return true
+  window.CARDBOARD_DEBUG = true;
+</script>
 <!--
   A polyfill for WebVR using the Device{Motion,Orientation}Event API.
   -->
@@ -183,6 +188,10 @@ manager.render = function(scene, camera, timestamp) {
     this.input.setAnimationFrameTime(timestamp);
   }
 };
+
+// WebVRPolyfill.prototype.isCardboardCompatible = functon() {
+//   return true;
+// };
 
 // Request animation frame loop function
 function animate(timestamp) {

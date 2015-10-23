@@ -3072,7 +3072,7 @@ WebVRPolyfill.prototype.isMobile = function() {
 };
 
 WebVRPolyfill.prototype.isCardboardCompatible = function() {
-  return true;
+//   return true;
   // For now, support all iOS and Android devices.
   // Also enable the global CARDBOARD_DEBUG flag.
   return this.isMobile() || window.CARDBOARD_DEBUG;
@@ -3080,4 +3080,5 @@ WebVRPolyfill.prototype.isCardboardCompatible = function() {
 
 module.exports = WebVRPolyfill;
 
+  
 },{"./base.js":1,"./cardboard-hmd-vr-device.js":2,"./gyro-position-sensor-vr-device.js":3,"./mouse-keyboard-position-sensor-vr-device.js":5}]},{},[4]);
