@@ -153,7 +153,7 @@ var manager = new WebVRManager(renderer, effect, {hideButton: false});
 
 //----------
 
-
+/*
 var boxgeom = new THREE.BoxGeometry(0.5, 0.5, 0.5);
 var boxmat = new THREE.MeshNormalMaterial();
 var cube = new THREE.Mesh(boxgeom, boxmat);
@@ -163,6 +163,7 @@ cube.position.z = -1;
 
 // Add cube mesh to your three.js scene
 scene.add(cube);
+*/
 
 //override render function
 manager.render = function(scene, camera, timestamp) {
@@ -186,7 +187,7 @@ manager.render = function(scene, camera, timestamp) {
 // Request animation frame loop function
 function animate(timestamp) {
   // Apply rotation to cube mesh
-   cube.rotation.y += 0.01;
+//    cube.rotation.y += 0.01;
 
   // Update VR headset position and apply to camera.
   controls.update();
@@ -197,7 +198,7 @@ function animate(timestamp) {
   if (manager.isVRMode()){ 
     effect.setRenderMode(2);
   } else {
-    effect.setRenderMode(0);
+    effect.setRenderMode(1);
   }
   
   manager.render(scene, camera, timestamp);

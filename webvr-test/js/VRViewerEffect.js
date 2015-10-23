@@ -264,6 +264,7 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
       // render pano
       // TODO: only run if mode says yes
       vrCameraRig.update(camera);
+      vrStereographicProjectionQuad.setLeft();
       vrStereographicProjectionQuad.preRender(camera);
       vrStereographicProjectionQuad.render(renderer);
       renderer.render( scene, camera );
@@ -296,6 +297,7 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
       size.width /= 2;      // render left eye
       renderer.setViewport( 0, 0, size.width, size.height );
       renderer.setScissor( 0, 0, size.width, size.height );
+      vrStereographicProjectionQuad.setLeft();
       vrStereographicProjectionQuad.preRender(cameraL);
       vrStereographicProjectionQuad.render(renderer);
       renderer.render( scene, cameraL );
@@ -303,17 +305,20 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
       // render right eye
       renderer.setViewport( size.width, 0, size.width, size.height );
       renderer.setScissor( size.width, 0, size.width, size.height );
+      vrStereographicProjectionQuad.setRight();
       vrStereographicProjectionQuad.preRender(cameraR);
       vrStereographicProjectionQuad.render(renderer);
       renderer.render( scene, cameraR );
       renderer.enableScissorTest( false );
     } else if (finalRenderMode == 1) {
       renderer.clear();
+      vrStereographicProjectionQuad.setLeft();
       vrStereographicProjectionQuad.preRender(cameraL);
       vrStereographicProjectionQuad.renderToTex(renderer, shaderPassAnaglyph.anaglyphTargetL);
       renderer.render( scene, cameraL, shaderPassAnaglyph.anaglyphTargetL );
 
       // render right eye
+      vrStereographicProjectionQuad.setRight();
       vrStereographicProjectionQuad.preRender(cameraR);
       vrStereographicProjectionQuad.renderToTex(renderer, shaderPassAnaglyph.anaglyphTargetR);
       renderer.render( scene, cameraR, shaderPassAnaglyph.anaglyphTargetR  );
@@ -484,8 +489,7 @@ var StereographicProjection = {
     transform: { type: "m4", value: new THREE.Matrix4() },
     sphereToTexU: { type: "v2", value: new THREE.Vector2() },
     sphereToTexV: { type: "v2", value: new THREE.Vector2() },
-    texToUV_r: { type: "m3", value: new THREE.Matrix3() },
-    texToUV_l: { type: "m3", value: new THREE.Matrix3() }
+    texToUV: { type: "m3", value: new THREE.Matrix3() }
   },
   
   vertexShader: [
@@ -503,8 +507,7 @@ var StereographicProjection = {
     'uniform mat4 transform;',
     'uniform vec2 sphereToTexU;',
     'uniform vec2 sphereToTexV;',
-    'uniform mat3 texToUV_r;',
-    'uniform mat3 texToUV_l;',
+    'uniform mat3 texToUV;',
 
     'varying vec2 vUv;',
 
@@ -549,7 +552,7 @@ var StereographicProjection = {
     '  normCoord.y = mod(normCoord.y, 1.0);',
 
     '  vec3 texCoord = vec3(normCoord, 1.0); ',
-    '  vec3 uvCoord = texToUV_l * texCoord ;',    
+    '  vec3 uvCoord = texToUV * texCoord ;',    
     '  gl_FragColor = texture2D(textureSource, vec2(uvCoord.x, uvCoord.y));',
     '}',    
   ].join('\n')
@@ -587,6 +590,8 @@ var ShaderPassQuad = function(shader) {
 THREE.VRStereographicProjectionQuad = function () {
   this.shaderPassQuad = new ShaderPassQuad(StereographicProjection);
   this.textureDescription = 0;
+  this.texToUV_l = new THREE.Matrix3();
+  this.texToUV_r = new THREE.Matrix3();
   
   this.resizeViewport = function (resX, resY) {
     this.shaderPassQuad.uniforms.imageResolution.value.x = resX;
@@ -611,18 +616,28 @@ THREE.VRStereographicProjectionQuad = function () {
     this.shaderPassQuad.uniforms.sphereToTexV.value.set( 0.5 + 0.5*fovX, 0.5 + 0.5*fovY );
         
     var t_r = textureDescription.V_r.sub(textureDescription.U_r);
-    this.shaderPassQuad.uniforms.texToUV_r.value.set( t_r.x,  0,  textureDescription.U_r.x,
-                                                0, t_r.y, textureDescription.U_r.y,
-                                                0, 0,   1.0);
+
+      
+    this.texToUV_r.set( t_r.x,  0,  textureDescription.U_r.x,
+                              0, t_r.y, textureDescription.U_r.y,
+                              0, 0,   1.0);
     
     var t_l = textureDescription.V_l.sub(textureDescription.U_l);
-    this.shaderPassQuad.uniforms.texToUV_l.value.set( t_l.x,  0,  textureDescription.U_l.x,
-                                                0, t_l.y, textureDescription.U_l.y,
-                                                0, 0,   1.0);
-    
+    this.texToUV_l.set( t_l.x,  0,  textureDescription.U_l.x,
+                              0, t_l.y, textureDescription.U_l.y,
+                              0, 0,   1.0);
+
     this.resizeViewport(initialResolutionX, initialResolutionY);
   };
-    
+   
+  this.setLeft = function() {
+    this.shaderPassQuad.uniforms.texToUV.value.copy(this.texToUV_l);
+  };
+
+  this.setRight = function() {
+    this.shaderPassQuad.uniforms.texToUV.value.copy(this.texToUV_r);
+  };
+  
   this.preRender = function(cameraObject) {
     var quat = new THREE.Quaternion();
     quat.setFromRotationMatrix(cameraObject.matrixWorld);
