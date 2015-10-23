@@ -68,11 +68,8 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
   var vrTopTransform;
   var renderMode = mode;
   var vrStereographicProjectionQuad = new THREE.VRStereographicProjectionQuad();
+  var shaderPassAnaglyph = new ShaderPassAnaglyph(AnaglyphProjection);
   var textureDesc = [];
-  
-  var _params = { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat };
-  var _renderTargetL = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight, _params );
-  var _renderTargetR = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight, _params );
   
   this.setStereographicProjection = function (textureDescription) {
     textureDesc.push(textureDescription);    
@@ -107,31 +104,24 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
         break; // We keep the first we encounter
       }
     }
-
+    
     if ( vrHMD === undefined ) {
       if ( onError ) onError( 'HMD not available' );
     }
   }
   
+  vrTopTransform = new THREE.Object3D();
+  vrCameraRig = new THREE.VRViewerCameraRig(vrTopTransform);
   if ( navigator.getVRDevices ) {
-    vrTopTransform = new THREE.Object3D();
-    vrCameraRig = new THREE.VRViewerCameraRig(vrTopTransform);
     navigator.getVRDevices().then( gotVRDevices );
   }
-
   //
 
   vrCameraRig.scale = 1;
 
   this.setSize = function( width, height ) {
     vrStereographicProjectionQuad.resizeViewport(width, height);
-    
-    if ( _renderTargetL ) _renderTargetL.dispose();
-    if ( _renderTargetR ) _renderTargetR.dispose();
-    
-    _renderTargetL = new THREE.WebGLRenderTarget( width, height, _params );
-    _renderTargetR = new THREE.WebGLRenderTarget( width, height, _params );
-
+    shaderPassAnaglyph.resize(width, height);
     renderer.setSize( width, height );
   };
 
@@ -274,7 +264,8 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
       vrCameraRig.update(camera);
       // render pano
       // TODO: only run if mode says yes
-      vrStereographicProjectionQuad.render(camera, renderer);
+      vrStereographicProjectionQuad.preRender(camera);
+      vrStereographicProjectionQuad.render(renderer);
       renderer.render( scene, camera );
       return;
     }
@@ -282,7 +273,9 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
     //------------------
     // START CAMERA BLOCK
     //------------------
-    if ( camera.parent === undefined ) camera.updateMatrixWorld();      
+    if ( camera.parent === undefined ) {
+      camera.updateMatrixWorld();      
+    }
     cameraL.projectionMatrix = fovToProjection( vrCameraRig._eyeFOVL, true, camera.near, camera.far );
     cameraR.projectionMatrix = fovToProjection( vrCameraRig._eyeFOVR, true, camera.near, camera.far );
     vrCameraRig.update(camera);
@@ -294,29 +287,52 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
     // START RENDER BLOCK
     //------------------    
     // render camera setup
-    renderer.enableScissorTest( true );
-    renderer.clear();
-    var size = renderer.getSize();
 
     // two viewport render
     if ( finalRenderMode == 2 ) {
+      renderer.enableScissorTest( true );
+      renderer.clear();
+      var size = renderer.getSize();
       size.width /= 2;      // render left eye
       renderer.setViewport( 0, 0, size.width, size.height );
       renderer.setScissor( 0, 0, size.width, size.height );
-      vrStereographicProjectionQuad.render(cameraL, renderer);
+      vrStereographicProjectionQuad.preRender(cameraL);
+      vrStereographicProjectionQuad.render(renderer);
       renderer.render( scene, cameraL );
 
       // render right eye
       renderer.setViewport( size.width, 0, size.width, size.height );
       renderer.setScissor( size.width, 0, size.width, size.height );
-      vrStereographicProjectionQuad.render(cameraR, renderer);
+      vrStereographicProjectionQuad.preRender(cameraR);
+      vrStereographicProjectionQuad.render(renderer);
       renderer.render( scene, cameraR );
       renderer.enableScissorTest( false );
-
     } else if (finalRenderMode == 1) {
+//       renderer.enableScissorTest( true );
+      renderer.clear();
       // TODO: anagylph, right here!!!
+      shaderPassAnaglyph.copyMat();
       
+      vrStereographicProjectionQuad.preRender(cameraL);
+      renderer.render(vrStereographicProjectionQuad.shaderPassQuad.scene, vrStereographicProjectionQuad.shaderPassQuad.camera, shaderPassAnaglyph.anaglyphTargetL, true);
+      renderer.render( scene, cameraL, shaderPassAnaglyph.anaglyphTargetL, true);
+      
+      vrStereographicProjectionQuad.preRender(cameraR);
+      renderer.render(vrStereographicProjectionQuad.shaderPassQuad.scene, vrStereographicProjectionQuad.shaderPassQuad.camera, shaderPassAnaglyph.anaglyphTargetR, true);
+      renderer.render( scene, cameraR, shaderPassAnaglyph.anaglyphTargetR, true);
+      
+      renderer.render( shaderPassAnaglyph.scene, shaderPassAnaglyph.camera );
+      
+      
+//       vrStereographicProjectionQuad.preRender(cameraL);
+//       vrStereographicProjectionQuad.render(renderer);
+//       renderer.render( scene, cameraL );
+      
+//       renderer.enableScissorTest( false );
+
     }
+  
+
     //------------------
     // END RENDER BLOCK
     //------------------
@@ -413,6 +429,34 @@ var ShaderPassAnaglyph = function(shader) {
     vertexShader: shader.vertexShader,
     fragmentShader: shader.fragmentShader
   });
+
+  var params = { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat };
+  this.anaglyphTargetL = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight, params );
+  this.anaglyphTargetR = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight, params );
+  
+
+  this.resize = function(width, height) {
+    if ( this.anaglyphTargetL ) this.anaglyphTargetL.dispose();
+    if ( this.anaglyphTargetR ) this.anaglyphTargetR.dispose();
+    
+    this.anaglyphTargetL = new THREE.WebGLRenderTarget( width, height, params );
+    this.anaglyphTargetR = new THREE.WebGLRenderTarget( width, height, params );
+  };
+
+  this.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+  this.scene  = new THREE.Scene();
+  this.quad = new THREE.Mesh(new THREE.PlaneBufferGeometry(2, 2), null);
+  this.scene.add(this.quad);
+  
+  this.copyMat = function () {
+    this.quad.material = this.material;
+  };
+  
+  // render loop prototype
+  //this.copyMat();
+  //renderer.render( this.scene, cameraL, this.anaglyphTargetL, true );
+  //renderer.render( this.scene, cameraR, this.anaglyphTargetR, true );
+  //renderer.render( this._scene, this._camera );
 };
 
 //
@@ -573,7 +617,7 @@ THREE.VRStereographicProjectionQuad = function () {
     this.resizeViewport(initialResolutionX, initialResolutionY);
   };
     
-  this.render = function(cameraObject, renderer) {
+  this.preRender = function(cameraObject) {
     var quat = new THREE.Quaternion();
     quat.setFromRotationMatrix(cameraObject.matrixWorld);
     quat.conjugate();  
@@ -594,6 +638,9 @@ THREE.VRStereographicProjectionQuad = function () {
     
     this.shaderPassQuad.uniforms.transform.value.makeRotationFromQuaternion(quat);
     this.shaderPassQuad.copyMat();
+  };
+  
+  this.render = function(renderer) {
     renderer.render(this.shaderPassQuad.scene, this.shaderPassQuad.camera);
   };
 };
