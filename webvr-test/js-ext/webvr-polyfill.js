@@ -3019,7 +3019,6 @@ var PositionSensorVRDevice = require('./base.js').PositionSensorVRDevice;
 
 function WebVRPolyfill() {
   this.devices = [];
-
   if (!this.isWebVRAvailable()) {
     this.enablePolyfill();
   }
@@ -3073,6 +3072,7 @@ WebVRPolyfill.prototype.isMobile = function() {
 };
 
 WebVRPolyfill.prototype.isCardboardCompatible = function() {
+  return true;
   // For now, support all iOS and Android devices.
   // Also enable the global CARDBOARD_DEBUG flag.
   return this.isMobile() || window.CARDBOARD_DEBUG;

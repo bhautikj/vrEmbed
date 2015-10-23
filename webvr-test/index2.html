@@ -81,6 +81,7 @@ Math.degrees = function(radians) {
   return radians * 180 / Math.PI;
 };
 </script>
+
 <script>
 //Setup three.js WebGL renderer
 var renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -104,16 +105,16 @@ effect.setSize(window.innerWidth, window.innerHeight);
 
 var textureDescription = new TextureDescription();
 
-textureDescription.textureSource = "left01.jpg";
-textureDescription.metaSource = "";
-textureDescription.isStereo = false;
-textureDescription.sphereFOV = new THREE.Vector2(360, 180);
-// in degrees
-textureDescription.sphereCentre = new THREE.Vector2(0.0, 0.0);
-textureDescription.U = new THREE.Vector2(0.0, 0.0);
-textureDescription.V = new THREE.Vector2(1.0, 1.0);
-textureDescription.U = new THREE.Vector2(0.0, 0.0);
-textureDescription.V = new THREE.Vector2(1.0, 1.0);
+// textureDescription.textureSource = "left01.jpg";
+// textureDescription.metaSource = "";
+// textureDescription.isStereo = false;
+// textureDescription.sphereFOV = new THREE.Vector2(360, 180);
+// // in degrees
+// textureDescription.sphereCentre = new THREE.Vector2(0.0, 0.0);
+// textureDescription.U = new THREE.Vector2(0.0, 0.0);
+// textureDescription.V = new THREE.Vector2(1.0, 1.0);
+// textureDescription.U = new THREE.Vector2(0.0, 0.0);
+// textureDescription.V = new THREE.Vector2(1.0, 1.0);
 
 // textureDescription.textureSource = "stereograph_c.jpg";
 // textureDescription.metaSource = "";
@@ -126,16 +127,16 @@ textureDescription.V = new THREE.Vector2(1.0, 1.0);
 // textureDescription.U_r = new THREE.Vector2(0.5, 0.0);
 // textureDescription.U_r = new THREE.Vector2(1.0, 1.0);
 
-// textureDescription.textureSource = "stereograph_a.jpg";
-// textureDescription.metaSource = "https://www.flickr.com/photos/127906254@N06/17787986691/";
-// textureDescription.isStereo = true;
-// textureDescription.sphereFOV = new THREE.Vector2(90, 90);
-// // in degrees
-// textureDescription.sphereCentre = new THREE.Vector2(0.0, 0.0);
-// textureDescription.U = new THREE.Vector2(0.0, 0.0);
-// textureDescription.V = new THREE.Vector2(0.493, 1.0);
-// textureDescription.U = new THREE.Vector2(0.497, 0.0);
-// textureDescription.V = new THREE.Vector2(0.990, 1.0);
+textureDescription.textureSource = "stereograph_a.jpg";
+textureDescription.metaSource = "https://www.flickr.com/photos/127906254@N06/17787986691/";
+textureDescription.isStereo = true;
+textureDescription.sphereFOV = new THREE.Vector2(90, 90);
+// in degrees
+textureDescription.sphereCentre = new THREE.Vector2(0.0, 0.0);
+textureDescription.U_l = new THREE.Vector2(0.0, 0.0);
+textureDescription.V_l = new THREE.Vector2(0.493, 1.0);
+textureDescription.U_r = new THREE.Vector2(0.497, 0.0);
+textureDescription.V_r = new THREE.Vector2(0.990, 1.0);
 
 // textureDescription.textureSource = "stereograph_b.jpg";
 // textureDescription.metaSource = "https://www.flickr.com/photos/library_of_congress/3253742804/";
@@ -152,7 +153,7 @@ var manager = new WebVRManager(renderer, effect, {hideButton: false});
 
 //----------
 
-
+/*
 var boxgeom = new THREE.BoxGeometry(0.5, 0.5, 0.5);
 var boxmat = new THREE.MeshNormalMaterial();
 var cube = new THREE.Mesh(boxgeom, boxmat);
@@ -162,6 +163,7 @@ cube.position.z = -1;
 
 // Add cube mesh to your three.js scene
 scene.add(cube);
+*/
 
 //override render function
 manager.render = function(scene, camera, timestamp) {
@@ -185,7 +187,7 @@ manager.render = function(scene, camera, timestamp) {
 // Request animation frame loop function
 function animate(timestamp) {
   // Apply rotation to cube mesh
-   cube.rotation.y += 0.01;
+//    cube.rotation.y += 0.01;
 
   // Update VR headset position and apply to camera.
   controls.update();
@@ -196,7 +198,7 @@ function animate(timestamp) {
   if (manager.isVRMode()){ 
     effect.setRenderMode(2);
   } else {
-    effect.setRenderMode(0);
+    effect.setRenderMode(1);
   }
   
   manager.render(scene, camera, timestamp);
@@ -205,6 +207,8 @@ function animate(timestamp) {
 
   requestAnimationFrame(animate);
 }
+
+// window.CARDBOARD_DEBUG = true;
 
 // Kick off animation loop
 animate();
