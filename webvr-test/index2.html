@@ -197,7 +197,7 @@ function animate(timestamp) {
   if (manager.isVRMode()){ 
     effect.setRenderMode(2);
   } else {
-    effect.setRenderMode(0);
+    effect.setRenderMode(1);
   }
   
   manager.render(scene, camera, timestamp);
@@ -206,6 +206,8 @@ function animate(timestamp) {
 
   requestAnimationFrame(animate);
 }
+
+// window.CARDBOARD_DEBUG = true;
 
 // Kick off animation loop
 animate();

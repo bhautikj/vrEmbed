@@ -261,9 +261,9 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
     if (finalRenderMode == 0) {
       // Regular render mode if not HMD
       if ( Array.isArray( scene ) ) scene = scene[ 0 ];
-      vrCameraRig.update(camera);
       // render pano
       // TODO: only run if mode says yes
+      vrCameraRig.update(camera);
       vrStereographicProjectionQuad.preRender(camera);
       vrStereographicProjectionQuad.render(renderer);
       renderer.render( scene, camera );
@@ -308,18 +308,16 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
       renderer.render( scene, cameraR );
       renderer.enableScissorTest( false );
     } else if (finalRenderMode == 1) {
-//       renderer.enableScissorTest( true );
       renderer.clear();
-      // TODO: anagylph, right here!!!
-      shaderPassAnaglyph.copyMat();
-      
       vrStereographicProjectionQuad.preRender(cameraL);
-      renderer.render(vrStereographicProjectionQuad.shaderPassQuad.scene, vrStereographicProjectionQuad.shaderPassQuad.camera, shaderPassAnaglyph.anaglyphTargetL, true);
-      renderer.render( scene, cameraL, shaderPassAnaglyph.anaglyphTargetL, true);
-      
+      vrStereographicProjectionQuad.renderToTex(renderer, shaderPassAnaglyph.anaglyphTargetL);
+      renderer.render( scene, cameraL, shaderPassAnaglyph.anaglyphTargetL );
+
+      // render right eye
       vrStereographicProjectionQuad.preRender(cameraR);
-      renderer.render(vrStereographicProjectionQuad.shaderPassQuad.scene, vrStereographicProjectionQuad.shaderPassQuad.camera, shaderPassAnaglyph.anaglyphTargetR, true);
-      renderer.render( scene, cameraR, shaderPassAnaglyph.anaglyphTargetR, true);
+      vrStereographicProjectionQuad.renderToTex(renderer, shaderPassAnaglyph.anaglyphTargetR);
+      renderer.render( scene, cameraR, shaderPassAnaglyph.anaglyphTargetR  );
+      shaderPassAnaglyph.copyMat();
       
       renderer.render( shaderPassAnaglyph.scene, shaderPassAnaglyph.camera );
       
@@ -399,8 +397,8 @@ var AnaglyphProjection = {
   vertexShader: [
     "varying vec2 vUv;",
     "void main() {",
-    " vUv = vec2( uv.x, uv.y );",
-    " gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+    '  vUv = uv;',
+    '  gl_Position = vec4( position, 1.0 );',    
     "}"
   ].join('\n'),
 
@@ -415,6 +413,7 @@ var AnaglyphProjection = {
       " colorR = texture2D( mapRight, uv );",
         // http://3dtv.at/Knowhow/AnaglyphComparison_en.aspx
       " gl_FragColor = vec4( colorL.g * 0.7 + colorL.b * 0.3, colorR.g, colorR.b, colorL.a + colorR.a ) * 1.1;",
+//        "gl_FragColor = colorL;",
       "}"  
   ].join('\n')
 };
@@ -429,11 +428,16 @@ var ShaderPassAnaglyph = function(shader) {
     vertexShader: shader.vertexShader,
     fragmentShader: shader.fragmentShader
   });
-
+  
+  this.material.depthTest = false;
+  this.material.depthWrite = false;
+  
   var params = { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat };
   this.anaglyphTargetL = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight, params );
   this.anaglyphTargetR = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight, params );
   
+  this.material.uniforms[ "mapLeft" ].value = this.anaglyphTargetL;
+  this.material.uniforms[ "mapRight" ].value = this.anaglyphTargetR;  
 
   this.resize = function(width, height) {
     if ( this.anaglyphTargetL ) this.anaglyphTargetL.dispose();
@@ -441,7 +445,11 @@ var ShaderPassAnaglyph = function(shader) {
     
     this.anaglyphTargetL = new THREE.WebGLRenderTarget( width, height, params );
     this.anaglyphTargetR = new THREE.WebGLRenderTarget( width, height, params );
+
+    this.material.uniforms[ "mapLeft" ].value = this.anaglyphTargetL;
+    this.material.uniforms[ "mapRight" ].value = this.anaglyphTargetR;
   };
+
 
   this.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
   this.scene  = new THREE.Scene();
@@ -642,5 +650,9 @@ THREE.VRStereographicProjectionQuad = function () {
   
   this.render = function(renderer) {
     renderer.render(this.shaderPassQuad.scene, this.shaderPassQuad.camera);
+  };
+  
+  this.renderToTex = function(renderer, tex) {
+    renderer.render(this.shaderPassQuad.scene, this.shaderPassQuad.camera, tex, false);
   };
 };
