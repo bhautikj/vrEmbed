@@ -11,42 +11,6 @@
  *
  */
 
-/*
- * Texture transform: viewport-to-viewport
- *
- * Sphere
- * ======
- * 0------------------------+
- * |     a-----.            |
- * |     |  C  |            |
- * |     .-----b            |
- * +------------------------1
- * 
- * Parameters:
- * --
- * fovx: width of image in sphere
- * fovy: height of image in sphere
- * 
- * C: where to place in sphere
- * => a.x = C.x-0.5*fovx
- * => b.x = C.x+0.5*fovx
- * => a.y = C.y-0.5*fovy
- * => b.y = C.y+0.5*fovy
- * 
- * Texture
- * =======
- * 0--------+
- * |  u--.  |
- * |  |  |  |
- * |  .--v  |
- * +--------1
- * 
- * Parameters:
- * --
- * (u,v): supplied, corners of tex rect
- * 
- */
-
 TextureDescription = function () {
   this.textureSource = "";
   this.metaSource = "";
