@@ -289,14 +289,6 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
       shaderPassAnaglyph.copyMat();
       
       renderer.render( shaderPassAnaglyph.scene, shaderPassAnaglyph.camera );
-      
-      
-//       vrStereographicProjectionQuad.preRender(cameraL);
-//       vrStereographicProjectionQuad.render(renderer);
-//       renderer.render( scene, cameraL );
-      
-//       renderer.enableScissorTest( false );
-
     }
   
 
