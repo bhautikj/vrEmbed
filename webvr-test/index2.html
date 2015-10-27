@@ -30,12 +30,12 @@ body {
 <!--
   three.js 3d library
   -->
-<script src="js-ext/three.js"></script>
+<script src="src/js-ext/three.js"></script>
 
 <!--
   VRControls.js acquires positional information from connected VR devices and applies the transformations to a three.js camera object.
    -->
-<script src="js-ext/VRControls.js"></script>
+<script src="src/js-ext/VRControls.js"></script>
 
 <script>
   //enable HMD mode without being mobile device
@@ -45,12 +45,12 @@ body {
 <!--
   A polyfill for WebVR using the Device{Motion,Orientation}Event API.
   -->
-<script src="js-ext/webvr-polyfill.js"></script>
+<script src="src/js-ext/webvr-polyfill.js"></script>
 
 <!--
   Helps enter and exit VR mode, provides best practices while in VR.
   -->
-<script src="js-ext/webvr-manager.js"></script>
+<script src="src/js-ext/webvr-manager.js"></script>
 
 
 <script>
@@ -72,7 +72,7 @@ WEBVR_PREDICTION_MODE = 0;
 <!--
   vr-bundle.js handles stereo camera setup and rendering.
   -->
-<script src="js/vr-bundle.js"></script>
+<script src="bin/vr-bundle.js"></script>
 
 <script>
 //Setup three.js WebGL renderer
