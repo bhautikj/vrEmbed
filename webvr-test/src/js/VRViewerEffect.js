@@ -106,6 +106,10 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
 
   };
 
+  this.isFullscreenMode = function () {
+    return isFullscreen;
+  }
+  
   //
 
   function fovToNDCScaleOffset( fov ) {

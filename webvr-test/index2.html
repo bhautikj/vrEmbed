@@ -13,7 +13,7 @@ body {
   width: 100%;
   height: 100%;
   position: fixed;
-  background-color: #000;
+  background-color: #0ff;
   color: #fff;
   margin: 0px;
   padding: 0;
@@ -73,7 +73,8 @@ var controls = new THREE.VRControls(camera);
 
 // Apply VR stereo rendering to renderer.
 var effect = new THREE.VRViewerEffect(renderer, 0);
-effect.setSize(window.innerWidth, window.innerHeight);
+// effect.setSize(window.innerWidth, window.innerHeight);
+effect.setSize(200, 200);
 
 var textureDescription = new TextureDescription();
 
@@ -121,7 +122,7 @@ textureDescription.V_r = new THREE.Vector2(0.990, 1.0);
 effect.setStereographicProjection(textureDescription);
 
 // Create a VR manager helper to enter and exit VR mode.
-var manager = new WebVRManager(renderer, effect, {hideButton: true});
+var manager = new WebVRManager(renderer, effect, {hideButton: false});
 
 //----------
 
@@ -200,10 +201,17 @@ window.addEventListener('keydown', onKey, true);
 
 // Handle window resizes
 function onWindowResize() {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
+  if (effect.isFullscreenMode()) {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    effect.setSize(window.innerWidth, window.innerHeight);
+  }
+  else {
+    camera.aspect = 200/200;
+    camera.updateProjectionMatrix();
+    effect.setSize(200, 200);
+  }
 
-  effect.setSize(window.innerWidth, window.innerHeight);
 }
 
 window.addEventListener('resize', onWindowResize, false);
