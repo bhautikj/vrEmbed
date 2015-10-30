@@ -19,28 +19,48 @@ body {
   padding: 0;
   overflow: hidden;
 }
+
+#vrcanvas {
+    background-color: #000;
+    width: 200px;
+    height: 200px;
+    border: 1px solid black;
+    margin: 100px;
+    padding: 0px;
+    position: static; /* fixed or static */
+    top: 100px;
+    left: 100px;
+}
 </style>
 </head>
 
 <body>
 <div id="log"></div>
+<div id="vrcanvas"></div>
 </body>
 
 
 
-<script src="src/js-ext/three.js"></script>
+<script src="bin/three.min.js"></script>
 <!--
   vr-bundle.js handles stereo camera setup and rendering.
   -->
 <script src="bin/vr-bundle.js"></script>
 
 <script>
+
+var container = document.getElementById( 'vrcanvas' );
+document.body.appendChild( container );
+
 //Setup three.js WebGL renderer
+// var renderer = new THREE.WebGLRenderer({ antialias: true });
 var renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setSize( 200, 200 );
 
 // Append the canvas element created by the renderer to document body element.
-document.body.appendChild(renderer.domElement);
+// document.body.appendChild(renderer.domElement);
+container.appendChild( renderer.domElement );
 
 // Create a three.js scene.
 var scene = new THREE.Scene();
@@ -101,7 +121,7 @@ textureDescription.V_r = new THREE.Vector2(0.990, 1.0);
 effect.setStereographicProjection(textureDescription);
 
 // Create a VR manager helper to enter and exit VR mode.
-var manager = new WebVRManager(renderer, effect, {hideButton: false});
+var manager = new WebVRManager(renderer, effect, {hideButton: true});
 
 //----------
 
