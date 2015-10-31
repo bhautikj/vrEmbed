@@ -35,3 +35,5 @@ require('./js-ext/webvr-manager.min.js');
 WEBVR_PREDICTION_MODE = 0;
 // In prediction mode, change how far into the future to predict.
 //WEBVR_PREDICTION_TIME_MS = 100;// </script>
+
+require('./js/VRParser.js');

@@ -1,11 +1,16 @@
 
 var container = document.getElementById( 'vrcanvas' );
 
+
+var containerWidth = container.clientWidth;
+var containerHeight = container.clientHeight;
+
+alert(containerWidth +","+ containerHeight);
 //Setup three.js WebGL renderer
 // var renderer = new THREE.WebGLRenderer({ antialias: true });
 var renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
-renderer.setSize( 200, 200 );
+renderer.setSize( containerWidth, containerHeight );
 
 // Append the canvas element created by the renderer to document body element.
 // document.body.appendChild(renderer.domElement);
@@ -23,7 +28,7 @@ var controls = new THREE.VRControls(camera);
 // Apply VR stereo rendering to renderer.
 var effect = new THREE.VRViewerEffect(renderer, 0);
 // effect.setSize(window.innerWidth, window.innerHeight);
-effect.setSize(200, 200);
+effect.setSize(containerWidth, containerHeight);
 
 var textureDescription = new TextureDescription();
 
@@ -156,9 +161,9 @@ function onWindowResize() {
     effect.setSize(window.innerWidth, window.innerHeight);
   }
   else {
-    camera.aspect = 200/200;
+    camera.aspect = containerWidth/containerHeight;
     camera.updateProjectionMatrix();
-    effect.setSize(200, 200);
+    effect.setSize(containerWidth, containerHeight);
   }
 
 }
