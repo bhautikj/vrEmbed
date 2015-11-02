@@ -41,9 +41,18 @@ body {
 
 <story>
   <scene>
-    <image>
+    <photo>
       <img src="stereograph_a.jpg" width=100%/>
-    </image>
+    </photo>
+  </scene>
+  <blerg/>
+</story>
+
+<story>
+  <scene>
+    <photo>
+      <img src="stereograph_b.jpg" width=100%/>
+    </photo>
   </scene>
 </story>
 
@@ -58,6 +67,10 @@ body {
 <script src="bin/vr-bundle.js"></script>
 
 <script>
+  var storyParser = new THREE.StoryParser();
+  storyParser.parseDocXML(document.body);
+  
+
   var container = document.getElementById( 'vrcanvas' );
 
   var textureDescription = new TextureDescription();

@@ -1,3 +1,60 @@
+VRPhoto = function() {
+};
+
+VRScene = function() {
+  this.renderObjectList = [];
+  
+  this.addPhoto = function(photo) {
+    this.renderObjectList.push(photo);
+  };
+};
+
+VRStory = function() {
+  this.sceneList = [];
+  
+  this.init = function(width, height) {
+  };
+  
+  this.addScene = function(scene) {
+    this.sceneList.push(scene);
+  };
+};
+
+VRStoryManager = function() {
+  this.storyList = [];
+  this.activeStory = -1;
+  
+  this.addStory = function(story) {
+    this.storyList.push(story);
+  };
+};
+
+THREE.StoryParser = function () {
+  this.storyManager = new VRStoryManager();
+  
+  this.parseSceneElement = function(sceneElement) {
+//     alert(sceneElement.nodeName);
+  };
+
+  this.parseDocXML = function(topElement) {
+    var stories=topElement.getElementsByTagName("story");
+    for(storyit = 0;storyit < stories.length; storyit++) {
+      var story = stories[storyit];
+      var scenes=story.children;
+      for(sceneit = 0;sceneit < scenes.length; sceneit++) {
+        var scene = scenes[sceneit];
+        if(scene.nodeName=="SCENE"){
+          var sceneElements = scene.children;
+          for(sceneelemit = 0; sceneelemit < sceneElements.length; sceneelemit++){
+            this.parseSceneElement(sceneElements[sceneelemit]);
+          }
+        }
+      }
+    }
+  };
+  
+};
+
 THREE.VRParser = function ( container, textureDescription ) {
   var containerWidth = container.clientWidth;
   var containerHeight = container.clientHeight;
