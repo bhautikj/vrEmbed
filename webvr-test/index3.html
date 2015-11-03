@@ -32,6 +32,29 @@ body {
     top: 50px;
     left: 50px;
 }
+
+div.stretchy-wrapper {
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 */
+  /* Other aspect ratios to try:
+  * 56.25% = 16:9
+  * 75% = 4:3
+  * 66.66% = 3:2
+  * 62.5% = 8:5
+  */
+  position: relative;
+/*   background: blue; */
+}
+
+div.stretchy-wrapper > div {
+  position: absolute;
+  top: 0; bottom: 0; left: 0; right: 0;
+
+  color: white;
+  font-size: 24px;
+  text-align: center;
+}
+
 </style>
 </head>
 
@@ -39,22 +62,26 @@ body {
 <!-- <div id="log"></div> -->
 <!-- <div id="vrcanvas"></div> -->
 
-<story>
-  <scene>
-    <photo>
-      <img src="stereograph_a.jpg" width=100%/>
-    </photo>
-  </scene>
-  <blerg/>
-</story>
+<div class="stretchy-wrapper"><div>
+  <story>
+    <scene>
+      <photo>
+        <img src="stereograph_a.jpg" width=100%/>
+      </photo>
+    </scene>
+    <blerg/>
+  </story>
+</div></div>
 
-<story>
-  <scene>
-    <photo>
-      <img src="stereograph_b.jpg" width=100%/>
-    </photo>
-  </scene>
-</story>
+<div class="stretchy-wrapper"><div>
+  <story>
+    <scene>
+      <photo>
+        <img src="stereograph_b.jpg" width=100%/>
+      </photo>
+    </scene>
+  </story>
+</div></div>
 
 </body>
 

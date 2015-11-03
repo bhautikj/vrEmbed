@@ -10,10 +10,24 @@ VRScene = function() {
 };
 
 VRStory = function() {
-  this.sceneList = [];
+  this.storyElement = null;
+  this.parentElement = null;
   
-  this.init = function(width, height) {
+  this.sceneList = [];
+
+  this.resize = function() {
+    var width = this.parentElement.clientWidth;
+    var height = this.parentElement.clientHeight;
+    alert(width + "," + height);
   };
+  
+  this.init = function(storyElement) {
+    this.storyElement = storyElement;
+    this.parentElement = this.storyElement.parentNode;
+    this.resize();
+    window.addEventListener("resize", this.resize);
+  };
+  
   
   this.addScene = function(scene) {
     this.sceneList.push(scene);
@@ -40,6 +54,9 @@ THREE.StoryParser = function () {
     var stories=topElement.getElementsByTagName("story");
     for(storyit = 0;storyit < stories.length; storyit++) {
       var story = stories[storyit];
+      var vrStory = new VRStory();
+      vrStory.init(story);
+      
       var scenes=story.children;
       for(sceneit = 0;sceneit < scenes.length; sceneit++) {
         var scene = scenes[sceneit];
