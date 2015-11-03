@@ -12,28 +12,77 @@ VRScene = function() {
 VRStory = function() {
   this.storyElement = null;
   this.parentElement = null;
+  this.renderer = null;
+  this.scene = null;
+  this.camera = null;
+  this.controls = null;
+  this.effect = null;
   
   this.sceneList = [];
 
   this.onResize = function() {
-    var width = this.parentElement.clientWidth;
-    var height = this.parentElement.clientHeight;
+    var containerWidth = this.parentElement.clientWidth;
+    var containerHeight = this.parentElement.clientHeight;
     
-    var scenes=story.children;
-    for(sceneit = 0;sceneit < scenes.length; sceneit++) {
-      var scene = scenes[sceneit];
-      if(scene.nodeName=="SCENE"){
-        var sceneElements = scene.children;
-        for(sceneelemit = 0; sceneelemit < sceneElements.length; sceneelemit++){
-          this.parseSceneElement(sceneElements[sceneelemit]);
-        }
+    if (this.effect != null) { 
+      if (this.effect.isFullscreenMode()) {
+        this.camera.aspect = window.innerWidth / window.innerHeight;
+        this.camera.updateProjectionMatrix();
+        this.effect.setSize(window.innerWidth, window.innerHeight);
+      }
+      else {
+        this.camera.aspect = containerWidth/containerHeight;
+        this.camera.updateProjectionMatrix();
+        this.effect.setSize(containerWidth, containerHeight);
       }
     }
+  };
+  
+  this.setupSceneRenderer = function() {
+    var containerWidth = this.parentElement.clientWidth;
+    var containerHeight = this.parentElement.clientHeight;
+
+    this.renderer = new THREE.WebGLRenderer({ antialias: true });
+    this.renderer.setPixelRatio(window.devicePixelRatio);
+    this.renderer.setSize( containerWidth, containerHeight );
+
+    // Append the canvas element created by the renderer to document body element.
+    // document.body.appendChild(renderer.domElement);
+    this.parentElement.appendChild( this.renderer.domElement );
+    
+    // Create a three.js scene.
+    this.scene = new THREE.Scene();
+
+    // Create a three.js camera.
+    this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.3, 10000);
+
+    // Apply VR headset positional data to camera.
+    this.controls = new THREE.VRControls(this.camera);
+
+    // Apply VR stereo rendering to renderer.
+    this.effect = new THREE.VRViewerEffect(this.renderer, 0);
+    // effect.setSize(window.innerWidth, window.innerHeight);
+    this.effect.setSize(containerWidth, containerHeight);
   };
   
   this.init = function(storyElement) {
     this.storyElement = storyElement;
     this.parentElement = this.storyElement.parentNode;
+    
+    var scenes=storyElement.children;
+    for(sceneit = 0;sceneit < scenes.length; sceneit++) {
+      var scene = scenes[sceneit];
+      if(scene.nodeName=="SCENE"){
+        var sceneElements = scene.children;
+        for(sceneelemit = 0; sceneelemit < sceneElements.length; sceneelemit++){
+//           this.parseSceneElement(sceneElements[sceneelemit]);
+        }
+      }
+    }
+    
+    this.setupSceneRenderer();
+
+    //last
     this.onResize();
   };
   
