@@ -15,17 +15,16 @@ VRStory = function() {
   
   this.sceneList = [];
 
-  this.resize = function() {
+  this.onResize = function() {
     var width = this.parentElement.clientWidth;
     var height = this.parentElement.clientHeight;
-    alert(width + "," + height);
+//     alert(width + "," + height);
   };
   
   this.init = function(storyElement) {
     this.storyElement = storyElement;
     this.parentElement = this.storyElement.parentNode;
-    this.resize();
-    window.addEventListener("resize", this.resize);
+    this.onResize();
   };
   
   
@@ -40,6 +39,12 @@ VRStoryManager = function() {
   
   this.addStory = function(story) {
     this.storyList.push(story);
+  };  
+  
+  this.onResize = function() {
+    for(i=0;i<this.storyList.length;i++){
+      this.storyList[i].onResize();
+    }
   };
 };
 
@@ -56,6 +61,7 @@ THREE.StoryParser = function () {
       var story = stories[storyit];
       var vrStory = new VRStory();
       vrStory.init(story);
+      this.storyManager.addStory(vrStory);
       
       var scenes=story.children;
       for(sceneit = 0;sceneit < scenes.length; sceneit++) {
@@ -70,6 +76,9 @@ THREE.StoryParser = function () {
     }
   };
   
+  this.onResize = function() {
+    this.storyManager.onResize();
+  };
 };
 
 THREE.VRParser = function ( container, textureDescription ) {

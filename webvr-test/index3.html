@@ -97,6 +97,12 @@ div.stretchy-wrapper > div {
   var storyParser = new THREE.StoryParser();
   storyParser.parseDocXML(document.body);
   
+  function onResize() {
+    storyParser.onResize();
+  }
+  
+  window.addEventListener('resize', onResize, false);
+
 
   var container = document.getElementById( 'vrcanvas' );
 
