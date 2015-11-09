@@ -72,8 +72,8 @@ THREE.VRStateToggler = function() {
 
 THREE.VRStateToggler.prototype = new Emitter();
 
-THREE.VRStateToggler.prototype.createButtons = function() {
-  this.buttonMiddle = document.createElement('img');
+THREE.VRStateToggler.prototype.createMiddleButton = function() {
+    this.buttonMiddle = document.createElement('img');
   var s = this.buttonMiddle.style;
   s.position = 'absolute';
   s.bottom = '5px';
@@ -95,8 +95,13 @@ THREE.VRStateToggler.prototype.createButtons = function() {
   this.buttonMiddle.addEventListener('dragstart', function(e) {
     e.preventDefault();
   });
-//   return button;
+}
+
+THREE.VRStateToggler.prototype.createButtons = function() {
+  this.createMiddleButton();
 };
+
+
 
 THREE.VRStateToggler.prototype.setMode = function(mode) {
   if (!this.isVisible) {
