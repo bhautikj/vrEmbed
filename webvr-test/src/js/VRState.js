@@ -66,17 +66,16 @@ THREE.VRStateToggler = function() {
   this.buttonLeftClick.prototype = new function () {};
   this.buttonMiddleClick.prototype = new function () {};
   this.buttonRightClick.prototype = new function () {};
-  
-  this.isVisible = true;
 
+  this.on('clickLeft', this.buttonLeftClick.bind(this));  
+  this.on('clickMiddle', this.buttonMiddleClick.bind(this));  
+  this.on('clickRight', this.buttonRightClick.bind(this));  
+  
   this.logoCardboard = logoCardboard;
   this.logoFullscreen = logoFullscreen;
   this.logoFullscreenAnaglyph = logoFullscreenAnaglyph;
   this.logoWindowed = logoWindowed;
   this.logoWindowedAnaglyph = logoWindowedAnaglyph;  
-  this.on('clickLeft', this.buttonLeftClick.bind(this));  
-  this.on('clickMiddle', this.buttonMiddleClick.bind(this));  
-  this.on('clickRight', this.buttonRightClick.bind(this));  
 }
 
 THREE.VRStateToggler.prototype = new Emitter();
@@ -160,16 +159,6 @@ THREE.VRStateToggler.prototype.createButtons = function() {
   this.createRightButton();
 };
 
-
-THREE.VRStateToggler.prototype.buttonRelayout = function(button) {
-
-};
-
-THREE.VRStateToggler.prototype.setVisibility = function(isVisible) {
-  this.isVisible = isVisible;
-  this.buttonMiddle.style.display = isVisible ? 'block' : 'none';
-};
-
 THREE.VRStateToggler.prototype.onClickLeft_ = function(e) {
   e.stopPropagation();
   e.preventDefault();
@@ -201,9 +190,6 @@ THREE.VRStateToggler.prototype.setupButton = function(button, src, title, isVisi
 };
 
 THREE.VRStateToggler.prototype.setState = function(state) {
-  if (!this.isVisible) {
-    return;
-  }
   switch (state) {
     case THREE.VRStates.CARDBOARD:
       this.setupButton(this.buttonLeft, "", "", false);
@@ -226,8 +212,8 @@ THREE.VRStateToggler.prototype.setState = function(state) {
       this.setupButton(this.buttonRight, this.logoWindowedAnaglyph, 'Red-blue mode', true);
       break;
     case THREE.VRStates.WINDOWED_ANAGLYPH:
-      this.setupButton(this.buttonLeft, this.logoWindowed, 'Windowed mode', true);
-      this.setupButton(this.buttonMiddle,  "", "", false);
+      this.setupButton(this.buttonLeft,  "", "", false);
+      this.setupButton(this.buttonMiddle, this.logoWindowed, 'Windowed mode', true);
       this.setupButton(this.buttonRight, this.logoFullscreenAnaglyph, 'Fullscreen mode', true);
       break;
   }
