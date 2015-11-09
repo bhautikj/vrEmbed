@@ -46,19 +46,17 @@ Emitter.prototype.on = function(eventName, callback) {
 /**
  * VR state machine:
  * 
- * windowed->[cardboard, windowed_analgpyh , fullscreen_anaglyph, fullscreen]
- * cardboard->[windowed]
- * windowed_analgpyh->[fullscreen_anaglyph, windowed]
- * fullscreen_anaglyph->[windowed_analgpyh, windowed]
- * fullscreen->[windowed]
  */
 
 THREE.VRStateToggler = function() {
   this.createButtons();
+  this.buttonLeft.addEventListener('click', this.onClickLeft_.bind(this));
   this.buttonMiddle.addEventListener('click', this.onClickMiddle_.bind(this));
+  this.buttonRight.addEventListener('click', this.onClickRight_.bind(this));
 
-  this.buttonMiddleClick.prototype = new function () {
-  };
+  this.buttonLeftClick.prototype = new function () {};
+  this.buttonMiddleClick.prototype = new function () {};
+  this.buttonRightClick.prototype = new function () {};
   
   this.isVisible = true;
 
@@ -67,7 +65,9 @@ THREE.VRStateToggler = function() {
   this.logoFullscreenAnaglyph = logoFullscreenAnaglyph;
   this.logoWindowed = logoWindowed;
   this.logoWindowedAnaglyph = logoWindowedAnaglyph;  
-  this.on('click', this.buttonMiddleClick.bind(this));  
+  this.on('clickLeft', this.buttonLeftClick.bind(this));  
+  this.on('clickMiddle', this.buttonMiddleClick.bind(this));  
+  this.on('clickRight', this.buttonRightClick.bind(this));  
 }
 
 THREE.VRStateToggler.prototype = new Emitter();
@@ -97,8 +97,58 @@ THREE.VRStateToggler.prototype.createMiddleButton = function() {
   });
 }
 
+THREE.VRStateToggler.prototype.createLeftButton = function() {
+  this.buttonLeft = document.createElement('img');
+  var s = this.buttonLeft.style;
+  s.position = 'absolute';
+  s.bottom = '5px';
+  s.left = 0;
+  s.right = 5;
+  s.marginLeft = 'auto';
+  s.width = '56px'
+  s.height = '56px';
+  s.backgroundSize = 'cover';
+  s.backgroundColor = 'transparent';
+  s.border = 0;
+  s.userSelect = 'none';
+  s.webkitUserSelect = 'none';
+  s.MozUserSelect = 'none';
+  s.cursor = 'pointer';
+  // Prevent button from being dragged.
+  this.buttonLeft.draggable = false;
+  this.buttonLeft.addEventListener('dragstart', function(e) {
+    e.preventDefault();
+  });
+}
+
+THREE.VRStateToggler.prototype.createRightButton = function() {
+  this.buttonRight = document.createElement('img');
+  var s = this.buttonRight.style;
+  s.position = 'absolute';
+  s.bottom = '5px';
+  s.left = 5;
+  s.right = 0;
+  s.marginRight = 'auto';
+  s.width = '56px'
+  s.height = '56px';
+  s.backgroundSize = 'cover';
+  s.backgroundColor = 'transparent';
+  s.border = 0;
+  s.userSelect = 'none';
+  s.webkitUserSelect = 'none';
+  s.MozUserSelect = 'none';
+  s.cursor = 'pointer';
+  // Prevent button from being dragged.
+  this.buttonRight.draggable = false;
+  this.buttonRight.addEventListener('dragstart', function(e) {
+    e.preventDefault();
+  });
+}
+
 THREE.VRStateToggler.prototype.createButtons = function() {
   this.createMiddleButton();
+  this.createLeftButton();
+  this.createRightButton();
 };
 
 
@@ -111,6 +161,10 @@ THREE.VRStateToggler.prototype.setMode = function(mode) {
     case 0:
       this.buttonMiddle.src = this.logoFullscreen;
       this.buttonMiddle.title = 'Open in immersive mode';
+      this.buttonRight.src = this.logoCardboard;
+      this.buttonRight.title = 'Open in immersive mode';
+      this.buttonLeft.src = this.logoWindowedAnaglyph;
+      this.buttonLeft.title = 'Open in immersive mode';
       break;
 //     case 1:
 //       this.buttonMiddle.src = this.logoCardboard;
@@ -138,14 +192,32 @@ THREE.VRStateToggler.prototype.setVisibility = function(isVisible) {
   this.buttonMiddle.style.display = isVisible ? 'block' : 'none';
 };
 
+THREE.VRStateToggler.prototype.onClickLeft_ = function(e) {
+  e.stopPropagation();
+  e.preventDefault();
+  this.emit('clickLeft');
+}
+
 THREE.VRStateToggler.prototype.onClickMiddle_ = function(e) {
   e.stopPropagation();
   e.preventDefault();
-  this.emit('click');
+  this.emit('clickMiddle');
 }
 
+THREE.VRStateToggler.prototype.onClickRight_ = function(e) {
+  e.stopPropagation();
+  e.preventDefault();
+  this.emit('clickRight');
+}
+
+THREE.VRStateToggler.prototype.buttonLeftClick = function() {
+  alert("LEFT");
+};
 THREE.VRStateToggler.prototype.buttonMiddleClick = function() {
-  alert("BLERGH");
+  alert("MIDDLE");
+};
+THREE.VRStateToggler.prototype.buttonRightClick = function() {
+  alert("RIGHT");
 };
 
 
