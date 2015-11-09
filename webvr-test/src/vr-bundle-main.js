@@ -1,3 +1,4 @@
+
 require('./js/TextureDescription.js');
 require('./js/VRViewerEffect.js');
 require('./js/VRViewerCameraRig.js');
@@ -20,6 +21,7 @@ require('./js-ext/webvr-polyfill.min.js');
 // 
 // //   Helps enter and exit VR mode, provides best practices while in VR.
 require('./js-ext/webvr-manager.min.js');
+
 // 
 // 
 // /*
@@ -35,3 +37,6 @@ require('./js-ext/webvr-manager.min.js');
 WEBVR_PREDICTION_MODE = 0;
 // In prediction mode, change how far into the future to predict.
 //WEBVR_PREDICTION_TIME_MS = 100;// </script>
+
+require('./js/VRParser.js');
+require('./js/VRState.js');
