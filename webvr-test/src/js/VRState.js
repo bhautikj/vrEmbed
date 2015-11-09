@@ -54,14 +54,12 @@ Emitter.prototype.on = function(eventName, callback) {
  */
 
 THREE.VRStateToggler = function() {
-  var button = this.createButton();
-//   document.body.appendChild(button);
-  button.addEventListener('click', this.onClick_.bind(this));
+  this.createButtons();
+  this.buttonMiddle.addEventListener('click', this.onClickMiddle_.bind(this));
 
-  this.buttonClick.prototype = new function () {
+  this.buttonMiddleClick.prototype = new function () {
   };
   
-  this.button = button;
   this.isVisible = true;
 
   this.logoCardboard = logoCardboard;
@@ -69,14 +67,14 @@ THREE.VRStateToggler = function() {
   this.logoFullscreenAnaglyph = logoFullscreenAnaglyph;
   this.logoWindowed = logoWindowed;
   this.logoWindowedAnaglyph = logoWindowedAnaglyph;  
-  this.on('click', this.buttonClick.bind(this));  
+  this.on('click', this.buttonMiddleClick.bind(this));  
 }
 
 THREE.VRStateToggler.prototype = new Emitter();
 
-THREE.VRStateToggler.prototype.createButton = function() {
-  var button = document.createElement('img');
-  var s = button.style;
+THREE.VRStateToggler.prototype.createButtons = function() {
+  this.buttonMiddle = document.createElement('img');
+  var s = this.buttonMiddle.style;
   s.position = 'absolute';
   s.bottom = '5px';
   s.left = 0;
@@ -93,11 +91,11 @@ THREE.VRStateToggler.prototype.createButton = function() {
   s.MozUserSelect = 'none';
   s.cursor = 'pointer';
   // Prevent button from being dragged.
-  button.draggable = false;
-  button.addEventListener('dragstart', function(e) {
+  this.buttonMiddle.draggable = false;
+  this.buttonMiddle.addEventListener('dragstart', function(e) {
     e.preventDefault();
   });
-  return button;
+//   return button;
 };
 
 THREE.VRStateToggler.prototype.setMode = function(mode) {
@@ -106,42 +104,42 @@ THREE.VRStateToggler.prototype.setMode = function(mode) {
   }
   switch (mode) {
     case 0:
-      this.button.src = this.logoFullscreen;
-      this.button.title = 'Open in immersive mode';
+      this.buttonMiddle.src = this.logoFullscreen;
+      this.buttonMiddle.title = 'Open in immersive mode';
       break;
 //     case 1:
-//       this.button.src = this.logoCardboard;
-//       this.button.title = 'Open in VR mode';
+//       this.buttonMiddle.src = this.logoCardboard;
+//       this.buttonMiddle.title = 'Open in VR mode';
 //       break;
 //     case 2:
-//       this.button.src = this.logoExit;
-//       this.button.title = 'Leave VR mode';
+//       this.buttonMiddle.src = this.logoExit;
+//       this.buttonMiddle.title = 'Leave VR mode';
 //       break;
 //     case 3:
-//       this.button.src = this.logoAnaglyph;
-//       this.button.title = 'Leave VR mode';
+//       this.buttonMiddle.src = this.logoAnaglyph;
+//       this.buttonMiddle.title = 'Leave VR mode';
 //       break;
   }
 
   // Hack for Safari Mac/iOS to force relayout (svg-specific issue)
   // http://goo.gl/hjgR6r
-  this.button.style.display = 'inline-block';
-  this.button.offsetHeight;
-  this.button.style.display = 'block';
+  this.buttonMiddle.style.display = 'inline-block';
+  this.buttonMiddle.offsetHeight;
+  this.buttonMiddle.style.display = 'block';
 };
 
 THREE.VRStateToggler.prototype.setVisibility = function(isVisible) {
   this.isVisible = isVisible;
-  this.button.style.display = isVisible ? 'block' : 'none';
+  this.buttonMiddle.style.display = isVisible ? 'block' : 'none';
 };
 
-THREE.VRStateToggler.prototype.onClick_ = function(e) {
+THREE.VRStateToggler.prototype.onClickMiddle_ = function(e) {
   e.stopPropagation();
   e.preventDefault();
   this.emit('click');
 }
 
-THREE.VRStateToggler.prototype.buttonClick = function() {
+THREE.VRStateToggler.prototype.buttonMiddleClick = function() {
   alert("BLERGH");
 };
 
