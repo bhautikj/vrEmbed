@@ -48,6 +48,15 @@ Emitter.prototype.on = function(eventName, callback) {
  * 
  */
 
+THREE.VRStates = {
+  INACTIVE: 0,
+  WINDOWED: 1,
+  WINDOWED_ANAGLYPH: 2,
+  FULLSCREEN: 3,
+  FULLSCREEN_ANAGLYPH: 4,
+  CARDBOARD: 5
+};
+
 THREE.VRStateToggler = function() {
   this.createButtons();
   this.buttonLeft.addEventListener('click', this.onClickLeft_.bind(this));
@@ -152,39 +161,8 @@ THREE.VRStateToggler.prototype.createButtons = function() {
 };
 
 
+THREE.VRStateToggler.prototype.buttonRelayout = function(button) {
 
-THREE.VRStateToggler.prototype.setMode = function(mode) {
-  if (!this.isVisible) {
-    return;
-  }
-  switch (mode) {
-    case 0:
-      this.buttonMiddle.src = this.logoFullscreen;
-      this.buttonMiddle.title = 'Open in immersive mode';
-      this.buttonRight.src = this.logoCardboard;
-      this.buttonRight.title = 'Open in immersive mode';
-      this.buttonLeft.src = this.logoWindowedAnaglyph;
-      this.buttonLeft.title = 'Open in immersive mode';
-      break;
-//     case 1:
-//       this.buttonMiddle.src = this.logoCardboard;
-//       this.buttonMiddle.title = 'Open in VR mode';
-//       break;
-//     case 2:
-//       this.buttonMiddle.src = this.logoExit;
-//       this.buttonMiddle.title = 'Leave VR mode';
-//       break;
-//     case 3:
-//       this.buttonMiddle.src = this.logoAnaglyph;
-//       this.buttonMiddle.title = 'Leave VR mode';
-//       break;
-  }
-
-  // Hack for Safari Mac/iOS to force relayout (svg-specific issue)
-  // http://goo.gl/hjgR6r
-  this.buttonMiddle.style.display = 'inline-block';
-  this.buttonMiddle.offsetHeight;
-  this.buttonMiddle.style.display = 'block';
 };
 
 THREE.VRStateToggler.prototype.setVisibility = function(isVisible) {
@@ -210,17 +188,80 @@ THREE.VRStateToggler.prototype.onClickRight_ = function(e) {
   this.emit('clickRight');
 }
 
+THREE.VRStateToggler.prototype.setupButton = function(button, src, title, isVisible) {
+  // Hack for Safari Mac/iOS to force relayout (svg-specific issue)
+  // http://goo.gl/hjgR6r
+  button.style.display = 'inline-block';
+  button.offsetHeight;
+  button.style.display = 'block';
+
+  button.src = src;
+  button.title = title;
+  button.style.display = isVisible ? 'inline-block' : 'none';  
+};
+
+THREE.VRStateToggler.prototype.setState = function(state) {
+  if (!this.isVisible) {
+    return;
+  }
+  switch (state) {
+    case THREE.VRStates.CARDBOARD:
+      this.setupButton(this.buttonLeft, "", "", false);
+      this.setupButton(this.buttonMiddle, this.logoWindowed, 'Windowed mode', true);
+      this.setupButton(this.buttonRight, "", "", false);
+      break;
+    case THREE.VRStates.FULLSCREEN:
+      this.setupButton(this.buttonLeft, this.logoCardboard, 'Immersive mode', true);
+      this.setupButton(this.buttonMiddle, this.logoWindowed, 'Windowed mode', true);
+      this.setupButton(this.buttonRight, this.logoFullscreenAnaglyph, 'Red-blue mode', true);
+      break;
+    case THREE.VRStates.FULLSCREEN_ANAGLYPH:
+      this.setupButton(this.buttonLeft, "", "", false);
+      this.setupButton(this.buttonMiddle, "", "", false);
+      this.setupButton(this.buttonRight, this.logoWindowedAnaglyph, 'Windowed mode', true);
+      break;
+    case THREE.VRStates.WINDOWED:
+      this.setupButton(this.buttonLeft, this.logoCardboard, 'Immersive mode', true);
+      this.setupButton(this.buttonMiddle, this.logoFullscreen, 'Fullscreen mode', true);
+      this.setupButton(this.buttonRight, this.logoWindowedAnaglyph, 'Red-blue mode', true);
+      break;
+    case THREE.VRStates.WINDOWED_ANAGLYPH:
+      this.setupButton(this.buttonLeft, this.logoWindowed, 'Windowed mode', true);
+      this.setupButton(this.buttonMiddle,  "", "", false);
+      this.setupButton(this.buttonRight, this.logoFullscreenAnaglyph, 'Fullscreen mode', true);
+      break;
+  }
+};
+
+THREE.VRStateToggler.prototype.stateChange = function(buttonSrc) {
+  switch (buttonSrc) {
+    case this.logoCardboard:
+      this.setState(THREE.VRStates.CARDBOARD);
+      break;
+    case this.logoFullscreen:
+      this.setState(THREE.VRStates.FULLSCREEN);
+      break;
+    case this.logoFullscreenAnaglyph:
+      this.setState(THREE.VRStates.FULLSCREEN_ANAGLYPH);
+      break;
+    case this.logoWindowed:
+      this.setState(THREE.VRStates.WINDOWED);
+      break;
+    case this.logoWindowedAnaglyph:
+      this.setState(THREE.VRStates.WINDOWED_ANAGLYPH);
+  }
+};
+
+
 THREE.VRStateToggler.prototype.buttonLeftClick = function() {
-  alert("LEFT");
+  this.stateChange(this.buttonLeft.src);
 };
 THREE.VRStateToggler.prototype.buttonMiddleClick = function() {
-  alert("MIDDLE");
+  this.stateChange(this.buttonMiddle.src);
 };
 THREE.VRStateToggler.prototype.buttonRightClick = function() {
-  alert("RIGHT");
+  this.stateChange(this.buttonRight.src);
 };
-
-
 
 // modules.export = THREE.VRStateToggler;
 
