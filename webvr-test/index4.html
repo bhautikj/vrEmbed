@@ -85,11 +85,11 @@ div.stretchy-wrapper > div {
 
 <script>
 
-var webVRButton = new THREE.VRStateToggler();
+var webVRButton = new VRStateToggler();
   
 var stories=document.getElementsByTagName("story");
 for(storyit = 0;storyit < stories.length; storyit++) {
-  webVRButton.setState(THREE.VRStates.WINDOWED);
+  webVRButton.setState(VRStates.WINDOWED);
 
   stories[storyit].appendChild( webVRButton.buttonLeft );
   stories[storyit].appendChild( webVRButton.buttonMiddle );

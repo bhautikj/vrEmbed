@@ -97,9 +97,35 @@ VRStory = function() {
 VRStoryManager = function() {
   this.storyList = [];
   this.activeStory = -1;
-  this.stateToggler = new THREE.VRStateToggler();
-  this.stateToggler.setState(THREE.VRStates.WINDOWED);
+  this.stateToggler = new VRStateToggler();
+  this.stateToggler.setState(VRStates.WINDOWED);
 
+  this.windowedCallback = function() {
+//     alert("WINDOWED");
+  };
+  
+  this.windowedAnaglyphCallback = function() {
+//     alert("WINDOWED_ANAGLYPH");
+  };
+
+  this.fullscreenCallback = function() {
+//     alert("FULLSCREEN");
+  };
+  
+  this.fullscreenAnaglyphCallback = function() {
+//     alert("FULLSCREEN_ANAGLYPH");
+  };
+  
+  this.cardboardCallback = function() {
+//     alert("CARDBOARD");
+  };
+  
+  this.stateToggler.on(VRStates.WINDOWED, this.windowedCallback.bind(this)); 
+  this.stateToggler.on(VRStates.WINDOWED_ANAGLYPH, this.windowedAnaglyphCallback.bind(this)); 
+  this.stateToggler.on(VRStates.FULLSCREEN, this.fullscreenCallback.bind(this)); 
+  this.stateToggler.on(VRStates.FULLSCREEN_ANAGLYPH, this.fullscreenAnaglyphCallback.bind(this)); 
+  this.stateToggler.on(VRStates.CARDBOARD, this.cardboardCallback.bind(this)); 
+  
   this.addStory = function(story) {
     this.storyList.push(story);
   };  
