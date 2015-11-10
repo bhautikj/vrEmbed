@@ -1,3 +1,5 @@
+require('./VRState.js');
+
 VRPhoto = function() {
 };
 
@@ -95,7 +97,9 @@ VRStory = function() {
 VRStoryManager = function() {
   this.storyList = [];
   this.activeStory = -1;
-  
+  this.stateToggler = new THREE.VRStateToggler();
+  this.stateToggler.setState(THREE.VRStates.WINDOWED);
+
   this.addStory = function(story) {
     this.storyList.push(story);
   };  
@@ -104,6 +108,15 @@ VRStoryManager = function() {
     for(i=0;i<this.storyList.length;i++){
       this.storyList[i].onResize();
     }
+  };
+  
+  this.setActiveStory = function(idx) {
+    //TODO: teardown story at previous index
+    this.activeStory = idx;
+    var story = this.storyList[this.activeStory];
+    story.storyElement.appendChild(this.stateToggler.buttonLeft);
+    story.storyElement.appendChild(this.stateToggler.buttonMiddle);
+    story.storyElement.appendChild(this.stateToggler.buttonRight);
   };
 };
 
@@ -117,6 +130,10 @@ THREE.StoryParser = function () {
       var vrStory = new VRStory();
       vrStory.init(story);
       this.storyManager.addStory(vrStory);
+    }
+    
+    if (stories.length>0){
+      this.storyManager.setActiveStory(0);
     }
   };
   
