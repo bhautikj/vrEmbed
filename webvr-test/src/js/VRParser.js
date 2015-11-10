@@ -98,7 +98,6 @@ VRStoryManager = function() {
   this.storyList = [];
   this.activeStory = -1;
   this.stateToggler = new VRStateToggler();
-  this.stateToggler.setState(VRStates.WINDOWED);
 
   this.windowedCallback = function() {
 //     alert("WINDOWED");
@@ -126,6 +125,9 @@ VRStoryManager = function() {
   this.stateToggler.on(VRStates.FULLSCREEN_ANAGLYPH, this.fullscreenAnaglyphCallback.bind(this)); 
   this.stateToggler.on(VRStates.CARDBOARD, this.cardboardCallback.bind(this)); 
   
+  this.stateToggler.setState(VRStates.WINDOWED);
+
+    
   this.addStory = function(story) {
     this.storyList.push(story);
   };  
