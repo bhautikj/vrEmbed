@@ -1,13 +1,52 @@
 require('./VRState.js');
+require('./TextureDescription.js');
 
-VRPhoto = function() {
+VRScenePhoto = function() {
+  this.scenePhoto = null;
+  this.textureDescription = null;
+
+  this.toVec2 = function(str) {
+    var arr = str.split(",");
+    return new THREE.Vector2(arr[0].trim(), arr[1].trim());
+  };
+  
+  this.init = function(scenePhoto) {
+    this.scenePhoto = scenePhoto;
+    this.textureDescription = new TextureDescription();
+    this.textureDescription.textureSource = this.scenePhoto.getAttribute("textureSource");
+    
+    if (this.textureDescription.textureSource  == null){
+      //TODO: throw exception
+      return;
+    }
+        
+    this.textureDescription.metaSource = this.scenePhoto.getAttribute("metaSource");
+    this.textureDescription.isStereo = this.scenePhoto.getAttribute("isStereo");
+    this.textureDescription.sphereFOV = this.toVec2(this.scenePhoto.getAttribute("sphereFOV"));
+    this.textureDescription.sphereCentre = this.toVec2(this.scenePhoto.getAttribute("sphereCentre"));
+    this.textureDescription.U_l = this.toVec2(this.scenePhoto.getAttribute("U_l"));
+    this.textureDescription.V_l = this.toVec2(this.scenePhoto.getAttribute("V_l"));
+    this.textureDescription.U_r = this.toVec2(this.scenePhoto.getAttribute("U_r"));
+    this.textureDescription.V_r = this.toVec2(this.scenePhoto.getAttribute("V_r"));
+  };
 };
 
 VRScene = function() {
-  this.renderObjectList = [];
+  this.sceneElement = null;
+  this.renderObjects = [];
   
-  this.addPhoto = function(photo) {
-    this.renderObjectList.push(photo);
+  this.init = function(sceneElement) {
+    this.sceneElement = sceneElement;
+    var elements=sceneElement.children;
+    for(elementit = 0;elementit < elements.length; elementit++) {
+      var element = elements[elementit];
+      if(element.nodeName=="PHOTO"){
+        var scenePhoto = element;
+        var vrScenePhoto = new VRScenePhoto();
+        vrScenePhoto.init(scenePhoto);
+        this.renderObjects.push(vrScenePhoto);
+      }
+    }
   };
 };
 
@@ -75,10 +114,9 @@ VRStory = function() {
     for(sceneit = 0;sceneit < scenes.length; sceneit++) {
       var scene = scenes[sceneit];
       if(scene.nodeName=="SCENE"){
-        var sceneElements = scene.children;
-        for(sceneelemit = 0; sceneelemit < sceneElements.length; sceneelemit++){
-//           this.parseSceneElement(sceneElements[sceneelemit]);
-        }
+        var vrScene = new VRScene();
+        vrScene.init(scene);
+        this.sceneList.push(vrScene);  
       }
     }
     
@@ -88,10 +126,6 @@ VRStory = function() {
     this.onResize();
   };
   
-  
-  this.addScene = function(scene) {
-    this.sceneList.push(scene);
-  };
 };
 
 VRStoryManager = function() {
