@@ -147,6 +147,15 @@ VRStory = function() {
         this.input.setAnimationFrameTime(timestamp);
       }  
     };
+    
+    this.manager.requestFullscreen_ = function() {
+      var canvas = this.renderer.domElement.parentNode;
+      if (canvas.mozRequestFullScreen) {
+        canvas.mozRequestFullScreen();
+      } else if (canvas.webkitRequestFullscreen) {
+        canvas.webkitRequestFullscreen();
+      }
+    };
   };
   
   this.init = function(storyElement) {
@@ -187,25 +196,13 @@ VRStoryManager = function() {
   this.activeStory = -1;
   this.stateToggler = new VRStateToggler();
   var self = this;
-
-  this.requestFullscreen_ = function() {
-    if (self.activeStory<0)
-      return;
-    
-    var canvas = self.storyList[self.activeStory].parentElement;
-    if (canvas.mozRequestFullScreen) {
-      canvas.mozRequestFullScreen();
-    } else if (canvas.webkitRequestFullscreen) {
-      canvas.webkitRequestFullscreen();
-    }
-  };
   
   this.enterFullscreen = function(){
     if (self.activeStory<0)
       return;
-//     self.storyList[self.activeStory].manager.enterImmersive();
+    self.storyList[self.activeStory].manager.enterImmersive();
 //     self.storyList[self.activeStory].manager.requestPointerLock_();
-    this.requestFullscreen_();
+//     this.requestFullscreen_();
   };
   
   this.exitFullscreen = function() {
@@ -250,7 +247,7 @@ VRStoryManager = function() {
   
   this.cardboardCallback = function() {
 //     self.storyList[self.activeStory].effect.setRenderMode(THREE.VRViewerEffectModes.TWO_VIEWPORTS);
-    this.enterVR();
+    this.enterCardboard();
 //     alert("CARDBOARD");
   };
   
