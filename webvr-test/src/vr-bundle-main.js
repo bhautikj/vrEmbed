@@ -39,4 +39,5 @@ WEBVR_PREDICTION_MODE = 0;
 //WEBVR_PREDICTION_TIME_MS = 100;// </script>
 
 require('./js/VRParser.js');
+require('./js/VRIcons.js');
 require('./js/VRState.js');

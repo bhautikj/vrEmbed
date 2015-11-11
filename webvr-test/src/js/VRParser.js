@@ -1,11 +1,53 @@
-VRPhoto = function() {
+require('./VRState.js');
+require('./TextureDescription.js');
+
+VRScenePhoto = function() {
+  this.scenePhoto = null;
+  this.textureDescription = null;
+
+  this.toVec2 = function(str) {
+    var arr = str.split(",");
+    return new THREE.Vector2(arr[0].trim(), arr[1].trim());
+  };
+  
+  this.init = function(scenePhoto) {
+    this.scenePhoto = scenePhoto;
+    this.textureDescription = new TextureDescription();
+    this.textureDescription.textureSource = this.scenePhoto.getAttribute("textureSource");
+    
+    if (this.textureDescription.textureSource  == null){
+      //TODO: throw exception
+      this.textureDescription = null;
+      return;
+    }
+        
+    this.textureDescription.metaSource = this.scenePhoto.getAttribute("metaSource");
+    this.textureDescription.isStereo = this.scenePhoto.getAttribute("isStereo");
+    this.textureDescription.sphereFOV = this.toVec2(this.scenePhoto.getAttribute("sphereFOV"));
+    this.textureDescription.sphereCentre = this.toVec2(this.scenePhoto.getAttribute("sphereCentre"));
+    this.textureDescription.U_l = this.toVec2(this.scenePhoto.getAttribute("U_l"));
+    this.textureDescription.V_l = this.toVec2(this.scenePhoto.getAttribute("V_l"));
+    this.textureDescription.U_r = this.toVec2(this.scenePhoto.getAttribute("U_r"));
+    this.textureDescription.V_r = this.toVec2(this.scenePhoto.getAttribute("V_r"));
+  };
 };
 
 VRScene = function() {
-  this.renderObjectList = [];
+  this.sceneElement = null;
+  this.renderObjects = [];
   
-  this.addPhoto = function(photo) {
-    this.renderObjectList.push(photo);
+  this.init = function(sceneElement) {
+    this.sceneElement = sceneElement;
+    var elements=sceneElement.children;
+    for(elementit = 0;elementit < elements.length; elementit++) {
+      var element = elements[elementit];
+      if(element.nodeName=="PHOTO"){
+        var scenePhoto = element;
+        var vrScenePhoto = new VRScenePhoto();
+        vrScenePhoto.init(scenePhoto);
+        this.renderObjects.push(vrScenePhoto);
+      }
+    }
   };
 };
 
@@ -17,6 +59,7 @@ VRStory = function() {
   this.camera = null;
   this.controls = null;
   this.effect = null;
+  var self = this;
   
   this.sceneList = [];
 
@@ -64,6 +107,50 @@ VRStory = function() {
     // effect.setSize(window.innerWidth, window.innerHeight);
     this.effect.setSize(containerWidth, containerHeight);
   };
+
+    // Request animation frame loop function
+  this.animate = function(timestamp) {
+    // Update VR headset position and apply to camera.
+    self.controls.update();
+    
+    self.manager.renderer.autoClear = false;
+    self.manager.renderer.clear();
+
+    if (self.manager.isVRMode()){ 
+      self.effect.setRenderMode(2);
+    } else {
+      self.effect.setRenderMode(1);
+    }
+    
+    self.manager.render(self.scene, self.camera, timestamp);
+
+    //   uniforms.iGlobalTime.value += 0.001;
+
+    requestAnimationFrame(self.animate);
+  };
+  
+  this.setupManager = function() {
+    // Create a VR manager helper to enter and exit VR mode.
+    this.manager = new WebVRManager(this.renderer, this.effect, {hideButton: true});
+    //override render function
+    this.manager.render = function(scene, camera, timestamp) {
+      if (this.isVRMode()) {
+        this.distorter.preRender();
+        this.effect.render(scene, camera);
+        this.distorter.postRender();
+      } else {
+        // Scene may be an array of two scenes, one for each eye.
+        if (scene instanceof Array) {
+          this.effect.render(scene[0], camera);
+        } else {
+          this.effect.render(scene, camera);
+        }
+      }
+      if (this.input && this.input.setAnimationFrameTime) {
+        this.input.setAnimationFrameTime(timestamp);
+      }  
+    };
+  };
   
   this.init = function(storyElement) {
     this.storyElement = storyElement;
@@ -73,29 +160,65 @@ VRStory = function() {
     for(sceneit = 0;sceneit < scenes.length; sceneit++) {
       var scene = scenes[sceneit];
       if(scene.nodeName=="SCENE"){
-        var sceneElements = scene.children;
-        for(sceneelemit = 0; sceneelemit < sceneElements.length; sceneelemit++){
-//           this.parseSceneElement(sceneElements[sceneelemit]);
-        }
+        var vrScene = new VRScene();
+        vrScene.init(scene);
+        this.sceneList.push(vrScene);  
       }
     }
     
     this.setupSceneRenderer();
+        
+    for(sceneit = 0;sceneit<this.sceneList.length; sceneit++) {
+      var scene = this.sceneList[sceneit];
+      for (objit = 0;objit<scene.renderObjects.length; objit++){
+        var scenePhoto = scene.renderObjects[objit];
+        if (scenePhoto.textureDescription!=null){
+          this.effect.setStereographicProjection(scenePhoto.textureDescription);
+        }
+      }
+    }
 
-    //last
+    this.setupManager();
     this.onResize();
+    this.animate();
   };
   
-  
-  this.addScene = function(scene) {
-    this.sceneList.push(scene);
-  };
 };
 
 VRStoryManager = function() {
   this.storyList = [];
   this.activeStory = -1;
+  this.stateToggler = new VRStateToggler();
+
+  this.windowedCallback = function() {
+//     alert("WINDOWED");
+  };
   
+  this.windowedAnaglyphCallback = function() {
+//     alert("WINDOWED_ANAGLYPH");
+  };
+
+  this.fullscreenCallback = function() {
+//     alert("FULLSCREEN");
+  };
+  
+  this.fullscreenAnaglyphCallback = function() {
+//     alert("FULLSCREEN_ANAGLYPH");
+  };
+  
+  this.cardboardCallback = function() {
+//     alert("CARDBOARD");
+  };
+  
+  this.stateToggler.on(VRStates.WINDOWED, this.windowedCallback.bind(this)); 
+  this.stateToggler.on(VRStates.WINDOWED_ANAGLYPH, this.windowedAnaglyphCallback.bind(this)); 
+  this.stateToggler.on(VRStates.FULLSCREEN, this.fullscreenCallback.bind(this)); 
+  this.stateToggler.on(VRStates.FULLSCREEN_ANAGLYPH, this.fullscreenAnaglyphCallback.bind(this)); 
+  this.stateToggler.on(VRStates.CARDBOARD, this.cardboardCallback.bind(this)); 
+  
+  this.stateToggler.setState(VRStates.WINDOWED);
+
+    
   this.addStory = function(story) {
     this.storyList.push(story);
   };  
@@ -104,6 +227,15 @@ VRStoryManager = function() {
     for(i=0;i<this.storyList.length;i++){
       this.storyList[i].onResize();
     }
+  };
+  
+  this.setActiveStory = function(idx) {
+    //TODO: teardown story at previous index
+    this.activeStory = idx;
+    var story = this.storyList[this.activeStory];
+    story.storyElement.appendChild(this.stateToggler.buttonLeft);
+    story.storyElement.appendChild(this.stateToggler.buttonMiddle);
+    story.storyElement.appendChild(this.stateToggler.buttonRight);
   };
 };
 
@@ -118,107 +250,15 @@ THREE.StoryParser = function () {
       vrStory.init(story);
       this.storyManager.addStory(vrStory);
     }
+    
+    if (stories.length>0){
+      this.storyManager.setActiveStory(0);
+    }
   };
   
   this.onResize = function() {
     this.storyManager.onResize();
   };
-};
-
-THREE.VRParser = function ( container, textureDescription ) {
-  var containerWidth = container.clientWidth;
-  var containerHeight = container.clientHeight;
-  // alert(containerWidth +","+ containerHeight);
-
-  //Setup three.js WebGL renderer
-  var renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setPixelRatio(window.devicePixelRatio);
-  renderer.setSize( containerWidth, containerHeight );
-
-  // Append the canvas element created by the renderer to document body element.
-  // document.body.appendChild(renderer.domElement);
-  container.appendChild( renderer.domElement );
-
-  // Create a three.js scene.
-  var scene = new THREE.Scene();
-
-  // Create a three.js camera.
-  var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.3, 10000);
-
-  // Apply VR headset positional data to camera.
-  var controls = new THREE.VRControls(camera);
-
-  // Apply VR stereo rendering to renderer.
-  var effect = new THREE.VRViewerEffect(renderer, 0);
-  // effect.setSize(window.innerWidth, window.innerHeight);
-  effect.setSize(containerWidth, containerHeight);
-  
-  
-  effect.setStereographicProjection(textureDescription);
-
-  // Create a VR manager helper to enter and exit VR mode.
-  var manager = new WebVRManager(renderer, effect, {hideButton: false});
-  //override render function
-  manager.render = function(scene, camera, timestamp) {
-    if (this.isVRMode()) {
-      this.distorter.preRender();
-      this.effect.render(scene, camera);
-      this.distorter.postRender();
-    } else {
-      // Scene may be an array of two scenes, one for each eye.
-      if (scene instanceof Array) {
-        this.effect.render(scene[0], camera);
-      } else {
-        this.effect.render(scene, camera);
-      }
-    }
-    if (this.input && this.input.setAnimationFrameTime) {
-      this.input.setAnimationFrameTime(timestamp);
-    }  
-  };
-  
-  // Request animation frame loop function
-  function animate(timestamp) {
-    // Update VR headset position and apply to camera.
-    controls.update();
-    
-    manager.renderer.autoClear = false;
-    manager.renderer.clear();
-
-    if (manager.isVRMode()){ 
-      effect.setRenderMode(2);
-    } else {
-      effect.setRenderMode(1);
-    }
-    
-    manager.render(scene, camera, timestamp);
-
-    //   uniforms.iGlobalTime.value += 0.001;
-
-    requestAnimationFrame(animate);
-  }
-
-  // window.CARDBOARD_DEBUG = true;
-
-  // Kick off animation loop
-  animate();
-  
-  // Handle window resizes
-  function onWindowResize() {
-    if (effect.isFullscreenMode()) {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      effect.setSize(window.innerWidth, window.innerHeight);
-    }
-    else {
-      camera.aspect = containerWidth/containerHeight;
-      camera.updateProjectionMatrix();
-      effect.setSize(containerWidth, containerHeight);
-    }
-
-  }
-
-  window.addEventListener('resize', onWindowResize, false);
 };
 
 
