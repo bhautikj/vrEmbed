@@ -188,16 +188,49 @@ VRStoryManager = function() {
   this.stateToggler = new VRStateToggler();
   var self = this;
 
+  this.requestFullscreen_ = function() {
+    if (self.activeStory<0)
+      return;
+    
+    var canvas = self.storyList[self.activeStory].parentElement;
+    if (canvas.mozRequestFullScreen) {
+      canvas.mozRequestFullScreen();
+    } else if (canvas.webkitRequestFullscreen) {
+      canvas.webkitRequestFullscreen();
+    }
+  };
+  
+  this.enterFullscreen = function(){
+    if (self.activeStory<0)
+      return;
+//     self.storyList[self.activeStory].manager.enterImmersive();
+//     self.storyList[self.activeStory].manager.requestPointerLock_();
+    this.requestFullscreen_();
+  };
+  
+  this.exitFullscreen = function() {
+    if (self.activeStory<0)
+      return;
+    self.storyList[self.activeStory].manager.exitVR();
+  };
+  
+  this.enterCardboard = function() {
+    if (self.activeStory<0)
+      return;
+    self.storyList[self.activeStory].manager.enterVR();
+  };
+  
   this.windowedCallback = function() {
     if (self.activeStory<0)
       return;
     self.storyList[self.activeStory].effect.setRenderMode(THREE.VRViewerEffectModes.ONE_VIEWPORT);
-    self.storyList[self.activeStory].manager.exitVR();
+    this.exitFullscreen();
 //     alert("WINDOWED");
   };
   
   this.windowedAnaglyphCallback = function() {
     self.storyList[self.activeStory].effect.setRenderMode(THREE.VRViewerEffectModes.ANAGLYPH);
+    this.exitFullscreen();
 //     alert("WINDOWED_ANAGLYPH");
   };
 
@@ -205,19 +238,19 @@ VRStoryManager = function() {
     if (self.activeStory<0)
       return;
     self.storyList[self.activeStory].effect.setRenderMode(THREE.VRViewerEffectModes.ONE_VIEWPORT);
-    self.storyList[self.activeStory].manager.enterImmersive();
+    this.enterFullscreen();
 //     alert("FULLSCREEN");
   };
   
   this.fullscreenAnaglyphCallback = function() {
     self.storyList[self.activeStory].effect.setRenderMode(THREE.VRViewerEffectModes.ANAGLYPH);
-    self.storyList[self.activeStory].manager.enterImmersive();
+    this.enterFullscreen();
 //     alert("FULLSCREEN_ANAGLYPH");
   };
   
   this.cardboardCallback = function() {
 //     self.storyList[self.activeStory].effect.setRenderMode(THREE.VRViewerEffectModes.TWO_VIEWPORTS);
-    self.storyList[self.activeStory].manager.enterVR();
+    this.enterVR();
 //     alert("CARDBOARD");
   };
   
@@ -229,7 +262,6 @@ VRStoryManager = function() {
   
   this.stateToggler.setState(VRStates.WINDOWED);
 
-    
   this.addStory = function(story) {
     this.storyList.push(story);
   };  
