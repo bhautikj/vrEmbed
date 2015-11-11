@@ -17,6 +17,7 @@ VRScenePhoto = function() {
     
     if (this.textureDescription.textureSource  == null){
       //TODO: throw exception
+      this.textureDescription = null;
       return;
     }
         
@@ -58,6 +59,7 @@ VRStory = function() {
   this.camera = null;
   this.controls = null;
   this.effect = null;
+  var self = this;
   
   this.sceneList = [];
 
@@ -105,6 +107,50 @@ VRStory = function() {
     // effect.setSize(window.innerWidth, window.innerHeight);
     this.effect.setSize(containerWidth, containerHeight);
   };
+
+    // Request animation frame loop function
+  this.animate = function(timestamp) {
+    // Update VR headset position and apply to camera.
+    self.controls.update();
+    
+    self.manager.renderer.autoClear = false;
+    self.manager.renderer.clear();
+
+    if (self.manager.isVRMode()){ 
+      self.effect.setRenderMode(2);
+    } else {
+      self.effect.setRenderMode(1);
+    }
+    
+    self.manager.render(self.scene, self.camera, timestamp);
+
+    //   uniforms.iGlobalTime.value += 0.001;
+
+    requestAnimationFrame(self.animate);
+  };
+  
+  this.setupManager = function() {
+    // Create a VR manager helper to enter and exit VR mode.
+    this.manager = new WebVRManager(this.renderer, this.effect, {hideButton: true});
+    //override render function
+    this.manager.render = function(scene, camera, timestamp) {
+      if (this.isVRMode()) {
+        this.distorter.preRender();
+        this.effect.render(scene, camera);
+        this.distorter.postRender();
+      } else {
+        // Scene may be an array of two scenes, one for each eye.
+        if (scene instanceof Array) {
+          this.effect.render(scene[0], camera);
+        } else {
+          this.effect.render(scene, camera);
+        }
+      }
+      if (this.input && this.input.setAnimationFrameTime) {
+        this.input.setAnimationFrameTime(timestamp);
+      }  
+    };
+  };
   
   this.init = function(storyElement) {
     this.storyElement = storyElement;
@@ -121,9 +167,20 @@ VRStory = function() {
     }
     
     this.setupSceneRenderer();
+        
+    for(sceneit = 0;sceneit<this.sceneList.length; sceneit++) {
+      var scene = this.sceneList[sceneit];
+      for (objit = 0;objit<scene.renderObjects.length; objit++){
+        var scenePhoto = scene.renderObjects[objit];
+        if (scenePhoto.textureDescription!=null){
+          this.effect.setStereographicProjection(scenePhoto.textureDescription);
+        }
+      }
+    }
 
-    //last
+    this.setupManager();
     this.onResize();
+    this.animate();
   };
   
 };
@@ -202,102 +259,6 @@ THREE.StoryParser = function () {
   this.onResize = function() {
     this.storyManager.onResize();
   };
-};
-
-THREE.VRParser = function ( container, textureDescription ) {
-  var containerWidth = container.clientWidth;
-  var containerHeight = container.clientHeight;
-  // alert(containerWidth +","+ containerHeight);
-
-  //Setup three.js WebGL renderer
-  var renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setPixelRatio(window.devicePixelRatio);
-  renderer.setSize( containerWidth, containerHeight );
-
-  // Append the canvas element created by the renderer to document body element.
-  // document.body.appendChild(renderer.domElement);
-  container.appendChild( renderer.domElement );
-
-  // Create a three.js scene.
-  var scene = new THREE.Scene();
-
-  // Create a three.js camera.
-  var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.3, 10000);
-
-  // Apply VR headset positional data to camera.
-  var controls = new THREE.VRControls(camera);
-
-  // Apply VR stereo rendering to renderer.
-  var effect = new THREE.VRViewerEffect(renderer, 0);
-  // effect.setSize(window.innerWidth, window.innerHeight);
-  effect.setSize(containerWidth, containerHeight);
-  
-  
-  effect.setStereographicProjection(textureDescription);
-
-  // Create a VR manager helper to enter and exit VR mode.
-  var manager = new WebVRManager(renderer, effect, {hideButton: false});
-  //override render function
-  manager.render = function(scene, camera, timestamp) {
-    if (this.isVRMode()) {
-      this.distorter.preRender();
-      this.effect.render(scene, camera);
-      this.distorter.postRender();
-    } else {
-      // Scene may be an array of two scenes, one for each eye.
-      if (scene instanceof Array) {
-        this.effect.render(scene[0], camera);
-      } else {
-        this.effect.render(scene, camera);
-      }
-    }
-    if (this.input && this.input.setAnimationFrameTime) {
-      this.input.setAnimationFrameTime(timestamp);
-    }  
-  };
-  
-  // Request animation frame loop function
-  function animate(timestamp) {
-    // Update VR headset position and apply to camera.
-    controls.update();
-    
-    manager.renderer.autoClear = false;
-    manager.renderer.clear();
-
-    if (manager.isVRMode()){ 
-      effect.setRenderMode(2);
-    } else {
-      effect.setRenderMode(1);
-    }
-    
-    manager.render(scene, camera, timestamp);
-
-    //   uniforms.iGlobalTime.value += 0.001;
-
-    requestAnimationFrame(animate);
-  }
-
-  // window.CARDBOARD_DEBUG = true;
-
-  // Kick off animation loop
-  animate();
-  
-  // Handle window resizes
-  function onWindowResize() {
-    if (effect.isFullscreenMode()) {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      effect.setSize(window.innerWidth, window.innerHeight);
-    }
-    else {
-      camera.aspect = containerWidth/containerHeight;
-      camera.updateProjectionMatrix();
-      effect.setSize(containerWidth, containerHeight);
-    }
-
-  }
-
-  window.addEventListener('resize', onWindowResize, false);
 };
 
 
