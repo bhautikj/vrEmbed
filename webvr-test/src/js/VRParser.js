@@ -197,12 +197,24 @@ VRStoryManager = function() {
   this.stateToggler = new VRStateToggler();
   var self = this;
   
+  this.onFullscreenChange_ = function(e) {
+    // If we leave full-screen, also exit VR mode.
+    if (document.webkitFullscreenElement === null ||
+        document.mozFullScreenElement === null) {
+      self.stateToggler.setState(VRStates.WINDOWED);
+    }
+  };
+  
+  // Whenever we enter fullscreen, we are entering VR or immersive mode.
+  document.addEventListener('webkitfullscreenchange',
+      this.onFullscreenChange_.bind(this));
+  document.addEventListener('mozfullscreenchange',
+      this.onFullscreenChange_.bind(this));
+  
   this.enterFullscreen = function(){
     if (self.activeStory<0)
       return;
     self.storyList[self.activeStory].manager.enterImmersive();
-//     self.storyList[self.activeStory].manager.requestPointerLock_();
-//     this.requestFullscreen_();
   };
   
   this.exitFullscreen = function() {
