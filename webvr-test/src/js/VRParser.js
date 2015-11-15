@@ -220,6 +220,7 @@ VRStoryManager = function() {
   this.exitFullscreen = function() {
     if (self.activeStory<0)
       return;
+//     this.onFullscreenChange_(null);
     self.storyList[self.activeStory].manager.exitVR();
   };
   
