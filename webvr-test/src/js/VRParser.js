@@ -59,6 +59,7 @@ VRStory = function() {
   this.camera = null;
   this.controls = null;
   this.effect = null;
+  this.manager = null;
   var self = this;
   
   this.sceneList = [];
@@ -116,11 +117,12 @@ VRStory = function() {
     self.manager.renderer.autoClear = false;
     self.manager.renderer.clear();
 
-    if (self.manager.isVRMode()){ 
-      self.effect.setRenderMode(2);
-    } else {
-      self.effect.setRenderMode(1);
-    }
+    
+//     if (self.manager.isVRMode()){ 
+//       self.effect.setRenderMode(2);
+//     } else {
+//       self.effect.setRenderMode(1);
+//     }
     
     self.manager.render(self.scene, self.camera, timestamp);
 
@@ -139,16 +141,20 @@ VRStory = function() {
         this.effect.render(scene, camera);
         this.distorter.postRender();
       } else {
-        // Scene may be an array of two scenes, one for each eye.
-        if (scene instanceof Array) {
-          this.effect.render(scene[0], camera);
-        } else {
           this.effect.render(scene, camera);
-        }
       }
       if (this.input && this.input.setAnimationFrameTime) {
         this.input.setAnimationFrameTime(timestamp);
       }  
+    };
+    
+    this.manager.requestFullscreen_ = function() {
+      var canvas = this.renderer.domElement.parentNode;
+      if (canvas.mozRequestFullScreen) {
+        canvas.mozRequestFullScreen();
+      } else if (canvas.webkitRequestFullscreen) {
+        canvas.webkitRequestFullscreen();
+      }
     };
   };
   
@@ -189,24 +195,72 @@ VRStoryManager = function() {
   this.storyList = [];
   this.activeStory = -1;
   this.stateToggler = new VRStateToggler();
-
+  var self = this;
+  
+  this.onFullscreenChange_ = function(e) {
+    // If we leave full-screen, also exit VR mode.
+    if (document.webkitFullscreenElement === null ||
+        document.mozFullScreenElement === null) {
+      self.stateToggler.setState(VRStates.WINDOWED);
+    }
+  };
+  
+  // Whenever we enter fullscreen, we are entering VR or immersive mode.
+  document.addEventListener('webkitfullscreenchange',
+      this.onFullscreenChange_.bind(this));
+  document.addEventListener('mozfullscreenchange',
+      this.onFullscreenChange_.bind(this));
+  
+  this.enterFullscreen = function(){
+    if (self.activeStory<0)
+      return;
+    self.storyList[self.activeStory].manager.enterImmersive();
+  };
+  
+  this.exitFullscreen = function() {
+    if (self.activeStory<0)
+      return;
+//     this.onFullscreenChange_(null);
+    self.storyList[self.activeStory].manager.exitVR();
+  };
+  
+  this.enterCardboard = function() {
+    if (self.activeStory<0)
+      return;
+    self.storyList[self.activeStory].manager.enterVR();
+  };
+  
   this.windowedCallback = function() {
+    if (self.activeStory<0)
+      return;
+    self.storyList[self.activeStory].effect.setRenderMode(THREE.VRViewerEffectModes.ONE_VIEWPORT);
+    this.exitFullscreen();
 //     alert("WINDOWED");
   };
   
   this.windowedAnaglyphCallback = function() {
+    self.storyList[self.activeStory].effect.setRenderMode(THREE.VRViewerEffectModes.ANAGLYPH);
+    this.exitFullscreen();
 //     alert("WINDOWED_ANAGLYPH");
   };
 
   this.fullscreenCallback = function() {
+    if (self.activeStory<0)
+      return;
+    self.storyList[self.activeStory].effect.setRenderMode(THREE.VRViewerEffectModes.ONE_VIEWPORT);
+    this.enterFullscreen();
 //     alert("FULLSCREEN");
   };
   
   this.fullscreenAnaglyphCallback = function() {
+    self.storyList[self.activeStory].effect.setRenderMode(THREE.VRViewerEffectModes.ANAGLYPH);
+    this.enterFullscreen();
 //     alert("FULLSCREEN_ANAGLYPH");
   };
   
   this.cardboardCallback = function() {
+//     self.storyList[self.activeStory].effect.setRenderMode(THREE.VRViewerEffectModes.TWO_VIEWPORTS);
+    this.enterCardboard();
 //     alert("CARDBOARD");
   };
   
@@ -218,7 +272,6 @@ VRStoryManager = function() {
   
   this.stateToggler.setState(VRStates.WINDOWED);
 
-    
   this.addStory = function(story) {
     this.storyList.push(story);
   };  
@@ -236,6 +289,10 @@ VRStoryManager = function() {
     story.storyElement.appendChild(this.stateToggler.buttonLeft);
     story.storyElement.appendChild(this.stateToggler.buttonMiddle);
     story.storyElement.appendChild(this.stateToggler.buttonRight);
+  };
+  
+  this.getActiveStory = function() {
+    return this.storyList[this.activeStory];
   };
 };
 

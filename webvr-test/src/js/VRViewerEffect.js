@@ -13,6 +13,16 @@
 
 require('./ShaderPassAnaglyph.js');
 
+THREE.VRViewerEffectModes = {
+  ONE_VIEWPORT: 0,
+  ANAGLYPH: 1,
+  TWO_VIEWPORTS: 2
+};
+
+// 0  (00): one viewport, no anaglyph
+// 2  (10): two viewports, no anaglyph
+// 1  (01): one viewport, anaglyph
+
 THREE.VRViewerEffect = function ( renderer, mode, onError ) {
   var vrHMD;
   var vrCameraRig;
@@ -201,8 +211,8 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
     
     // fallback modes if HMD unavailable
     if (!vrHMD) {
-      if (renderMode == 2) {
-        finalRenderMode = 0;
+      if (renderMode == THREE.VRViewerEffectModes.TWO_VIEWPORTS) {
+        finalRenderMode = THREE.VRViewerEffectModes.ONE_VIEWPORT;
       }
     }
     
@@ -213,7 +223,7 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
     // 1  (01): one viewport, anaglyph
     
     
-    if (finalRenderMode == 0) {
+    if (finalRenderMode == THREE.VRViewerEffectModes.ONE_VIEWPORT) {
       // Regular render mode if not HMD
       if ( Array.isArray( scene ) ) scene = scene[ 0 ];
       // render pano
@@ -245,7 +255,7 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
     // render camera setup
 
     // two viewport render
-    if ( finalRenderMode == 2 ) {
+    if ( finalRenderMode == THREE.VRViewerEffectModes.TWO_VIEWPORTS ) {
       renderer.enableScissorTest( true );
       renderer.clear();
       var size = renderer.getSize();
@@ -265,7 +275,7 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
       vrStereographicProjectionQuad.render(renderer);
       renderer.render( scene, cameraR );
       renderer.enableScissorTest( false );
-    } else if (finalRenderMode == 1) {
+    } else if (finalRenderMode == THREE.VRViewerEffectModes.ANAGLYPH) {
       renderer.clear();
       vrStereographicProjectionQuad.setLeft();
       vrStereographicProjectionQuad.preRender(cameraL);
