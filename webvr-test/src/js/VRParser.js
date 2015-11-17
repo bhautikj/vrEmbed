@@ -13,8 +13,7 @@ VRScenePhoto = function() {
   this.init = function(scenePhoto) {
     this.scenePhoto = scenePhoto;
     this.textureDescription = new TextureDescription();
-    this.textureDescription.textureSource = this.scenePhoto.getAttribute("textureSource");
-    
+    this.textureDescription.textureSource = this.scenePhoto.getAttribute("textureSource");    
     if (this.textureDescription.textureSource  == null){
       //TODO: throw exception
       this.textureDescription = null;
@@ -40,11 +39,10 @@ VRScene = function() {
     this.sceneElement = sceneElement;
     var elements=sceneElement.children;
     for(elementit = 0;elementit < elements.length; elementit++) {
-      var element = elements[elementit];
-      if(element.nodeName=="PHOTO"){
-        var scenePhoto = element;
+      var elm = elements[elementit];
+      if(elm.nodeName=="PHOTO"){
         var vrScenePhoto = new VRScenePhoto();
-        vrScenePhoto.init(scenePhoto);
+        vrScenePhoto.init(elm);
         this.renderObjects.push(vrScenePhoto);
       }
     }
@@ -87,6 +85,7 @@ VRStory = function() {
     var containerHeight = this.parentElement.clientHeight;
 
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
+        
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setSize( containerWidth, containerHeight );
 
