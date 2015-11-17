@@ -44,6 +44,7 @@ var StereographicProjection = {
     '  vec2 uv = vUv;',
       
     '  float aspect = imageResolution.y/imageResolution.x;',
+    //TODO: passthrough FOV
     //FOV: scale = 1.->FOV of ~120
     //FOV: scale = .5 -> FOV of ~60
     '  float scale = .625;',
@@ -72,8 +73,10 @@ var StereographicProjection = {
     '  normCoord.y = normCoord.y/vu.y;',
     
     '  if (normCoord.x<0.0 || normCoord.x>1.0 || normCoord.y<0.0 || normCoord.y>1.0) {',
-    '    gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0); ',
-    '    return;',
+//TODO: render background colour if bottom layer!
+//     '    gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);',
+    '    // exits fragment shader here',
+    '    discard;',
     '  } ',
     
     '  normCoord.x = mod(normCoord.x, 1.0);',

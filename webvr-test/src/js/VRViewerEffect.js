@@ -13,30 +13,31 @@
 
 require('./ShaderPassAnaglyph.js');
 
+// 0  (00): one viewport, no anaglyph
+// 2  (10): two viewports, no anaglyph
+// 1  (01): one viewport, anaglyph
+
 THREE.VRViewerEffectModes = {
   ONE_VIEWPORT: 0,
   ANAGLYPH: 1,
   TWO_VIEWPORTS: 2
 };
 
-// 0  (00): one viewport, no anaglyph
-// 2  (10): two viewports, no anaglyph
-// 1  (01): one viewport, anaglyph
-
 THREE.VRViewerEffect = function ( renderer, mode, onError ) {
   var vrHMD;
   var vrCameraRig;
   var vrTopTransform;
   var renderMode = mode;
-  var vrStereographicProjectionQuad = new THREE.VRStereographicProjectionQuad();
+  var vrStereographicProjectionQuads = [];
   var shaderPassAnaglyph = new ShaderPassAnaglyph(AnaglyphProjection);
   var textureDesc = [];
   
   this.setStereographicProjection = function (textureDescription) {
-    textureDesc.push(textureDescription);    
+    var vrStereographicProjectionQuad = new THREE.VRStereographicProjectionQuad();
     vrStereographicProjectionQuad.setupProjection(textureDescription, 
                                                   window.innerWidth, 
                                                   window.innerHeight);
+    vrStereographicProjectionQuads.push(vrStereographicProjectionQuad);    
   };
   
   this.setRenderMode = function (mode) {
@@ -81,7 +82,9 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
   vrCameraRig.scale = 1;
 
   this.setSize = function( width, height ) {
-    vrStereographicProjectionQuad.resizeViewport(width, height);
+    for (i=0; i<vrStereographicProjectionQuads.length; i++){
+      vrStereographicProjectionQuads[i].resizeViewport(width, height);
+    }
     shaderPassAnaglyph.resize(width, height);
     renderer.setSize( width, height );
   };
@@ -229,9 +232,12 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
       // render pano
       // TODO: only run if mode says yes
       vrCameraRig.update(camera);
-      vrStereographicProjectionQuad.setLeft();
-      vrStereographicProjectionQuad.preRender(camera);
-      vrStereographicProjectionQuad.render(renderer);
+      for (i=0; i<vrStereographicProjectionQuads.length; i++){
+        vrStereographicProjectionQuads[i].setLeft();
+        vrStereographicProjectionQuads[i].preRender(camera);
+        vrStereographicProjectionQuads[i].render(renderer);
+      }
+      
       renderer.render( scene, camera );
       return;
     }
@@ -262,30 +268,40 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
       size.width /= 2;      // render left eye
       renderer.setViewport( 0, 0, size.width, size.height );
       renderer.setScissor( 0, 0, size.width, size.height );
-      vrStereographicProjectionQuad.setLeft();
-      vrStereographicProjectionQuad.preRender(cameraL);
-      vrStereographicProjectionQuad.render(renderer);
+      
+      for (i=0; i<vrStereographicProjectionQuads.length; i++){
+        vrStereographicProjectionQuads[i].setLeft();
+        vrStereographicProjectionQuads[i].preRender(cameraL);
+        vrStereographicProjectionQuads[i].render(renderer);
+      }
+      
       renderer.render( scene, cameraL );
 
       // render right eye
       renderer.setViewport( size.width, 0, size.width, size.height );
       renderer.setScissor( size.width, 0, size.width, size.height );
-      vrStereographicProjectionQuad.setRight();
-      vrStereographicProjectionQuad.preRender(cameraR);
-      vrStereographicProjectionQuad.render(renderer);
+      for (i=0; i<vrStereographicProjectionQuads.length; i++){
+        vrStereographicProjectionQuads[i].setRight();
+        vrStereographicProjectionQuads[i].preRender(cameraR);
+        vrStereographicProjectionQuads[i].render(renderer);
+      }
       renderer.render( scene, cameraR );
       renderer.enableScissorTest( false );
     } else if (finalRenderMode == THREE.VRViewerEffectModes.ANAGLYPH) {
       renderer.clear();
-      vrStereographicProjectionQuad.setLeft();
-      vrStereographicProjectionQuad.preRender(cameraL);
-      vrStereographicProjectionQuad.renderToTex(renderer, shaderPassAnaglyph.anaglyphTargetL);
+      for (i=0; i<vrStereographicProjectionQuads.length; i++){
+        vrStereographicProjectionQuads[i].setLeft();
+        vrStereographicProjectionQuads[i].preRender(cameraL);
+        vrStereographicProjectionQuads[i].renderToTex(renderer, shaderPassAnaglyph.anaglyphTargetL);
+      }
       renderer.render( scene, cameraL, shaderPassAnaglyph.anaglyphTargetL );
 
       // render right eye
-      vrStereographicProjectionQuad.setRight();
-      vrStereographicProjectionQuad.preRender(cameraR);
-      vrStereographicProjectionQuad.renderToTex(renderer, shaderPassAnaglyph.anaglyphTargetR);
+      for (i=0; i<vrStereographicProjectionQuads.length; i++){
+        vrStereographicProjectionQuads[i].setRight();
+        vrStereographicProjectionQuads[i].preRender(cameraR);
+        vrStereographicProjectionQuads[i].renderToTex(renderer, shaderPassAnaglyph.anaglyphTargetR);
+      }
       renderer.render( scene, cameraR, shaderPassAnaglyph.anaglyphTargetR  );
       shaderPassAnaglyph.copyMat();
       
