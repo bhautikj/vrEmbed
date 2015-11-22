@@ -146,7 +146,7 @@ VRStory = function() {
         this.input.setAnimationFrameTime(timestamp);
       }  
     };
-    
+        
     this.manager.requestFullscreen_ = function() {
       var canvas = this.renderer.domElement.parentNode;
       if (canvas.mozRequestFullScreen) {
