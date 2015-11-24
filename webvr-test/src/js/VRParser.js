@@ -49,13 +49,30 @@ VRScene = function() {
   };
 };
 
+VRManager = function(renderer, effect) {
+  this.renderer = renderer;
+  this.effect = effect;
+  
+  this.render = function(scene, camera, timestamp) {
+    this.effect.render(scene, camera);
+  };
+  
+//       this.manager.requestFullscreen_ = function() {
+//       var canvas = this.renderer.domElement.parentNode;
+//       if (canvas.mozRequestFullScreen) {
+//         canvas.mozRequestFullScreen();
+//       } else if (canvas.webkitRequestFullscreen) {
+//         canvas.webkitRequestFullscreen();
+//       }
+//     };
+};
+
 VRStory = function() {
   this.storyElement = null;
   this.parentElement = null;
   this.renderer = null;
   this.scene = null;
   this.camera = null;
-  this.controls = null;
   this.effect = null;
   this.manager = null;
   var self = this;
@@ -100,7 +117,8 @@ VRStory = function() {
     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.3, 10000);
 
     // Apply VR headset positional data to camera.
-    this.controls = new THREE.VRControls(this.camera);
+    //TODO: REPLACE!
+//     this.controls = new THREE.VRControls(this.camera);
 
     // Apply VR stereo rendering to renderer.
     this.effect = new THREE.VRViewerEffect(this.renderer, 0);
@@ -111,50 +129,19 @@ VRStory = function() {
     // Request animation frame loop function
   this.animate = function(timestamp) {
     // Update VR headset position and apply to camera.
-    self.controls.update();
+    //TODO: REPLACE!
+//     self.controls.update();
     
     self.manager.renderer.autoClear = false;
     self.manager.renderer.clear();
 
-    
-//     if (self.manager.isVRMode()){ 
-//       self.effect.setRenderMode(2);
-//     } else {
-//       self.effect.setRenderMode(1);
-//     }
-    
     self.manager.render(self.scene, self.camera, timestamp);
 
     //   uniforms.iGlobalTime.value += 0.001;
 
     requestAnimationFrame(self.animate);
-  };
-  
-  this.setupManager = function() {
-    // Create a VR manager helper to enter and exit VR mode.
-    this.manager = new WebVRManager(this.renderer, this.effect, {hideButton: true});
-    //override render function
-    this.manager.render = function(scene, camera, timestamp) {
-      if (this.isVRMode()) {
-        this.distorter.preRender();
-        this.effect.render(scene, camera);
-        this.distorter.postRender();
-      } else {
-          this.effect.render(scene, camera);
-      }
-      if (this.input && this.input.setAnimationFrameTime) {
-        this.input.setAnimationFrameTime(timestamp);
-      }  
-    };
-        
-    this.manager.requestFullscreen_ = function() {
-      var canvas = this.renderer.domElement.parentNode;
-      if (canvas.mozRequestFullScreen) {
-        canvas.mozRequestFullScreen();
-      } else if (canvas.webkitRequestFullscreen) {
-        canvas.webkitRequestFullscreen();
-      }
-    };
+    
+//     alert(timestamp);
   };
   
   this.init = function(storyElement) {
@@ -183,7 +170,7 @@ VRStory = function() {
       }
     }
 
-    this.setupManager();
+    this.manager = new VRManager(this.renderer, this.effect);
     this.onResize();
     this.animate();
   };
