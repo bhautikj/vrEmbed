@@ -118,7 +118,8 @@ VRStory = function() {
 
     // Apply VR headset positional data to camera.
     //TODO: REPLACE!
-//     this.controls = new THREE.VRControls(this.camera);
+    this.controls = new VRLookController();
+    this.controls.setCamera(this.camera);
 
     // Apply VR stereo rendering to renderer.
     this.effect = new THREE.VRViewerEffect(this.renderer, 0);
@@ -130,7 +131,7 @@ VRStory = function() {
   this.animate = function(timestamp) {
     // Update VR headset position and apply to camera.
     //TODO: REPLACE!
-//     self.controls.update();
+    self.controls.update();
     
     self.manager.renderer.autoClear = false;
     self.manager.renderer.clear();

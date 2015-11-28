@@ -9,3 +9,6 @@ require('./js/VRStereographicProjectionQuad.js');
 require('./js/VRParser.js');
 require('./js/VRIcons.js');
 require('./js/VRState.js');
+
+
+require('./js/VRControllers.js');
