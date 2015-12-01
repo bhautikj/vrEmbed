@@ -72,6 +72,7 @@ VRManager = function(renderer, effect) {
 };
 
 VRStory = function() {
+  var self = this;
   this.storyElement = null;
   this.parentElement = null;
   this.renderer = null;
@@ -82,7 +83,6 @@ VRStory = function() {
   this.storyManager = null;
   this.stateToggler = new VRStateToggler();
 
-  var self = this;
   
   this.sceneList = [];
 
@@ -104,19 +104,19 @@ VRStory = function() {
   this.windowedCallback = function() {
     if (self.effect != null)
       self.effect.setRenderMode(THREE.VRViewerEffectModes.ONE_VIEWPORT);
-    this.exitFullscreen();
+    self.exitFullscreen();
 //     alert("WINDOWED");
   };
   
   this.windowedAnaglyphCallback = function() {
     self.effect.setRenderMode(THREE.VRViewerEffectModes.ANAGLYPH);
-    this.exitFullscreen();
+    self.exitFullscreen();
 //     alert("WINDOWED_ANAGLYPH");
   };
 
   this.fullscreenCallback = function() {
     self.effect.setRenderMode(THREE.VRViewerEffectModes.ONE_VIEWPORT);
-    this.enterFullscreen();
+    self.enterFullscreen();
 //     alert("FULLSCREEN");
   };
   
@@ -128,15 +128,15 @@ VRStory = function() {
   
   this.cardboardCallback = function() {
 //     self.effect.setRenderMode(THREE.VRViewerEffectModes.TWO_VIEWPORTS);
-    this.enterCardboard();
+    self.enterCardboard();
 //     alert("CARDBOARD");
   };
   
-  this.stateToggler.on(VRStates.WINDOWED, this.windowedCallback.bind(this)); 
-  this.stateToggler.on(VRStates.WINDOWED_ANAGLYPH, this.windowedAnaglyphCallback.bind(this)); 
-  this.stateToggler.on(VRStates.FULLSCREEN, this.fullscreenCallback.bind(this)); 
-  this.stateToggler.on(VRStates.FULLSCREEN_ANAGLYPH, this.fullscreenAnaglyphCallback.bind(this)); 
-  this.stateToggler.on(VRStates.CARDBOARD, this.cardboardCallback.bind(this)); 
+  self.stateToggler.on(VRStates.WINDOWED, self.windowedCallback.bind(this)); 
+  self.stateToggler.on(VRStates.WINDOWED_ANAGLYPH, self.windowedAnaglyphCallback.bind(this)); 
+  self.stateToggler.on(VRStates.FULLSCREEN, self.fullscreenCallback.bind(this)); 
+  self.stateToggler.on(VRStates.FULLSCREEN_ANAGLYPH, self.fullscreenAnaglyphCallback.bind(this)); 
+  self.stateToggler.on(VRStates.CARDBOARD, self.cardboardCallback.bind(this)); 
     
   this.onResize = function() {
     var containerWidth = this.parentElement.clientWidth;
