@@ -116,11 +116,6 @@ VRStory = function() {
     // Create a three.js camera.
     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.3, 10000);
 
-    // Apply VR headset positional data to camera.
-    //TODO: REPLACE!
-    this.controls = new VRLookController();
-    this.controls.setCamera(this.camera);
-
     // Apply VR stereo rendering to renderer.
     this.effect = new THREE.VRViewerEffect(this.renderer, 0);
     // effect.setSize(window.innerWidth, window.innerHeight);
@@ -129,19 +124,12 @@ VRStory = function() {
 
     // Request animation frame loop function
   this.animate = function(timestamp) {
-    // Update VR headset position and apply to camera.
-    //TODO: REPLACE!
-    self.controls.update();
-    
     self.manager.renderer.autoClear = false;
     self.manager.renderer.clear();
 
     self.manager.render(self.scene, self.camera, timestamp);
 
-    //   uniforms.iGlobalTime.value += 0.001;
-
-    requestAnimationFrame(self.animate);
-    
+    //   uniforms.iGlobalTime.value += 0.001;    
 //     alert(timestamp);
   };
   
@@ -179,11 +167,14 @@ VRStory = function() {
 };
 
 VRStoryManager = function() {
+  var self= this;
   this.storyList = [];
   this.activeStory = -1;
   this.stateToggler = new VRStateToggler();
   var self = this;
-  
+
+  this.controls = new VRLookController();
+    
   this.onFullscreenChange_ = function(e) {
     // If we leave full-screen, also exit VR mode.
     if (document.webkitFullscreenElement === null ||
@@ -276,11 +267,28 @@ VRStoryManager = function() {
     story.storyElement.appendChild(this.stateToggler.buttonLeft);
     story.storyElement.appendChild(this.stateToggler.buttonMiddle);
     story.storyElement.appendChild(this.stateToggler.buttonRight);
+    // Apply VR headset positional data to camera.
+    this.controls.setCamera(story.camera);
   };
   
   this.getActiveStory = function() {
     return this.storyList[this.activeStory];
   };
+  
+  // central animation loop - this is the event pump that should drive the rest
+  this.animate = function() {
+    // Update VR headset position and apply to camera.
+    self.controls.update();
+    
+    if (self.activeStory >= 0){
+      self.getActiveStory().animate();
+    }
+    
+    requestAnimationFrame(self.animate);
+  };
+  
+  this.animate();
+  
 };
 
 THREE.StoryParser = function () {

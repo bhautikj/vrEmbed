@@ -8,7 +8,6 @@ function VRLookControlBase() {
 
 VRLookControlBase.prototype.updateBase = function() {
     if (this.camera == null){
-      alert("OH GODS");
       return;
     }
 //     alert(this.eulerY);
@@ -39,7 +38,6 @@ VRIdleCameraSpinner.prototype = new VRLookControlBase();
 
 VRIdleCameraSpinner.prototype.update = function(){
   this.setEuler(0, this.eulerY+0.01, 0);
-//   console.log(this.eulerY);
   this.updateBase();
 }
 
