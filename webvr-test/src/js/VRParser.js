@@ -161,9 +161,16 @@ VRStory = function() {
       }
     }
     
+    this.mouseMove = function(ev) {
+      self.storyManager.mouseMove(self, ev);
+    };
+    
     this.parentElement.addEventListener("mousedown", function (ev) {
-      self.storyManager.mouseMove(self);
-//         stereoScene.container.addEventListener("mousemove", mouseController.gyroMouse, false);
+        this.parentElement.addEventListener("mousemove", self.mouseMove, false);
+    }, false);
+
+    this.parentElement.addEventListener("mouseup", function (ev) {
+        this.parentElement.removeEventListener("mousemove", self.mouseMove, false);
     }, false);
 
     this.manager = new VRManager(this.renderer, this.effect);
@@ -304,8 +311,11 @@ VRStoryManager = function() {
     return foundidx;
   };
   
-  this.mouseMove = function(story) {
-    alert(self.findStoryIndex(story));
+  this.mouseMove = function(story, ev) {
+    var mx = ev.movementX || ev.mozMovementX || ev.webkitMovementX || 0;
+    var my = ev.movementY || ev.mozMovementY || ev.webkitMovementY || 0;
+//     alert(self.findStoryIndex(story));
+    console.log(mx + "," + my);
   };
   
   this.animate();
