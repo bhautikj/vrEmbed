@@ -57,6 +57,10 @@ VRManager = function(renderer, effect) {
     this.effect.render(scene, camera);
   };
   
+  this.exitVR = function() {
+    //TODO: FILL OUT ARGH!
+  };
+  
 //       this.manager.requestFullscreen_ = function() {
 //       var canvas = this.renderer.domElement.parentNode;
 //       if (canvas.mozRequestFullScreen) {
@@ -76,10 +80,64 @@ VRStory = function() {
   this.effect = null;
   this.manager = null;
   this.storyManager = null;
+  this.stateToggler = new VRStateToggler();
+
   var self = this;
   
   this.sceneList = [];
 
+  
+  this.enterFullscreen = function(){
+    self.manager.enterImmersive();
+  };
+  
+  this.exitFullscreen = function() {
+    if (self.manager != null)
+      self.manager.exitVR();
+//     this.onFullscreenChange_(null);
+  };
+  
+  this.enterCardboard = function() {
+    self.manager.enterVR();
+  };
+  
+  this.windowedCallback = function() {
+    if (self.effect != null)
+      self.effect.setRenderMode(THREE.VRViewerEffectModes.ONE_VIEWPORT);
+    this.exitFullscreen();
+//     alert("WINDOWED");
+  };
+  
+  this.windowedAnaglyphCallback = function() {
+    self.effect.setRenderMode(THREE.VRViewerEffectModes.ANAGLYPH);
+    this.exitFullscreen();
+//     alert("WINDOWED_ANAGLYPH");
+  };
+
+  this.fullscreenCallback = function() {
+    self.effect.setRenderMode(THREE.VRViewerEffectModes.ONE_VIEWPORT);
+    this.enterFullscreen();
+//     alert("FULLSCREEN");
+  };
+  
+  this.fullscreenAnaglyphCallback = function() {
+    self.effect.setRenderMode(THREE.VRViewerEffectModes.ANAGLYPH);
+    this.enterFullscreen();
+//     alert("FULLSCREEN_ANAGLYPH");
+  };
+  
+  this.cardboardCallback = function() {
+//     self.effect.setRenderMode(THREE.VRViewerEffectModes.TWO_VIEWPORTS);
+    this.enterCardboard();
+//     alert("CARDBOARD");
+  };
+  
+  this.stateToggler.on(VRStates.WINDOWED, this.windowedCallback.bind(this)); 
+  this.stateToggler.on(VRStates.WINDOWED_ANAGLYPH, this.windowedAnaglyphCallback.bind(this)); 
+  this.stateToggler.on(VRStates.FULLSCREEN, this.fullscreenCallback.bind(this)); 
+  this.stateToggler.on(VRStates.FULLSCREEN_ANAGLYPH, this.fullscreenAnaglyphCallback.bind(this)); 
+  this.stateToggler.on(VRStates.CARDBOARD, this.cardboardCallback.bind(this)); 
+    
   this.onResize = function() {
     var containerWidth = this.parentElement.clientWidth;
     var containerHeight = this.parentElement.clientHeight;
@@ -173,9 +231,16 @@ VRStory = function() {
         this.parentElement.removeEventListener("mousemove", self.mouseMove, false);
     }, false);
 
+    this.storyElement.appendChild(this.stateToggler.buttonLeft);
+    this.storyElement.appendChild(this.stateToggler.buttonMiddle);
+    this.storyElement.appendChild(this.stateToggler.buttonRight);
+    
     this.manager = new VRManager(this.renderer, this.effect);
     this.onResize();
     this.animate();
+    
+    this.stateToggler.setState(VRStates.WINDOWED);
+
   };
   
 };
@@ -184,7 +249,6 @@ VRStoryManager = function() {
   var self= this;
   this.storyList = [];
   this.activeStory = -1;
-  this.stateToggler = new VRStateToggler();
   var self = this;
 
   this.controls = new VRLookController();
@@ -193,7 +257,7 @@ VRStoryManager = function() {
     // If we leave full-screen, also exit VR mode.
     if (document.webkitFullscreenElement === null ||
         document.mozFullScreenElement === null) {
-      self.stateToggler.setState(VRStates.WINDOWED);
+      self.getActiveStory().stateToggler.setState(VRStates.WINDOWED);
     }
   };
   
@@ -203,67 +267,6 @@ VRStoryManager = function() {
   document.addEventListener('mozfullscreenchange',
       this.onFullscreenChange_.bind(this));
   
-  this.enterFullscreen = function(){
-    if (self.activeStory<0)
-      return;
-    self.storyList[self.activeStory].manager.enterImmersive();
-  };
-  
-  this.exitFullscreen = function() {
-    if (self.activeStory<0)
-      return;
-//     this.onFullscreenChange_(null);
-    self.storyList[self.activeStory].manager.exitVR();
-  };
-  
-  this.enterCardboard = function() {
-    if (self.activeStory<0)
-      return;
-    self.storyList[self.activeStory].manager.enterVR();
-  };
-  
-  this.windowedCallback = function() {
-    if (self.activeStory<0)
-      return;
-    self.storyList[self.activeStory].effect.setRenderMode(THREE.VRViewerEffectModes.ONE_VIEWPORT);
-    this.exitFullscreen();
-//     alert("WINDOWED");
-  };
-  
-  this.windowedAnaglyphCallback = function() {
-    self.storyList[self.activeStory].effect.setRenderMode(THREE.VRViewerEffectModes.ANAGLYPH);
-    this.exitFullscreen();
-//     alert("WINDOWED_ANAGLYPH");
-  };
-
-  this.fullscreenCallback = function() {
-    if (self.activeStory<0)
-      return;
-    self.storyList[self.activeStory].effect.setRenderMode(THREE.VRViewerEffectModes.ONE_VIEWPORT);
-    this.enterFullscreen();
-//     alert("FULLSCREEN");
-  };
-  
-  this.fullscreenAnaglyphCallback = function() {
-    self.storyList[self.activeStory].effect.setRenderMode(THREE.VRViewerEffectModes.ANAGLYPH);
-    this.enterFullscreen();
-//     alert("FULLSCREEN_ANAGLYPH");
-  };
-  
-  this.cardboardCallback = function() {
-//     self.storyList[self.activeStory].effect.setRenderMode(THREE.VRViewerEffectModes.TWO_VIEWPORTS);
-    this.enterCardboard();
-//     alert("CARDBOARD");
-  };
-  
-  this.stateToggler.on(VRStates.WINDOWED, this.windowedCallback.bind(this)); 
-  this.stateToggler.on(VRStates.WINDOWED_ANAGLYPH, this.windowedAnaglyphCallback.bind(this)); 
-  this.stateToggler.on(VRStates.FULLSCREEN, this.fullscreenCallback.bind(this)); 
-  this.stateToggler.on(VRStates.FULLSCREEN_ANAGLYPH, this.fullscreenAnaglyphCallback.bind(this)); 
-  this.stateToggler.on(VRStates.CARDBOARD, this.cardboardCallback.bind(this)); 
-  
-  this.stateToggler.setState(VRStates.WINDOWED);
-
   this.addStory = function(story) {
     this.storyList.push(story);
   };  
@@ -278,9 +281,6 @@ VRStoryManager = function() {
     //TODO: teardown story at previous index
     this.activeStory = idx;
     var story = this.storyList[this.activeStory];
-    story.storyElement.appendChild(this.stateToggler.buttonLeft);
-    story.storyElement.appendChild(this.stateToggler.buttonMiddle);
-    story.storyElement.appendChild(this.stateToggler.buttonRight);
     // Apply VR headset positional data to camera.
     this.controls.setCamera(story.camera);
   };
