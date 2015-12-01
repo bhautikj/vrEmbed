@@ -75,6 +75,7 @@ VRStory = function() {
   this.camera = null;
   this.effect = null;
   this.manager = null;
+  this.storyManager = null;
   var self = this;
   
   this.sceneList = [];
@@ -133,8 +134,9 @@ VRStory = function() {
 //     alert(timestamp);
   };
   
-  this.init = function(storyElement) {
+  this.init = function(storyElement, storyManager) {
     this.storyElement = storyElement;
+    this.storyManager = storyManager;
     this.parentElement = this.storyElement.parentNode;
     
     var scenes=storyElement.children;
@@ -158,6 +160,11 @@ VRStory = function() {
         }
       }
     }
+    
+    this.parentElement.addEventListener("mousedown", function (ev) {
+      self.storyManager.mouseMove(self);
+//         stereoScene.container.addEventListener("mousemove", mouseController.gyroMouse, false);
+    }, false);
 
     this.manager = new VRManager(this.renderer, this.effect);
     this.onResize();
@@ -287,6 +294,20 @@ VRStoryManager = function() {
     requestAnimationFrame(self.animate);
   };
   
+  this.findStoryIndex = function(story) {
+    var foundidx=-1;
+    for(storyit = 0;storyit < self.storyList.length; storyit++) {
+      if (self.storyList[storyit]==story){
+        foundidx=storyit;
+      }
+    }
+    return foundidx;
+  };
+  
+  this.mouseMove = function(story) {
+    alert(self.findStoryIndex(story));
+  };
+  
   this.animate();
   
 };
@@ -299,7 +320,7 @@ THREE.StoryParser = function () {
     for(storyit = 0;storyit < stories.length; storyit++) {
       var story = stories[storyit];
       var vrStory = new VRStory();
-      vrStory.init(story);
+      vrStory.init(story, this.storyManager);
       this.storyManager.addStory(vrStory);
     }
     
