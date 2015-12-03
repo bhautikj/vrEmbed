@@ -41,20 +41,39 @@ VRIdleCameraSpinner.prototype.update = function(){
   this.updateBase();
 }
 
+
+VRMouseSpinner = function() {  
+}
+
+VRMouseSpinner.prototype = new VRLookControlBase();
+
+VRMouseSpinner.prototype.mouseMove = function(dX, dY){
+  this.eulerX += dX;
+  this.eulerY += dY;
+}
+
+VRMouseSpinner.prototype.update = function(){
+  this.updateBase();
+}
+
+
 VRLookController = function() {
   var self = this;
   this.angle = 0;
-  this.idleCameraSpinner = new VRIdleCameraSpinner();
+  this.vrMouseSpinner = new VRMouseSpinner();
   
   this.setCamera = function(camera){
-    self.idleCameraSpinner.setCamera(camera);
+    self.vrMouseSpinner.setCamera(camera);
+  };
+  
+  this.mouseMove = function(dx, dy) {
+    self.vrMouseSpinner.mouseMove(dx, dy);
   };
   
   this.update = function() {
-    if (self.idleCameraSpinner==null)
+    if (self.vrMouseSpinner==null)
       return;
 
-    self.idleCameraSpinner.update();
+    self.vrMouseSpinner.update();
   };
-  
 };

@@ -337,6 +337,7 @@ VRStoryManager = function() {
     var my = ev.movementY || ev.mozMovementY || ev.webkitMovementY || 0;
 //     alert(self.findStoryIndex(story));
     console.log(mx + "," + my);
+    this.controls.mouseMove(my*-0.005,mx*-0.005);
   };
   
   this.animate();
