@@ -246,6 +246,7 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
     // START CAMERA BLOCK
     //------------------
     if ( camera.parent === undefined ) {
+//       alert("AH OH GODS");
       camera.updateMatrixWorld();      
     }
     cameraL.projectionMatrix = fovToProjection( vrCameraRig._eyeFOVL, true, camera.near, camera.far );

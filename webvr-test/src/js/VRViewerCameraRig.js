@@ -2,7 +2,6 @@ THREE.VRViewerCameraRig = function ( parentTransform ) {
   this._topTransform = new THREE.Object3D();
   parentTransform.add(this._topTransform);
   this._hasMono = true;
-  this._hasClassicStereo = false;
   this._scale = 1.0;
   
   //
@@ -31,16 +30,12 @@ THREE.VRViewerCameraRig = function ( parentTransform ) {
     // work out eye translations
     this._transformCameraL.translateX( this._eyeTranslationL.x * this._scale);
     this._transformCameraR.translateX( this._eyeTranslationR.x * this._scale);
-        
-    this._hasClassicStereo = true;
   };
   
   this.update = function (camera) {
-    if (this._hasClassicStereo) {
-      camera.matrixWorld.decompose (this._topTransform.position, this._topTransform.quaternion, this._topTransform.scale);      
-      this._topTransform.updateMatrixWorld();
-      return;
-    }
+    camera.matrixWorld.decompose (this._topTransform.position, this._topTransform.quaternion, this._topTransform.scale);      
+    this._topTransform.updateMatrixWorld();
+    return;
   };
   
 };
