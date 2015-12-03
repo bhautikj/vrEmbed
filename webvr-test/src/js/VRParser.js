@@ -82,6 +82,7 @@ VRStory = function() {
   this.manager = null;
   this.storyManager = null;
   this.stateToggler = new VRStateToggler();
+  this.stateToggler.setVRStory(this);
 
   
   this.sceneList = [];
@@ -130,6 +131,26 @@ VRStory = function() {
 //     self.effect.setRenderMode(THREE.VRViewerEffectModes.TWO_VIEWPORTS);
     self.enterCardboard();
 //     alert("CARDBOARD");
+  };
+  
+  this.setState = function(state) {
+    switch (state) {
+      case VRStates.CARDBOARD:
+        self.cardboardCallback();
+        break;
+      case VRStates.FULLSCREEN:
+        self.fullscreenCallback();
+        break;
+      case VRStates.FULLSCREEN_ANAGLYPH:
+        self.fullscreenAnaglyphCallback();
+        break;
+      case VRStates.WINDOWED:
+        self.windowedCallback();
+        break;
+      case VRStates.WINDOWED_ANAGLYPH:
+        self.windowedAnaglyphCallback();
+        break;
+    }
   };
   
   self.stateToggler.on(VRStates.WINDOWED, self.windowedCallback.bind(this)); 
@@ -335,7 +356,7 @@ THREE.StoryParser = function () {
     }
     
     if (stories.length>0){
-      this.storyManager.setActiveStory(0);
+      this.storyManager.setActiveStory(1);
     }
   };
   
