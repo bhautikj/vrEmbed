@@ -357,7 +357,7 @@ THREE.StoryParser = function () {
     }
     
     if (stories.length>0){
-      this.storyManager.setActiveStory(1);
+      this.storyManager.setActiveStory(0);
     }
   };
   
