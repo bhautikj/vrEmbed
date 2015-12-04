@@ -68,40 +68,6 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
     renderer.setSize( width, height );
   };
 
-  // fullscreen
-
-  var isFullscreen = false;
-
-  var canvas = renderer.domElement;
-  var fullscreenchange = canvas.mozRequestFullScreen ? 'mozfullscreenchange' : 'webkitfullscreenchange';
-
-  document.addEventListener( fullscreenchange, function ( event ) {
-
-  isFullscreen = document.mozFullScreenElement || document.webkitFullscreenElement;
-
-  }, false );
-
-  this.setFullScreen = function ( boolean ) {
-
-    if ( vrHMD === undefined ) return;
-    if ( isFullscreen === boolean ) return;
-
-    if ( canvas.mozRequestFullScreen ) {
-
-      canvas.mozRequestFullScreen( { vrDisplay: vrHMD } );
-
-    } else if ( canvas.webkitRequestFullscreen ) {
-
-      canvas.webkitRequestFullscreen( { vrDisplay: vrHMD } );
-
-    }
-
-  };
-
-  this.isFullscreenMode = function () {
-    return isFullscreen;
-  }
-  
   //
 
   function fovToNDCScaleOffset( fov ) {

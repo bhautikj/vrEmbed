@@ -174,7 +174,7 @@ VRStory = function() {
     var containerHeight = this.parentElement.clientHeight;
     
     if (this.effect != null) { 
-      if (this.effect.isFullscreenMode()) {
+      if (this.isFullScreen) {
         this.camera.aspect = window.innerWidth / window.innerHeight;
         this.camera.updateProjectionMatrix();
         this.effect.setSize(window.innerWidth, window.innerHeight);

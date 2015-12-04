@@ -10,6 +10,7 @@ VRLookControlBase.prototype.updateBase = function() {
     if (this.camera == null){
       return;
     }
+    
 //     alert(this.eulerY);
     var devm = new THREE.Quaternion().setFromEuler(
           new THREE.Euler(this.eulerX, this.eulerY, this.eulerZ));
@@ -31,15 +32,33 @@ VRLookControlBase.prototype.dispose = function() {
 };
 
 
-VRIdleCameraSpinner = function() {
+VRIdleSpinner = function() {
 }
 
-VRIdleCameraSpinner.prototype = new VRLookControlBase();
+VRIdleSpinner.prototype = new VRLookControlBase();
 
-VRIdleCameraSpinner.prototype.update = function(){
+VRIdleSpinner.prototype.update = function(){
   this.setEuler(0, this.eulerY+0.01, 0);
   this.updateBase();
 }
+
+var VRIdleSpinnerFactory = (function () {
+    var instance;
+ 
+    function createInstance() {
+        var object = new VRIdleSpinner();
+        return object;
+    }
+ 
+    return {
+        getInstance: function () {
+            if (!instance) {
+                instance = createInstance();
+            }
+            return instance;
+        }
+    };
+})();
 
 
 VRMouseSpinner = function() {  
@@ -57,13 +76,37 @@ VRMouseSpinner.prototype.update = function(){
 }
 
 
+
+VRLookMode = {
+  MOUSE: 0,
+  IDLESPINNER: 1,
+  GYRO: 2
+}
+
 VRLookController = function() {
   var self = this;
   this.angle = 0;
   this.vrMouseSpinner = new VRMouseSpinner();
+  this.vrIdleSpinner = VRIdleSpinnerFactory.getInstance();
+  this.camera = null;
+  this.mode = VRLookMode.MOUSE;
+  
+  this.setMode = function(mode) {
+    switch(mode){
+      case VRLookMode.MOUSE:
+        self.vrIdleSpinner.setCamera(null);
+        self.vrMouseSpinner.setCamera(self.camera);
+        break;
+      case VRLookMode.IDLESPINNER:
+        self.vrIdleSpinner.setCamera(self.camera);
+        self.vrMouseSpinner.setCamera(null);
+        break;
+    };
+  }
   
   this.setCamera = function(camera){
-    self.vrMouseSpinner.setCamera(camera);
+    self.camera = camera;
+    self.setMode(self.mode);
   };
   
   this.mouseMove = function(dx, dy) {
@@ -71,9 +114,10 @@ VRLookController = function() {
   };
   
   this.update = function() {
-    if (self.vrMouseSpinner==null)
-      return;
-
     self.vrMouseSpinner.update();
+    self.vrIdleSpinner.update();
   };
+  
+  self.setMode(self.mode);
+  
 };
