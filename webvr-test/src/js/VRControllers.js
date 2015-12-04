@@ -48,8 +48,8 @@ VRMouseSpinner = function() {
 VRMouseSpinner.prototype = new VRLookControlBase();
 
 VRMouseSpinner.prototype.mouseMove = function(dX, dY){
-  this.eulerX += dX;
-  this.eulerY += dY;
+  this.eulerX = Math.min(Math.max(-Math.PI / 2, this.eulerX - dY * 0.01), Math.PI / 2);
+  this.eulerY = this.eulerY - dX * 0.01;
 }
 
 VRMouseSpinner.prototype.update = function(){

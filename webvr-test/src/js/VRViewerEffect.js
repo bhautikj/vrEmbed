@@ -44,39 +44,18 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
     renderMode = mode;
   };
   
-  function gotVRDevices( devices ) {
-    for ( var i = 0; i < devices.length; i ++ ) {
-      if ( devices[ i ] instanceof HMDVRDevice ) {
-        vrHMD = devices[ i ];
-        if ( vrHMD.getEyeParameters !== undefined ) {
-          var eyeParamsL = vrHMD.getEyeParameters( 'left' );
-          var eyeParamsR = vrHMD.getEyeParameters( 'right' );
-          vrCameraRig.setupClassicStereoCam( eyeParamsL.eyeTranslation, 
-                                            eyeParamsR.eyeTranslation, 
-                                            eyeParamsL.recommendedFieldOfView, 
-                                            eyeParamsR.recommendedFieldOfView);
-        } else {
-          // TODO: This is an older code path and not spec compliant.
-          // It should be removed at some point in the near future.
-          vrCameraRig.setupClassicStereoCam( vrHMD.getEyeTranslation( 'left' ), 
-                                            vrHMD.getEyeTranslation( 'right' ), 
-                                            vrHMD.getRecommendedEyeFieldOfView( 'left' ), 
-                                            vrHMD.getRecommendedEyeFieldOfView( 'right' ));
-        }
-        break; // We keep the first we encounter
-      }
-    }
-    
-    if ( vrHMD === undefined ) {
-      if ( onError ) onError( 'HMD not available' );
-    }
+  function setupClassicStereoCam( ) {
+    var INTERPUPILLARY_DISTANCE = 0.06;
+    var DEFAULT_MAX_FOV_LEFT_RIGHT = 40.0;
+    vrCameraRig.setupClassicStereoCam( INTERPUPILLARY_DISTANCE*-0.5, 
+                                      INTERPUPILLARY_DISTANCE*0.5, 
+                                      DEFAULT_MAX_FOV_LEFT_RIGHT, 
+                                      DEFAULT_MAX_FOV_LEFT_RIGHT);
   }
   
   vrTopTransform = new THREE.Object3D();
   vrCameraRig = new THREE.VRViewerCameraRig(vrTopTransform);
-  if ( navigator.getVRDevices ) {
-    navigator.getVRDevices().then( gotVRDevices );
-  }
+  //setupClassicStereoCam();
   //
 
   vrCameraRig.scale = 1;
@@ -212,14 +191,6 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
     
     finalRenderMode = renderMode;
     
-    // fallback modes if HMD unavailable
-    if (!vrHMD) {
-      if (renderMode == THREE.VRViewerEffectModes.TWO_VIEWPORTS) {
-        finalRenderMode = THREE.VRViewerEffectModes.ONE_VIEWPORT;
-      }
-    }
-    
-    
     // Render modes:
     // 0  (00): one viewport, no anaglyph
     // 2  (10): two viewports, no anaglyph
@@ -246,7 +217,6 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
     // START CAMERA BLOCK
     //------------------
     if ( camera.parent === undefined ) {
-//       alert("AH OH GODS");
       camera.updateMatrixWorld();      
     }
     cameraL.projectionMatrix = fovToProjection( vrCameraRig._eyeFOVL, true, camera.near, camera.far );
