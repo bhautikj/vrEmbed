@@ -90,6 +90,7 @@ VRStory = function() {
   this.storyManager = null;
   this.stateToggler = new VRStateToggler();
   this.stateToggler.setVRStory(this);
+  this.controls = new VRLookController();
 
   this.isFullScreen = false;
   
@@ -210,10 +211,15 @@ VRStory = function() {
     this.effect = new THREE.VRViewerEffect(this.renderer, 0);
     // effect.setSize(window.innerWidth, window.innerHeight);
     this.effect.setSize(containerWidth, containerHeight);
+    
+    // Apply VR headset positional data to camera.
+    this.controls.setCamera(this.camera);
   };
 
-    // Request animation frame loop function
+  // Request animation frame loop function
   this.animate = function(timestamp) {
+    // Update VR headset position and apply to camera.
+    self.controls.update();
     self.manager.renderer.autoClear = false;
     self.manager.renderer.clear();
 
@@ -250,10 +256,14 @@ VRStory = function() {
       }
     }
     
-    this.mouseMove = function(ev) {
-      self.storyManager.mouseMove(self, ev);
-    };
     
+    this.mouseMove = function(ev) {
+      var mx = ev.movementX || ev.mozMovementX || ev.webkitMovementX || 0;
+      var my = ev.movementY || ev.mozMovementY || ev.webkitMovementY || 0;
+      //console.log(mx + "," + my);
+      self.controls.mouseMove(mx, my);
+    };
+      
     this.parentElement.addEventListener("mousedown", function (ev) {
         this.parentElement.addEventListener("mousemove", self.mouseMove, false);
     }, false);
@@ -282,7 +292,6 @@ VRStoryManager = function() {
   this.activeStory = -1;
   var self = this;
 
-  this.controls = new VRLookController();
     
   this.onFullscreenChange_ = function(e) {
     // If we leave full-screen, also exit VR mode.
@@ -303,8 +312,8 @@ VRStoryManager = function() {
   };  
   
   this.onResize = function() {
-    for(i=0;i<this.storyList.length;i++){
-      this.storyList[i].onResize();
+    for(storyit = 0;storyit < self.storyList.length; storyit++) {
+      self.storyList[storyit].onResize();
     }
   };
   
@@ -312,8 +321,6 @@ VRStoryManager = function() {
     //TODO: teardown story at previous index
     this.activeStory = idx;
     var story = this.storyList[this.activeStory];
-    // Apply VR headset positional data to camera.
-    this.controls.setCamera(story.camera);
   };
   
   this.getActiveStory = function() {
@@ -321,14 +328,10 @@ VRStoryManager = function() {
   };
   
   // central animation loop - this is the event pump that should drive the rest
-  this.animate = function() {
-    // Update VR headset position and apply to camera.
-    self.controls.update();
-    
-    if (self.activeStory >= 0){
-      self.getActiveStory().animate();
+  this.animate = function() {    
+    for(storyit = 0;storyit < self.storyList.length; storyit++) {
+      self.storyList[storyit].animate();
     }
-    
     requestAnimationFrame(self.animate);
   };
   
@@ -340,13 +343,6 @@ VRStoryManager = function() {
       }
     }
     return foundidx;
-  };
-  
-  this.mouseMove = function(story, ev) {
-    var mx = ev.movementX || ev.mozMovementX || ev.webkitMovementX || 0;
-    var my = ev.movementY || ev.mozMovementY || ev.webkitMovementY || 0;
-    //console.log(mx + "," + my);
-    this.controls.mouseMove(mx, my);
   };
   
   this.animate();
@@ -363,10 +359,6 @@ THREE.StoryParser = function () {
       var vrStory = new VRStory();
       vrStory.init(story, this.storyManager);
       this.storyManager.addStory(vrStory);
-    }
-    
-    if (stories.length>0){
-      this.storyManager.setActiveStory(0);
     }
   };
   
