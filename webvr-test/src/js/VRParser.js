@@ -34,6 +34,7 @@ VRScenePhoto = function() {
 VRScene = function() {
   this.sceneElement = null;
   this.renderObjects = [];
+  this.oldScroll = null;
   
   this.init = function(sceneElement) {
     this.sceneElement = sceneElement;
@@ -52,12 +53,27 @@ VRScene = function() {
 VRManager = function(renderer, effect) {
   this.renderer = renderer;
   this.effect = effect;
+  this.fallbackFullscreen = false;
+  this.oldScroll = null;
+  this.fallbackWidth = null;
+  this.fallbackHeight = null;
   
   this.render = function(scene, camera, timestamp) {
     this.effect.render(scene, camera);
   };
   
   this.exitVR = function() {
+    if (this.fallbackFullscreen == true) {
+      var canvas = this.renderer.domElement.parentNode;
+      alert("UNSTITCHING");
+      window.onscroll = this.oldScroll;
+      this.fallbackFullscreen = false;
+      alert("UNSTITISH");
+      canvas.style.width  = this.fallbackWidth;
+      canvas.style.height = this.fallbackHeight;
+      alert("UNSTITCHED");
+    }
+    
     if(document.exitFullscreen) {
       document.exitFullscreen();
     } else if(document.mozCancelFullScreen) {
@@ -69,11 +85,26 @@ VRManager = function(renderer, effect) {
   
   this.enterFullscreen = function() {
     var canvas = this.renderer.domElement.parentNode;
-    if (canvas.mozRequestFullScreen) {
-      canvas.mozRequestFullScreen();
+    if (canvas.requestFullscreen) {
+      this.fallbackFullscreen = false;      
+      canvas.requestFullscreen();
+    } else if (canvas.mozRequestFullScreen) {
+      this.fallbackFullscreen = false;
+      canvas.mozRequestFullScreen();      
     } else if (canvas.webkitRequestFullscreen) {
+      this.fallbackFullscreen = false;
       canvas.webkitRequestFullscreen();
-    }    
+    } else {
+      this.fallbackFullscreen = true;
+      // mobile safari fallback to manual mode
+      this.fallbackHeight = canvas.style.height;
+      this.fallbackWidth = canvas.style.width;
+      canvas.style.width  = window.innerWidth+"px";
+      canvas.style.height = window.innerHeight+"px";
+      canvas.scrollIntoView(true);
+      this.oldScroll = window.onscroll;
+      window.onscroll = function () { canvas.scrollIntoView(true); };
+    }
   }
   
 };
@@ -100,6 +131,9 @@ VRStory = function() {
   this.enterFullscreen = function(){
     this.isFullScreen = true;
     self.manager.enterFullscreen();
+    if (self.manager.fallbackFullscreen == true) {
+      self.onResize();
+    }
   };
   
   this.exitFullscreen = function() {
@@ -179,6 +213,12 @@ VRStory = function() {
         this.camera.aspect = window.innerWidth / window.innerHeight;
         this.camera.updateProjectionMatrix();
         this.effect.setSize(window.innerWidth, window.innerHeight);
+        if (this.manager.fallbackFullscreen == true){
+          var canvas = this.renderer.domElement.parentNode;
+          canvas.style.width  = window.innerWidth+"px";
+          canvas.style.height = window.innerHeight+"px";
+          alert("MUH");
+        }
       }
       else {
         this.camera.aspect = containerWidth/containerHeight;
@@ -297,7 +337,9 @@ VRStoryManager = function() {
     // If we leave full-screen, also exit VR mode.
     if (document.webkitFullscreenElement === null ||
         document.mozFullScreenElement === null) {
-      self.getActiveStory().stateToggler.setState(VRStates.WINDOWED);
+      for(storyit = 0;storyit < self.storyList.length; storyit++) {
+        self.storyList[storyit].stateToggler.setState(VRStates.WINDOWED);
+      }
     }
   };
   
