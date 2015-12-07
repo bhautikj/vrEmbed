@@ -165,19 +165,19 @@ VRStateToggler.prototype.setState = function(state) {
       this.setupButton(this.buttonRight, "", "", false);
       break;
     case VRStates.FULLSCREEN:
-      this.setupButton(this.buttonLeft, this.logoCardboard, 'Immersive mode', true);
+      this.setupButton(this.buttonLeft, "", "", false);
       this.setupButton(this.buttonMiddle, this.logoWindowed, 'Windowed mode', true);
-      this.setupButton(this.buttonRight, this.logoFullscreenAnaglyph, 'Fullscreen Red-blue mode', true);
+      this.setupButton(this.buttonRight, "", "", false);
       break;
     case VRStates.FULLSCREEN_ANAGLYPH:
       this.setupButton(this.buttonLeft, "", "", false);
-      this.setupButton(this.buttonMiddle, "", "", false);
-      this.setupButton(this.buttonRight, this.logoWindowedAnaglyph, 'Windowed mode', true);
+      this.setupButton(this.buttonMiddle, this.logoWindowed, 'Windowed mode', true);
+      this.setupButton(this.buttonRight, "", "", false);
       break;
     case VRStates.WINDOWED:
       this.setupButton(this.buttonLeft, this.logoCardboard, 'Immersive mode', true);
       this.setupButton(this.buttonMiddle, this.logoFullscreen, 'Fullscreen mode', true);
-      this.setupButton(this.buttonRight, this.logoWindowedAnaglyph, 'Windowed Red-blue mode', true);
+      this.setupButton(this.buttonRight, this.logoFullscreenAnaglyph, 'Fullscreen Red-blue mode', true);
       break;
     case VRStates.WINDOWED_ANAGLYPH:
       this.setupButton(this.buttonLeft,  "", "", false);
