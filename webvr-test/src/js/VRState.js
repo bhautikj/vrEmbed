@@ -17,6 +17,8 @@ VRStates = {
 };
 
 VRStateToggler = function() {
+  this.vrStory = null;
+  
   this.createButtons();
   this.buttonLeft.addEventListener('click', this.onClickLeft_.bind(this));
   this.buttonMiddle.addEventListener('click', this.onClickMiddle_.bind(this));
@@ -26,9 +28,9 @@ VRStateToggler = function() {
   this.buttonMiddleClick.prototype = new function () {};
   this.buttonRightClick.prototype = new function () {};
 
-  this.on('clickLeft', this.buttonLeftClick.bind(this));  
-  this.on('clickMiddle', this.buttonMiddleClick.bind(this));  
-  this.on('clickRight', this.buttonRightClick.bind(this));  
+//   this.on('clickLeft', this.buttonLeftClick.bind(this));  
+//   this.on('clickMiddle', this.buttonMiddleClick.bind(this));  
+//   this.on('clickRight', this.buttonRightClick.bind(this));  
   
   this.logoCardboard = VRLogos.logoCardboard;
   this.logoFullscreen = VRLogos.logoFullscreen;
@@ -39,8 +41,12 @@ VRStateToggler = function() {
 
 VRStateToggler.prototype = new Emitter();
 
+VRStateToggler.prototype.setVRStory = function(vrStory) {
+  this.vrStory = vrStory;
+};
+
 VRStateToggler.prototype.createMiddleButton = function() {
-    this.buttonMiddle = document.createElement('img');
+  this.buttonMiddle = document.createElement('img');
   var s = this.buttonMiddle.style;
   s.position = 'absolute';
   s.bottom = '5px';
@@ -121,19 +127,22 @@ VRStateToggler.prototype.createButtons = function() {
 VRStateToggler.prototype.onClickLeft_ = function(e) {
   e.stopPropagation();
   e.preventDefault();
-  this.emit('clickLeft');
+  this.buttonLeftClick();
+//   this.emit('clickLeft');
 }
 
 VRStateToggler.prototype.onClickMiddle_ = function(e) {
   e.stopPropagation();
   e.preventDefault();
-  this.emit('clickMiddle');
+  this.buttonMiddleClick();
+//   this.emit('clickMiddle');
 }
 
 VRStateToggler.prototype.onClickRight_ = function(e) {
   e.stopPropagation();
   e.preventDefault();
-  this.emit('clickRight');
+  this.buttonRightClick();
+//   this.emit('clickRight');
 }
 
 VRStateToggler.prototype.setupButton = function(button, src, title, isVisible) {
@@ -156,19 +165,19 @@ VRStateToggler.prototype.setState = function(state) {
       this.setupButton(this.buttonRight, "", "", false);
       break;
     case VRStates.FULLSCREEN:
-      this.setupButton(this.buttonLeft, this.logoCardboard, 'Immersive mode', true);
+      this.setupButton(this.buttonLeft, "", "", false);
       this.setupButton(this.buttonMiddle, this.logoWindowed, 'Windowed mode', true);
-      this.setupButton(this.buttonRight, this.logoFullscreenAnaglyph, 'Fullscreen Red-blue mode', true);
+      this.setupButton(this.buttonRight, "", "", false);
       break;
     case VRStates.FULLSCREEN_ANAGLYPH:
       this.setupButton(this.buttonLeft, "", "", false);
-      this.setupButton(this.buttonMiddle, "", "", false);
-      this.setupButton(this.buttonRight, this.logoWindowedAnaglyph, 'Windowed mode', true);
+      this.setupButton(this.buttonMiddle, this.logoWindowed, 'Windowed mode', true);
+      this.setupButton(this.buttonRight, "", "", false);
       break;
     case VRStates.WINDOWED:
       this.setupButton(this.buttonLeft, this.logoCardboard, 'Immersive mode', true);
       this.setupButton(this.buttonMiddle, this.logoFullscreen, 'Fullscreen mode', true);
-      this.setupButton(this.buttonRight, this.logoWindowedAnaglyph, 'Windowed Red-blue mode', true);
+      this.setupButton(this.buttonRight, this.logoFullscreenAnaglyph, 'Fullscreen Red-blue mode', true);
       break;
     case VRStates.WINDOWED_ANAGLYPH:
       this.setupButton(this.buttonLeft,  "", "", false);
@@ -177,7 +186,11 @@ VRStateToggler.prototype.setState = function(state) {
       break;
   }
   
-  this.emit(state);
+  if (this.vrStory!= null){
+    this.vrStory.setState(state);
+  } else {    
+    this.emit(state);
+  }
 };
 
 VRStateToggler.prototype.stateChange = function(buttonSrc) {
