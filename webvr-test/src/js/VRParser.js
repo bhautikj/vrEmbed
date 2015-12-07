@@ -65,13 +65,10 @@ VRManager = function(renderer, effect) {
   this.exitVR = function() {
     if (this.fallbackFullscreen == true) {
       var canvas = this.renderer.domElement.parentNode;
-      alert("UNSTITCHING");
       window.onscroll = this.oldScroll;
       this.fallbackFullscreen = false;
-      alert("UNSTITISH");
       canvas.style.width  = this.fallbackWidth;
       canvas.style.height = this.fallbackHeight;
-      alert("UNSTITCHED");
     }
     
     if(document.exitFullscreen) {
@@ -217,7 +214,6 @@ VRStory = function() {
           var canvas = this.renderer.domElement.parentNode;
           canvas.style.width  = window.innerWidth+"px";
           canvas.style.height = window.innerHeight+"px";
-          alert("MUH");
         }
       }
       else {
