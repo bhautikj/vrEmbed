@@ -188,11 +188,11 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
     if ( camera.parent === undefined ) {
       camera.updateMatrixWorld();
     }
+    
     cameraL.projectionMatrix = fovToProjection( vrCameraRig._eyeFOVL, true, camera.near, camera.far );
     cameraR.projectionMatrix = fovToProjection( vrCameraRig._eyeFOVR, true, camera.near, camera.far );
     vrCameraRig.update(camera);
-//     cameraL.updateMatrix();
-//     cameraR.updateMatrix();
+
 
     //------------------
     // END CAMERA BLOCK
