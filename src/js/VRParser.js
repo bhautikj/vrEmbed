@@ -212,6 +212,8 @@ VRStory = function() {
         this.camera.aspect = window.innerWidth / window.innerHeight;
         this.camera.updateProjectionMatrix();
         this.effect.setSize(window.innerWidth, window.innerHeight);
+        console.log(window.innerWidth +','+ window.innerHeight);
+        
         if (this.manager.fallbackFullscreen == true){
           var canvas = this.renderer.domElement.parentNode;
           canvas.style.width  = window.innerWidth+"px";
@@ -223,6 +225,8 @@ VRStory = function() {
         this.camera.updateProjectionMatrix();
         this.effect.setSize(containerWidth, containerHeight);
       }
+    } else {
+      console.log("SHOULD NEVER BE HERE");
     }
   };
   

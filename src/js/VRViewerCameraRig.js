@@ -35,6 +35,14 @@ THREE.VRViewerCameraRig = function ( parentTransform ) {
   this.update = function (camera) {
     camera.matrixWorld.decompose (this._topTransform.position, this._topTransform.quaternion, this._topTransform.scale);      
     this._topTransform.updateMatrixWorld();
+//         your_object.position = start_position;
+//     your_object.quaternion = quaternion;
+//     your_object.updateMatrix();
+//     or
+//         your_object.matrix.setRotationFromQuaternion(quaternion);
+//     your_object.matrix.setPosition(start_position);
+//     your_object.matrixAutoUpdate = false;
+    
     return;
   };
 };
