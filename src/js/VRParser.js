@@ -1,5 +1,7 @@
-require('./VRState.js');
-require('./TextureDescription.js');
+var VRStates = require('./VRStates.js');
+var VRStateToggler = require('./VRStateToggler.js');
+var VRTextureDescription = require('./VRTextureDescription.js');
+var VRLookController = require('./VRControllers.js');
 
 VRScenePhoto = function() {
   this.scenePhoto = null;
@@ -12,7 +14,7 @@ VRScenePhoto = function() {
   
   this.init = function(scenePhoto) {
     this.scenePhoto = scenePhoto;
-    this.textureDescription = new TextureDescription();
+    this.textureDescription = new VRTextureDescription();
     this.textureDescription.textureSource = this.scenePhoto.getAttribute("textureSource");    
     if (this.textureDescription.textureSource  == null){
       //TODO: throw exception

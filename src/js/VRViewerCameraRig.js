@@ -37,5 +37,6 @@ THREE.VRViewerCameraRig = function ( parentTransform ) {
     this._topTransform.updateMatrixWorld();
     return;
   };
-  
 };
+
+module.exports = THREE.VRViewerCameraRig;

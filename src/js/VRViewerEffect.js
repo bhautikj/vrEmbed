@@ -11,7 +11,8 @@
  *
  */
 
-require('./ShaderPassAnaglyph.js');
+var VRShaderPassAnaglyph = require('./VRShaderPassAnaglyph.js');
+var VRViewerCameraRig = require('./VRViewerCameraRig.js');
 
 // 0  (00): one viewport, no anaglyph
 // 2  (10): two viewports, no anaglyph
@@ -29,7 +30,7 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
   var vrTopTransform;
   var renderMode = mode;
   var vrStereographicProjectionQuads = [];
-  var shaderPassAnaglyph = new ShaderPassAnaglyph(AnaglyphProjection);
+  var shaderPassAnaglyph = new VRShaderPassAnaglyph();
   var textureDesc = [];
   
   this.setStereographicProjection = function (textureDescription) {

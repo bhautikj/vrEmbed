@@ -1,4 +1,4 @@
-TextureDescription = function () {
+VRTextureDescription = function () {
   this.textureSource = "";
   this.metaSource = "";
   this.isStereo = false;
@@ -12,3 +12,5 @@ TextureDescription = function () {
   this.U_l = new THREE.Vector2(0.0, 0.0);
   this.V_l = new THREE.Vector2(1.0, 1.0);
 };
+
+module.exports = VRTextureDescription;
