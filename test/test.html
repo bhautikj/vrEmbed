@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Getting Started with Three.js</title>    
+    <script src="three.min.js"></script>
+    <script>
+    
+    THREE.VRViewerCameraRig = function (leftCam, centerCam, rightCam) {
+      this._topTransform = new THREE.Object3D();
+      this._hasMono = true;
+      this._scale = 1.0;
+      this._centerCam = centerCam;
+      this._leftCam = leftCam;
+      this._rightCam = rightCam;
+      this.scene = null;
+      
+      //
+      // Classic stereo camera setup: parent transform with two child cameras
+      //
+      this._transformCameraL = new THREE.Object3D();
+      this._transformCameraR = new THREE.Object3D(); 
+      this._topTransform.add(this._transformCameraL);
+      this._topTransform.add(this._transformCameraR);
+
+      this._eyeTranslationL = 0;  
+      this._eyeFOVL = 0; 
+      this._eyeTranslationR = 0;  
+      this._eyeFOVR = 0; 
+
+      this._topTransform.matrix.identity();
+      this._transformCameraL.matrix.identity();
+      this._transformCameraR.matrix.identity();
+        
+      this.connectCameras = function() {
+        this._topTransform.add(this._centerCam);
+        this._transformCameraL.add(this._leftCam);
+        this._transformCameraR.add(this._rightCam);
+      };
+        
+      this.disconnectCameras = function() {
+        this._topTransform.remove(this._centerCam);
+        this._transformCameraL.remove(this._leftCam);
+        this._transformCameraR.remove(this._rightCam);
+      };
+      
+      this.init = function(scene) {
+        this.scene = scene;
+        this.connectCameras();
+        this.scene.add (this._topTransform);
+      };
+
+      this.dispose = function() {
+        this.disconnectCameras();
+        this.scene.remove (this._topTransform);
+      };
+      
+      this.setupClassicStereoCam = function( eyeTranslationL, eyeTranslationR, eyeFOVL, eyeFOVR ) {
+        // setup camera params
+        this._eyeTranslationL = eyeTranslationL;
+        this._eyeTranslationR = eyeTranslationR;
+        this._eyeFOVL = eyeFOVL;
+        this._eyeFOVR = eyeFOVR;
+        
+        // work out eye translations
+        this._transformCameraL.translateX( this._eyeTranslationL * this._scale);
+        this._transformCameraR.translateX( this._eyeTranslationR * this._scale);
+        this._transformCameraL.updateMatrix();
+        this._transformCameraR.updateMatrix();
+      };
+      
+      this.setRotation = function (quat) {
+        this._topTransform.quaternion.copy( quat );  
+        this._topTransform.updateMatrix();
+      };
+      
+      this.setPosition = function (pos) {
+        this._topTransform.position.copy( pos );  
+        this._topTransform.updateMatrix();      
+      };
+    };
+    
+    
+    
+    
+    // =================================================================================================================
+    // =================================================================================================================
+    // =================================================================================================================
+    // =================================================================================================================
+    // =================================================================================================================
+
+    if ( !window.requestAnimationFrame ) {
+
+      window.requestAnimationFrame = ( function() {
+
+        return window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        window.oRequestAnimationFrame ||
+        window.msRequestAnimationFrame ||
+        function( /* function FrameRequestCallback */ callback, /* DOMElement Element */ element ) {
+
+          return window.setTimeout( callback, 1000 / 60 );
+
+        };
+
+      } )();
+
+    }
+
+    if ( !window.cancelRequestAnimationFrame ) {
+
+      window.cancelRequestAnimationFrame = ( function() {
+
+        return window.webkitCancelRequestAnimationFrame ||
+        window.mozCancelRequestAnimationFrame ||
+        window.oCancelRequestAnimationFrame ||
+        window.msCancelRequestAnimationFrame ||
+        clearTimeout
+
+      } )();
+
+    }
+
+    window.onload = function() {
+
+        var renderer = new THREE.WebGLRenderer();
+        renderer.setSize( 800, 600 );
+        document.body.appendChild( renderer.domElement );
+
+        var scene = new THREE.Scene();
+
+        function createCamera(scene) {
+          var camera = new THREE.PerspectiveCamera(
+              35,             // Field of view
+              800 / 600,      // Aspect ratio
+              0.1,            // Near plane
+              10000           // Far plane
+          );
+          camera.position.set( 0, 0, 0 );
+          camera.lookAt( scene.position );
+          return camera;
+        }
+        
+        var centerCam = createCamera(scene);
+        var rightCam = createCamera(scene);
+        var leftCam = createCamera(scene);
+        var cameraRig = new THREE.VRViewerCameraRig(leftCam, centerCam, rightCam);
+        cameraRig.init(scene);
+        cameraRig.setupClassicStereoCam( -4.0, 4.0, 40, 40 )
+
+        var geometry = new THREE.BoxGeometry( 5, 5, 5 );
+        var material = new THREE.MeshLambertMaterial( { color: 0xFF0000 } );
+        var mesh = new THREE.Mesh( geometry, material );
+        mesh.position.set(0, 0, -20);
+        mesh.rotation.set(30,60,45);
+        scene.add( mesh );
+
+        var light = new THREE.PointLight( 0xFFFF00 );
+        light.position.set( 10, 0, 10 );
+        scene.add( light );
+
+        
+        eulerX = 0.0;
+        eulerY = 0.0;
+        eulerZ = 0.0;
+        
+        function animloop() {
+          eulerZ += 0.01;
+          var devm = new THREE.Quaternion().setFromEuler(
+                new THREE.Euler(eulerX, eulerY, eulerZ));
+          cameraRig.setRotation(devm);
+          
+          renderer.setClearColor( 0xdddddd, 1);
+          renderer.render( scene, rightCam );
+          requestAnimationFrame(animloop);
+        };
+        
+        animloop();
+
+    };
+    </script>
+</head>
+<body></body>
+</html>

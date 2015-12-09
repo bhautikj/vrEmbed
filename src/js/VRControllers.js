@@ -13,6 +13,7 @@ VRLookControlBase.prototype.updateBase = function(cameraObject) {
           new THREE.Euler(this.eulerX, this.eulerY, this.eulerZ));
 //     console.log(this.eulerX +","+ this.eulerY +","+ this.eulerZ);
     cameraObject.quaternion.copy( devm );
+    cameraObject.updateMatrix();
 };
 
 VRLookControlBase.prototype.setEuler = function(x,y,z) {
