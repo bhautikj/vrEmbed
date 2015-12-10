@@ -1,6 +1,6 @@
 // external deps
-// var THREE = require('./js-ext/three.js');
-// console.log('THREE revision: ', THREE.REVISION);
+var THREE = require('./js-ext/three.js');
+console.log('THREE revision: ', THREE.REVISION);
 
 // local deps
 require('./js/VRTextureDescription.js');

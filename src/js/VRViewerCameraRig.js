@@ -1,3 +1,5 @@
+var THREE = require('../js-ext/three.js');
+
 var VRStates = require('./VRStates.js');
 
 THREE.VRViewerCameraRig = function () {

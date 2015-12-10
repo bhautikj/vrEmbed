@@ -1,3 +1,5 @@
+var THREE = require('../js-ext/three.js');
+
 // 0  (00): one viewport, no anaglyph
 // 2  (10): two viewports, no anaglyph
 // 1  (01): one viewport, anaglyph

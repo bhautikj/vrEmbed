@@ -1,3 +1,5 @@
+var THREE = require('../js-ext/three.js');
+
 var Util = require('./VRutil.js');
 var util = new Util();
 

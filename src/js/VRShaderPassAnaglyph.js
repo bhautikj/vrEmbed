@@ -1,3 +1,5 @@
+var THREE = require('../js-ext/three.js');
+
 AnaglyphProjection = {
   
   uniforms: {

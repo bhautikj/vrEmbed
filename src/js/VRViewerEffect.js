@@ -11,6 +11,8 @@
  *
  */
 
+var THREE = require('../js-ext/three.js');
+
 var VRShaderPassAnaglyph = require('./VRShaderPassAnaglyph.js');
 var VRViewerCameraRig = require('./VRViewerCameraRig.js');
 var VRStereographicProjectionQuad = require('./VRStereographicProjectionQuad.js');

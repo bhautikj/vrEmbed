@@ -1,3 +1,5 @@
+var THREE = require('../js-ext/three.js');
+
 var VRStates = require('./VRStates.js');
 var VRStateToggler = require('./VRStateToggler.js');
 var VRTextureDescription = require('./VRTextureDescription.js');
