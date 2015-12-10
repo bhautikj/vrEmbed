@@ -1,3 +1,5 @@
+var THREE = require('../js-ext/three.js');
+
 AnaglyphProjection = {
   
   uniforms: {
@@ -30,7 +32,9 @@ AnaglyphProjection = {
 };
 
 // based on http://threejs.org/examples/js/effects/AnaglyphEffect.js
-ShaderPassAnaglyph = function(shader) {
+THREE.VRShaderPassAnaglyph = function() {
+  var shader = AnaglyphProjection;
+
   this.uniforms = THREE.UniformsUtils.clone(shader.uniforms);
 
   this.material = new THREE.ShaderMaterial({
@@ -68,10 +72,6 @@ ShaderPassAnaglyph = function(shader) {
   this.copyMat = function () {
     this.quad.material = this.material;
   };
-  
-  // render loop prototype
-  //this.copyMat();
-  //renderer.render( this.scene, cameraL, this.anaglyphTargetL, true );
-  //renderer.render( this.scene, cameraR, this.anaglyphTargetR, true );
-  //renderer.render( this._scene, this._camera );
 };
+
+module.exports = THREE.VRShaderPassAnaglyph;

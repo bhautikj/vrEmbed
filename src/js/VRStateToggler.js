@@ -1,21 +1,13 @@
-require('./VRIcons.js');
 
+var VRStates = require('./VRStates.js');
+var VRLogos = require('./VRIcons.js');
 var Emitter = require('../js-ext/emitter.js');
+
 
 /**
  * VR state machine:
  * 
  */
-
-VRStates = {
-  INACTIVE: 0,
-  WINDOWED: 1,
-  WINDOWED_ANAGLYPH: 2,
-  FULLSCREEN: 3,
-  FULLSCREEN_ANAGLYPH: 4,
-  CARDBOARD: 5
-};
-
 VRStateToggler = function() {
   this.vrStory = null;
   
@@ -223,6 +215,6 @@ VRStateToggler.prototype.buttonRightClick = function() {
   this.stateChange(this.buttonRight.src);
 };
 
-// modules.export = VRStateToggler;
+module.exports = VRStateToggler;
 
 

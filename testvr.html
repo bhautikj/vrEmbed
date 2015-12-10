@@ -65,7 +65,7 @@ div.stretchy-wrapper > div {
 <div class="stretchy-wrapper"><div>
   <story>
     <scene>
-      <photo textureSource = "stereograph_a.jpg"
+      <photo textureSource = "img/stereograph_a.jpg"
              metaSource = "https://www.flickr.com/photos/127906254@N06/17787986691/"
              isStereo = true
              sphereFOV = "90, 90"
@@ -74,7 +74,7 @@ div.stretchy-wrapper > div {
              V_l = "0.493, 1.0"
              U_r = "0.497, 0.0"
              V_r = "0.990, 1.0"></photo>
-      <photo textureSource = "stereograph_b.jpg"
+      <photo textureSource = "img/stereograph_b.jpg"
              metaSource = "https://www.flickr.com/photos/library_of_congress/3253742804/"
              isStereo = true
              sphereFOV = "90, 90"
@@ -84,7 +84,7 @@ div.stretchy-wrapper > div {
              U_r = "0.5, 0.0"
              V_r = "1.0, 1.0"></photo>
     </scene>
-  </story>
+  </story><script async src="bin/vr-bundle.js" charset="utf-8"></script>
 </div></div>
 
 <div>
@@ -99,7 +99,7 @@ div.stretchy-wrapper > div {
 <div class="stretchy-wrapper"><div>
   <story>
     <scene>
-      <photo textureSource = "stereograph_b.jpg"
+      <photo textureSource = "img/stereograph_b.jpg"
              metaSource = "https://www.flickr.com/photos/127906254@N06/17787986691/"
              isStereo = true
              sphereFOV = "90, 90"
@@ -108,7 +108,7 @@ div.stretchy-wrapper > div {
              V_l = "0.493, 1.0"
              U_r = "0.497, 0.0"
              V_r = "0.990, 1.0"></photo>
-      <photo textureSource = "stereograph_a.jpg"
+      <photo textureSource = "img/stereograph_a.jpg"
              metaSource = "https://www.flickr.com/photos/library_of_congress/3253742804/"
              isStereo = true
              sphereFOV = "90, 90"
@@ -118,7 +118,7 @@ div.stretchy-wrapper > div {
              U_r = "0.5, 0.0"
              V_r = "1.0, 1.0"></photo>
     </scene>
-  </story>
+  </story><script async src="bin/vr-bundle.js" charset="utf-8"></script>
 </div></div>
 
 <div>
@@ -140,23 +140,5 @@ div.stretchy-wrapper > div {
 
 </body>
 
-
-
-<script src="bin/three.min.js"></script>
-<!--
-  vr-bundle.js handles stereo camera setup and rendering.
-  -->
-<script src="bin/vr-bundle.js"></script>
-
-<script>
-  var storyParser = new THREE.StoryParser();
-  storyParser.parseDocXML(document.body);
-  
-  function onResize() {
-    storyParser.onResize();
-  }
-  
-  window.addEventListener('resize', onResize, false);
-</script>
 
 </html>
