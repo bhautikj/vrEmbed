@@ -84,7 +84,7 @@ div.stretchy-wrapper > div {
              U_r = "0.5, 0.0"
              V_r = "1.0, 1.0"></photo>
     </scene>
-  </story>
+  </story><script async src="bin/three.min.js"></script><script async src="bin/vr-bundle.js" charset="utf-8"></script>
 </div></div>
 
 <div>
@@ -118,7 +118,7 @@ div.stretchy-wrapper > div {
              U_r = "0.5, 0.0"
              V_r = "1.0, 1.0"></photo>
     </scene>
-  </story>
+  </story><script async src="bin/vr-bundle.js" charset="utf-8"></script>
 </div></div>
 
 <div>
@@ -140,23 +140,5 @@ div.stretchy-wrapper > div {
 
 </body>
 
-
-
-<script src="bin/three.min.js"></script>
-<!--
-  vr-bundle.js handles stereo camera setup and rendering.
-  -->
-<script src="bin/vr-bundle.js"></script>
-
-<script>
-  var storyParser = new THREE.StoryParser();
-  storyParser.parseDocXML(document.body);
-  
-  function onResize() {
-    storyParser.onResize();
-  }
-  
-  window.addEventListener('resize', onResize, false);
-</script>
 
 </html>

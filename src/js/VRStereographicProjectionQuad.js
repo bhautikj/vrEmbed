@@ -200,3 +200,5 @@ THREE.VRStereographicProjectionQuad = function () {
     renderer.render(this.shaderPassQuad.scene, this.shaderPassQuad.camera, tex, false);
   };
 };
+
+module.exports = THREE.VRStereographicProjectionQuad;

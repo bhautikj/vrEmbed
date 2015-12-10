@@ -3,6 +3,8 @@ var VRStateToggler = require('./VRStateToggler.js');
 var VRTextureDescription = require('./VRTextureDescription.js');
 var VRLookController = require('./VRControllers.js');
 var VRCameraRig = require('./VRViewerCameraRig.js');
+var VRViewerEffect = require('./VRViewerEffect.js');
+var VRViewerEffectModes = require('./VRViewerEffectModes.js');
 
 VRScenePhoto = function() {
   this.scenePhoto = null;
@@ -262,7 +264,7 @@ VRStory = function() {
     this.setupClassicStereoCam(this.vrCameraRig);
 
     // Apply VR stereo rendering to renderer.
-    this.effect = new THREE.VRViewerEffect(this.renderer, 0);
+    this.effect = new VRViewerEffect(this.renderer, 0);
     // effect.setSize(window.innerWidth, window.innerHeight);
     this.effect.setSize(containerWidth, containerHeight);
     
@@ -423,4 +425,4 @@ THREE.StoryParser = function () {
   };
 };
 
-
+module.exports = THREE.StoryParser;

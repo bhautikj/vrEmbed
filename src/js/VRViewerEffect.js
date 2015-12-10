@@ -13,16 +13,8 @@
 
 var VRShaderPassAnaglyph = require('./VRShaderPassAnaglyph.js');
 var VRViewerCameraRig = require('./VRViewerCameraRig.js');
-
-// 0  (00): one viewport, no anaglyph
-// 2  (10): two viewports, no anaglyph
-// 1  (01): one viewport, anaglyph
-
-THREE.VRViewerEffectModes = {
-  ONE_VIEWPORT: 0,
-  ANAGLYPH: 1,
-  TWO_VIEWPORTS: 2
-};
+var VRStereographicProjectionQuad = require('./VRStereographicProjectionQuad.js');
+var VRViewerEffectModes = require('./VRViewerEffectModes.js');
 
 THREE.VRViewerEffect = function ( renderer, mode, onError ) {
   var vrHMD;
@@ -32,7 +24,7 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
   var textureDesc = [];
   
   this.setStereographicProjection = function (textureDescription) {
-    var vrStereographicProjectionQuad = new THREE.VRStereographicProjectionQuad();
+    var vrStereographicProjectionQuad = new VRStereographicProjectionQuad();
     vrStereographicProjectionQuad.setupProjection(textureDescription, 
                                                   window.innerWidth, 
                                                   window.innerHeight);
@@ -227,6 +219,7 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
   }; 
 };
 
+module.exports = THREE.VRViewerEffect;
 
 
 
