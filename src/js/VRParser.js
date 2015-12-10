@@ -2,6 +2,7 @@ var VRStates = require('./VRStates.js');
 var VRStateToggler = require('./VRStateToggler.js');
 var VRTextureDescription = require('./VRTextureDescription.js');
 var VRLookController = require('./VRControllers.js');
+var VRCameraRig = require('./VRViewerCameraRig.js');
 
 VRScenePhoto = function() {
   this.scenePhoto = null;
@@ -59,9 +60,9 @@ VRManager = function(renderer, effect) {
   this.oldScroll = null;
   this.fallbackWidth = null;
   this.fallbackHeight = null;
-  
-  this.render = function(scene, camera, timestamp) {
-    this.effect.render(scene, camera);
+
+  this.render = function(scene, cameraRig, timestamp) {
+    this.effect.render(scene, cameraRig);
   };
   
   this.exitVR = function() {
@@ -114,13 +115,14 @@ VRStory = function() {
   this.parentElement = null;
   this.renderer = null;
   this.scene = null;
-  this.camera = null;
+  this.vrCameraRig = null;
   this.effect = null;
   this.manager = null;
   this.storyManager = null;
   this.stateToggler = new VRStateToggler();
   this.stateToggler.setVRStory(this);
   this.controls = new VRLookController();
+  this.state = VRStates.INACTIVE;
 
   this.isFullScreen = false;
   
@@ -177,7 +179,32 @@ VRStory = function() {
     console.log("CARDBOARD CALLBACK");
   };
   
+  this.onResize = function() {
+    var containerWidth = this.parentElement.clientWidth;
+    var containerHeight = this.parentElement.clientHeight;
+    
+    if (this.effect != null) { 
+      if (this.isFullScreen) {
+        this.vrCameraRig.resizeCamera(window.innerWidth, window.innerHeight, this.state);
+        this.effect.setSize(window.innerWidth, window.innerHeight);
+        
+        if (this.manager.fallbackFullscreen == true){
+          var canvas = this.renderer.domElement.parentNode;
+          canvas.style.width  = window.innerWidth+"px";
+          canvas.style.height = window.innerHeight+"px";
+        }
+      }
+      else {
+        this.vrCameraRig.resizeCamera(containerWidth, containerHeight, this.state);
+        this.effect.setSize(containerWidth, containerHeight);
+      }
+    } else {
+      console.log("SHOULD NEVER BE HERE");
+    }
+  };
+  
   this.setState = function(state) {
+    self.state = state;
     switch (state) {
       case VRStates.CARDBOARD:
         self.cardboardCallback();
@@ -195,6 +222,8 @@ VRStory = function() {
         self.windowedAnaglyphCallback();
         break;
     }
+    
+    this.onResize();
   };
   
   self.stateToggler.on(VRStates.WINDOWED, self.windowedCallback.bind(this)); 
@@ -202,33 +231,15 @@ VRStory = function() {
   self.stateToggler.on(VRStates.FULLSCREEN, self.fullscreenCallback.bind(this)); 
   self.stateToggler.on(VRStates.FULLSCREEN_ANAGLYPH, self.fullscreenAnaglyphCallback.bind(this)); 
   self.stateToggler.on(VRStates.CARDBOARD, self.cardboardCallback.bind(this)); 
-    
-  this.onResize = function() {
-    var containerWidth = this.parentElement.clientWidth;
-    var containerHeight = this.parentElement.clientHeight;
-    
-    if (this.effect != null) { 
-      if (this.isFullScreen) {
-        this.camera.aspect = window.innerWidth / window.innerHeight;
-        this.camera.updateProjectionMatrix();
-        this.effect.setSize(window.innerWidth, window.innerHeight);
-        console.log(window.innerWidth +','+ window.innerHeight);
-        
-        if (this.manager.fallbackFullscreen == true){
-          var canvas = this.renderer.domElement.parentNode;
-          canvas.style.width  = window.innerWidth+"px";
-          canvas.style.height = window.innerHeight+"px";
-        }
-      }
-      else {
-        this.camera.aspect = containerWidth/containerHeight;
-        this.camera.updateProjectionMatrix();
-        this.effect.setSize(containerWidth, containerHeight);
-      }
-    } else {
-      console.log("SHOULD NEVER BE HERE");
-    }
-  };
+  
+  this.setupClassicStereoCam = function( vrCameraRig ) {
+    var INTERPUPILLARY_DISTANCE = 0.06;
+    var DEFAULT_MAX_FOV_LEFT_RIGHT = 40.0;
+    vrCameraRig.setupClassicStereoCam( INTERPUPILLARY_DISTANCE*-0.5, 
+                                      INTERPUPILLARY_DISTANCE*0.5, 
+                                      DEFAULT_MAX_FOV_LEFT_RIGHT, 
+                                      DEFAULT_MAX_FOV_LEFT_RIGHT);
+  }
   
   this.setupSceneRenderer = function() {
     var containerWidth = this.parentElement.clientWidth;
@@ -246,8 +257,9 @@ VRStory = function() {
     // Create a three.js scene.
     this.scene = new THREE.Scene();
 
-    // Create a three.js camera.
-    this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.3, 10000);
+    this.vrCameraRig = new THREE.VRViewerCameraRig();
+    this.vrCameraRig.init(this.scene);
+    this.setupClassicStereoCam(this.vrCameraRig);
 
     // Apply VR stereo rendering to renderer.
     this.effect = new THREE.VRViewerEffect(this.renderer, 0);
@@ -255,7 +267,7 @@ VRStory = function() {
     this.effect.setSize(containerWidth, containerHeight);
     
     // Apply VR headset positional data to camera.
-    this.controls.setCamera(this.camera);
+    this.controls.setCamera(this.vrCameraRig._topTransform);
   };
 
   // Request animation frame loop function
@@ -265,7 +277,7 @@ VRStory = function() {
     self.manager.renderer.autoClear = false;
     self.manager.renderer.clear();
 
-    self.manager.render(self.scene, self.camera, timestamp);
+    self.manager.render(self.scene, self.vrCameraRig, timestamp);
 
     //   uniforms.iGlobalTime.value += 0.001;    
 //     alert(timestamp);

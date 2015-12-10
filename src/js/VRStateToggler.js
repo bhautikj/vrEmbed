@@ -169,8 +169,7 @@ VRStateToggler.prototype.setState = function(state) {
     case VRStates.WINDOWED:
       this.setupButton(this.buttonLeft, this.logoCardboard, 'Immersive mode', true);
       this.setupButton(this.buttonMiddle, this.logoFullscreen, 'Fullscreen mode', true);
-//       this.setupButton(this.buttonRight, this.logoFullscreenAnaglyph, 'Fullscreen Red-blue mode', true);
-      this.setupButton(this.buttonRight, this.logoWindowedAnaglyph, 'Fullscreen Red-blue mode', true);
+      this.setupButton(this.buttonRight, this.logoFullscreenAnaglyph, 'Fullscreen Red-blue mode', true);
       break;
     case VRStates.WINDOWED_ANAGLYPH:
       this.setupButton(this.buttonLeft,  "", "", false);

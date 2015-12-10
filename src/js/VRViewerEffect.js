@@ -26,8 +26,6 @@ THREE.VRViewerEffectModes = {
 
 THREE.VRViewerEffect = function ( renderer, mode, onError ) {
   var vrHMD;
-  var vrCameraRig;
-  var vrTopTransform;
   var renderMode = mode;
   var vrStereographicProjectionQuads = [];
   var shaderPassAnaglyph = new VRShaderPassAnaglyph();
@@ -45,22 +43,6 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
     renderMode = mode;
   };
   
-  function setupClassicStereoCam( ) {
-    var INTERPUPILLARY_DISTANCE = 0.06;
-    var DEFAULT_MAX_FOV_LEFT_RIGHT = 40.0;
-    vrCameraRig.setupClassicStereoCam( INTERPUPILLARY_DISTANCE*-0.5, 
-                                      INTERPUPILLARY_DISTANCE*0.5, 
-                                      DEFAULT_MAX_FOV_LEFT_RIGHT, 
-                                      DEFAULT_MAX_FOV_LEFT_RIGHT);
-  }
-  
-  vrTopTransform = new THREE.Object3D();
-  vrCameraRig = new THREE.VRViewerCameraRig(vrTopTransform);
-  //setupClassicStereoCam();
-  //
-
-  vrCameraRig.scale = 1;
-
   this.setSize = function( width, height ) {
     for (i=0; i<vrStereographicProjectionQuads.length; i++){
       vrStereographicProjectionQuads[i].resizeViewport(width, height);
@@ -141,17 +123,10 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
 
     return fovPortToProjection( fovPort, rightHanded, zNear, zFar );
 
-  }
-
-  var cameraL = new THREE.PerspectiveCamera();
-  var cameraR = new THREE.PerspectiveCamera();
-  
-  vrCameraRig._transformCameraL.add(cameraL);
-  vrCameraRig._transformCameraR.add(cameraR);
-  
+  }  
   
   // render
-  this.render = function ( scene, camera ) {
+  this.render = function ( scene, cameraRig ) {
     if ( Array.isArray( scene ) ) {
       onError( 'Multiple scenes not supported in VRViewerEffect' );
     }
@@ -168,15 +143,13 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
       // Regular render mode if not HMD
       if ( Array.isArray( scene ) ) scene = scene[ 0 ];
       // render pano
-      // TODO: only run if mode says yes
-      vrCameraRig.update(camera);
       for (i=0; i<vrStereographicProjectionQuads.length; i++){
         vrStereographicProjectionQuads[i].setLeft();
-        vrStereographicProjectionQuads[i].preRender(camera);
+        vrStereographicProjectionQuads[i].preRender(cameraRig._centerCam);
         vrStereographicProjectionQuads[i].render(renderer);
       }
       
-      renderer.render( scene, camera );
+      renderer.render( scene, cameraRig._centerCam );
       return;
     }
     
@@ -185,15 +158,8 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
     //------------------
     // START CAMERA BLOCK
     //------------------
-    if ( camera.parent === undefined ) {
-      camera.updateMatrixWorld();
-    }
-    
-    cameraL.projectionMatrix = fovToProjection( vrCameraRig._eyeFOVL, true, camera.near, camera.far );
-    cameraR.projectionMatrix = fovToProjection( vrCameraRig._eyeFOVR, true, camera.near, camera.far );
-    vrCameraRig.update(camera);
-
-
+    cameraRig._leftCam.projectionMatrix = fovToProjection( cameraRig._eyeFOVL, true, cameraRig._centerCam.near, cameraRig._centerCam.far );
+    cameraRig._rightCam.projectionMatrix = fovToProjection( cameraRig._eyeFOVR, true, cameraRig._centerCam.near, cameraRig._centerCam.far );
     //------------------
     // END CAMERA BLOCK
     //------------------
@@ -214,38 +180,38 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
       
       for (i=0; i<vrStereographicProjectionQuads.length; i++){
         vrStereographicProjectionQuads[i].setLeft();
-        vrStereographicProjectionQuads[i].preRender(cameraL);
+        vrStereographicProjectionQuads[i].preRender(cameraRig._leftCam);
         vrStereographicProjectionQuads[i].render(renderer);
       }
       
-      renderer.render( scene, cameraL );
+      renderer.render( scene, cameraRig._leftCam );
 
       // render right eye
       renderer.setViewport( size.width, 0, size.width, size.height );
       renderer.setScissor( size.width, 0, size.width, size.height );
       for (i=0; i<vrStereographicProjectionQuads.length; i++){
         vrStereographicProjectionQuads[i].setRight();
-        vrStereographicProjectionQuads[i].preRender(cameraR);
+        vrStereographicProjectionQuads[i].preRender(cameraRig._rightCam);
         vrStereographicProjectionQuads[i].render(renderer);
       }
-      renderer.render( scene, cameraR );
+      renderer.render( scene, cameraRig._rightCam );
       renderer.enableScissorTest( false );
     } else if (finalRenderMode == THREE.VRViewerEffectModes.ANAGLYPH) {
       renderer.clear();
       for (i=0; i<vrStereographicProjectionQuads.length; i++){
         vrStereographicProjectionQuads[i].setLeft();
-        vrStereographicProjectionQuads[i].preRender(cameraL);
+        vrStereographicProjectionQuads[i].preRender(cameraRig._leftCam);
         vrStereographicProjectionQuads[i].renderToTex(renderer, shaderPassAnaglyph.anaglyphTargetL);
       }
-      renderer.render( scene, cameraL, shaderPassAnaglyph.anaglyphTargetL );
+      renderer.render( scene, cameraRig._leftCam, shaderPassAnaglyph.anaglyphTargetL );
 
       // render right eye
       for (i=0; i<vrStereographicProjectionQuads.length; i++){
         vrStereographicProjectionQuads[i].setRight();
-        vrStereographicProjectionQuads[i].preRender(cameraR);
+        vrStereographicProjectionQuads[i].preRender(cameraRig._rightCam);
         vrStereographicProjectionQuads[i].renderToTex(renderer, shaderPassAnaglyph.anaglyphTargetR);
       }
-      renderer.render( scene, cameraR, shaderPassAnaglyph.anaglyphTargetR  );
+      renderer.render( scene, cameraRig._rightCam, shaderPassAnaglyph.anaglyphTargetR  );
       shaderPassAnaglyph.copyMat();
       
       renderer.render( shaderPassAnaglyph.scene, shaderPassAnaglyph.camera );
