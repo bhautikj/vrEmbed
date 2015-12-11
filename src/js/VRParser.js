@@ -17,42 +17,102 @@ VRScenePhoto = function() {
     return new THREE.Vector2(arr[0].trim(), arr[1].trim());
   };
   
+  this.parseSphereParams = function(str) {
+    var arr = str.split(" ");
+    this.textureDescription.sphereFOV = new THREE.Vector2(arr[0].trim(), arr[1].trim());
+    this.textureDescription.sphereCentre = new THREE.Vector2(arr[2].trim(), arr[3].trim());
+  };
+  
+  this.parseTexParams = function(str) {
+    var arr = str.split(" ");
+    this.textureDescription.U_l = new THREE.Vector2(arr[0].trim(), arr[1].trim());
+    this.textureDescription.V_l = new THREE.Vector2(arr[2].trim(), arr[3].trim());
+    this.textureDescription.U_r = new THREE.Vector2(arr[4].trim(), arr[5].trim());
+    this.textureDescription.V_r = new THREE.Vector2(arr[6].trim(), arr[7].trim());
+  };
+  
   this.init = function(scenePhoto) {
     this.scenePhoto = scenePhoto;
-    this.textureDescription = new VRTextureDescription();
-    this.textureDescription.textureSource = this.scenePhoto.getAttribute("textureSource");    
+    this.textureDescription = new VRTextureDescription();    
+    this.textureDescription.textureSource = this.scenePhoto.getAttribute("src");    
     if (this.textureDescription.textureSource  == null){
       //TODO: throw exception
       this.textureDescription = null;
       return;
     }
-        
-    this.textureDescription.metaSource = this.scenePhoto.getAttribute("metaSource");
+    this.textureDescription.metaSource = "";
     this.textureDescription.isStereo = this.scenePhoto.getAttribute("isStereo");
-    this.textureDescription.sphereFOV = this.toVec2(this.scenePhoto.getAttribute("sphereFOV"));
-    this.textureDescription.sphereCentre = this.toVec2(this.scenePhoto.getAttribute("sphereCentre"));
-    this.textureDescription.U_l = this.toVec2(this.scenePhoto.getAttribute("U_l"));
-    this.textureDescription.V_l = this.toVec2(this.scenePhoto.getAttribute("V_l"));
-    this.textureDescription.U_r = this.toVec2(this.scenePhoto.getAttribute("U_r"));
-    this.textureDescription.V_r = this.toVec2(this.scenePhoto.getAttribute("V_r"));
+    this.parseSphereParams(this.scenePhoto.getAttribute("sphereParams"));
+    this.parseTexParams(this.scenePhoto.getAttribute("texParams"));
   };
 };
+
+VRSceneImg = function() {
+  this.sceneImg = null;
+  this.textureDescription = null;
+
+  this.toVec2 = function(str) {
+    var arr = str.split(",");
+    return new THREE.Vector2(arr[0].trim(), arr[1].trim());
+  };
+  
+  this.parseSphereParams = function(str) {
+    var arr = str.split(" ");
+    this.textureDescription.sphereFOV = new THREE.Vector2(arr[0].trim(), arr[1].trim());
+    this.textureDescription.sphereCentre = new THREE.Vector2(arr[2].trim(), arr[3].trim());
+  };
+  
+  this.parseTexParams = function(str) {
+    var arr = str.split(" ");
+    this.textureDescription.U_l = new THREE.Vector2(arr[0].trim(), arr[1].trim());
+    this.textureDescription.V_l = new THREE.Vector2(arr[2].trim(), arr[3].trim());
+    this.textureDescription.U_r = new THREE.Vector2(arr[4].trim(), arr[5].trim());
+    this.textureDescription.V_r = new THREE.Vector2(arr[6].trim(), arr[7].trim());
+  };
+  
+  this.init = function(sceneImg) {
+    this.sceneImg = sceneImg;
+    this.textureDescription = new VRTextureDescription();
+    
+    this.textureDescription.textureSource = this.sceneImg.getAttribute("src");    
+    if (this.textureDescription.textureSource  == null){
+      //TODO: throw exception
+      this.textureDescription = null;
+      return;
+    }
+    this.textureDescription.metaSource = "";
+    this.textureDescription.isStereo = this.sceneImg.getAttribute("isStereo");
+    this.parseSphereParams(this.sceneImg.getAttribute("sphereParams"));
+    this.parseTexParams(this.sceneImg.getAttribute("texParams"));
+  };
+};
+
 
 VRScene = function() {
   this.sceneElement = null;
   this.renderObjects = [];
   this.oldScroll = null;
   
+  this.parseChildNode = function(elm) {
+    if(elm.nodeName=="PHOTO"){
+      var vrScenePhoto = new VRScenePhoto();
+      vrScenePhoto.init(elm);
+      this.renderObjects.push(vrScenePhoto);
+    }
+    
+    var elements = elm.children;
+    for(elementit = 0;elementit < elements.length; elementit++) {
+      var elm = elements[elementit];
+      this.parseChildNode(elm);
+    }
+  }
+  
   this.init = function(sceneElement) {
     this.sceneElement = sceneElement;
     var elements=sceneElement.children;
     for(elementit = 0;elementit < elements.length; elementit++) {
       var elm = elements[elementit];
-      if(elm.nodeName=="PHOTO"){
-        var vrScenePhoto = new VRScenePhoto();
-        vrScenePhoto.init(elm);
-        this.renderObjects.push(vrScenePhoto);
-      }
+      this.parseChildNode(elm);
     }
   };
 };
@@ -286,21 +346,12 @@ VRStory = function() {
     //   uniforms.iGlobalTime.value += 0.001;    
 //     alert(timestamp);
   };
-  
+      
   this.init = function(storyElement, storyManager) {
     this.storyElement = storyElement;
     this.storyManager = storyManager;
     this.parentElement = this.storyElement.parentNode;
-    
-    var scenes=storyElement.children;
-    for(sceneit = 0;sceneit < scenes.length; sceneit++) {
-      var scene = scenes[sceneit];
-      if(scene.nodeName=="SCENE"){
-        var vrScene = new VRScene();
-        vrScene.init(scene);
-        this.sceneList.push(vrScene);  
-      }
-    }
+
     
     this.setupSceneRenderer();
         
@@ -342,6 +393,22 @@ VRStory = function() {
 
   };
   
+  this.initVrEmbedPhoto = function(vrEmbedPhoto, storyManager) {
+  };
+  
+  this.initStory = function(storyElement, storyManager) {
+    var scenes=storyElement.children;
+    for(sceneit = 0;sceneit < scenes.length; sceneit++) {
+      var scene = scenes[sceneit];
+      if(scene.nodeName=="SCENE"){
+        var vrScene = new VRScene();
+        vrScene.init(scene);
+        this.sceneList.push(vrScene);  
+      }
+    }
+    this.init(storyElement, storyManager);
+  }
+
 };
 
 VRStoryManager = function() {
@@ -377,16 +444,6 @@ VRStoryManager = function() {
     }
   };
   
-  this.setActiveStory = function(idx) {
-    //TODO: teardown story at previous index
-    this.activeStory = idx;
-    var story = this.storyList[this.activeStory];
-  };
-  
-  this.getActiveStory = function() {
-    return this.storyList[this.activeStory];
-  };
-  
   // central animation loop - this is the event pump that should drive the rest
   this.animate = function() {    
     for(storyit = 0;storyit < self.storyList.length; storyit++) {
@@ -413,13 +470,23 @@ THREE.StoryParser = function () {
   this.storyManager = new VRStoryManager();
 
   this.parseDocXML = function(topElement) {
+    // parse full-fledged stories
     var stories=topElement.getElementsByTagName("story");
     for(storyit = 0;storyit < stories.length; storyit++) {
       var story = stories[storyit];
       var vrStory = new VRStory();
-      vrStory.init(story, this.storyManager);
+      vrStory.initStory(story, this.storyManager);
       this.storyManager.addStory(vrStory);
     }
+    
+//     // parse vr embed photos
+//     var vrEmbedPhotos=topElement.getElementsByTagName("vrEmbedPhoto");
+//     for(vrEmbedPhotosIt = 0;vrEmbedPhotosIt < vrEmbedPhotos.length; vrEmbedPhotosIt++) {
+//       var vrEmbedPhoto = vrEmbedPhotos[vrEmbedPhotosIt];
+//       var vrStory = new VRStory();
+//       vrStory.initVrEmbedPhoto(vrEmbedPhoto, this.storyManager);
+//       this.storyManager.addStory(vrStory);
+//     }
   };
   
   this.onResize = function() {

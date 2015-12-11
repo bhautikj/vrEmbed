@@ -59,30 +59,12 @@ div.stretchy-wrapper > div {
 </head>
 
 <body>
-<!-- <div id="log"></div> -->
-<!-- <div id="vrcanvas"></div> -->
 
 <div class="stretchy-wrapper"><div>
   <story>
     <scene>
-      <photo textureSource = "img/stereograph_a.jpg"
-             metaSource = "https://www.flickr.com/photos/127906254@N06/17787986691/"
-             isStereo = true
-             sphereFOV = "90, 90"
-             sphereCentre = "0.0, 0.0"
-             U_l = "0.0, 0.0"
-             V_l = "0.493, 1.0"
-             U_r = "0.497, 0.0"
-             V_r = "0.990, 1.0"></photo>
-      <photo textureSource = "img/stereograph_b.jpg"
-             metaSource = "https://www.flickr.com/photos/library_of_congress/3253742804/"
-             isStereo = true
-             sphereFOV = "90, 90"
-             sphereCentre = "0.0, 120.0"
-             U_l = "0.0, 0.0"
-             V_l = "0.5, 1.0"
-             U_r = "0.5, 0.0"
-             V_r = "1.0, 1.0"></photo>
+      <photo src="img/stereograph_a.jpg" isStereo="true" sphereParams="90 90 0 0" texParams="0.0 0.0 0.493 1.0 0.497 0.0 0.990 1.0"/>
+      <photo src="img/stereograph_b.jpg" isStereo="true" sphereParams="90 90 0 90" texParams="0.0 0.0 0.5 1.0 0.5 0.0 1.0 1.0"/>
     </scene>
   </story><script async src="bin/vr-bundle.js" charset="utf-8"></script>
 </div></div>
@@ -99,24 +81,8 @@ div.stretchy-wrapper > div {
 <div class="stretchy-wrapper"><div>
   <story>
     <scene>
-      <photo textureSource = "img/stereograph_b.jpg"
-             metaSource = "https://www.flickr.com/photos/127906254@N06/17787986691/"
-             isStereo = true
-             sphereFOV = "90, 90"
-             sphereCentre = "0.0, 0.0"
-             U_l = "0.0, 0.0"
-             V_l = "0.493, 1.0"
-             U_r = "0.497, 0.0"
-             V_r = "0.990, 1.0"></photo>
-      <photo textureSource = "img/stereograph_a.jpg"
-             metaSource = "https://www.flickr.com/photos/library_of_congress/3253742804/"
-             isStereo = true
-             sphereFOV = "90, 90"
-             sphereCentre = "0.0, 120.0"
-             U_l = "0.0, 0.0"
-             V_l = "0.5, 1.0"
-             U_r = "0.5, 0.0"
-             V_r = "1.0, 1.0"></photo>
+      <photo src="img/stereograph_a.jpg" isStereo="true" sphereParams="90 90 0 0" texParams="0.0 0.0 0.493 1.0 0.497 0.0 0.990 1.0"/>
+      <photo src="img/stereograph_b.jpg" isStereo="true" sphereParams="90 90 45 0" texParams="0.0 0.0 0.5 1.0 0.5 0.0 1.0 1.0"/>
     </scene>
   </story><script async src="bin/vr-bundle.js" charset="utf-8"></script>
 </div></div>
@@ -137,6 +103,10 @@ div.stretchy-wrapper > div {
 <li>C</li>
 </ol>
 </div>
+
+<div class="stretchy-wrapper"><div>
+<vrEmbedPhoto src="img/stereograph_b.jpg" isStereo="true" sphereParams="90 90 0 0" texParams="0.0 0.0 0.493 1.0 0.497 0.0 0.990 1.0"/> 
+</div></div>
 
 </body>
 
