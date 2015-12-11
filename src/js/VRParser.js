@@ -81,9 +81,10 @@ VRSceneImg = function() {
       return;
     }
     this.textureDescription.metaSource = "";
-    this.textureDescription.isStereo = this.sceneImg.getAttribute("isStereo");
     this.parseSphereParams(this.sceneImg.getAttribute("sphereParams"));
-    this.parseTexParams(this.sceneImg.getAttribute("texParams"));
+    this.textureDescription.isStereo = this.sceneImg.getAttribute("isStereo");
+    if (this.textureDescription.isStereo == "true")
+      this.parseTexParams(this.sceneImg.getAttribute("texParams"));
   };
 };
 

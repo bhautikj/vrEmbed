@@ -6,9 +6,9 @@ THREE.VRViewerCameraRig = function () {
   this._topTransform = new THREE.Object3D();
   this._hasMono = true;
   this._scale = 1.0;
-  this._centerCam = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.3, 10000);
-  this._leftCam = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.3, 10000);
-  this._rightCam = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.3, 10000);
+  this._centerCam = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.3, 10000);
+  this._leftCam = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.3, 10000);
+  this._rightCam = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.3, 10000);
   this.scene = null;
   
   //

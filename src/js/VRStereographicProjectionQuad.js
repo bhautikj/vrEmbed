@@ -49,7 +49,7 @@ var StereographicProjection = {
     //TODO: passthrough FOV
     //FOV: scale = 1.->FOV of ~120
     //FOV: scale = .5 -> FOV of ~60
-    '  float scale = .625;',
+    '  float scale = .33;',
       
     '  vec2 rads = vec2(PI * 2. , PI) ;',
     '  vec2 pnt = (uv - .5) * vec2(scale, scale * aspect);',
