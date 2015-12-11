@@ -106,7 +106,7 @@ VRScene = function() {
       this.parseChildNode(elm);
     }
   }
-  
+    
   this.init = function(sceneElement) {
     this.sceneElement = sceneElement;
     var elements=sceneElement.children;
@@ -115,6 +115,12 @@ VRScene = function() {
       this.parseChildNode(elm);
     }
   };
+  
+  this.initVrEmbedPhoto = function(vrEmbedPhoto) {
+    var vrEmbedPhotoElm = new VRSceneImg();
+    vrEmbedPhotoElm.init(vrEmbedPhoto);
+    this.renderObjects.push(vrEmbedPhotoElm);
+  }
 };
 
 VRManager = function(renderer, effect) {
@@ -395,6 +401,9 @@ VRStory = function() {
   
   this.initVrEmbedPhoto = function(vrEmbedPhoto, storyManager) {
     var vrScene = new VRScene();
+    vrScene.initVrEmbedPhoto(vrEmbedPhoto);
+    this.sceneList.push(vrScene);
+    this.init(vrEmbedPhoto, storyManager);
   };
   
   this.initStory = function(storyElement, storyManager) {
@@ -480,14 +489,14 @@ THREE.StoryParser = function () {
       this.storyManager.addStory(vrStory);
     }
     
-//     // parse vr embed photos
-//     var vrEmbedPhotos=topElement.getElementsByTagName("vrEmbedPhoto");
-//     for(vrEmbedPhotosIt = 0;vrEmbedPhotosIt < vrEmbedPhotos.length; vrEmbedPhotosIt++) {
-//       var vrEmbedPhoto = vrEmbedPhotos[vrEmbedPhotosIt];
-//       var vrStory = new VRStory();
-//       vrStory.initVrEmbedPhoto(vrEmbedPhoto, this.storyManager);
-//       this.storyManager.addStory(vrStory);
-//     }
+    // parse vr embed photos
+    var vrEmbedPhotos=topElement.getElementsByTagName("vrEmbedPhoto");
+    for(vrEmbedPhotosIt = 0;vrEmbedPhotosIt < vrEmbedPhotos.length; vrEmbedPhotosIt++) {
+      var vrEmbedPhoto = vrEmbedPhotos[vrEmbedPhotosIt];
+      var vrStory = new VRStory();
+      vrStory.initVrEmbedPhoto(vrEmbedPhoto, this.storyManager);
+      this.storyManager.addStory(vrStory);
+    }
   };
   
   this.onResize = function() {
