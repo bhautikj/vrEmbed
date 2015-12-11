@@ -394,6 +394,7 @@ VRStory = function() {
   };
   
   this.initVrEmbedPhoto = function(vrEmbedPhoto, storyManager) {
+    var vrScene = new VRScene();
   };
   
   this.initStory = function(storyElement, storyManager) {
