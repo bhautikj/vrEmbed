@@ -19,7 +19,8 @@ var StereographicProjection = {
     transform: { type: "m4", value: new THREE.Matrix4() },
     sphereToTexU: { type: "v2", value: new THREE.Vector2() },
     sphereToTexV: { type: "v2", value: new THREE.Vector2() },
-    texToUV: { type: "m3", value: new THREE.Matrix3() }
+    texToUV: { type: "m3", value: new THREE.Matrix3() },
+    hFOV: {type: "f", value: 75.0 }
   },
   
   vertexShader: [
@@ -38,6 +39,7 @@ var StereographicProjection = {
     'uniform vec2 sphereToTexU;',
     'uniform vec2 sphereToTexV;',
     'uniform mat3 texToUV;',
+    'uniform float hFOV;',
 
     'varying vec2 vUv;',
 
@@ -46,10 +48,9 @@ var StereographicProjection = {
     '  vec2 uv = vUv;',
       
     '  float aspect = imageResolution.y/imageResolution.x;',
-    //TODO: passthrough FOV
     //FOV: scale = 1.->FOV of ~120
     //FOV: scale = .5 -> FOV of ~60
-    '  float scale = .33;',
+    '  float scale = hFOV/120.0;',
       
     '  vec2 rads = vec2(PI * 2. , PI) ;',
     '  vec2 pnt = (uv - .5) * vec2(scale, scale * aspect);',
@@ -130,6 +131,10 @@ THREE.VRStereographicProjectionQuad = function () {
     this.shaderPassQuad.uniforms.imageResolution.value.x = resX;
     this.shaderPassQuad.uniforms.imageResolution.value.y = resY;
   };
+  
+  this.setHFOV = function (hFOV) {
+    this.shaderPassQuad.uniforms.hFOV.value = hFOV;
+  }
   
   this.setupProjection = function (textureDescription, initialResolutionX, initialResolutionY) {
     if ( this.shaderPassQuad.uniforms.textureSource.value )

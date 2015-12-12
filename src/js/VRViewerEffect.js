@@ -164,10 +164,15 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
     // render camera setup
 
     // two viewport render
-    if ( finalRenderMode == THREE.VRViewerEffectModes.TWO_VIEWPORTS ) {
+    if ( finalRenderMode == THREE.VRViewerEffectModes.TWO_VIEWPORTS ) {      
       renderer.enableScissorTest( true );
       renderer.clear();
       var size = renderer.getSize();
+      
+      for (i=0; i<vrStereographicProjectionQuads.length; i++){
+        vrStereographicProjectionQuads[i].resizeViewport(size.width/2, size.height);
+      }
+
       size.width /= 2;      // render left eye
       renderer.setViewport( 0, 0, size.width, size.height );
       renderer.setScissor( 0, 0, size.width, size.height );
