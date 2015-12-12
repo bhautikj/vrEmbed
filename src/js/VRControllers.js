@@ -12,8 +12,7 @@ function VRLookControlBase() {
 
 VRLookControlBase.prototype.updateBase = function(cameraObject) { 
     var devm = new THREE.Quaternion().setFromEuler(
-          new THREE.Euler(this.eulerX, this.eulerY, this.eulerZ));
-//     console.log(this.eulerX +","+ this.eulerY +","+ this.eulerZ);
+          new THREE.Euler(this.eulerX, this.eulerY, this.eulerZ, 'YXZ'));
     cameraObject.quaternion.copy( devm );
     cameraObject.updateMatrix();
 };
@@ -61,8 +60,6 @@ VRMouseSpinner.prototype = new VRLookControlBase();
 VRMouseSpinner.prototype.mouseMove = function(dX, dY){
   this.eulerX = Math.min(Math.max(-Math.PI / 2, this.eulerX - dY * 0.01), Math.PI / 2);
   this.eulerY = this.eulerY - dX * 0.01;
-  
-//   console.log(dX + "," + dY);
 }
 
 VRMouseSpinner.prototype.update = function(cameraObject){
