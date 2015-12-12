@@ -48,7 +48,6 @@ var StereographicProjection = {
     '  vec2 uv = vUv;',
       
     '  float aspect = imageResolution.y/imageResolution.x;',
-    //TODO: passthrough FOV
     //FOV: scale = 1.->FOV of ~120
     //FOV: scale = .5 -> FOV of ~60
     '  float scale = hFOV/120.0;',
