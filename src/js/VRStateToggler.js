@@ -156,37 +156,6 @@ VRStateToggler.prototype.configureStereo = function(isStereo) {
 };
 
 VRStateToggler.prototype.setState = function(state) {
-<<<<<<< HEAD
-  switch (state) {
-    case VRStates.CARDBOARD:
-      this.setupButton(this.buttonLeft, "", "", false);
-      this.setupButton(this.buttonMiddle, this.logoWindowed, 'Windowed mode', true);
-      this.setupButton(this.buttonRight, "", "", false);
-      break;
-    case VRStates.FULLSCREEN:
-      this.setupButton(this.buttonLeft, "", "", false);
-      this.setupButton(this.buttonMiddle, this.logoWindowed, 'Windowed mode', true);
-      this.setupButton(this.buttonRight, "", "", false);
-      break;
-    case VRStates.FULLSCREEN_ANAGLYPH:
-      this.setupButton(this.buttonLeft, "", "", false);
-      this.setupButton(this.buttonMiddle, this.logoWindowed, 'Windowed mode', true);
-      this.setupButton(this.buttonRight, "", "", false);
-      break;
-    case VRStates.WINDOWED:
-      this.setupButton(this.buttonLeft, this.logoCardboard, 'Immersive mode', true);
-      this.setupButton(this.buttonMiddle, this.logoFullscreen, 'Fullscreen mode', true);
-      this.setupButton(this.buttonRight, this.logoAnaglyph, 'Fullscreen Red-blue mode', true);
-      break;
-    case VRStates.WINDOWED_ANAGLYPH:
-      this.setupButton(this.buttonLeft,  "", "", false);
-      this.setupButton(this.buttonMiddle, this.logoWindowed, 'Windowed mode', true);
-      this.setupButton(this.buttonRight, this.logoAnaglyph, 'Fullscreen mode', true);
-      break;
-  }
-  
-=======
->>>>>>> origin/master
   if (this.vrStory!= null){
     var stateChangeWorked = this.vrStory.setState(state);
     if (stateChangeWorked == false)
@@ -215,12 +184,12 @@ VRStateToggler.prototype.setState = function(state) {
       case VRStates.WINDOWED:
         this.setupButton(this.buttonLeft, this.logoCardboard, 'Immersive mode', true);
         this.setupButton(this.buttonMiddle, this.logoFullscreen, 'Fullscreen mode', true);
-        this.setupButton(this.buttonRight, this.logoFullscreenAnaglyph, 'Fullscreen Red-blue mode', true);
+        this.setupButton(this.buttonRight, this.logoAnaglyph, 'Fullscreen Red-blue mode', true);
         break;
       case VRStates.WINDOWED_ANAGLYPH:
         this.setupButton(this.buttonLeft,  "", "", false);
         this.setupButton(this.buttonMiddle, this.logoWindowed, 'Windowed mode', true);
-        this.setupButton(this.buttonRight, this.logoFullscreenAnaglyph, 'Fullscreen mode', true);
+        this.setupButton(this.buttonRight, this.logoAnaglyph, 'Fullscreen mode', true);
         break;
     }
   } else {
@@ -248,7 +217,7 @@ VRStateToggler.prototype.setState = function(state) {
       case VRStates.WINDOWED_ANAGLYPH:
         this.setupButton(this.buttonLeft,  "", "", false);
         this.setupButton(this.buttonMiddle, this.logoWindowed, 'Windowed mode', true);
-        this.setupButton(this.buttonRight, this.logoFullscreenAnaglyph, 'Fullscreen mode', true);
+        this.setupButton(this.buttonRight, this.logoAnaglyph, 'Fullscreen mode', true);
         break;
     }
   }
