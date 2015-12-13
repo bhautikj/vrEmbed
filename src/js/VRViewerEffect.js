@@ -121,10 +121,6 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
   
   // render
   this.render = function ( scene, cameraRig ) {
-    if ( Array.isArray( scene ) ) {
-      onError( 'Multiple scenes not supported in VRViewerEffect' );
-    }
-    
     finalRenderMode = renderMode;
     
     // Render modes:
@@ -134,8 +130,6 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
     
     
     if (finalRenderMode == THREE.VRViewerEffectModes.ONE_VIEWPORT) {
-      // Regular render mode if not HMD
-      if ( Array.isArray( scene ) ) scene = scene[ 0 ];
       // render pano
       for (i=0; i<vrStereographicProjectionQuads.length; i++){
         vrStereographicProjectionQuads[i].setLeft();

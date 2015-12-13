@@ -194,7 +194,9 @@ VRStory = function() {
   this.stateToggler.setVRStory(this);
   this.controls = new VRLookController();
   this.state = VRStates.INACTIVE;
-
+  this.lastVisibleCheck = 0;
+  this.isVisible = true;
+  
   this.isFullScreen = false;
   
   this.sceneList = [];
@@ -341,8 +343,31 @@ VRStory = function() {
     this.controls.setCamera(this.vrCameraRig._topTransform);
   };
 
+  this.isInViewport = function() {
+      var rect = this.storyElement.getBoundingClientRect();
+      var windowHeight = (window.innerHeight || document.documentElement.clientHeight);
+      var windowWidth = (window.innerWidth || document.documentElement.clientWidth);
+
+      // http://stackoverflow.com/questions/325933/determine-whether-two-date-ranges-overlap
+      var vertInView = (rect.top <= windowHeight) && ((rect.top + rect.height) >= 0);
+      var horInView = (rect.left <= windowWidth) && ((rect.left + rect.width) >= 0);
+
+      return (vertInView && horInView);
+  }
+
+  this.checkVisible = function() {
+    var now = Date.now();
+    if (now - this.lastVisibleCheck < 100) 
+      return; // ~4Hz
+    this.isVisible = this.isInViewport();
+  }
+    
   // Request animation frame loop function
-  this.animate = function(timestamp) {
+  this.animate = function(timestamp) {    
+    this.checkVisible();
+    if (this.isVisible == false)
+      return;
+
     // Update VR headset position and apply to camera.
     self.controls.update();
     self.manager.renderer.autoClear = false;
@@ -358,7 +383,6 @@ VRStory = function() {
     this.storyElement = storyElement;
     this.storyManager = storyManager;
     this.parentElement = this.storyElement.parentNode;
-
     
     this.setupSceneRenderer();
         
@@ -457,10 +481,10 @@ VRStoryManager = function() {
   
   // central animation loop - this is the event pump that should drive the rest
   this.animate = function() {    
+    requestAnimationFrame(self.animate);
     for(storyit = 0;storyit < self.storyList.length; storyit++) {
       self.storyList[storyit].animate();
     }
-    requestAnimationFrame(self.animate);
   };
   
   this.findStoryIndex = function(story) {
