@@ -100,14 +100,14 @@ VRScene = function() {
   this.sceneElement = null;
   this.renderObjects = [];
   this.oldScroll = null;
-  this.hasStereo = false;
+  this.isStereo = false;
   
   this.parseChildNode = function(elm) {
     if(elm.nodeName=="PHOTO"){
       var vrScenePhoto = new VRScenePhoto();
       vrScenePhoto.init(elm);
       if (vrScenePhoto.isStereo == true)
-        this.hasStereo = true;
+        this.isStereo = true;
       this.renderObjects.push(vrScenePhoto);
     }
     
@@ -131,7 +131,7 @@ VRScene = function() {
     var vrEmbedPhotoElm = new VRSceneImg();
     vrEmbedPhotoElm.init(vrEmbedPhoto);
     if (vrEmbedPhotoElm.isStereo == true)
-      this.hasStereo = true;    
+      this.isStereo = true;    
     this.renderObjects.push(vrEmbedPhotoElm);
   }
 };
@@ -214,6 +214,7 @@ VRStory = function() {
   this.state = VRStates.INACTIVE;
   this.lastVisibleCheck = 0;
   this.isVisible = true;
+  this.isStereo = false;
   
   this.isFullScreen = false;
   
@@ -418,6 +419,8 @@ VRStory = function() {
     this.storyManager = storyManager;
     this.parentElement = this.storyElement.parentNode;
     
+    this.stateToggler.configureStereo(this.isStereo);
+    
     this.setupSceneRenderer();
         
     for(sceneit = 0;sceneit<this.sceneList.length; sceneit++) {
@@ -445,7 +448,7 @@ VRStory = function() {
     this.parentElement.addEventListener("mouseup", function (ev) {
         this.parentElement.removeEventListener("mousemove", self.mouseMove, false);
     }, false);
-
+    
     this.storyElement.appendChild(this.stateToggler.buttonLeft);
     this.storyElement.appendChild(this.stateToggler.buttonMiddle);
     this.storyElement.appendChild(this.stateToggler.buttonRight);
@@ -461,6 +464,8 @@ VRStory = function() {
   this.initVrEmbedPhoto = function(vrEmbedPhoto, storyManager) {
     var vrScene = new VRScene();
     vrScene.initVrEmbedPhoto(vrEmbedPhoto);
+    if (vrScene.isStereo)
+      this.isStereo = true;
     this.sceneList.push(vrScene);
     this.init(vrEmbedPhoto, storyManager);
   };
@@ -472,6 +477,8 @@ VRStory = function() {
       if(scene.nodeName=="SCENE"){
         var vrScene = new VRScene();
         vrScene.init(scene);
+        if (vrScene.isStereo)
+          this.isStereo = true;
         this.sceneList.push(vrScene);  
       }
     }
