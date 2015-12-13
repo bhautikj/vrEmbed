@@ -11,6 +11,7 @@ var VRViewerEffectModes = require('./VRViewerEffectModes.js');
 VRScenePhoto = function() {
   this.scenePhoto = null;
   this.textureDescription = null;
+  this.isStereo = false;
 
   this.toVec2 = function(str) {
     var arr = str.split(",");
@@ -42,6 +43,9 @@ VRScenePhoto = function() {
     }
     this.textureDescription.metaSource = "";
     this.textureDescription.isStereo = this.scenePhoto.getAttribute("isStereo");
+    if (this.textureDescription.isStereo.toLowerCase()=="true")
+      this.isStereo = true;
+    
     this.parseSphereParams(this.scenePhoto.getAttribute("sphereParams"));
     this.parseTexParams(this.scenePhoto.getAttribute("texParams"));
   };
@@ -50,6 +54,7 @@ VRScenePhoto = function() {
 VRSceneImg = function() {
   this.sceneImg = null;
   this.textureDescription = null;
+  this.isStereo = false;
 
   this.toVec2 = function(str) {
     var arr = str.split(",");
@@ -83,6 +88,8 @@ VRSceneImg = function() {
     this.textureDescription.metaSource = "";
     this.parseSphereParams(this.sceneImg.getAttribute("sphereParams"));
     this.textureDescription.isStereo = this.sceneImg.getAttribute("isStereo");
+    if (this.textureDescription.isStereo.toLowerCase()=="true")
+      this.isStereo = true;    
     if (this.textureDescription.isStereo == "true")
       this.parseTexParams(this.sceneImg.getAttribute("texParams"));
   };
@@ -93,11 +100,14 @@ VRScene = function() {
   this.sceneElement = null;
   this.renderObjects = [];
   this.oldScroll = null;
+  this.isStereo = false;
   
   this.parseChildNode = function(elm) {
     if(elm.nodeName=="PHOTO"){
       var vrScenePhoto = new VRScenePhoto();
       vrScenePhoto.init(elm);
+      if (vrScenePhoto.isStereo == true)
+        this.isStereo = true;
       this.renderObjects.push(vrScenePhoto);
     }
     
@@ -120,6 +130,8 @@ VRScene = function() {
   this.initVrEmbedPhoto = function(vrEmbedPhoto) {
     var vrEmbedPhotoElm = new VRSceneImg();
     vrEmbedPhotoElm.init(vrEmbedPhoto);
+    if (vrEmbedPhotoElm.isStereo == true)
+      this.isStereo = true;    
     this.renderObjects.push(vrEmbedPhotoElm);
   }
 };
@@ -166,8 +178,13 @@ VRManager = function(renderer, effect) {
       this.fallbackFullscreen = false;
       canvas.webkitRequestFullscreen();
     } else {
+      if (Math.abs(window.orientation) != 90){
+        alert("Please rotate device to landscape mode before activating");
+        return false;
+      }      
       this.fallbackFullscreen = true;
       // mobile safari fallback to manual mode
+      canvas.style.zDepth = 900;
       this.fallbackHeight = canvas.style.height;
       this.fallbackWidth = canvas.style.width;
       canvas.style.width  = window.innerWidth+"px";
@@ -176,6 +193,7 @@ VRManager = function(renderer, effect) {
       this.oldScroll = window.onscroll;
       window.onscroll = function () { canvas.scrollIntoView(true); };
     }
+    return true;
   }
   
 };
@@ -194,15 +212,20 @@ VRStory = function() {
   this.stateToggler.setVRStory(this);
   this.controls = new VRLookController();
   this.state = VRStates.INACTIVE;
-
+  this.lastVisibleCheck = 0;
+  this.isVisible = true;
+  this.isStereo = false;
+  
   this.isFullScreen = false;
   
   this.sceneList = [];
 
   
   this.enterFullscreen = function(){
+    if (self.manager.enterFullscreen() == false)
+      return false;
+    
     this.isFullScreen = true;
-    self.manager.enterFullscreen();
     if (self.manager.fallbackFullscreen == true) {
       self.onResize();
     }
@@ -220,34 +243,43 @@ VRStory = function() {
   };
     
   this.windowedCallback = function() {
-    if (self.effect != null)
-      self.effect.setRenderMode(THREE.VRViewerEffectModes.ONE_VIEWPORT);
+    if (self.effect == null) 
+      return false;
+    self.effect.setRenderMode(THREE.VRViewerEffectModes.ONE_VIEWPORT);
     self.exitFullscreen();
     console.log("WINDOWED CALLBACK");
+    return true;
   };
   
   this.windowedAnaglyphCallback = function() {
     self.effect.setRenderMode(THREE.VRViewerEffectModes.ANAGLYPH);
     self.exitFullscreen();
     console.log("WINDOWED ANAGLYPH CALLBACK");
+    return true;
   };
 
   this.fullscreenCallback = function() {
+    if (self.enterFullscreen() == false)
+      return false;
     self.effect.setRenderMode(THREE.VRViewerEffectModes.ONE_VIEWPORT);
-    self.enterFullscreen();
     console.log("FULLSCREEN CALLBACK");
+    return true;
   };
   
   this.fullscreenAnaglyphCallback = function() {
+    if (self.enterFullscreen() == false)
+      return false;
     self.effect.setRenderMode(THREE.VRViewerEffectModes.ANAGLYPH);
-    this.enterFullscreen();
     console.log("FULLSCREEN ANAGLYPH CALLBACK");
+    return true;
   };
   
   this.cardboardCallback = function() {
+    if (self.enterFullscreen() == false)
+      return false;
     self.effect.setRenderMode(THREE.VRViewerEffectModes.TWO_VIEWPORTS);
-    this.enterFullscreen();
     console.log("CARDBOARD CALLBACK");
+    return true;
   };
   
   this.onResize = function() {
@@ -275,33 +307,37 @@ VRStory = function() {
   };
   
   this.setState = function(state) {
+    var oldState = self.state;
+    
     self.state = state;
+    var success = false;
     switch (state) {
       case VRStates.CARDBOARD:
-        self.cardboardCallback();
+        success = self.cardboardCallback();
         break;
       case VRStates.FULLSCREEN:
-        self.fullscreenCallback();
+        success = self.fullscreenCallback();
         break;
       case VRStates.FULLSCREEN_ANAGLYPH:
-        self.fullscreenAnaglyphCallback();
+        success = self.fullscreenAnaglyphCallback();
         break;
       case VRStates.WINDOWED:
-        self.windowedCallback();
+        success = self.windowedCallback();
         break;
       case VRStates.WINDOWED_ANAGLYPH:
-        self.windowedAnaglyphCallback();
+        success = self.windowedAnaglyphCallback();
         break;
     }
     
-    this.onResize();
+    if (success == true) {
+      self.state = state;
+      this.onResize();
+    } else {
+      self.state = oldState;
+    }
+    
+    return success;
   };
-  
-  self.stateToggler.on(VRStates.WINDOWED, self.windowedCallback.bind(this)); 
-  self.stateToggler.on(VRStates.WINDOWED_ANAGLYPH, self.windowedAnaglyphCallback.bind(this)); 
-  self.stateToggler.on(VRStates.FULLSCREEN, self.fullscreenCallback.bind(this)); 
-  self.stateToggler.on(VRStates.FULLSCREEN_ANAGLYPH, self.fullscreenAnaglyphCallback.bind(this)); 
-  self.stateToggler.on(VRStates.CARDBOARD, self.cardboardCallback.bind(this)); 
   
   this.setupClassicStereoCam = function( vrCameraRig ) {
     var INTERPUPILLARY_DISTANCE = 0.06;
@@ -341,8 +377,32 @@ VRStory = function() {
     this.controls.setCamera(this.vrCameraRig._topTransform);
   };
 
+  this.isInViewport = function() {
+      var canvas = this.renderer.domElement.parentNode;
+      var rect = canvas.getBoundingClientRect();
+      var windowHeight = (window.innerHeight || document.documentElement.clientHeight);
+      var windowWidth = (window.innerWidth || document.documentElement.clientWidth);
+
+      // http://stackoverflow.com/questions/325933/determine-whether-two-date-ranges-overlap
+      var vertInView = (rect.top <= windowHeight) && ((rect.top + rect.height) >= 0);
+      var horInView = (rect.left <= windowWidth) && ((rect.left + rect.width) >= 0);
+
+      return (vertInView && horInView);
+  }
+
+  this.checkVisible = function() {
+    var now = Date.now();
+    if (now - this.lastVisibleCheck < 100) 
+      return; // ~4Hz
+    this.isVisible = this.isInViewport();
+  }
+    
   // Request animation frame loop function
-  this.animate = function(timestamp) {
+  this.animate = function(timestamp) {    
+    this.checkVisible();
+    if (this.isVisible == false)
+      return;
+
     // Update VR headset position and apply to camera.
     self.controls.update();
     self.manager.renderer.autoClear = false;
@@ -358,7 +418,8 @@ VRStory = function() {
     this.storyElement = storyElement;
     this.storyManager = storyManager;
     this.parentElement = this.storyElement.parentNode;
-
+    
+    this.stateToggler.configureStereo(this.isStereo);
     
     this.setupSceneRenderer();
         
@@ -387,7 +448,7 @@ VRStory = function() {
     this.parentElement.addEventListener("mouseup", function (ev) {
         this.parentElement.removeEventListener("mousemove", self.mouseMove, false);
     }, false);
-
+    
     this.storyElement.appendChild(this.stateToggler.buttonLeft);
     this.storyElement.appendChild(this.stateToggler.buttonMiddle);
     this.storyElement.appendChild(this.stateToggler.buttonRight);
@@ -403,6 +464,8 @@ VRStory = function() {
   this.initVrEmbedPhoto = function(vrEmbedPhoto, storyManager) {
     var vrScene = new VRScene();
     vrScene.initVrEmbedPhoto(vrEmbedPhoto);
+    if (vrScene.isStereo)
+      this.isStereo = true;
     this.sceneList.push(vrScene);
     this.init(vrEmbedPhoto, storyManager);
   };
@@ -414,6 +477,8 @@ VRStory = function() {
       if(scene.nodeName=="SCENE"){
         var vrScene = new VRScene();
         vrScene.init(scene);
+        if (vrScene.isStereo)
+          this.isStereo = true;
         this.sceneList.push(vrScene);  
       }
     }
@@ -457,10 +522,10 @@ VRStoryManager = function() {
   
   // central animation loop - this is the event pump that should drive the rest
   this.animate = function() {    
+    requestAnimationFrame(self.animate);
     for(storyit = 0;storyit < self.storyList.length; storyit++) {
       self.storyList[storyit].animate();
     }
-    requestAnimationFrame(self.animate);
   };
   
   this.findStoryIndex = function(story) {
