@@ -150,6 +150,14 @@ VRStateToggler.prototype.setupButton = function(button, src, title, isVisible) {
 };
 
 VRStateToggler.prototype.setState = function(state) {
+  if (this.vrStory!= null){
+    var stateChangeWorked = this.vrStory.setState(state);
+    if (stateChangeWorked == false)
+      return;
+  } else {    
+    this.emit(state);
+  }
+  
   switch (state) {
     case VRStates.CARDBOARD:
       this.setupButton(this.buttonLeft, "", "", false);
@@ -176,12 +184,6 @@ VRStateToggler.prototype.setState = function(state) {
       this.setupButton(this.buttonMiddle, this.logoWindowed, 'Windowed mode', true);
       this.setupButton(this.buttonRight, this.logoFullscreenAnaglyph, 'Fullscreen mode', true);
       break;
-  }
-  
-  if (this.vrStory!= null){
-    this.vrStory.setState(state);
-  } else {    
-    this.emit(state);
   }
 };
 

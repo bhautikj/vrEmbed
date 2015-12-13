@@ -166,8 +166,13 @@ VRManager = function(renderer, effect) {
       this.fallbackFullscreen = false;
       canvas.webkitRequestFullscreen();
     } else {
+      if (Math.abs(window.orientation) != 90){
+        alert("Please rotate device to landscape mode before activating");
+        return false;
+      }      
       this.fallbackFullscreen = true;
       // mobile safari fallback to manual mode
+      canvas.style.zDepth = 900;
       this.fallbackHeight = canvas.style.height;
       this.fallbackWidth = canvas.style.width;
       canvas.style.width  = window.innerWidth+"px";
@@ -176,6 +181,7 @@ VRManager = function(renderer, effect) {
       this.oldScroll = window.onscroll;
       window.onscroll = function () { canvas.scrollIntoView(true); };
     }
+    return true;
   }
   
 };
@@ -203,8 +209,10 @@ VRStory = function() {
 
   
   this.enterFullscreen = function(){
+    if (self.manager.enterFullscreen() == false)
+      return false;
+    
     this.isFullScreen = true;
-    self.manager.enterFullscreen();
     if (self.manager.fallbackFullscreen == true) {
       self.onResize();
     }
@@ -222,34 +230,43 @@ VRStory = function() {
   };
     
   this.windowedCallback = function() {
-    if (self.effect != null)
-      self.effect.setRenderMode(THREE.VRViewerEffectModes.ONE_VIEWPORT);
+    if (self.effect == null) 
+      return false;
+    self.effect.setRenderMode(THREE.VRViewerEffectModes.ONE_VIEWPORT);
     self.exitFullscreen();
     console.log("WINDOWED CALLBACK");
+    return true;
   };
   
   this.windowedAnaglyphCallback = function() {
     self.effect.setRenderMode(THREE.VRViewerEffectModes.ANAGLYPH);
     self.exitFullscreen();
     console.log("WINDOWED ANAGLYPH CALLBACK");
+    return true;
   };
 
   this.fullscreenCallback = function() {
+    if (self.enterFullscreen() == false)
+      return false;
     self.effect.setRenderMode(THREE.VRViewerEffectModes.ONE_VIEWPORT);
-    self.enterFullscreen();
     console.log("FULLSCREEN CALLBACK");
+    return true;
   };
   
   this.fullscreenAnaglyphCallback = function() {
+    if (self.enterFullscreen() == false)
+      return false;
     self.effect.setRenderMode(THREE.VRViewerEffectModes.ANAGLYPH);
-    this.enterFullscreen();
     console.log("FULLSCREEN ANAGLYPH CALLBACK");
+    return true;
   };
   
   this.cardboardCallback = function() {
+    if (self.enterFullscreen() == false)
+      return false;
     self.effect.setRenderMode(THREE.VRViewerEffectModes.TWO_VIEWPORTS);
-    this.enterFullscreen();
     console.log("CARDBOARD CALLBACK");
+    return true;
   };
   
   this.onResize = function() {
@@ -277,33 +294,37 @@ VRStory = function() {
   };
   
   this.setState = function(state) {
+    var oldState = self.state;
+    
     self.state = state;
+    var success = false;
     switch (state) {
       case VRStates.CARDBOARD:
-        self.cardboardCallback();
+        success = self.cardboardCallback();
         break;
       case VRStates.FULLSCREEN:
-        self.fullscreenCallback();
+        success = self.fullscreenCallback();
         break;
       case VRStates.FULLSCREEN_ANAGLYPH:
-        self.fullscreenAnaglyphCallback();
+        success = self.fullscreenAnaglyphCallback();
         break;
       case VRStates.WINDOWED:
-        self.windowedCallback();
+        success = self.windowedCallback();
         break;
       case VRStates.WINDOWED_ANAGLYPH:
-        self.windowedAnaglyphCallback();
+        success = self.windowedAnaglyphCallback();
         break;
     }
     
-    this.onResize();
+    if (success == true) {
+      self.state = state;
+      this.onResize();
+    } else {
+      self.state = oldState;
+    }
+    
+    return success;
   };
-  
-  self.stateToggler.on(VRStates.WINDOWED, self.windowedCallback.bind(this)); 
-  self.stateToggler.on(VRStates.WINDOWED_ANAGLYPH, self.windowedAnaglyphCallback.bind(this)); 
-  self.stateToggler.on(VRStates.FULLSCREEN, self.fullscreenCallback.bind(this)); 
-  self.stateToggler.on(VRStates.FULLSCREEN_ANAGLYPH, self.fullscreenAnaglyphCallback.bind(this)); 
-  self.stateToggler.on(VRStates.CARDBOARD, self.cardboardCallback.bind(this)); 
   
   this.setupClassicStereoCam = function( vrCameraRig ) {
     var INTERPUPILLARY_DISTANCE = 0.06;
@@ -364,9 +385,9 @@ VRStory = function() {
     
   // Request animation frame loop function
   this.animate = function(timestamp) {    
-    this.checkVisible();
-    if (this.isVisible == false)
-      return;
+//     this.checkVisible();
+//     if (this.isVisible == false)
+//       return;
 
     // Update VR headset position and apply to camera.
     self.controls.update();
