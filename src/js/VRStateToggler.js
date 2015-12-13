@@ -26,9 +26,10 @@ VRStateToggler = function() {
   
   this.logoCardboard = VRLogos.logoCardboard;
   this.logoFullscreen = VRLogos.logoFullscreen;
-  this.logoFullscreenAnaglyph = VRLogos.logoFullscreenAnaglyph;
+  this.logoAnaglyph = VRLogos.logoAnaglyph;
   this.logoWindowed = VRLogos.logoWindowed;
-  this.logoWindowedAnaglyph = VRLogos.logoWindowedAnaglyph;  
+  this.logoSettings = VRLogos.logoSettings;
+  this.logoVrEmbed = VRLogos.logoVrEmbed;
 }
 
 VRStateToggler.prototype = new Emitter();
@@ -183,12 +184,12 @@ VRStateToggler.prototype.setState = function(state) {
       case VRStates.WINDOWED:
         this.setupButton(this.buttonLeft, this.logoCardboard, 'Immersive mode', true);
         this.setupButton(this.buttonMiddle, this.logoFullscreen, 'Fullscreen mode', true);
-        this.setupButton(this.buttonRight, this.logoFullscreenAnaglyph, 'Fullscreen Red-blue mode', true);
+        this.setupButton(this.buttonRight, this.logoAnaglyph, 'Fullscreen Red-blue mode', true);
         break;
       case VRStates.WINDOWED_ANAGLYPH:
         this.setupButton(this.buttonLeft,  "", "", false);
         this.setupButton(this.buttonMiddle, this.logoWindowed, 'Windowed mode', true);
-        this.setupButton(this.buttonRight, this.logoFullscreenAnaglyph, 'Fullscreen mode', true);
+        this.setupButton(this.buttonRight, this.logoAnaglyph, 'Fullscreen mode', true);
         break;
     }
   } else {
@@ -216,7 +217,7 @@ VRStateToggler.prototype.setState = function(state) {
       case VRStates.WINDOWED_ANAGLYPH:
         this.setupButton(this.buttonLeft,  "", "", false);
         this.setupButton(this.buttonMiddle, this.logoWindowed, 'Windowed mode', true);
-        this.setupButton(this.buttonRight, this.logoFullscreenAnaglyph, 'Fullscreen mode', true);
+        this.setupButton(this.buttonRight, this.logoAnaglyph, 'Fullscreen mode', true);
         break;
     }
   }
@@ -230,14 +231,12 @@ VRStateToggler.prototype.stateChange = function(buttonSrc) {
     case this.logoFullscreen:
       this.setState(VRStates.FULLSCREEN);
       break;
-    case this.logoFullscreenAnaglyph:
+    case this.logoAnaglyph:
       this.setState(VRStates.FULLSCREEN_ANAGLYPH);
       break;
     case this.logoWindowed:
       this.setState(VRStates.WINDOWED);
       break;
-    case this.logoWindowedAnaglyph:
-      this.setState(VRStates.WINDOWED_ANAGLYPH);
   }
 };
 
