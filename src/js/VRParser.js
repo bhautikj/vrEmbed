@@ -11,6 +11,7 @@ var VRViewerEffectModes = require('./VRViewerEffectModes.js');
 VRScenePhoto = function() {
   this.scenePhoto = null;
   this.textureDescription = null;
+  this.isStereo = false;
 
   this.toVec2 = function(str) {
     var arr = str.split(",");
@@ -42,6 +43,9 @@ VRScenePhoto = function() {
     }
     this.textureDescription.metaSource = "";
     this.textureDescription.isStereo = this.scenePhoto.getAttribute("isStereo");
+    if (this.textureDescription.isStereo.toLowerCase()=="true")
+      this.isStereo = true;
+    
     this.parseSphereParams(this.scenePhoto.getAttribute("sphereParams"));
     this.parseTexParams(this.scenePhoto.getAttribute("texParams"));
   };
@@ -50,6 +54,7 @@ VRScenePhoto = function() {
 VRSceneImg = function() {
   this.sceneImg = null;
   this.textureDescription = null;
+  this.isStereo = false;
 
   this.toVec2 = function(str) {
     var arr = str.split(",");
@@ -83,6 +88,8 @@ VRSceneImg = function() {
     this.textureDescription.metaSource = "";
     this.parseSphereParams(this.sceneImg.getAttribute("sphereParams"));
     this.textureDescription.isStereo = this.sceneImg.getAttribute("isStereo");
+    if (this.textureDescription.isStereo.toLowerCase()=="true")
+      this.isStereo = true;    
     if (this.textureDescription.isStereo == "true")
       this.parseTexParams(this.sceneImg.getAttribute("texParams"));
   };
@@ -93,11 +100,14 @@ VRScene = function() {
   this.sceneElement = null;
   this.renderObjects = [];
   this.oldScroll = null;
+  this.hasStereo = false;
   
   this.parseChildNode = function(elm) {
     if(elm.nodeName=="PHOTO"){
       var vrScenePhoto = new VRScenePhoto();
       vrScenePhoto.init(elm);
+      if (vrScenePhoto.isStereo == true)
+        this.hasStereo = true;
       this.renderObjects.push(vrScenePhoto);
     }
     
@@ -120,6 +130,8 @@ VRScene = function() {
   this.initVrEmbedPhoto = function(vrEmbedPhoto) {
     var vrEmbedPhotoElm = new VRSceneImg();
     vrEmbedPhotoElm.init(vrEmbedPhoto);
+    if (vrEmbedPhotoElm.isStereo == true)
+      this.hasStereo = true;    
     this.renderObjects.push(vrEmbedPhotoElm);
   }
 };
@@ -365,7 +377,8 @@ VRStory = function() {
   };
 
   this.isInViewport = function() {
-      var rect = this.storyElement.getBoundingClientRect();
+      var canvas = this.renderer.domElement.parentNode;
+      var rect = canvas.getBoundingClientRect();
       var windowHeight = (window.innerHeight || document.documentElement.clientHeight);
       var windowWidth = (window.innerWidth || document.documentElement.clientWidth);
 
@@ -385,9 +398,9 @@ VRStory = function() {
     
   // Request animation frame loop function
   this.animate = function(timestamp) {    
-//     this.checkVisible();
-//     if (this.isVisible == false)
-//       return;
+    this.checkVisible();
+    if (this.isVisible == false)
+      return;
 
     // Update VR headset position and apply to camera.
     self.controls.update();
