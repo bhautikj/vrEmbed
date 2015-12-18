@@ -155,15 +155,8 @@ VRStateToggler.prototype.configureStereo = function(isStereo) {
   this.isStereo = isStereo;
 };
 
-VRStateToggler.prototype.setState = function(state) {
-  if (this.vrStory!= null){
-    var stateChangeWorked = this.vrStory.setState(state);
-    if (stateChangeWorked == false)
-      return;
-  } else {    
-    this.emit(state);
-  }
-  
+
+VRStateToggler.prototype.setButtonState = function(state) {
   if (this.isStereo) {
     switch (state) {
       case VRStates.CARDBOARD:
@@ -221,6 +214,17 @@ VRStateToggler.prototype.setState = function(state) {
         break;
     }
   }
+};
+
+VRStateToggler.prototype.setState = function(state) {
+  if (this.vrStory!= null){
+    var stateChangeWorked = this.vrStory.setState(state);
+    if (stateChangeWorked == false)
+      return;
+  } else {    
+    this.emit(state);
+  }
+  this.setButtonState(state);
 };
 
 VRStateToggler.prototype.stateChange = function(buttonSrc) {

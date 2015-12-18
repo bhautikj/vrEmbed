@@ -7,6 +7,7 @@ var VRLookController = require('./VRControllers.js');
 var VRCameraRig = require('./VRViewerCameraRig.js');
 var VRViewerEffect = require('./VRViewerEffect.js');
 var VRViewerEffectModes = require('./VRViewerEffectModes.js');
+var VRUtil = require('./VRUtil.js');
 
 VRScenePhoto = function() {
   this.scenePhoto = null;
@@ -144,6 +145,13 @@ VRManager = function(renderer, effect) {
   this.fallbackWidth = null;
   this.fallbackHeight = null;
 
+  this.isLandscape = function() {
+    if(window.innerWidth > window.innerHeight)
+      return true;
+    else
+      return false;
+  };
+  
   this.render = function(scene, cameraRig, timestamp) {
     this.effect.render(scene, cameraRig);
   };
@@ -178,7 +186,7 @@ VRManager = function(renderer, effect) {
       this.fallbackFullscreen = false;
       canvas.webkitRequestFullscreen();
     } else {
-      if (Math.abs(window.orientation) != 90){
+      if (this.isLandscape() == false){
         alert("Please rotate device to landscape mode before activating");
         return false;
       }      
@@ -287,6 +295,14 @@ VRStory = function() {
     var containerHeight = this.parentElement.clientHeight;
     
     if (this.effect != null) { 
+      // check to see if we should drop back to windowed mode
+      if (this.manager.fallbackFullscreen == true){
+          if (this.manager.isLandscape() == false) {
+            this.stateToggler.setState(VRStates.WINDOWED);
+            return;
+          }
+      }
+      
       if (this.isFullScreen) {
         this.vrCameraRig.resizeCamera(window.innerWidth, window.innerHeight, this.state);
         this.effect.setSize(window.innerWidth, window.innerHeight);
