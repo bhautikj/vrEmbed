@@ -53,7 +53,10 @@ var StereographicProjection = {
     '  float scale = hFOV/120.0;',
       
     '  vec2 rads = vec2(PI * 2. , PI) ;',
-    '  vec2 pnt = (uv - .5) * vec2(scale, scale * aspect);',
+    // move center of rotation: uvOfs.x=0 is far left, uvOfs.x=1 = far right
+    // default to center, but should tweak this based on IPD for HMD
+    '  vec2 uvOfs = vec2(.5,.5);',
+    '  vec2 pnt = (uv - uvOfs) * vec2(scale, scale * aspect);',
     '  float x2y2 = pnt.x * pnt.x + pnt.y * pnt.y;',
     '  vec3 _sphere_pnt = vec3(2. * pnt, x2y2 - 1.) / (x2y2 + 1.);',
     '  vec4 sphere_pnt = vec4(_sphere_pnt, 1.);',
