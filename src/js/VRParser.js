@@ -20,13 +20,13 @@ VRScenePhoto = function() {
   };
   
   this.parseSphereParams = function(str) {
-    var arr = str.split(" ");
+    var arr = str.split(",");
     this.textureDescription.sphereFOV = new THREE.Vector2(arr[0].trim(), arr[1].trim());
     this.textureDescription.sphereCentre = new THREE.Vector2(arr[2].trim(), arr[3].trim());
   };
   
   this.parseTexParams = function(str) {
-    var arr = str.split(" ");
+    var arr = str.split(",");
     this.textureDescription.U_l = new THREE.Vector2(arr[0].trim(), arr[1].trim());
     this.textureDescription.V_l = new THREE.Vector2(arr[2].trim(), arr[3].trim());
     this.textureDescription.U_r = new THREE.Vector2(arr[4].trim(), arr[5].trim());
@@ -63,13 +63,13 @@ VRSceneImg = function() {
   };
   
   this.parseSphereParams = function(str) {
-    var arr = str.split(" ");
+    var arr = str.split(",");
     this.textureDescription.sphereFOV = new THREE.Vector2(arr[0].trim(), arr[1].trim());
     this.textureDescription.sphereCentre = new THREE.Vector2(arr[2].trim(), arr[3].trim());
   };
   
   this.parseTexParams = function(str) {
-    var arr = str.split(" ");
+    var arr = str.split(",");
     this.textureDescription.U_l = new THREE.Vector2(arr[0].trim(), arr[1].trim());
     this.textureDescription.V_l = new THREE.Vector2(arr[2].trim(), arr[3].trim());
     this.textureDescription.U_r = new THREE.Vector2(arr[4].trim(), arr[5].trim());
