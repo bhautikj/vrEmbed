@@ -468,6 +468,8 @@ VRStory = function() {
     this.storyElement.appendChild(this.stateToggler.buttonLeft);
     this.storyElement.appendChild(this.stateToggler.buttonMiddle);
     this.storyElement.appendChild(this.stateToggler.buttonRight);
+    this.storyElement.appendChild(this.stateToggler.buttonOptions);
+    
     
     this.manager = new VRManager(this.renderer, this.effect);
     this.onResize();

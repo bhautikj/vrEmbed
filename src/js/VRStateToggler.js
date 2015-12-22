@@ -15,17 +15,15 @@ VRStateToggler = function() {
   this.buttonLeft.addEventListener('click', this.onClickLeft_.bind(this));
   this.buttonMiddle.addEventListener('click', this.onClickMiddle_.bind(this));
   this.buttonRight.addEventListener('click', this.onClickRight_.bind(this));
+  this.buttonOptions.addEventListener('click', this.onClickOptions_.bind(this));
 
   this.buttonLeftClick.prototype = new function () {};
   this.buttonMiddleClick.prototype = new function () {};
   this.buttonRightClick.prototype = new function () {};
+  this.buttonOptionsClick.prototype = new function () {};
 
-//   this.on('clickLeft', this.buttonLeftClick.bind(this));  
-//   this.on('clickMiddle', this.buttonMiddleClick.bind(this));  
-//   this.on('clickRight', this.buttonRightClick.bind(this));  
-  
   this.logoCardboard = VRLogos.logoCardboard;
-  this.logoFullscreen = VRLogos.logoFullscreen;
+  this.logoFullscreen = VRLogos.logoVrEmbed;
   this.logoAnaglyph = VRLogos.logoAnaglyph;
   this.logoWindowed = VRLogos.logoWindowed;
   this.logoSettings = VRLogos.logoSettings;
@@ -57,9 +55,35 @@ VRStateToggler.prototype.createMiddleButton = function() {
   s.webkitUserSelect = 'none';
   s.MozUserSelect = 'none';
   s.cursor = 'pointer';
+  s.opacity = '0.8';  
   // Prevent button from being dragged.
   this.buttonMiddle.draggable = false;
   this.buttonMiddle.addEventListener('dragstart', function(e) {
+    e.preventDefault();
+  });
+}
+
+VRStateToggler.prototype.createOptionsButton = function() {
+  this.buttonOptions = document.createElement('img');
+  var s = this.buttonOptions.style;
+  s.position = 'absolute';
+  s.top = '5px';
+  s.left = 0;
+  s.right = 50;
+  s.marginLeft = 'auto';
+  s.width = '56px'
+  s.height = '56px';
+  s.backgroundSize = 'cover';
+  s.backgroundColor = 'transparent';
+  s.border = 0;
+  s.userSelect = 'none';
+  s.webkitUserSelect = 'none';
+  s.MozUserSelect = 'none';
+  s.cursor = 'pointer';
+  s.opacity = '0.8';
+  // Prevent button from being dragged.
+  this.buttonOptions.draggable = false;
+  this.buttonOptions.addEventListener('dragstart', function(e) {
     e.preventDefault();
   });
 }
@@ -81,6 +105,7 @@ VRStateToggler.prototype.createLeftButton = function() {
   s.webkitUserSelect = 'none';
   s.MozUserSelect = 'none';
   s.cursor = 'pointer';
+  s.opacity = '0.8';  
   // Prevent button from being dragged.
   this.buttonLeft.draggable = false;
   this.buttonLeft.addEventListener('dragstart', function(e) {
@@ -105,6 +130,7 @@ VRStateToggler.prototype.createRightButton = function() {
   s.webkitUserSelect = 'none';
   s.MozUserSelect = 'none';
   s.cursor = 'pointer';
+  s.opacity = '0.8';  
   // Prevent button from being dragged.
   this.buttonRight.draggable = false;
   this.buttonRight.addEventListener('dragstart', function(e) {
@@ -116,6 +142,7 @@ VRStateToggler.prototype.createButtons = function() {
   this.createMiddleButton();
   this.createLeftButton();
   this.createRightButton();
+  this.createOptionsButton();
 };
 
 VRStateToggler.prototype.onClickLeft_ = function(e) {
@@ -139,6 +166,13 @@ VRStateToggler.prototype.onClickRight_ = function(e) {
 //   this.emit('clickRight');
 }
 
+VRStateToggler.prototype.onClickOptions_ = function(e) {
+  e.stopPropagation();
+  e.preventDefault();
+  this.buttonOptionsClick();
+//   this.emit('clickRight');
+}
+
 VRStateToggler.prototype.setupButton = function(button, src, title, isVisible) {
   // Hack for Safari Mac/iOS to force relayout (svg-specific issue)
   // http://goo.gl/hjgR6r
@@ -157,9 +191,13 @@ VRStateToggler.prototype.configureStereo = function(isStereo) {
 
 
 VRStateToggler.prototype.setButtonState = function(state) {
+  
   if (this.isStereo) {
+    this.setupButton(this.buttonOptions, this.logoSettings, 'settings', true);
+    
     switch (state) {
       case VRStates.CARDBOARD:
+        this.setupButton(this.buttonOptions, "", "", false);
         this.setupButton(this.buttonLeft, "", "", false);
         this.setupButton(this.buttonMiddle, this.logoWindowed, 'Windowed mode', true);
         this.setupButton(this.buttonRight, "", "", false);
@@ -170,6 +208,7 @@ VRStateToggler.prototype.setButtonState = function(state) {
         this.setupButton(this.buttonRight, "", "", false);
         break;
       case VRStates.FULLSCREEN_ANAGLYPH:
+        this.setupButton(this.buttonOptions, "", "", false);
         this.setupButton(this.buttonLeft, "", "", false);
         this.setupButton(this.buttonMiddle, this.logoWindowed, 'Windowed mode', true);
         this.setupButton(this.buttonRight, "", "", false);
@@ -186,8 +225,11 @@ VRStateToggler.prototype.setButtonState = function(state) {
         break;
     }
   } else {
+    this.setupButton(this.buttonOptions, this.logoSettings, 'settings', true);
+    
     switch (state) {
       case VRStates.CARDBOARD:
+        this.setupButton(this.buttonOptions, "", "", false);
         this.setupButton(this.buttonLeft, "", "", false);
         this.setupButton(this.buttonMiddle, this.logoWindowed, 'Windowed mode', true);
         this.setupButton(this.buttonRight, "", "", false);
@@ -198,6 +240,7 @@ VRStateToggler.prototype.setButtonState = function(state) {
         this.setupButton(this.buttonRight, "", "", false);
         break;
       case VRStates.FULLSCREEN_ANAGLYPH:
+        this.setupButton(this.buttonOptions, "", "", false);
         this.setupButton(this.buttonLeft, "", "", false);
         this.setupButton(this.buttonMiddle, this.logoWindowed, 'Windowed mode', true);
         this.setupButton(this.buttonRight, "", "", false);
@@ -251,8 +294,13 @@ VRStateToggler.prototype.buttonLeftClick = function() {
 VRStateToggler.prototype.buttonMiddleClick = function() {
   this.stateChange(this.buttonMiddle.src);
 };
+
 VRStateToggler.prototype.buttonRightClick = function() {
   this.stateChange(this.buttonRight.src);
+};
+
+VRStateToggler.prototype.buttonOptionsClick = function() {
+  //this.stateChange(this.buttonRight.src);
 };
 
 module.exports = VRStateToggler;
