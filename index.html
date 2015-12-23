@@ -11,11 +11,11 @@
 
 <style>
 body {
-  background-color: #000;
-  color: #ccc;
-  margin: 0px;
+  background-color: #fff;
+  color: #111;
+  margin: 10px;
   padding: 0;
-  font-family: "Arial Black", Gadget, sans-serif;
+  font-family: Arial, Gadget, sans-serif;
 }
 
 div.code {
@@ -24,7 +24,11 @@ div.code {
   margin: 10px;
   padding: 4px;
   font-family: "Lucida Console", Monaco, monospace;
-  align: center;
+  text-align: center;
+}
+
+div.figure {
+  text-align: center;
 }
 
 </style>
@@ -32,10 +36,44 @@ div.code {
 
 <body>
 
-<h1>vrEmbed demo page</h1>
+<div class="figure"><img src="src/assets/vrEmbedLogo.png" width=200px/></div>
+
+vrEmbed is an easy-to-use tool to create a VR experience from photos. You can use it to easily wrap an existing image:
+
+..and turn it into a VR experience.
+
+The above was achieved using a simple, one-line embed code that you can use practically anywhere online that allows you to cut-and-paste HTML. Slightly more advanced users can create scenes with multiple images and soon, multiple scenes tied together into a story.
+
+<h2>How to create a vrEmbed pano</h2>
+The quick mode for vrEmbed allows you to quickly wrap a single image to turn it into an interactive VR scene.
+
+The basic format of a vrEmbed goes like this:
+<div class="code">&lt;a class=&quot;vrEmbedPhoto&quot; src=&quot;foo.jpg&quot; isStereo=&quot;false&quot; sphereParams=&quot;w,h,x,y&quot; texParams=&quot;LTx,LTy,LBx,LBy,RTx,RTy,RBx,RBy&quot;&gt;&lt;/a&gt;&lt;script async src=&quot;//bhautikj.github.io/vrEmbed/vrEmbed.min.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/div&gt;&lt;/script&gt;</div>
+
+<p><b>Needed: src</b></p>
+<div class="code">src=&quot;foo.jpg&quot;</div>
+Simply point the code at where your image lives online.
+
+<p><b>Needed: isStereo</b></p>
+<div class="code">isStereo=&quot;false&quot;</div>
+If your image is a composite of left and right images, set this to <b>true</b> otherwise just leave it as <b>false</b>.
+
+<p><b>Needed: sphereParams</b></p>
+<div class="code">sphereParams=&quot;w,h,x,y&quot;</div>
+<div class="figure"><img src="src/assets/image_size.png" width=300px/></div>
+<b>h</b> and <b>w</b> refer to the vertical height and horizontal width of your image on the sphere, in degrees. If you have a full, 360 by 180 panorama then <b>w=360</b> and <b>h=180</b>.
+<div class="figure"><img src="src/assets/image_location.png" width=300px/></div>
+<b>x</b> and <b>y</b> refer to where on the sphere the <i>centre</i> of your image is. <b>x</b> goes from left to right from -180 to 180; 0 is stright ahead of the viewer, -90 is directly to the left and 90 is directly to the right. <b>y</b> goes from top to bottom -90 to 90; 0 is straight ahead of the viewer, -90 is directly above and 90 is directly below.
+
+<p><b>Optional: texParams</b></p>
+<div class="code">texParams=&quot;LTx,LTy,LBx,LBy,RTx,RTy,RBx,RBy&quot;</div>
+<div class="figure"><img src="src/assets/stereo_image_coords.png" width=300px/></div>
+More advanced users can set up their embed with a 3D (i.e. stereo) image. For vrEmbed we currently assume that the left and right images combined together into the <i>same</i> image, typically side-by-side or top-and-bottom. We need to tell vrEmbed where the left and right images are. We measure the x-coordinate from left to right going from 0.0 to 1.0, amd the y-coordinate from top to bottom also going from 0.0 to 1.0. Note that at the moment we <i>do not</i> support pixel coordinates - these are floating-point values (this may change depending on need).<br/>
+We define <b>(LTx,LTy)</b> as the top-left coordinate of the left image, <b>(LBx,LBy)</b> as the bottom-right coordinate of the left image.  <b>(RTx,RTy)</b> and <b>(RBx,RBy)</b> correspondingly match the right image.
 
 
-<h2>Mono pano</h2>
+
+<!-- <h2>Mono pano</h2>
 <a class="vrEmbedPhoto" src="img/right14.jpg" isStereo="false" sphereParams="360,180,0,0"></a><script async src="vrEmbed.min.js" charset="utf-8"></div></script>
 <div class="code"></div>
 
@@ -51,7 +89,7 @@ div.code {
 
 <a class="vrEmbedPhoto" src="img/16mm_100deg_02.jpg" isStereo="false" sphereParams="100,66,0,0"></a><script async src="vrEmbed.min.js" charset="utf-8"></script>
 <div class="code"></div>
-
+ -->
 
 </body>
 
