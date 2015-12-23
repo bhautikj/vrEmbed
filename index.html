@@ -40,11 +40,11 @@ div.figure {
 
 <div class="figure"><img src="src/assets/vrEmbedLogo.png" width=200px/><br/><i>Bhautik Joshi, 2015</i></div>
 
-vrEmbed is an easy-to-use tool to create a VR experience from photos. You can use it to take an existing image:
+vrEmbed is an easy-to-use tool to create VR experiences from photos. You can use it to take an existing image:
 
 <div class="figure"><img src="src/assets/rheingauer_dom.jpg" width=300px/><br/><a href="https://commons.wikimedia.org/wiki/File:Rheingauer_Dom,_Geisenheim,_360_Panorama_(Equirectangular_projection).jpg" target="_blank">(source)</a></div>
 
-..and turn it into an interactive VR experience:
+..and turn it into an interactive VR scene:
 
 <a class="vrEmbedPhoto" src="src/assets/rheingauer_dom.jpg" isStereo="false" sphereParams="360,180,0,0"></a><script async src="//bhautikj.github.io/vrEmbed/vrEmbed.min.js" charset="utf-8"></div></script>
 
@@ -54,12 +54,13 @@ The above was achieved using a simple, one-line embed code:
 
 ...that you can use practically anywhere online that allows you to cut-and-paste HTML. Slightly more advanced users can create scenes with multiple images and soon, multiple scenes tied together into a story.
 
-You can even take 3D image pairs and turn them into 3D VR:
+You can even take 3D image pairs:
 <div class="figure"><img src="src/assets/stereograph_b.jpg" width=300px/></div>
 
-..and turn it into an interactive VR experience:
+and turn them into 3D VR:
 
 <a class="vrEmbedPhoto" src="src/assets/stereograph_b.jpg" isStereo="true" sphereParams="90,90,0,0" texParams=".0,.0,.5,1.,.5,.0,1.,1."></a><script async src="//bhautikj.github.io/vrEmbed/vrEmbed.min.js" charset="utf-8"></div></script>
+<div class="code">&lt;a class=&quot;vrEmbedPhoto&quot; src=&quot;src/assets/stereograph_b.jpg&quot; isStereo=&quot;true&quot; sphereParams=&quot;90,90,0,0&quot; texParams=&quot;.0,.0,.5,1.,.5,.0,1.,1.&quot;&gt;&lt;/a&gt;&lt;script async src=&quot;//bhautikj.github.io/vrEmbed/vrEmbed.min.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/div&gt;&lt;/script&gt;</div>
 
 
 
