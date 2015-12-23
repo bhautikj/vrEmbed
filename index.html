@@ -28,6 +28,8 @@ div.code {
 }
 
 div.figure {
+  margin: 10px;
+  padding: 4px;
   text-align: center;
 }
 
@@ -38,11 +40,28 @@ div.figure {
 
 <div class="figure"><img src="src/assets/vrEmbedLogo.png" width=200px/></div>
 
-vrEmbed is an easy-to-use tool to create a VR experience from photos. You can use it to easily wrap an existing image:
+vrEmbed is an easy-to-use tool to create a VR experience from photos. You can use it to take an existing image:
 
-..and turn it into a VR experience.
+<div class="figure"><img src="src/assets/rheingauer_dom.jpg" width=300px/><br/><a href="https://commons.wikimedia.org/wiki/File:Rheingauer_Dom,_Geisenheim,_360_Panorama_(Equirectangular_projection).jpg" target="_blank">(source)</a></div>
 
-The above was achieved using a simple, one-line embed code that you can use practically anywhere online that allows you to cut-and-paste HTML. Slightly more advanced users can create scenes with multiple images and soon, multiple scenes tied together into a story.
+..and turn it into an interactive VR experience:
+
+<a class="vrEmbedPhoto" src="src/assets/rheingauer_dom.jpg" isStereo="false" sphereParams="360,180,0,0"></a><script async src="vrEmbed.min.js" charset="utf-8"></div></script>
+
+The above was achieved using a simple, one-line embed code:
+
+<div class="code">&lt;a class=&quot;vrEmbedPhoto&quot; src=&quot;src/assets/rheingauer_dom.jpg&quot; isStereo=&quot;false&quot; sphereParams=&quot;360,180,0,0&quot;&gt;&lt;/a&gt;&lt;script async src=&quot;//bhautikj.github.io/vrEmbed/vrEmbed.min.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/div&gt;&lt;/script&gt;</div>
+
+...that you can use practically anywhere online that allows you to cut-and-paste HTML. Slightly more advanced users can create scenes with multiple images and soon, multiple scenes tied together into a story.
+
+You can even take 3D image pairs and turn them into 3D VR:
+<div class="figure"><img src="src/assets/stereograph_b.jpg" width=300px/></div>
+
+..and turn it into an interactive VR experience:
+
+<a class="vrEmbedPhoto" src="src/assets/stereograph_b.jpg" isStereo="true" sphereParams="90,90,0,0" texParams=".0,.0,.5,1.,.5,.0,1.,1."></a><script async src="vrEmbed.min.js" charset="utf-8"></div></script>
+
+
 
 <h2>How to create a vrEmbed pano</h2>
 The quick mode for vrEmbed allows you to quickly wrap a single image to turn it into an interactive VR scene.
@@ -71,25 +90,8 @@ If your image is a composite of left and right images, set this to <b>true</b> o
 More advanced users can set up their embed with a 3D (i.e. stereo) image. For vrEmbed we currently assume that the left and right images combined together into the <i>same</i> image, typically side-by-side or top-and-bottom. We need to tell vrEmbed where the left and right images are. We measure the x-coordinate from left to right going from 0.0 to 1.0, amd the y-coordinate from top to bottom also going from 0.0 to 1.0. Note that at the moment we <i>do not</i> support pixel coordinates - these are floating-point values (this may change depending on need).<br/>
 We define <b>(LTx,LTy)</b> as the top-left coordinate of the left image, <b>(LBx,LBy)</b> as the bottom-right coordinate of the left image.  <b>(RTx,RTy)</b> and <b>(RBx,RBy)</b> correspondingly match the right image.
 
-
-
-<!-- <h2>Mono pano</h2>
-<a class="vrEmbedPhoto" src="img/right14.jpg" isStereo="false" sphereParams="360,180,0,0"></a><script async src="vrEmbed.min.js" charset="utf-8"></div></script>
-<div class="code"></div>
-
-<h2>Stereo pano</h2>
-<a class="vrEmbedPhoto" src="img/scn14.jpg" isStereo="true" sphereParams="360,180,0,0" texParams="0.0,0.0,1.0,0.5,0.0,0.5,1.0,1.0"></a><script async src="vrEmbed.min.js" charset="utf-8"></script>
-<div class="code"></div>
-
-<h2>Wide mono photographs</h2>
-<a class="vrEmbedPhoto" src="img/16mm_100deg_01.jpg" isStereo="false" sphereParams="100,66,0,0" width=320px height=120px></a><script async src="vrEmbed.min.js" charset="utf-8"></script>
-<div class="code"></div>
-<br/>
-<br/>
-
-<a class="vrEmbedPhoto" src="img/16mm_100deg_02.jpg" isStereo="false" sphereParams="100,66,0,0"></a><script async src="vrEmbed.min.js" charset="utf-8"></script>
-<div class="code"></div>
- -->
+<p><b>Optional: width and height</b></p>
+You can set the width and height of the embed using width and height parameters, which both need to be set (e.g. width=640px height=480px); otherwise the embed defaults to creating a 16:9 ratio embed that takes up the width of the container.
 
 </body>
 
