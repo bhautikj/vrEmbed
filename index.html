@@ -11,32 +11,11 @@
 
 <style>
 body {
-  background-color: #000;
-  color: #ccc;
-  margin: 0px;
+  background-color: #fff;
+  color: #111;
+  margin: 10px;
   padding: 0;
-  font-family: "Arial Black", Gadget, sans-serif;
-}
-
-div.stretchy-wrapper {
-  width: 100%;
-  padding-bottom: 56.25%; /* 16:9 */
-  /* Other aspect ratios to try:
-  * 56.25% = 16:9
-  * 75% = 4:3
-  * 66.66% = 3:2
-  * 62.5% = 8:5
-  */
-  position: relative;
-}
-
-div.stretchy-wrapper > div {
-  position: absolute;
-  top: 0; bottom: 0; left: 0; right: 0;
-
-  color: white;
-  font-size: 24px;
-  text-align: center;
+  font-family: Arial, Gadget, sans-serif;
 }
 
 div.code {
@@ -45,7 +24,13 @@ div.code {
   margin: 10px;
   padding: 4px;
   font-family: "Lucida Console", Monaco, monospace;
-  align: center;
+  text-align: center;
+}
+
+div.figure {
+  margin: 10px;
+  padding: 4px;
+  text-align: center;
 }
 
 </style>
@@ -53,33 +38,60 @@ div.code {
 
 <body>
 
-<h1>vrEmbed demo page</h1>
+<div class="figure"><img src="src/assets/vrEmbedLogo.png" width=200px/><br/><i>Bhautik Joshi, 2015</i></div>
 
-<h2>Mono pano</h2>
-<div class="stretchy-wrapper"><div>
-<vrEmbedPhoto src="img/right14.jpg" isStereo="false" sphereParams="360 180 0 0"/><script async src="//bhautikj.github.io/vrEmbed/vrEmbed.min.js" charset="utf-8"></script> 
-</div></div>
-<div class="code">&lt;vrEmbedPhoto src=&quot;img/right14.jpg&quot; isStereo=&quot;false&quot; sphereParams=&quot;360 180 0 0&quot;/&gt;&lt;script async src=&quot;//bhautikj.github.io/vrEmbed/vrEmbed.min.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt; </div>
+vrEmbed is an easy-to-use tool to create a VR experience from photos. You can use it to take an existing image:
 
-<h2>Stereo pano</h2>
-<div class="stretchy-wrapper"><div>
-<vrEmbedPhoto src="img/scn14.jpg" isStereo="true" sphereParams="360 180 0 0" texParams="0.0 0.0 1.0 0.5 0.0 0.5 1.0 1.0"/><script async src="//bhautikj.github.io/vrEmbed/vrEmbed.min.js" charset="utf-8"></script> 
-</div></div>
-<div class="code">&lt;vrEmbedPhoto src=&quot;img/scn14.jpg&quot; isStereo=&quot;true&quot; sphereParams=&quot;360 180 0 0&quot; texParams=&quot;0.0 0.0 1.0 0.5 0.0 0.5 1.0 1.0&quot;/&gt;&lt;script async src=&quot;//bhautikj.github.io/vrEmbed/vrEmbed.min.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;</div>
+<div class="figure"><img src="src/assets/rheingauer_dom.jpg" width=300px/><br/><a href="https://commons.wikimedia.org/wiki/File:Rheingauer_Dom,_Geisenheim,_360_Panorama_(Equirectangular_projection).jpg" target="_blank">(source)</a></div>
 
-<h2>Wide mono photographs</h2>
-<div class="stretchy-wrapper"><div>
-<vrEmbedPhoto src="img/16mm_100deg_01.jpg" isStereo="false" sphereParams="100 66 0 0"/><script async src="//bhautikj.github.io/vrEmbed/vrEmbed.min.js" charset="utf-8"></script> 
-</div></div>
-<div class="code">&lt;vrEmbedPhoto src=&quot;img/16mm_100deg_01.jpg&quot; isStereo=&quot;false&quot; sphereParams=&quot;100 66 0 0&quot;/&gt;&lt;script async src=&quot;//bhautikj.github.io/vrEmbed/vrEmbed.min.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt; </div>
-<br/>
-<br/>
+..and turn it into an interactive VR experience:
 
-<div class="stretchy-wrapper"><div>
-<vrEmbedPhoto src="img/16mm_100deg_02.jpg" isStereo="false" sphereParams="100 66 0 0"/><script async src="//bhautikj.github.io/vrEmbed/vrEmbed.min.js" charset="utf-8"></script> 
-</div></div>
-<div class="code">&lt;vrEmbedPhoto src=&quot;img/16mm_100deg_02.jpg&quot; isStereo=&quot;false&quot; sphereParams=&quot;100 66 0 0&quot;/&gt;&lt;script async src=&quot;//bhautikj.github.io/vrEmbed/vrEmbed.min.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt; </div>
+<a class="vrEmbedPhoto" src="src/assets/rheingauer_dom.jpg" isStereo="false" sphereParams="360,180,0,0"></a><script async src="vrEmbed.min.js" charset="utf-8"></div></script>
 
+The above was achieved using a simple, one-line embed code:
+
+<div class="code">&lt;a class=&quot;vrEmbedPhoto&quot; src=&quot;src/assets/rheingauer_dom.jpg&quot; isStereo=&quot;false&quot; sphereParams=&quot;360,180,0,0&quot;&gt;&lt;/a&gt;&lt;script async src=&quot;//bhautikj.github.io/vrEmbed/vrEmbed.min.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/div&gt;&lt;/script&gt;</div>
+
+...that you can use practically anywhere online that allows you to cut-and-paste HTML. Slightly more advanced users can create scenes with multiple images and soon, multiple scenes tied together into a story.
+
+You can even take 3D image pairs and turn them into 3D VR:
+<div class="figure"><img src="src/assets/stereograph_b.jpg" width=300px/></div>
+
+..and turn it into an interactive VR experience:
+
+<a class="vrEmbedPhoto" src="src/assets/stereograph_b.jpg" isStereo="true" sphereParams="90,90,0,0" texParams=".0,.0,.5,1.,.5,.0,1.,1."></a><script async src="vrEmbed.min.js" charset="utf-8"></div></script>
+
+
+
+<h2>How to create a vrEmbed pano</h2>
+The quick mode for vrEmbed allows you to quickly wrap a single image to turn it into an interactive VR scene.
+
+The basic format of a vrEmbed goes like this:
+<div class="code">&lt;a class=&quot;vrEmbedPhoto&quot; src=&quot;foo.jpg&quot; isStereo=&quot;false&quot; sphereParams=&quot;w,h,x,y&quot; texParams=&quot;LTx,LTy,LBx,LBy,RTx,RTy,RBx,RBy&quot;&gt;&lt;/a&gt;&lt;script async src=&quot;//bhautikj.github.io/vrEmbed/vrEmbed.min.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/div&gt;&lt;/script&gt;</div>
+
+<p><b>Needed: src</b></p>
+<div class="code">src=&quot;foo.jpg&quot;</div>
+Simply point the code at where your image lives online.
+
+<p><b>Needed: isStereo</b></p>
+<div class="code">isStereo=&quot;false&quot;</div>
+If your image is a composite of left and right images, set this to <b>true</b> otherwise just leave it as <b>false</b>.
+
+<p><b>Needed: sphereParams</b></p>
+<div class="code">sphereParams=&quot;w,h,x,y&quot;</div>
+<div class="figure"><img src="src/assets/image_size.png" width=300px/></div>
+<b>h</b> and <b>w</b> refer to the vertical height and horizontal width of your image on the sphere, in degrees. If you have a full, 360 by 180 panorama then <b>w=360</b> and <b>h=180</b>.
+<div class="figure"><img src="src/assets/image_location.png" width=300px/></div>
+<b>x</b> and <b>y</b> refer to where on the sphere the <i>centre</i> of your image is. <b>x</b> goes from left to right from -180 to 180; 0 is stright ahead of the viewer, -90 is directly to the left and 90 is directly to the right. <b>y</b> goes from top to bottom -90 to 90; 0 is straight ahead of the viewer, -90 is directly above and 90 is directly below.
+
+<p><b>Optional: texParams</b></p>
+<div class="code">texParams=&quot;LTx,LTy,LBx,LBy,RTx,RTy,RBx,RBy&quot;</div>
+<div class="figure"><img src="src/assets/stereo_image_coords.png" width=300px/></div>
+More advanced users can set up their embed with a 3D (i.e. stereo) image. For vrEmbed we currently assume that the left and right images combined together into the <i>same</i> image, typically side-by-side or top-and-bottom. We need to tell vrEmbed where the left and right images are. We measure the x-coordinate from left to right going from 0.0 to 1.0, amd the y-coordinate from top to bottom also going from 0.0 to 1.0. Note that at the moment we <i>do not</i> support pixel coordinates - these are floating-point values (this may change depending on need).<br/>
+We define <b>(LTx,LTy)</b> as the top-left coordinate of the left image, <b>(LBx,LBy)</b> as the bottom-right coordinate of the left image.  <b>(RTx,RTy)</b> and <b>(RBx,RBy)</b> correspondingly match the right image.
+
+<p><b>Optional: width and height</b></p>
+You can set the width and height of the embed using width and height parameters, which both need to be set (e.g. width=640px height=480px); otherwise the embed defaults to creating a 16:9 ratio embed that takes up the width of the container.
 
 </body>
 
