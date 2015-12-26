@@ -627,6 +627,8 @@ VRStoryManager = function() {
 };
 
 THREE.StoryParser = function () {
+  THREE.ImageUtils.crossOrigin = '';
+
   this.storyManager = new VRStoryManager();
   this.storyManager.init();
 

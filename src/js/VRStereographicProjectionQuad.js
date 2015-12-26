@@ -3,10 +3,10 @@ var THREE = require('../js-ext/three.js');
 //
 // renderMode values
 // --
-// variables: 
+// variables:
 // 0: [one/two] viewports (e.g. mono vs L/R viewports)
 // 1: [yes/no] analgyph (e.g. full viewport, render analglyph)
-// 
+//
 // Render modes:
 // 0  (00): one viewport, no anaglyph
 // 2  (10): two viewports, no anaglyph
@@ -22,7 +22,7 @@ var StereographicProjection = {
     texToUV: { type: "m3", value: new THREE.Matrix3() },
     hFOV: {type: "f", value: 75.0 }
   },
-  
+
   vertexShader: [
     'varying vec2 vUv;',
     'void main() {',
@@ -46,12 +46,12 @@ var StereographicProjection = {
     'void main(void) {',
     '  //normalize uv so it is between 0 and 1',
     '  vec2 uv = vUv;',
-      
+
     '  float aspect = imageResolution.y/imageResolution.x;',
     //FOV: scale = 1.->FOV of ~120
     //FOV: scale = .5 -> FOV of ~60
     '  float scale = hFOV/120.0;',
-      
+
     '  vec2 rads = vec2(PI * 2. , PI) ;',
     // move center of rotation: uvOfs.x=0 is far left, uvOfs.x=1 = far right
     // default to center, but should tweak this based on IPD for HMD
@@ -61,37 +61,37 @@ var StereographicProjection = {
     '  vec3 _sphere_pnt = vec3(2. * pnt, x2y2 - 1.) / (x2y2 + 1.);',
     '  vec4 sphere_pnt = vec4(_sphere_pnt, 1.);',
     '  sphere_pnt *= transform;',
-      
+
     '  // Convert to Spherical Coordinates',
     '  float r = length(sphere_pnt);',
-      
+
     '  float lon = atan(sphere_pnt.y, sphere_pnt.x);',
-      
+
     '  float lat = 2.0*(acos(sphere_pnt.z / r) - PI*.5) + PI*.5;',
     '  lon = mod(lon, 2.*PI);',
-    
-    '  vec2 sphereCoord = vec2(lon, lat) / rads;',  
-    
+
+    '  vec2 sphereCoord = vec2(lon, lat) / rads;',
+
     '  vec2 normCoord = sphereCoord - sphereToTexU;',
-    
+
     '  vec2 vu = sphereToTexV - sphereToTexU;',
     '  normCoord.x = normCoord.x/vu.x;',
     '  normCoord.y = normCoord.y/vu.y;',
-    
+
     '  if (normCoord.x<0.0 || normCoord.x>1.0 || normCoord.y<0.0 || normCoord.y>1.0) {',
 //TODO: render background colour if bottom layer!
 //     '    gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);',
     '    // exits fragment shader here',
     '    discard;',
     '  } ',
-    
+
     '  normCoord.x = mod(normCoord.x, 1.0);',
     '  normCoord.y = mod(normCoord.y, 1.0);',
 
     '  vec3 texCoord = vec3(normCoord, 1.0); ',
-    '  vec3 uvCoord = texToUV * texCoord ;',    
+    '  vec3 uvCoord = texToUV * texCoord ;',
     '  gl_FragColor = texture2D(textureSource, vec2(uvCoord.x, uvCoord.y));',
-    '}',    
+    '}',
   ].join('\n')
 };
 
@@ -108,7 +108,7 @@ var ShaderPassQuad = function(shader) {
 
   this.material.depthTest = false;
   this.material.depthWrite = false;
-  
+
   this.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
   this.scene  = new THREE.Scene();
   this.quad = new THREE.Mesh(new THREE.PlaneBufferGeometry(2, 2), null);
@@ -118,7 +118,7 @@ var ShaderPassQuad = function(shader) {
     this.quad.material = this.material;
     renderFunc(this.scene, this.camera);
   };
-  
+
   this.copyMat = function () {
     this.quad.material = this.material;
   };
@@ -129,40 +129,41 @@ THREE.VRStereographicProjectionQuad = function () {
   this.textureDescription = 0;
   this.texToUV_l = new THREE.Matrix3();
   this.texToUV_r = new THREE.Matrix3();
-  
+
   this.resizeViewport = function (resX, resY) {
     this.shaderPassQuad.uniforms.imageResolution.value.x = resX;
     this.shaderPassQuad.uniforms.imageResolution.value.y = resY;
   };
-  
+
   this.setHFOV = function (hFOV) {
     this.shaderPassQuad.uniforms.hFOV.value = hFOV;
   }
-  
+
   this.setupProjection = function (textureDescription, initialResolutionX, initialResolutionY) {
     if ( this.shaderPassQuad.uniforms.textureSource.value )
       this.shaderPassQuad.uniforms.textureSource.value.dispose();
     this.textureDescription = textureDescription;
+
     this.shaderPassQuad.uniforms.textureSource.value = THREE.ImageUtils.loadTexture( textureDescription.textureSource );
     this.shaderPassQuad.uniforms.textureSource.value.magFilter = THREE.LinearFilter;
     this.shaderPassQuad.uniforms.textureSource.value.minFilter = THREE.LinearFilter;
     this.shaderPassQuad.uniforms.textureSource.value.wrapS = THREE.MirroredRepeatWrapping;
     this.shaderPassQuad.uniforms.textureSource.value.wrapT = THREE.MirroredRepeatWrapping;
-//     this.shaderPassQuad.uniforms.textureSource.value.needsUpdate = true; 
+//     this.shaderPassQuad.uniforms.textureSource.value.needsUpdate = true;
 
     var fovX = textureDescription.sphereFOV.x/360.0;
     var fovY = textureDescription.sphereFOV.y/180.0;
-        
+
     this.shaderPassQuad.uniforms.sphereToTexU.value.set( 0.5 - 0.5*fovX, 0.5 - 0.5*fovY );
     this.shaderPassQuad.uniforms.sphereToTexV.value.set( 0.5 + 0.5*fovX, 0.5 + 0.5*fovY );
-        
+
     var t_r = textureDescription.V_r.sub(textureDescription.U_r);
 
-      
+
     this.texToUV_r.set( t_r.x,  0,  textureDescription.U_r.x,
                               0, t_r.y, textureDescription.U_r.y,
                               0, 0,   1.0);
-    
+
     var t_l = textureDescription.V_l.sub(textureDescription.U_l);
     this.texToUV_l.set( t_l.x,  0,  textureDescription.U_l.x,
                               0, t_l.y, textureDescription.U_l.y,
@@ -170,7 +171,7 @@ THREE.VRStereographicProjectionQuad = function () {
 
     this.resizeViewport(initialResolutionX, initialResolutionY);
   };
-   
+
   this.setLeft = function() {
     this.shaderPassQuad.uniforms.texToUV.value.copy(this.texToUV_l);
   };
@@ -178,11 +179,11 @@ THREE.VRStereographicProjectionQuad = function () {
   this.setRight = function() {
     this.shaderPassQuad.uniforms.texToUV.value.copy(this.texToUV_r);
   };
-  
+
   this.preRender = function(cameraObject) {
     var quat = new THREE.Quaternion();
     quat.setFromRotationMatrix(cameraObject.matrixWorld);
-    quat.conjugate();  
+    quat.conjugate();
     var fixQuat = new THREE.Quaternion();
     fixQuat.setFromAxisAngle( new THREE.Vector3( 1, 0, 0 ), Math.PI / 2 );
     quat.multiply(fixQuat);
@@ -197,15 +198,15 @@ THREE.VRStereographicProjectionQuad = function () {
 //    // yaw adjustment (-PI->PI)
    fixQuat.setFromAxisAngle( new THREE.Vector3( 0, 0, 1 ), yaw );
    quat.multiply(fixQuat);
-    
+
     this.shaderPassQuad.uniforms.transform.value.makeRotationFromQuaternion(quat);
     this.shaderPassQuad.copyMat();
   };
-  
+
   this.render = function(renderer) {
     renderer.render(this.shaderPassQuad.scene, this.shaderPassQuad.camera);
   };
-  
+
   this.renderToTex = function(renderer, tex) {
     renderer.render(this.shaderPassQuad.scene, this.shaderPassQuad.camera, tex, false);
   };
