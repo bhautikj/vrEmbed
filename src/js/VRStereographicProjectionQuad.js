@@ -144,6 +144,7 @@ THREE.VRStereographicProjectionQuad = function () {
       this.shaderPassQuad.uniforms.textureSource.value.dispose();
     this.textureDescription = textureDescription;
 
+    THREE.ImageUtils.crossOrigin = '';
     this.shaderPassQuad.uniforms.textureSource.value = THREE.ImageUtils.loadTexture( textureDescription.textureSource );
     this.shaderPassQuad.uniforms.textureSource.value.magFilter = THREE.LinearFilter;
     this.shaderPassQuad.uniforms.textureSource.value.minFilter = THREE.LinearFilter;
