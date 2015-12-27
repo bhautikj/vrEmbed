@@ -1,4 +1,5 @@
 var StoryParser = require('./VRParser.js');
+var domReady = require('../js-ext/domready.js')
 
 var StoryParserFactory = (function () {
   var instance;
@@ -6,13 +7,17 @@ var StoryParserFactory = (function () {
   function createInstance() {
       window.VRSTORYPARSER_INIT = true;
       var storyParser = new StoryParser();
-      storyParser.parseDocXML(document.body);
 
       function onResize() {
         storyParser.onResize();
       }
 
+      function initSystem(){
+        storyParser.parseDocXML(document.body);
+      }
+
       window.addEventListener('resize', onResize, false);
+      domReady(initSystem);
 
       return storyParser;
   }
