@@ -9,6 +9,7 @@ var VRViewerEffect = require('./VRViewerEffect.js');
 var VRViewerEffectModes = require('./VRViewerEffectModes.js');
 var VRUtil = require('./VRUtil.js');
 var VROptions = require('./VROptions.js');
+var VRURLParser = require('./VRURLParser.js');
 
 VRScenePhoto = function() {
   this.scenePhoto = null;

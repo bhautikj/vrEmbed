@@ -1,6 +1,25 @@
 var StoryParser = require('./VRParser.js');
 var domReady = require('../js-ext/domready.js')
 
+var URLParserFactory = (function () {
+  var instance;
+
+  function createInstance() {
+      window.VRURLPARSER_INIT = true;
+      var vrURLParser = new VRURLParser();
+      return vrURLParser;
+  }
+
+  return {
+      getInstance: function () {
+          if (!instance) {
+              instance = createInstance();
+          }
+          return instance;
+      }
+  };
+})();
+
 var StoryParserFactory = (function () {
   var instance;
 
@@ -31,6 +50,17 @@ var StoryParserFactory = (function () {
       }
   };
 })();
+
+
+if (!window.VRURLPARSER_INIT){
+  var urlParser = URLParserFactory.getInstance();
+  urlParser.init();
+  if (urlParser.isEditor == true){
+    window.stop();
+    document.body.innerHTML = "";
+    return;
+  }
+}
 
 if (window.VRSTORYPARSER_INIT)
   return;
