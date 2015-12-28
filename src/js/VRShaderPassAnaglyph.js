@@ -1,17 +1,33 @@
+/**
+  Copyright 2015 Bhautik J Joshi
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+**/
+
 var THREE = require('../js-ext/three.js');
 
 AnaglyphProjection = {
-  
+
   uniforms: {
     mapLeft: { type: "t", value: 0 },
     mapRight: { type: "t", value: 0 }
   },
-  
+
   vertexShader: [
     "varying vec2 vUv;",
     "void main() {",
     '  vUv = uv;',
-    '  gl_Position = vec4( position, 1.0 );',    
+    '  gl_Position = vec4( position, 1.0 );',
     "}"
   ].join('\n'),
 
@@ -27,7 +43,7 @@ AnaglyphProjection = {
         // http://3dtv.at/Knowhow/AnaglyphComparison_en.aspx
       " gl_FragColor = vec4( colorL.g * 0.7 + colorL.b * 0.3, colorR.g, colorR.b, colorL.a + colorR.a ) * 1.1;",
 //        "gl_FragColor = colorL;",
-      "}"  
+      "}"
   ].join('\n')
 };
 
@@ -43,21 +59,21 @@ THREE.VRShaderPassAnaglyph = function() {
     vertexShader: shader.vertexShader,
     fragmentShader: shader.fragmentShader
   });
-  
+
   this.material.depthTest = false;
   this.material.depthWrite = false;
-  
+
   var params = { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat };
 
   this.resize = function(width, height) {
     if ( this.anaglyphTargetL ) this.anaglyphTargetL.dispose();
     if ( this.anaglyphTargetR ) this.anaglyphTargetR.dispose();
-    
+
     this.anaglyphTargetL = new THREE.WebGLRenderTarget( width, height, params );
     this.anaglyphTargetR = new THREE.WebGLRenderTarget( width, height, params );
     this.anaglyphTargetL.depthBuffer = false;
     this.anaglyphTargetR.depthBuffer = false;
-  
+
     this.material.uniforms[ "mapLeft" ].value = this.anaglyphTargetL;
     this.material.uniforms[ "mapRight" ].value = this.anaglyphTargetR;
   };
@@ -68,7 +84,7 @@ THREE.VRShaderPassAnaglyph = function() {
   this.scene  = new THREE.Scene();
   this.quad = new THREE.Mesh(new THREE.PlaneBufferGeometry(2, 2), null);
   this.scene.add(this.quad);
-  
+
   this.copyMat = function () {
     this.quad.material = this.material;
   };
