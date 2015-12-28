@@ -1,3 +1,19 @@
+/**
+  Copyright 2015 Bhautik J Joshi
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+**/
+
 var THREE = require('../js-ext/three.js');
 
 var Util = require('./VRutil.js');
@@ -10,7 +26,7 @@ function VRLookControlBase() {
   this.eulerZ = 0.0;
 }
 
-VRLookControlBase.prototype.updateBase = function(cameraObject) { 
+VRLookControlBase.prototype.updateBase = function(cameraObject) {
     var devm = new THREE.Quaternion().setFromEuler(
           new THREE.Euler(this.eulerX, this.eulerY, this.eulerZ, 'YXZ'));
     cameraObject.quaternion.copy( devm );
@@ -35,12 +51,12 @@ VRIdleSpinner.prototype.update = function(cameraObject){
 
 var VRIdleSpinnerFactory = (function () {
     var instance;
- 
+
     function createInstance() {
         var object = new VRIdleSpinner();
         return object;
     }
- 
+
     return {
         getInstance: function () {
             if (!instance) {
@@ -52,7 +68,7 @@ var VRIdleSpinnerFactory = (function () {
 })();
 
 
-VRMouseSpinner = function() {  
+VRMouseSpinner = function() {
 }
 
 VRMouseSpinner.prototype = new VRLookControlBase();
@@ -70,10 +86,10 @@ VRMouseSpinner.prototype.update = function(cameraObject){
 VRGyroSpinner = function() {
   this.deviceOrientation = null;
   this.screenOrientation = window.orientation;
-  
+
   window.addEventListener('deviceorientation', this.onDeviceOrientationChange_.bind(this));
   window.addEventListener('orientationchange', this.onScreenOrientationChange_.bind(this));
-  
+
   // Helper objects for calculating orientation.
   this.finalQuaternion = new THREE.Quaternion();
   this.tmpQuaternion = new THREE.Quaternion();
@@ -83,8 +99,8 @@ VRGyroSpinner = function() {
   this.worldTransform = new THREE.Quaternion(-Math.sqrt(0.5), 0, 0, Math.sqrt(0.5));
 
   // The quaternion for taking into account the reset position.
-  this.resetTransform = new THREE.Quaternion();  
-  
+  this.resetTransform = new THREE.Quaternion();
+
   this.init = false;
 }
 
@@ -104,7 +120,7 @@ VRGyroSpinner.prototype.getOrientation = function() {
   }
 
   this.init = true;
-  
+
   // Rotation around the z-axis.
   var alpha = THREE.Math.degToRad(this.deviceOrientation.alpha);
   // Front-to-back (in portrait) rotation (x-axis).
@@ -143,17 +159,17 @@ VRGyroSpinner.prototype.isMobile = function() {
 }
 
 mobileAndTabletcheck = function() {
-  
+
 }
 
 var VRGyroSpinnerFactory = (function () {
     var instance;
- 
+
     function createInstance() {
         var object = new VRGyroSpinner();
         return object;
     }
- 
+
     return {
         getInstance: function () {
             if (!instance) {
@@ -177,18 +193,18 @@ VRLookController = function() {
   this.vrMouseSpinner = new VRMouseSpinner();
   this.vrIdleSpinner = VRIdleSpinnerFactory.getInstance();
   this.vrGyroSpinner = VRGyroSpinnerFactory.getInstance();
-  
+
   this.camera = null;
   this.mode = VRLookMode.MOUSE;
-    
+
   this.setCamera = function(camera){
     self.camera = camera;
   };
-  
+
   this.mouseMove = function(dx, dy) {
     self.vrMouseSpinner.mouseMove(dx, dy);
   };
-  
+
   this.checkModes = function() {
 //     this.mode = VRLookMode.GYRO;
     if (this.vrGyroSpinner.isMobile())
@@ -196,15 +212,15 @@ VRLookController = function() {
     else
       this.mode = VRLookMode.MOUSE;
   };
-  
+
   this.update = function() {
     this.checkModes();
-    
+
     switch(this.mode) {
       case VRLookMode.MOUSE:
         self.vrMouseSpinner.update(this.camera);
         break;
-      case VRLookMode.IDLESPINNER:  
+      case VRLookMode.IDLESPINNER:
         self.vrIdleSpinner.update(this.camera);
         break;
       case VRLookMode.GYRO:

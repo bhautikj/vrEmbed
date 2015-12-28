@@ -1,4 +1,20 @@
 /**
+  Copyright 2015 Bhautik J Joshi
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+**/
+
+/**
  * @author bhautikj / https://github.com/bhautikj
  * @author dmarcos / https://github.com/dmarcos
  * @author mrdoob / http://mrdoob.com
@@ -24,19 +40,19 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
   var vrStereographicProjectionQuads = [];
   var shaderPassAnaglyph = new VRShaderPassAnaglyph();
   var textureDesc = [];
-  
+
   this.setStereographicProjection = function (textureDescription) {
     var vrStereographicProjectionQuad = new VRStereographicProjectionQuad();
-    vrStereographicProjectionQuad.setupProjection(textureDescription, 
-                                                  window.innerWidth, 
+    vrStereographicProjectionQuad.setupProjection(textureDescription,
+                                                  window.innerWidth,
                                                   window.innerHeight);
-    vrStereographicProjectionQuads.push(vrStereographicProjectionQuad);    
+    vrStereographicProjectionQuads.push(vrStereographicProjectionQuad);
   };
-  
+
   this.setRenderMode = function (mode) {
     renderMode = mode;
   };
-  
+
   this.setSize = function( width, height ) {
     for (i=0; i<vrStereographicProjectionQuads.length; i++){
       vrStereographicProjectionQuads[i].resizeViewport(width, height);
@@ -117,18 +133,18 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
 
     return fovPortToProjection( fovPort, rightHanded, zNear, zFar );
 
-  }  
-  
+  }
+
   // render
   this.render = function ( scene, cameraRig ) {
     finalRenderMode = renderMode;
-    
+
     // Render modes:
     // 0  (00): one viewport, no anaglyph
     // 2  (10): two viewports, no anaglyph
     // 1  (01): one viewport, anaglyph
-    
-    
+
+
     if (finalRenderMode == THREE.VRViewerEffectModes.ONE_VIEWPORT) {
       // render pano
       for (i=0; i<vrStereographicProjectionQuads.length; i++){
@@ -136,12 +152,12 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
         vrStereographicProjectionQuads[i].preRender(cameraRig._centerCam);
         vrStereographicProjectionQuads[i].render(renderer);
       }
-      
+
       renderer.render( scene, cameraRig._centerCam );
       return;
     }
-    
-    
+
+
 
     //------------------
     // START CAMERA BLOCK
@@ -151,18 +167,18 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
     //------------------
     // END CAMERA BLOCK
     //------------------
-    
+
     //------------------
     // START RENDER BLOCK
-    //------------------    
+    //------------------
     // render camera setup
 
     // two viewport render
-    if ( finalRenderMode == THREE.VRViewerEffectModes.TWO_VIEWPORTS ) {      
+    if ( finalRenderMode == THREE.VRViewerEffectModes.TWO_VIEWPORTS ) {
       renderer.enableScissorTest( true );
       renderer.clear();
       var size = renderer.getSize();
-      
+
       for (i=0; i<vrStereographicProjectionQuads.length; i++){
         vrStereographicProjectionQuads[i].resizeViewport(size.width/2, size.height);
       }
@@ -170,13 +186,13 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
       size.width /= 2;      // render left eye
       renderer.setViewport( 0, 0, size.width, size.height );
       renderer.setScissor( 0, 0, size.width, size.height );
-      
+
       for (i=0; i<vrStereographicProjectionQuads.length; i++){
         vrStereographicProjectionQuads[i].setLeft();
         vrStereographicProjectionQuads[i].preRender(cameraRig._leftCam);
         vrStereographicProjectionQuads[i].render(renderer);
       }
-      
+
       renderer.render( scene, cameraRig._leftCam );
 
       // render right eye
@@ -206,10 +222,10 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
       }
       renderer.render( scene, cameraRig._rightCam, shaderPassAnaglyph.anaglyphTargetR  );
       shaderPassAnaglyph.copyMat();
-      
+
       renderer.render( shaderPassAnaglyph.scene, shaderPassAnaglyph.camera );
     }
-  
+
 
     //------------------
     // END RENDER BLOCK
@@ -217,12 +233,7 @@ THREE.VRViewerEffect = function ( renderer, mode, onError ) {
 
     return;
 
-  }; 
+  };
 };
 
 module.exports = THREE.VRViewerEffect;
-
-
-
-
-
