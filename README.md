@@ -1,4 +1,4 @@
-# vrEmbed
+# vrEmbed, by Bhautik Joshi
 
 <img src="src/assets/vrEmbedLogo.png" width="300px">
 
