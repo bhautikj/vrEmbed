@@ -9,50 +9,7 @@ var VRViewerEffect = require('./VRViewerEffect.js');
 var VRViewerEffectModes = require('./VRViewerEffectModes.js');
 var VRUtil = require('./VRUtil.js');
 var VROptions = require('./VROptions.js');
-var VRURLParser = require('./VRURLParser.js');
-
-VRScenePhoto = function() {
-  this.scenePhoto = null;
-  this.textureDescription = null;
-  this.isStereo = false;
-
-  this.toVec2 = function(str) {
-    var arr = str.split(",");
-    return new THREE.Vector2(arr[0].trim(), arr[1].trim());
-  };
-
-  this.parseSphereParams = function(str) {
-    var arr = str.split(",");
-    this.textureDescription.sphereFOV = new THREE.Vector2(arr[0].trim(), arr[1].trim());
-    this.textureDescription.sphereCentre = new THREE.Vector2(arr[2].trim(), arr[3].trim());
-  };
-
-  this.parseTexParams = function(str) {
-    var arr = str.split(",");
-    this.textureDescription.U_l = new THREE.Vector2(arr[0].trim(), arr[1].trim());
-    this.textureDescription.V_l = new THREE.Vector2(arr[2].trim(), arr[3].trim());
-    this.textureDescription.U_r = new THREE.Vector2(arr[4].trim(), arr[5].trim());
-    this.textureDescription.V_r = new THREE.Vector2(arr[6].trim(), arr[7].trim());
-  };
-
-  this.init = function(scenePhoto) {
-    this.scenePhoto = scenePhoto;
-    this.textureDescription = new VRTextureDescription();
-    this.textureDescription.textureSource = this.scenePhoto.getAttribute("src");
-    if (this.textureDescription.textureSource  == null){
-      //TODO: throw exception
-      this.textureDescription = null;
-      return;
-    }
-    this.textureDescription.metaSource = "";
-    this.textureDescription.isStereo = this.scenePhoto.getAttribute("isStereo");
-    if (this.textureDescription.isStereo.toLowerCase()=="true")
-      this.isStereo = true;
-
-    this.parseSphereParams(this.scenePhoto.getAttribute("sphereParams"));
-    this.parseTexParams(this.scenePhoto.getAttribute("texParams"));
-  };
-};
+var VRScenePhoto = require('./VRScenePhoto.js');
 
 VRSceneImg = function() {
   this.sceneImg = null;
@@ -136,6 +93,12 @@ VRScene = function() {
     if (vrEmbedPhotoElm.isStereo == true)
       this.isStereo = true;
     this.renderObjects.push(vrEmbedPhotoElm);
+  }
+
+  this.initFromURLSource = function(scenePhoto) {
+    if (scenePhoto.isStereo == true)
+      this.isStereo = true;
+    this.renderObjects.push(scenePhoto);
   }
 };
 
@@ -500,7 +463,6 @@ VRStory = function() {
   };
 
   this.initVrEmbedPhoto = function(vrEmbedPhoto, storyManager) {
-
     // div wrap vrEmbedPhoto
     var stretchyDiv = document.createElement('div');
     var s = stretchyDiv.style;
@@ -533,6 +495,40 @@ VRStory = function() {
 
     this.init(innerMost, storyManager);
   };
+
+  this.initFromURLSource = function(scenePhoto, storyManager) {
+    // div wrap vrEmbedPhoto
+    var stretchyDiv = document.createElement('div');
+    var s = stretchyDiv.style;
+    //s.position = 'relative';
+    s.width = '100%';
+    s.paddingBottom = '100%';
+
+    var innerDiv = document.createElement('div');
+    var t = innerDiv.style;
+    t.position = 'absolute';
+    t.top = '0';
+    t.bottom = '0';
+    t.left = '0';
+    t.right = '0';
+    t.color = 'white';
+    t.fontSize = '24px';
+    t.textAlign = 'center';
+
+    var innerMost = document.createElement('a');
+    innerDiv.appendChild(innerMost);
+    stretchyDiv.appendChild(innerDiv);
+    document.body.appendChild(stretchyDiv);
+
+    var vrScene = new VRScene();
+    vrScene.initFromURLSource(scenePhoto);
+
+    if (vrScene.isStereo)
+      this.isStereo = true;
+    this.sceneList.push(vrScene);
+
+    this.init(innerMost, storyManager);
+  }
 
   this.initStory = function(storyElement, storyManager) {
     var scenes=storyElement.children;
@@ -650,6 +646,12 @@ THREE.StoryParser = function () {
       this.storyManager.addStory(vrStory);
     }
   };
+
+  this.initFromURLSource  = function(scenePhoto){
+    var vrStory = new VRStory();
+    vrStory.initFromURLSource(scenePhoto, this.storyManager);
+    this.storyManager.addStory(vrStory);
+  }
 
   this.onResize = function() {
     this.storyManager.onResize();

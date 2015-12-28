@@ -1,3 +1,5 @@
+var VRScenePhoto = require('./VRScenePhoto.js');
+
 function getSearchParameters() {
       var prmstr = window.location.search.substr(1);
       return prmstr != null && prmstr != "" ? transformToAssocArray(prmstr) : {};
@@ -8,8 +10,8 @@ function transformToAssocArray( prmstr ) {
     var prmarr = prmstr.split("&");
     for ( var i = 0; i < prmarr.length; i++) {
         var tmparr = prmarr[i].split("=");
-        params[tmparr[0]] = tmparr[1];
-        console.log(tmparr[0], tmparr[1]);
+        params[tmparr[0]] = decodeURIComponent(tmparr[1]);
+        //console.log(tmparr[0], params[tmparr[0]]);
     }
     return params;
 }
@@ -17,6 +19,8 @@ function transformToAssocArray( prmstr ) {
 VRURLParser = function () {
   this.isEditor = false;
   this.params = [];
+  this.scenePhoto = null;
+
   this.parseURL = function() {
     this.params = getSearchParameters();
   }
@@ -28,13 +32,21 @@ VRURLParser = function () {
     var numArgs = 0;
     for (var key in this.params) {
       numArgs+=1;
-      console.log(this.params[key]);
+      //console.log(this.params[key]);
     }
 
+
     if(editorTags.length != 0 && numArgs != 0){
-      this.isEditor = true;
-      console.log("IS EDITOR");
+      this.scenePhoto = new VRScenePhoto();
+      this.scenePhoto.initFromURL(this.params);
+      if (this.scenePhoto.textureDescription != null){
+        this.isEditor = true;
+        return this.scenePhoto;
+      }
     }
+
+    //TODO: raise meaningful parse error
+    return null;
   }
 };
 

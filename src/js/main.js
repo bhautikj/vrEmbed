@@ -1,4 +1,6 @@
 var StoryParser = require('./VRParser.js');
+var VRURLParser = require('./VRURLParser.js');
+
 var domReady = require('../js-ext/domready.js')
 
 var URLParserFactory = (function () {
@@ -58,6 +60,18 @@ if (!window.VRURLPARSER_INIT){
   if (urlParser.isEditor == true){
     window.stop();
     document.body.innerHTML = "";
+
+    window.VRSTORYPARSER_INIT = true;
+    var storyParser = new StoryParser();
+
+    function onResize() {
+      storyParser.onResize();
+    }
+
+    window.addEventListener('resize', onResize, false);
+
+    storyParser.initFromURLSource(urlParser.scenePhoto);
+
     return;
   }
 }
