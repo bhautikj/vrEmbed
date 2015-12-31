@@ -11,49 +11,39 @@
 
     -->
     <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0, user-scalable=yes">
-    <meta property="og:title" content="TWGL.js - tiny" />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="http://twgljs.org/examples/screenshots/tiny.png" />
-    <meta property="og:description" content="TWGL.js - tiny" />
-    <meta property="og:url" content="http://twgljs.org" />
-
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:site" content="@greggman">
-    <meta name="twitter:creator" content="@greggman">
-    <meta name="twitter:domain" content="twgljs.org">
-    <meta name="twitter:title" content="TWGL.js - tiny">
-    <meta name="twitter:url" content="http://twgljs.org/examples/tiny.html">
-    <meta name="twitter:description" content="TWGL.js - tiny">
-    <meta name="twitter:image:src" content="http://twgljs.org/examples/screenshots/tiny.png">
-
-    <link href="/resources/images/twgljs-icon.png" rel="shortcut icon" type="image/png">
-
-    <title>twgl.js - tiny</title>
+    <title>twgl test</title>
     <style>
-      html, body {
-        margin: 0px;
+      div.stretchy-wrapper {
         width: 100%;
-        height: 100%;
-        overflow: hidden;
-        font-family: monospace;
+        padding-bottom: 56.25%; /* 16:9 */
+        /* Other aspect ratios to try:
+        * 56.25% = 16:9
+        * 75% = 4:3
+        * 66.66% = 3:2
+        * 62.5% = 8:5
+        */
+        position: relative;
+      /*   background: blue; */
       }
-      canvas {
-        width: 100%;
-        height: 100%;
-      }
-      #b {
+
+      div.stretchy-wrapper > div {
         position: absolute;
-        top: 10px;
-        width: 100%;
+        top: 0; bottom: 0; left: 0; right: 0;
+
+        color: white;
+        font-size: 24px;
         text-align: center;
-        z-index: 2;
       }
     </style>
   </head>
   <body>
-    <canvas id="c"></canvas>
-    <div id="b"><a href="http://twgljs.org">twgl.js</a> - tiny</div>
+    twgl test wrapper<br/><br/>
+    <div class="stretchy-wrapper"><div>
+      <canvas id="c" style="width:80%"></canvas>
+    </div></div>
   </body>
+
+
   <script id="vs" type="notjs">
     attribute vec4 position;
 
@@ -61,25 +51,18 @@
       gl_Position = position;
     }
   </script>
+
   <script id="fs" type="notjs">
     precision mediump float;
-
     uniform vec2 resolution;
-    uniform float time;
-
-    void main() {
+    void main(void) {
+      //normalize uv so it is between 0 and 1
       vec2 uv = gl_FragCoord.xy / resolution;
-      float color = 0.0;
-      // lifted from glslsandbox.com
-      color += sin( uv.x * cos( time / 3.0 ) * 60.0 ) + cos( uv.y * cos( time / 2.80 ) * 10.0 );
-      color += sin( uv.y * sin( time / 2.0 ) * 40.0 ) + cos( uv.x * sin( time / 1.70 ) * 40.0 );
-      color += sin( uv.x * sin( time / 1.0 ) * 10.0 ) + sin( uv.y * sin( time / 3.50 ) * 80.0 );
-      color *= sin( time / 10.0 ) * 0.5;
-
-      gl_FragColor = vec4( vec3( color * 0.5, sin( color + time / 2.5 ) * 0.75, color ), 1.0 );
+      gl_FragColor = vec4( uv.x,uv.y, 0.0, 1.0 );
     }
   </script>
   <script src="src/js-ext/twgl.js"></script>
+  
   <script>
     "use strict";
     var gl = twgl.getWebGLContext(document.getElementById("c"));
