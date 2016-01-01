@@ -62,7 +62,7 @@
     }
   </script>
   <script src="src/js-ext/twgl.js"></script>
-  
+
   <script>
     "use strict";
     var gl = twgl.getWebGLContext(document.getElementById("c"));
@@ -78,7 +78,6 @@
       gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
       var uniforms = {
-        time: time * 0.001,
         resolution: [gl.canvas.width, gl.canvas.height],
       };
 
