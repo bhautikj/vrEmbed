@@ -35,24 +35,6 @@
       <twglTest></twglTest>
     </div></div>
   </body>
-  <script id="vs" type="notjs">
-    attribute vec4 position;
 
-    void main() {
-      gl_Position = position;
-    }
-  </script>
-
-  <script id="fs" type="notjs">
-    precision mediump float;
-    uniform vec2 resolution;
-    void main(void) {
-      //normalize uv so it is between 0 and 1
-      vec2 uv = gl_FragCoord.xy / resolution;
-      gl_FragColor = vec4( uv.x,uv.y, 0.0, 1.0 );
-    }
-  </script>
-
-  <script src="bin/twglTest.js">
-  </script>
+  <script src="bin/twglTest.js"></script>
 </html>
