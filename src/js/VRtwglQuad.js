@@ -6,6 +6,8 @@ VRtwglQuad = function() {
   this.programInfo = null;
   this.bufferInfo = null;
   this.parentElement = null;
+  this.uniforms = null;
+
   var self = this;
 
   this.init = function (elm, vs, fs){
@@ -44,23 +46,15 @@ VRtwglQuad = function() {
     }
   }
 
-  this.render = function() {
-    //console.log(self.glContext.canvas.width, self.glContext.canvas.height);
-    //console.log(self.canvas.clientWidth, self.canvas.clientHeight);
-    var uniforms = {
-      resolution: [self.canvas.clientWidth, self.canvas.clientHeight],
-    };
-
-    self.glContext.useProgram(self.programInfo.program);
-    twgl.setBuffersAndAttributes(self.glContext, self.programInfo, self.bufferInfo);
-    twgl.setUniforms(self.programInfo, uniforms);
-    twgl.drawBufferInfo(self.glContext, self.glContext.TRIANGLES, self.bufferInfo);
-    // console.log("RENDER");
+  this.setUniforms = function(uniforms) {
+      this.uniforms = uniforms;
   }
 
-  this.anim = function() {
-    self.render();
-    requestAnimationFrame(self.anim);
+  this.render = function() {
+    self.glContext.useProgram(self.programInfo.program);
+    twgl.setBuffersAndAttributes(self.glContext, self.programInfo, self.bufferInfo);
+    twgl.setUniforms(self.programInfo, this.uniforms);
+    twgl.drawBufferInfo(self.glContext, self.glContext.TRIANGLES, self.bufferInfo);
   }
 }
 
