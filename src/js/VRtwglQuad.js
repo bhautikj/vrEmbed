@@ -1,6 +1,8 @@
 var twgl = require('../js-ext/twgl-full.js');
 
 VRtwglQuad = function() {
+  var self = this;
+
   this.canvas = null;
   this.glContext = null;
   this.programInfo = null;
@@ -8,7 +10,6 @@ VRtwglQuad = function() {
   this.parentElement = null;
   this.uniforms = null;
 
-  var self = this;
 
   this.init = function (elm, vs, fs){
     this.parentElement = elm.parentNode;
