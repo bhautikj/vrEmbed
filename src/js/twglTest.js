@@ -28,7 +28,7 @@ runTestStereographic = function() {
     vrtwglQuadStereoProjection.init(twglTestElement);
 
     var texDesc = new VRTextureDescription();
-    texDesc.textureSource='img/stereograph_b.jpg';
+    texDesc.textureSource='src/assets/rheingauer_dom.jpg';
     vrtwglQuadStereoProjection.setupProjection(texDesc);
 
 
