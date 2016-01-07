@@ -3,8 +3,8 @@ var twgl = require('../js-ext/twgl-full.js');
 VRtwglQuad = function() {
   var self = this;
 
-  this.glContext = null;
   this.canvas = null;
+  this.glContext = null;
   this.programInfo = null;
   this.bufferInfo = null;
   this.parentElement = null;
