@@ -1,4 +1,5 @@
 VRtwglQuad = require('./VRtwglQuad.js');
+twgl = require('../js-ext/twgl-full.js');
 
 var vs = "attribute vec4 position;\n"+
 "void main() {\n"+
@@ -7,16 +8,21 @@ var vs = "attribute vec4 position;\n"+
 
 var fs = "precision mediump float;\n"+
 "uniform vec2 resolution;\n"+
+"uniform sampler2D textureSource;\n"+
 "void main(void) {\n"+
 "  //normalize uv so it is between 0 and 1\n"+
-"  vec2 uv = gl_FragCoord.xy / resolution;\n"+
-"  gl_FragColor = vec4( uv.x,uv.y, 0.0, 1.0 );\n"+
-"}\n";
+"  vec2 uv = -1.*gl_FragCoord.xy / resolution;\n"+
+"  gl_FragColor = texture2D(textureSource, vec2(uv.x, uv.y));\n"+
+"}\n"
 
 
 VRtwglQuadStereoProjection = function() {
   var self = this;
   this.vrtwglQuad = null;
+  this.uniforms = {
+    resolution:[0,0],
+    textureSource:null
+  };
 
   this.init = function(element){
     this.vrtwglQuad = new VRtwglQuad();
@@ -28,11 +34,9 @@ VRtwglQuadStereoProjection = function() {
   }
 
   this.render = function() {
-    var uniforms = {
-      resolution: [self.vrtwglQuad.canvas.clientWidth, self.vrtwglQuad.canvas.clientHeight],
-    };
+    this.uniforms["resolution"] = [self.vrtwglQuad.canvas.clientWidth, self.vrtwglQuad.canvas.clientHeight];
 
-    self.vrtwglQuad.setUniforms(uniforms);
+    self.vrtwglQuad.setUniforms(this.uniforms);
     self.vrtwglQuad.render();
   }
 
@@ -40,6 +44,19 @@ VRtwglQuadStereoProjection = function() {
     self.render();
     requestAnimationFrame(self.anim);
   }
+
+  this.setupProjection = function (textureDescription) {
+    var gl = self.vrtwglQuad.glContext;
+    var tex = twgl.createTexture(gl, {
+      min: gl.NEAREST,
+      mag: gl.NEAREST,
+      src: textureDescription.textureSource,
+      crossOrigin: "", // either this or use twgl.setDefaults
+    });
+
+    this.uniforms["textureSource"] = tex;
+  }
+
 
 }
 

@@ -19,8 +19,14 @@ VRtwglQuad = function() {
     this.programInfo = twgl.createProgramInfo(this.glContext , [vs, fs]);
 
     var arrays = {
-      position: [-1, -1, 0, 1, -1, 0, -1, 1, 0, -1, 1, 0, 1, -1, 0, 1, 1, 0],
-    };
+      position: [-1, -1, 0, //bottom left
+                 1, -1, 0, //bottom right
+                 -1, 1, 0, //top left
+                 -1, 1, 0, //top left
+                 1, -1, 0, //bottom right
+                 1, 1, 0 //top right
+                 ],
+        };
 
     this.bufferInfo = twgl.createBufferInfoFromArrays(this.glContext, arrays);
   }

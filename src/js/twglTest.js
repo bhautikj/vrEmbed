@@ -16,4 +16,28 @@ runTest = function() {
   }
 }
 
-runTest();
+// create a test quad from this element: <twglTest></twglTest>
+runTestStereographic = function() {
+  VRtwglQuadStereoProjection = require('./VRtwglQuadStereoProjection.js');
+  VRTextureDescription = require('./VRTextureDescription.js');
+
+  var twglTestElements=document.getElementsByTagName("twglTest");
+  for(twglTestIt = 0;twglTestIt < twglTestElements.length; twglTestIt++) {
+    var twglTestElement = twglTestElements[twglTestIt];
+    var vrtwglQuadStereoProjection = new VRtwglQuadStereoProjection();
+    vrtwglQuadStereoProjection.init(twglTestElement);
+
+    var texDesc = new VRTextureDescription();
+    texDesc.textureSource='img/stereograph_b.jpg';
+    vrtwglQuadStereoProjection.setupProjection(texDesc);
+
+
+    vrtwglQuadStereoProjection.resize();
+    window.addEventListener('resize', vrtwglQuadStereoProjection.resize, false);
+    vrtwglQuadStereoProjection.anim();
+  }
+}
+
+
+
+runTestStereographic();
