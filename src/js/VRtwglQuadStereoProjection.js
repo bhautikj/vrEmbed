@@ -11,7 +11,8 @@ var fs = "precision mediump float;\n"+
 "uniform sampler2D textureSource;\n"+
 "void main(void) {\n"+
 "  //normalize uv so it is between 0 and 1\n"+
-"  vec2 uv = -1.*gl_FragCoord.xy / resolution;\n"+
+"  vec2 uv = gl_FragCoord.xy / resolution;\n"+
+"  uv.y = 1. - uv.y;\n"+
 "  gl_FragColor = texture2D(textureSource, vec2(uv.x, uv.y));\n"+
 "}\n"
 
@@ -48,8 +49,8 @@ VRtwglQuadStereoProjection = function() {
   this.setupProjection = function (textureDescription) {
     var gl = self.vrtwglQuad.glContext;
     var tex = twgl.createTexture(gl, {
-      min: gl.NEAREST,
-      mag: gl.NEAREST,
+      min: gl.LINEAR,
+      mag: gl.LINEAR,
       src: textureDescription.textureSource,
       crossOrigin: "", // either this or use twgl.setDefaults
     });
