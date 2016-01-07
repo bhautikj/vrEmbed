@@ -1,4 +1,4 @@
-var twgl = require('../js-ext/twgl.js');
+var twgl = require('../js-ext/twgl-full.js');
 
 VRtwglQuad = function() {
   this.canvas = null;
