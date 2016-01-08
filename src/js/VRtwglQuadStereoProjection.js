@@ -6,6 +6,7 @@ var vs = "attribute vec4 position;\n"+
 "  gl_Position = position;\n"+
 "}\n";
 
+// equations - see: http://stackoverflow.com/a/1185413
 var fs = "precision mediump float;\n"+
 "#define PI 3.141592653589793\n"+
 "uniform vec2 resolution;\n"+
@@ -15,6 +16,7 @@ var fs = "precision mediump float;\n"+
 "  //normalize uv so it is between 0 and 1\n"+
 "  vec2 uv = gl_FragCoord.xy / resolution;\n"+
 "  uv.y = (1. - uv.y);\n"+
+//"  uv = 2.*uv;\n"+
 "  float lat = uv.y;\n"+
 "  float lon = uv.x;\n"+
 "  vec4 sphere_pnt = vec4(cos(lat) * cos(lon), cos(lat) * sin(lon), sin(lat), 1.);\n"+
@@ -37,9 +39,9 @@ VRtwglQuadStereoProjection = function() {
   this.init = function(element){
     this.vrtwglQuad = new VRtwglQuad();
     this.vrtwglQuad.init(element, vs, fs);
-    //twgl.m4.rotateX(this.uniforms.transform, 0.1, this.uniforms.transform);
-    //twgl.m4.rotateY(this.uniforms.transform, Math.PI/2, this.uniforms.transform);
-    //twgl.m4.rotateZ(this.uniforms.transform, Math.PI/2, this.uniforms.transform);
+    //twgl.m4.rotateZ(this.uniforms.transform, 0, this.uniforms.transform); // yaw
+    //var axis = twgl.v3.create(0,1,0);
+    //twgl.m4.axisRotate(this.uniforms.transform, axis, Math.PI/2, this.uniforms.transform);
   }
 
   this.resize = function() {
@@ -49,6 +51,7 @@ VRtwglQuadStereoProjection = function() {
   this.render = function() {
     this.uniforms["resolution"] = [self.vrtwglQuad.canvas.clientWidth, self.vrtwglQuad.canvas.clientHeight];
     //twgl.m4.rotateX(this.uniforms.transform, 0.01, this.uniforms.transform);
+
 
     self.vrtwglQuad.setUniforms(this.uniforms);
     self.vrtwglQuad.render();
