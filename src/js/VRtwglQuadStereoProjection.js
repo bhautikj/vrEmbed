@@ -21,6 +21,7 @@ var fs = "precision mediump float;\n"+
 "  float lon = uv.x;\n"+
 "  vec4 sphere_pnt = vec4(cos(lat) * cos(lon), cos(lat) * sin(lon), sin(lat), 1.);\n"+
 "  sphere_pnt *= transform;\n"+
+//"  float R = length(sphere_pnt);\n"+
 "  float finalLat = asin(sphere_pnt.z);\n"+
 "  float finalLon = atan(sphere_pnt.y, sphere_pnt.x);\n"+
 "  gl_FragColor = texture2D(textureSource, vec2(finalLon, finalLat));\n"+
