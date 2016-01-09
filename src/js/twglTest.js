@@ -39,5 +39,5 @@ runTestStereographic = function() {
 }
 
 
-
+//runTest();
 runTestStereographic();
