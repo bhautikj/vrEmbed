@@ -15,6 +15,21 @@ runTest = function() {
     vrTwglQuadTest.anim();
   }
 }
+runTestBuffer = function() {
+  VRtwglQuadTestBuffer = require('./VRtwglQuadTestBuffer.js');
+
+  console.log("INIT");
+  var twglTestElements=document.getElementsByTagName("twglTest");
+  for(twglTestIt = 0;twglTestIt < twglTestElements.length; twglTestIt++) {
+    console.log("FOUND");
+    var twglTestElement = twglTestElements[twglTestIt];
+    var vrTwglQuadTest = new VRtwglQuadTestBuffer();
+    vrTwglQuadTest.init(twglTestElement);
+    vrTwglQuadTest.resize();
+    window.addEventListener('resize', vrTwglQuadTest.resize, false);
+    vrTwglQuadTest.anim();
+  }
+}
 
 // create a test quad from this element: <twglTest></twglTest>
 runTestStereographic = function() {
@@ -39,5 +54,6 @@ runTestStereographic = function() {
 }
 
 
+runTestBuffer();
 //runTest();
-runTestStereographic();
+//runTestStereographic();

@@ -9,14 +9,9 @@ VRtwglQuad = function() {
   this.bufferInfo = null;
   this.parentElement = null;
   this.uniforms = null;
+  this.fbSize = 2048;
 
-
-  this.init = function (elm, vs, fs){
-    this.parentElement = elm.parentNode;
-    this.canvas = document.createElement('canvas');
-    elm.appendChild(this.canvas);
-
-    this.glContext = twgl.getWebGLContext(this.canvas);
+  this.initCore = function(vs, fs) {
     this.programInfo = twgl.createProgramInfo(this.glContext , [vs, fs]);
 
     var arrays = {
@@ -30,6 +25,30 @@ VRtwglQuad = function() {
         };
 
     this.bufferInfo = twgl.createBufferInfoFromArrays(this.glContext, arrays);
+  }
+
+  this.init = function (elm, vs, fs){
+    this.parentElement = elm.parentNode;
+    this.canvas = document.createElement('canvas');
+    elm.appendChild(this.canvas);
+    this.glContext = twgl.getWebGLContext(this.canvas);
+
+    this.initCore(vs, fs);
+  }
+
+  this.initFramebuffer = function(fbSize, glContext, vs, fs) {
+    this.glContext = glContext;
+    this.initCore(vs, fs);
+    this.fbSize = fbSize;
+    this.framebufferInfo = twgl.createFramebufferInfo(this.glContext, undefined, this.fbSize, this.fbSize);
+  }
+
+  this.getFramebufferTexture = function() {
+    return this.framebufferInfo.attachments[0];
+  }
+
+  this.getFramebufferSize = function() {
+    return this.fbSize;
   }
 
   this.resize = function() {
@@ -62,6 +81,12 @@ VRtwglQuad = function() {
     twgl.setBuffersAndAttributes(self.glContext, self.programInfo, self.bufferInfo);
     twgl.setUniforms(self.programInfo, this.uniforms);
     twgl.drawBufferInfo(self.glContext, self.glContext.TRIANGLES, self.bufferInfo);
+  }
+
+  this.renderFramebuffer = function() {
+    twgl.bindFramebufferInfo(self.glContext, self.framebufferInfo);
+    this.render();
+    twgl.bindFramebufferInfo(self.glContext, null);
   }
 }
 
