@@ -7,7 +7,7 @@ var vs = "attribute vec4 position;\n"+
 "}\n";
 
 // equations - see: http://stackoverflow.com/a/1185413
-var fs = "precision mediump float;\n"+
+var fsFull360180 = "precision mediump float;\n"+
 "#define PI 3.141592653589793\n"+
 "uniform vec2 resolution;\n"+
 "uniform sampler2D textureSource;\n"+
@@ -44,9 +44,7 @@ VRtwglQuadStereoProjection = function() {
 
   this.init = function(element){
     this.vrtwglQuad = new VRtwglQuad();
-    this.vrtwglQuad.init(element, vs, fs);
-    //var axis = twgl.v3.create(0,0,1);
-    //twgl.m4.axisRotate(this.uniforms.transform, axis, Math.PI, this.uniforms.transform);
+    this.vrtwglQuad.init(element, vs, fsFull360180);
   }
 
   this.resize = function() {
@@ -59,7 +57,6 @@ VRtwglQuadStereoProjection = function() {
     twgl.m4.axisRotate(this.uniforms.transform, axisYaw, 0.01, this.uniforms.transform);
     var axisPitch = twgl.v3.create(0,0,1);
     twgl.m4.axisRotate(this.uniforms.transform, axisPitch, 0.01, this.uniforms.transform);
-
 
     self.vrtwglQuad.setUniforms(this.uniforms);
     self.vrtwglQuad.render();
