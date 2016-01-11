@@ -54,6 +54,6 @@ runTestStereographic = function() {
 }
 
 
-runTestBuffer();
+//runTestBuffer();
 //runTest();
-//runTestStereographic();
+runTestStereographic();
