@@ -32,6 +32,36 @@ var fsFull360180 = "precision mediump float;\n"+
 "  gl_FragColor = texture2D(textureSource, vec2(finalLon, finalLat));\n"+
 "}\n"
 
+var fsWindowed = "precision mediump float;\n"+
+"#define PI 3.141592653589793\n"+
+"uniform vec2 resolution;\n"+
+"uniform sampler2D textureSource;\n"+
+"uniform mat4 transform;\n"+
+"void main(void) {\n"+
+"  //normalize uv so it is between 0 and 1\n"+
+"  vec2 uv = gl_FragCoord.xy / resolution;\n"+
+"  uv.y = (1. - uv.y);\n"+
+"  vec2 sphX = vec2(.25,.25);\n"+
+"  vec2 sphY = vec2(.75,.75);\n"+
+"  vec2 sphYX = sphY-sphX;\n"+
+"  vec2 testPt = (uv-sphX);\n"+
+"  testPt= mod(testPt, 1.)/sphYX;\n"+
+"  if (testPt.x<0. || testPt.x>1. || testPt.y<0. || testPt.y>1.){ discard; return;}\n"+
+"  //map uv.x 0..1 to -PI..PI and uv.y 0..1 to -PI/2..PI/2\n"+
+"  float lat = 0.5*PI*(uv.y-0.5);\n"+
+"  float lon = PI*(uv.x-0.5);\n"+
+"  // map lat/lon to point on unit sphere\n"+
+"  vec4 sphere_pnt = vec4(cos(lat) * cos(lon), cos(lat) * sin(lon), sin(lat), 1.);\n"+
+"  // rotate point around origin via transform - pitch/yaw etc\n"+
+"  sphere_pnt *= transform;\n"+
+"  // now map point in sphere back to lat/lon coords\n"+
+"  float R = length(sphere_pnt);\n"+
+"  // map asin, which is -PI/2..PI/2 to 0..1\n"+
+"  float finalLat = 0.5+asin(sphere_pnt.z/R)/(0.5*PI);\n"+
+"  // map atan, which is -PI..PI to 0..1\n"+
+"  float finalLon = 0.5+atan(sphere_pnt.y, sphere_pnt.x)/(PI);\n"+
+"  gl_FragColor = texture2D(textureSource, vec2(finalLon, finalLat));\n"+
+"}\n"
 
 VRtwglQuadStereoProjection = function() {
   var self = this;
@@ -44,7 +74,7 @@ VRtwglQuadStereoProjection = function() {
 
   this.init = function(element){
     this.vrtwglQuad = new VRtwglQuad();
-    this.vrtwglQuad.init(element, vs, fsFull360180);
+    this.vrtwglQuad.init(element, vs, fsWindowed);
   }
 
   this.resize = function() {
@@ -53,10 +83,10 @@ VRtwglQuadStereoProjection = function() {
 
   this.render = function() {
     this.uniforms["resolution"] = [self.vrtwglQuad.canvas.clientWidth, self.vrtwglQuad.canvas.clientHeight];
-    var axisYaw = twgl.v3.create(0,1,0);
-    twgl.m4.axisRotate(this.uniforms.transform, axisYaw, 0.01, this.uniforms.transform);
-    var axisPitch = twgl.v3.create(0,0,1);
-    twgl.m4.axisRotate(this.uniforms.transform, axisPitch, 0.01, this.uniforms.transform);
+    // var axisYaw = twgl.v3.create(0,1,0);
+    // twgl.m4.axisRotate(this.uniforms.transform, axisYaw, 0.01, this.uniforms.transform);
+    // var axisPitch = twgl.v3.create(0,0,1);
+    // twgl.m4.axisRotate(this.uniforms.transform, axisPitch, 0.01, this.uniforms.transform);
 
     self.vrtwglQuad.setUniforms(this.uniforms);
     self.vrtwglQuad.render();
