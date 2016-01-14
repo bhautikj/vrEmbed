@@ -6,6 +6,18 @@ var vs = "attribute vec4 position;\n"+
 "  gl_Position = position;\n"+
 "}\n";
 
+var fsPassthrough = "precision mediump float;\n"+
+"#define PI 3.141592653589793\n"+
+"uniform vec2 resolution;\n"+
+"uniform sampler2D textureSource;\n"+
+"uniform mat4 transform;\n"+
+"void main(void) {\n"+
+"  //normalize uv so it is between 0 and 1\n"+
+"  vec2 uv = gl_FragCoord.xy / resolution;\n"+
+"  uv.y = (1. - uv.y);\n"+
+"  gl_FragColor = texture2D(textureSource, vec2(uv.x, uv.y));\n"+
+"}\n"
+
 // equations - see: http://stackoverflow.com/a/1185413
 var fsFull360180 = "precision mediump float;\n"+
 "#define PI 3.141592653589793\n"+
@@ -16,6 +28,8 @@ var fsFull360180 = "precision mediump float;\n"+
 "  //normalize uv so it is between 0 and 1\n"+
 "  vec2 uv = gl_FragCoord.xy / resolution;\n"+
 "  uv.y = (1. - uv.y);\n"+
+"  vec2 rads = vec2(PI * 2. , PI);\n"+
+//"  uv.y = .5+2.*(uv.y-0.5);\n"+
 "  //map uv.x 0..1 to -PI..PI and uv.y 0..1 to -PI/2..PI/2\n"+
 "  float lat = 0.5*PI*(uv.y-0.5);\n"+
 "  float lon = PI*(uv.x-0.5);\n"+
@@ -25,12 +39,24 @@ var fsFull360180 = "precision mediump float;\n"+
 "  sphere_pnt *= transform;\n"+
 "  // now map point in sphere back to lat/lon coords\n"+
 "  float R = length(sphere_pnt);\n"+
+"  sphere_pnt /= R;\n"+
 "  // map asin, which is -PI/2..PI/2 to 0..1\n"+
-"  float finalLat = 0.5+asin(sphere_pnt.z/R)/(0.5*PI);\n"+
+"  float finalLat = 2.0*(asin(sphere_pnt.z) - PI*.5) + PI*.5;\n"+
 "  // map atan, which is -PI..PI to 0..1\n"+
-"  float finalLon = 0.5+atan(sphere_pnt.y, sphere_pnt.x)/(PI);\n"+
-"  gl_FragColor = texture2D(textureSource, vec2(finalLon, finalLat));\n"+
+"  float finalLon = atan(sphere_pnt.y, sphere_pnt.x);\n"+
+"  finalLon = mod(finalLon, 2.*PI);\n"+
+"  vec2 final = vec2(lon, lat) / rads;\n"+
+"  gl_FragColor = texture2D(textureSource, final);\n"+
 "}\n"
+
+// "  // map asin, which is -PI/2..PI/2 to 0..1\n"+
+// "  float finalLat = 0.5+asin(sphere_pnt.z)/(0.5*PI);\n"+
+// "  // map atan, which is -PI..PI to 0..1\n"+
+// "  float finalLon = 0.5+atan(sphere_pnt.y, sphere_pnt.x)/(PI);\n"+
+
+// "  float finalLat = 2.0*(acos(sphere_pnt.z - PI*.5) + PI*.5;\n"+
+// "  float finalLon = atan(sphere_pnt.y, sphere_pnt.x);\n"+
+// "  finalLon = mod(finalLon, 2.*PI);\n"+
 
 var fsWindowed = "precision mediump float;\n"+
 "#define PI 3.141592653589793\n"+
@@ -41,12 +67,7 @@ var fsWindowed = "precision mediump float;\n"+
 "  //normalize uv so it is between 0 and 1\n"+
 "  vec2 uv = gl_FragCoord.xy / resolution;\n"+
 "  uv.y = (1. - uv.y);\n"+
-"  vec2 sphX = vec2(.25,.25);\n"+
-"  vec2 sphY = vec2(.75,.75);\n"+
-"  vec2 sphYX = sphY-sphX;\n"+
-"  vec2 testPt = (uv-sphX);\n"+
-"  testPt= mod(testPt, 1.)/sphYX;\n"+
-"  if (testPt.x<0. || testPt.x>1. || testPt.y<0. || testPt.y>1.){ discard; return;}\n"+
+"  uv.y = .5+2.*(uv.y-0.5);\n"+
 "  //map uv.x 0..1 to -PI..PI and uv.y 0..1 to -PI/2..PI/2\n"+
 "  float lat = 0.5*PI*(uv.y-0.5);\n"+
 "  float lon = PI*(uv.x-0.5);\n"+
@@ -60,6 +81,13 @@ var fsWindowed = "precision mediump float;\n"+
 "  float finalLat = 0.5+asin(sphere_pnt.z/R)/(0.5*PI);\n"+
 "  // map atan, which is -PI..PI to 0..1\n"+
 "  float finalLon = 0.5+atan(sphere_pnt.y, sphere_pnt.x)/(PI);\n"+
+"  vec2 sphPt = vec2(finalLon, finalLat);\n"+
+"  vec2 sphX = vec2(0.25,0.25);\n"+
+"  vec2 sphY = vec2(0.75,0.75);\n"+
+"  vec2 sphYX = sphY-sphX;\n"+
+"  vec2 testPt = (sphPt-sphX);\n"+
+"  testPt = mod(testPt, 1.)/sphYX;\n"+
+"  if (testPt.x<0. || testPt.x>1. || testPt.y<0. || testPt.y>1.){ discard; return;}\n"+
 "  gl_FragColor = texture2D(textureSource, vec2(finalLon, finalLat));\n"+
 "}\n"
 
@@ -74,7 +102,9 @@ VRtwglQuadStereoProjection = function() {
 
   this.init = function(element){
     this.vrtwglQuad = new VRtwglQuad();
-    this.vrtwglQuad.init(element, vs, fsWindowed);
+    this.vrtwglQuad.init(element, vs, fsFull360180);
+    // var axisYaw = twgl.v3.create(0,1,0);
+    // twgl.m4.axisRotate(this.uniforms.transform, axisYaw, Math.PI/2, this.uniforms.transform);
   }
 
   this.resize = function() {
@@ -84,7 +114,7 @@ VRtwglQuadStereoProjection = function() {
   this.render = function() {
     this.uniforms["resolution"] = [self.vrtwglQuad.canvas.clientWidth, self.vrtwglQuad.canvas.clientHeight];
     // var axisYaw = twgl.v3.create(0,1,0);
-    // twgl.m4.axisRotate(this.uniforms.transform, axisYaw, 0.01, this.uniforms.transform);
+    // twgl.m4.axisRotate(this.uniforms.transform, axisYaw, 0.005, this.uniforms.transform);
     // var axisPitch = twgl.v3.create(0,0,1);
     // twgl.m4.axisRotate(this.uniforms.transform, axisPitch, 0.01, this.uniforms.transform);
 
