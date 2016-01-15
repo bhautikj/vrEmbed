@@ -52,29 +52,30 @@ var fsWindowed = "precision mediump float;\n"+
 "  //normalize uv so it is between 0 and 1\n"+
 "  vec2 uv = gl_FragCoord.xy / resolution;\n"+
 "  uv.y = (1. - uv.y);\n"+
-"  uv.y = .5+2.*(uv.y-0.5);\n"+
 "  //map uv.x 0..1 to -PI..PI and uv.y 0..1 to -PI/2..PI/2\n"+
-"  float lat = 0.5*PI*(uv.y-0.5);\n"+
-"  float lon = PI*(uv.x-0.5);\n"+
+"  float lat = 0.5*PI*(2.*uv.y-1.0);\n"+
+"  float lon = PI*(2.0*uv.x-1.0);\n"+
 "  // map lat/lon to point on unit sphere\n"+
-"  vec4 sphere_pnt = vec4(cos(lat) * cos(lon), cos(lat) * sin(lon), sin(lat), 1.);\n"+
-"  // rotate point around origin via transform - pitch/yaw etc\n"+
+"  float r = cos(lat);\n"+
+"  vec4 sphere_pnt = vec4(r*cos(lon), r*sin(lon), sin(lat), 1.0);\n"+
 "  sphere_pnt *= transform;\n"+
 "  // now map point in sphere back to lat/lon coords\n"+
-"  float R = length(sphere_pnt);\n"+
-"  // map asin, which is -PI/2..PI/2 to 0..1\n"+
-"  float finalLat = 0.5+asin(sphere_pnt.z/R)/(0.5*PI);\n"+
-"  // map atan, which is -PI..PI to 0..1\n"+
-"  float finalLon = 0.5+atan(sphere_pnt.y, sphere_pnt.x)/(PI);\n"+
-"  vec2 sphPt = vec2(finalLon, finalLat);\n"+
+"  float sphere_pnt_len = length(sphere_pnt);\n"+
+"  sphere_pnt /= sphere_pnt_len;\n"+
+"  vec2 lonLat = vec2(atan(sphere_pnt.y, sphere_pnt.x), asin(sphere_pnt.z));\n"+
+"  lonLat.x = (lonLat.x/(2.0*PI))+0.5;\n"+
+"  lonLat.y = (lonLat.y/(.5*PI))+0.5;\n"+
 "  vec2 sphX = vec2(0.25,0.25);\n"+
 "  vec2 sphY = vec2(0.75,0.75);\n"+
 "  vec2 sphYX = sphY-sphX;\n"+
-"  vec2 testPt = (sphPt-sphX);\n"+
+"  vec2 testPt = (lonLat-sphX);\n"+
 "  testPt = mod(testPt, 1.)/sphYX;\n"+
 "  if (testPt.x<0. || testPt.x>1. || testPt.y<0. || testPt.y>1.){ discard; return;}\n"+
-"  gl_FragColor = texture2D(textureSource, vec2(finalLon, finalLat));\n"+
+"  gl_FragColor = texture2D(textureSource, lonLat);\n"+
 "}\n"
+
+
+
 
 VRtwglQuadStereoProjection = function() {
   var self = this;
@@ -87,7 +88,7 @@ VRtwglQuadStereoProjection = function() {
 
   this.init = function(element){
     this.vrtwglQuad = new VRtwglQuad();
-    this.vrtwglQuad.init(element, vs, fsFull360180);
+    this.vrtwglQuad.init(element, vs, fsWindowed);
     // var axisYaw = twgl.v3.create(0,1,0);
     // twgl.m4.axisRotate(this.uniforms.transform, axisYaw, Math.PI/2, this.uniforms.transform);
   }
