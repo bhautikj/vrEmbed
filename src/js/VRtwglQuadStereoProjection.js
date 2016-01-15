@@ -38,6 +38,7 @@ var fsFull360180 = "precision mediump float;\n"+
 "  float sphere_pnt_len = length(sphere_pnt);\n"+
 "  sphere_pnt /= sphere_pnt_len;\n"+
 "  vec2 lonLat = vec2(atan(sphere_pnt.y, sphere_pnt.x), asin(sphere_pnt.z));\n"+
+"  // map back to 0..1\n"+
 "  lonLat.x = (lonLat.x/(2.0*PI))+0.5;\n"+
 "  lonLat.y = (lonLat.y/(.5*PI))+0.5;\n"+
 "  gl_FragColor = texture2D(textureSource, lonLat);\n"+
@@ -63,6 +64,7 @@ var fsWindowed = "precision mediump float;\n"+
 "  float sphere_pnt_len = length(sphere_pnt);\n"+
 "  sphere_pnt /= sphere_pnt_len;\n"+
 "  vec2 lonLat = vec2(atan(sphere_pnt.y, sphere_pnt.x), asin(sphere_pnt.z));\n"+
+"  // map back to 0..1\n"+
 "  lonLat.x = (lonLat.x/(2.0*PI))+0.5;\n"+
 "  lonLat.y = (lonLat.y/(.5*PI))+0.5;\n"+
 "  vec2 sphX = vec2(0.25,0.25);\n"+
