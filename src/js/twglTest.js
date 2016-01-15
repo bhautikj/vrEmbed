@@ -48,6 +48,10 @@ runTestStereographic = function() {
     texDescA.textureSource='src/assets/rheingauer_dom.jpg';
     texArray.push(texDescA);
 
+    var texDescB = new VRTextureDescription();
+    texDescB.textureSource='src/assets/stereograph_b.jpg';
+    texArray.push(texDescB);
+
     vrtwglQuadStereoProjection.loadTextures(texArray);
 
     vrtwglQuadStereoProjection.resize();

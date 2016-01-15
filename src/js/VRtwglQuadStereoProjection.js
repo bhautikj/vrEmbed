@@ -64,7 +64,7 @@ var fsWindowed = "precision mediump float;\n"+
 "void main(void) {\n"+
 "  //normalize uv so it is between 0 and 1\n"+
 "  vec2 uv = gl_FragCoord.xy / resolution;\n"+
-"  uv.y = (1. - uv.y);\n"+
+// "  uv.y = (1. - uv.y);\n"+
 "  //map uv.x 0..1 to -PI..PI and uv.y 0..1 to -PI/2..PI/2\n"+
 "  float lat = 0.5*PI*(2.*uv.y-1.0);\n"+
 "  float lon = PI*(2.0*uv.x-1.0);\n"+
@@ -94,8 +94,8 @@ VRtwglQuadStereoProjection = function() {
   this.vrtwglQuadFb = null;
   this.textureSet = [];
   this.fbRes = 2048;
-  this.textureDescriptions = [];
-  this.textureSources = [];
+  this.textureDescriptions = {};
+  this.textures = [];
 
   this.uniforms = {
     resolution:[0,0],
@@ -114,11 +114,7 @@ VRtwglQuadStereoProjection = function() {
     this.vrtwglQuad.init(element, vs, fsFull360180);
 
     this.vrtwglQuadFb = new VRtwglQuad();
-    this.vrtwglQuadFb.initFramebuffer(this.fbRes, this.vrtwglQuad.glContext, vs, fsTest);
-    // var axisYaw = twgl.v3.create(0,1,0);
-    // twgl.m4.axisRotate(this.uniforms.transform, axisYaw, 0.005, this.uniforms.transform);
-    // var axisPitch = twgl.v3.create(0,0,1);
-    // twgl.m4.axisRotate(this.uniforms.transform, axisPitch, 0.005, this.uniforms.transform);
+    this.vrtwglQuadFb.initFramebuffer(this.fbRes, this.vrtwglQuad.glContext, vs, fsWindowed);
   }
 
   this.resize = function() {
@@ -126,8 +122,8 @@ VRtwglQuadStereoProjection = function() {
   }
 
   this.render = function() {
-    var axisYaw = twgl.v3.create(0,1,0);
-    twgl.m4.axisRotate(this.uniforms.transform, axisYaw, 0.005, this.uniforms.transform);
+    // var axisYaw = twgl.v3.create(0,1,0);
+    // twgl.m4.axisRotate(this.uniforms.transform, axisYaw, 0.005, this.uniforms.transform);
 
     this.uniforms["resolution"] = [self.vrtwglQuad.canvas.clientWidth, self.vrtwglQuad.canvas.clientHeight];
     this.uniforms["textureSource"] = self.vrtwglQuadFb.getFramebufferTexture();
@@ -146,27 +142,44 @@ VRtwglQuadStereoProjection = function() {
     requestAnimationFrame(self.anim);
   }
 
+  this.createOrientation = function(yaw, pitch) {
+    var mat = twgl.m4.identity();
+    var axisYaw = twgl.v3.create(0,1,0);
+    twgl.m4.axisRotate(mat, axisYaw, yaw, mat);
+    var axisPitch = twgl.v3.create(0,0,1);
+    twgl.m4.axisRotate(mat, axisPitch, pitch, mat);
+    return mat;
+  }
+
   this.texturesLoaded = function(err, textures, sources) {
       //alert("TEXTURES LOADED");
-      self.renderFb();
+
+      for (var key in self.textures) {
+        if (self.textures.hasOwnProperty(key)) {
+          //alert(key + " -> " + self.textures[key]);
+          self.uniformsFb["textureSource"] = self.textures[key];
+          self.uniformsFb["transform"] = self.createOrientation(0.5*Math.PI*(2.*Math.random()-.5),Math.PI*(2.*Math.random()-.5));
+          self.renderFb();
+        }
+      }
   }
 
   this.loadTextures = function (textureDescriptions) {
-    this.textureDescriptions = textureDescriptions;
     var gl = self.vrtwglQuad.glContext;
     var texArray = [];
     for(texIt = 0;texIt < textureDescriptions.length; texIt++) {
-      var textureDescription = {
+      var texSpec = {
         min: gl.LINEAR,
         mag: gl.LINEAR,
         src: textureDescriptions[texIt].textureSource,
         crossOrigin: "", // either this or use twgl.setDefaults
       };
-      texArray[texIt] = textureDescription;
+      texArray[texIt] = texSpec;
+      this.textureDescriptions[texIt] = textureDescriptions[texIt];
     }
 
     var gl = self.vrtwglQuad.glContext;
-    var tex = twgl.createTextures(gl, texArray, self.texturesLoaded);
+    this.textures = twgl.createTextures(gl, texArray, this.texturesLoaded);
   }
 
 }
