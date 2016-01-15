@@ -77,22 +77,18 @@ var fsWindowed = "precision mediump float;\n"+
 "}\n"
 
 
-
-
-VRtwglQuadStereoProjection = function() {
+// project textures on to 360x180 canvas
+VRtwglQuadStereoProjector = function() {
   var self = this;
   this.vrtwglQuad = null;
-  this.uniforms = {
-    resolution:[0,0],
-    textureSource:null,
-    transform:twgl.m4.identity()
-  };
+  this.vrtwglQuadFb = null;
 
   this.init = function(element){
     this.vrtwglQuad = new VRtwglQuad();
-    this.vrtwglQuad.init(element, vs, fsWindowed);
-    // var axisYaw = twgl.v3.create(0,1,0);
-    // twgl.m4.axisRotate(this.uniforms.transform, axisYaw, Math.PI/2, this.uniforms.transform);
+    this.vrtwglQuad.init(element, vsTex, fsTex);
+
+    this.vrtwglQuadFb = new VRtwglQuad();
+    this.vrtwglQuadFb.initFramebuffer(2048, this.vrtwglQuad.glContext, vs, fs);
   }
 
   this.resize = function() {
@@ -100,13 +96,19 @@ VRtwglQuadStereoProjection = function() {
   }
 
   this.render = function() {
-    this.uniforms["resolution"] = [self.vrtwglQuad.canvas.clientWidth, self.vrtwglQuad.canvas.clientHeight];
-    // var axisYaw = twgl.v3.create(0,1,0);
-    // twgl.m4.axisRotate(this.uniforms.transform, axisYaw, 0.005, this.uniforms.transform);
-    // var axisPitch = twgl.v3.create(0,0,1);
-    // twgl.m4.axisRotate(this.uniforms.transform, axisPitch, 0.005, this.uniforms.transform);
+    var uniformsFb = {
+      resolution: [2048, 2048]
+    };
 
-    self.vrtwglQuad.setUniforms(this.uniforms);
+    self.vrtwglQuadFb.setUniforms(uniformsFb);
+    self.vrtwglQuadFb.renderFramebuffer();
+
+    var uniforms = {
+      resolution: [self.vrtwglQuad.canvas.clientWidth, self.vrtwglQuad.canvas.clientHeight],
+      textureSource: self.vrtwglQuadFb.getFramebufferTexture()
+    };
+
+    self.vrtwglQuad.setUniforms(uniforms);
     self.vrtwglQuad.render();
   }
 
@@ -115,16 +117,78 @@ VRtwglQuadStereoProjection = function() {
     requestAnimationFrame(self.anim);
   }
 
-  this.setupProjection = function (textureDescription) {
-    var gl = self.vrtwglQuad.glContext;
-    var tex = twgl.createTexture(gl, {
-      min: gl.LINEAR,
-      mag: gl.LINEAR,
-      src: textureDescription.textureSource,
-      crossOrigin: "", // either this or use twgl.setDefaults
-    });
+}
 
-    this.uniforms["textureSource"] = tex;
+
+VRtwglQuadStereoProjection = function() {
+  var self = this;
+  this.vrtwglQuad = null;
+  this.vrtwglQuadFb = null;
+  this.textureSet = [];
+
+  this.uniforms = {
+    resolution:[0,0],
+    textureSource:null,
+    transform:twgl.m4.identity()
+  };
+
+  this.init = function(element){
+    this.vrtwglQuad = new VRtwglQuad();
+    this.vrtwglQuad.init(element, vs, fsFull360180);
+
+    this.vrtwglQuadFb = new VRtwglQuad();
+    this.vrtwglQuadFb.initFramebuffer(2048, this.vrtwglQuad.glContext, vs, fsWindowed);
+    // var axisYaw = twgl.v3.create(0,1,0);
+    // twgl.m4.axisRotate(this.uniforms.transform, axisYaw, 0.005, this.uniforms.transform);
+    // var axisPitch = twgl.v3.create(0,0,1);
+    // twgl.m4.axisRotate(this.uniforms.transform, axisPitch, 0.005, this.uniforms.transform);
+  }
+
+  this.resize = function() {
+    self.vrtwglQuad.resize();
+  }
+
+  this.render = function() {
+    this.uniforms["resolution"] = [self.vrtwglQuad.canvas.clientWidth, self.vrtwglQuad.canvas.clientHeight];
+    this.uniforms["textureSource"] = self.vrtwglQuadFb.getFramebufferTexture();
+
+    self.vrtwglQuad.setUniforms(this.uniforms);
+    self.vrtwglQuad.render();
+  }
+
+  this.renderFb = function() {
+    var uniformsFb = {
+      resolution: [2048, 2048]
+    };
+
+    self.vrtwglQuadFb.setUniforms(uniformsFb);
+    self.vrtwglQuadFb.renderFramebuffer();
+  }
+
+  this.anim = function() {
+    //self.render();
+    requestAnimationFrame(self.anim);
+  }
+
+  this.texturesLoaded = function(err, textures, sources) {
+      alert("TEXTURES LOADED");
+  }
+
+  this.loadTextures = function (textureDescriptions) {
+    var gl = self.vrtwglQuad.glContext;
+    var texArray = [];
+    for(texIt = 0;texIt < textureDescriptions.length; texIt++) {
+      var textureDescription = {
+        min: gl.LINEAR,
+        mag: gl.LINEAR,
+        src: textureDescriptions[texIt].textureSource,
+        crossOrigin: "", // either this or use twgl.setDefaults
+      };
+      texArray[texIt] = textureDescription;
+    }
+
+    var gl = self.vrtwglQuad.glContext;
+    var tex = twgl.createTextures(gl, texArray, self.texturesLoaded);
   }
 
 

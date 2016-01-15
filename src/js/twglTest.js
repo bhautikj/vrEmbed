@@ -42,10 +42,13 @@ runTestStereographic = function() {
     var vrtwglQuadStereoProjection = new VRtwglQuadStereoProjection();
     vrtwglQuadStereoProjection.init(twglTestElement);
 
-    var texDesc = new VRTextureDescription();
-    texDesc.textureSource='src/assets/rheingauer_dom.jpg';
-    vrtwglQuadStereoProjection.setupProjection(texDesc);
+    var texArray = [];
+    // TODO: load multi texDesc
+    var texDescA = new VRTextureDescription();
+    texDescA.textureSource='src/assets/rheingauer_dom.jpg';
+    texArray.push(texDescA);
 
+    vrtwglQuadStereoProjection.loadTextures(texArray);
 
     vrtwglQuadStereoProjection.resize();
     window.addEventListener('resize', vrtwglQuadStereoProjection.resize, false);
