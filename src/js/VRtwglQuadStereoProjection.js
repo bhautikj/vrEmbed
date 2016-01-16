@@ -212,7 +212,7 @@ VRtwglQuadStereoProjection = function() {
   this.init = function(element){
     this.vrtwglQuad = new VRtwglQuad();
     this.vrtwglQuad.init(element, vs, fsRenderDisplay);
-    this.setFOVX(120);
+    this.setFOVX(107);
     this.setDistortionParams(0.51, 0.16);
     this.setIpdAdjust(0.0);
     this.vrtwglQuadFb = new VRtwglQuad();
