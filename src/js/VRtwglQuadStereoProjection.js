@@ -19,8 +19,6 @@ var fsTest = "precision mediump float;\n"+
 "  gl_FragColor = vec4(uv.x, uv.y,0.0,1.0);\n"+
 "}\n"
 
-
-
 var fsFull360180 = "precision mediump float;\n"+
 "#define PI 3.141592653589793\n"+
 "uniform vec2 resolution;\n"+
@@ -57,6 +55,15 @@ var fsRenderDisplay = "precision mediump float;\n"+
 "  //normalize uv so it is between 0 and 1\n"+
 "  vec2 uv = gl_FragCoord.xy / resolution;\n"+
 "  uv.y = (1. - uv.y);\n"+
+"  bool leftImg=false;\n"+
+"  if (renderMode == 1) {\n"+
+"    if (uv.x<0.5) { \n"+
+"      uv.x *= 2.; \n"+
+"      leftImg=true; }\n"+
+"    else {\n"+
+"      uv.x = 2.*(uv.x - .5);\n"+
+"    }\n"+
+"  }\n"+
 "  //map uv.x 0..1 to -PI..PI and uv.y 0..1 to -PI/2..PI/2\n"+
 "  float lat = 0.5*PI*(2.*uv.y-1.0);\n"+
 "  float lon = PI*(2.0*uv.x-1.0);\n"+
@@ -75,6 +82,14 @@ var fsRenderDisplay = "precision mediump float;\n"+
 "  if (renderMode == 0) {\n"+
 "    lonLat.y *= 0.5;\n"+
 "    gl_FragColor = texture2D(textureSource, lonLat);\n"+
+"  } else if (renderMode == 1) {\n"+
+"    if (leftImg == true) {\n"+
+"      lonLat.y *= 0.5;\n"+
+"      gl_FragColor = texture2D(textureSource, lonLat);\n"+
+"    } else {\n"+
+"      lonLat.y = 0.5 + lonLat.y*0.5;\n"+
+"      gl_FragColor = texture2D(textureSource, lonLat);\n"+
+"    }\n"+
 "  } else if (renderMode == 2) {\n"+
 "    // anaglyph render\n"+
 "    vec4 colorL, colorR;\n"+
@@ -148,7 +163,7 @@ VRtwglQuadStereoProjection = function() {
     resolution:[0,0],
     textureSource:null,
     transform:twgl.m4.identity(),
-    renderMode:VRRenderModes.STEREOANAGLYPH
+    renderMode:VRRenderModes.STEREOSIDEBYSIDE
   };
 
   this.uniformsFb = {
@@ -170,10 +185,10 @@ VRtwglQuadStereoProjection = function() {
   }
 
   this.render = function() {
-    var axisYaw = twgl.v3.create(0,1,0);
-    twgl.m4.axisRotate(this.uniforms.transform, axisYaw, 0.005, this.uniforms.transform);
-    var axisPitch = twgl.v3.create(0,0,1);
-    twgl.m4.axisRotate(this.uniforms.transform, axisPitch, 0.005, this.uniforms.transform);
+    // var axisYaw = twgl.v3.create(0,1,0);
+    // twgl.m4.axisRotate(this.uniforms.transform, axisYaw, 0.005, this.uniforms.transform);
+    // var axisPitch = twgl.v3.create(0,0,1);
+    // twgl.m4.axisRotate(this.uniforms.transform, axisPitch, 0.005, this.uniforms.transform);
     this.uniforms["resolution"] = [self.vrtwglQuad.canvas.clientWidth, self.vrtwglQuad.canvas.clientHeight];
     this.uniforms["textureSource"] = self.vrtwglQuadFb.getFramebufferTexture();
 
