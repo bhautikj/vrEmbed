@@ -45,6 +45,8 @@ var fsFull360180 = "precision mediump float;\n"+
 "  gl_FragColor = texture2D(textureSource, lonLat);\n"+
 "}\n"
 
+// display lens distorter equations:
+// https://support.google.com/cardboard/manufacturers/answer/6324808?hl=en
 var fsRenderDisplay = "precision mediump float;\n"+
 "#define PI 3.141592653589793\n"+
 "uniform vec2 resolution;\n"+
@@ -52,6 +54,7 @@ var fsRenderDisplay = "precision mediump float;\n"+
 "uniform mat4 transform;\n"+
 "uniform int renderMode;\n"+
 "uniform vec2 fovParams;\n"+
+"uniform vec2 k;\n"+
 "void main(void) {\n"+
 "  //normalize uv so it is between 0 and 1\n"+
 "  vec2 uv = gl_FragCoord.xy / resolution;\n"+
@@ -59,17 +62,24 @@ var fsRenderDisplay = "precision mediump float;\n"+
 "  bool leftImg=false;\n"+
 "  vec2 fov = fovParams;\n"+
 "  if (renderMode == 1) {\n"+
+"    fov.y *= 2.;\n"+
 "    if (uv.x<0.5) { \n"+
 "      uv.x *= 2.; \n"+
 "      leftImg=true; }\n"+
 "    else {\n"+
 "      uv.x = 2.*(uv.x - .5);\n"+
 "    }\n"+
-"    fov.y *= 2.;\n"+
+"    // lens distorter\n"+
+"    float r2 = (uv.x-0.5)*(uv.x-0.5) + (uv.y-0.5)*(uv.y-0.5);\n"+
+"    uv.x = uv.x*(1. + k.x*r2 + k.y*r2*r2);\n"+
+"    uv.y = uv.y*(1. + k.x*r2 + k.y*r2*r2);\n"+
+"    uv.x = 0.5+fov.x*(uv.x-0.5);\n"+
+"    uv.y = 0.5+fov.y*(uv.y-0.5);\n"+
+"  } else {\n"+
+"    //constrain to FOV\n"+
+"    uv.x = 0.5+fov.x*(uv.x-0.5);\n"+
+"    uv.y = 0.5+fov.y*(uv.y-0.5);\n"+
 "  }\n"+
-"  //constrain to FOV\n"+
-"  uv.x = 0.5+fov.x*(uv.x-0.5);\n"+
-"  uv.y = 0.5+fov.y*(uv.y-0.5);\n"+
 "  //map uv.x 0..1 to -PI..PI and uv.y 0..1 to -PI/2..PI/2\n"+
 "  float lat = 0.5*PI*(2.*uv.y-1.0);\n"+
 "  float lon = PI*(2.0*uv.x-1.0);\n"+
@@ -164,14 +174,15 @@ VRtwglQuadStereoProjection = function() {
   this.fbRes = 2048;
   this.textureDescriptions = {};
   this.textures = [];
-  this.fovX = 120;
+  this.fovX = 40;
 
   this.uniforms = {
     resolution:[0,0],
     fovParams:[0,0],
     textureSource:null,
     transform:twgl.m4.identity(),
-    renderMode:VRRenderModes.STEREOSIDEBYSIDE
+    renderMode:VRRenderModes.STEREOSIDEBYSIDE,
+    k:[0,0]
   };
 
   this.uniformsFb = {
@@ -180,9 +191,19 @@ VRtwglQuadStereoProjection = function() {
     transform:twgl.m4.identity()
   };
 
+  this.setFOVX = function(fovX) {
+    this.fovX = fovX;
+  }
+
+  this.setDistortionParams = function(k1, k2) {
+    this.uniforms.k = [k1, k2];
+  }
+
   this.init = function(element){
     this.vrtwglQuad = new VRtwglQuad();
     this.vrtwglQuad.init(element, vs, fsRenderDisplay);
+    this.setFOVX(120);
+    this.setDistortionParams(0.51, 0.16);
 
     this.vrtwglQuadFb = new VRtwglQuad();
     this.vrtwglQuadFb.initFramebuffer(this.fbRes, this.vrtwglQuad.glContext, vs, fsWindowed);
@@ -193,8 +214,8 @@ VRtwglQuadStereoProjection = function() {
   }
 
   this.render = function() {
-    // var axisPitch = twgl.v3.create(0,0,1);
-    // twgl.m4.axisRotate(this.uniforms.transform, axisPitch, 0.005, this.uniforms.transform);
+    var axisPitch = twgl.v3.create(0,0,1);
+    twgl.m4.axisRotate(this.uniforms.transform, axisPitch, 0.01, this.uniforms.transform);
     // var axisYaw = twgl.v3.create(0,1,0);
     // twgl.m4.axisRotate(this.uniforms.transform, axisYaw, 0.005, this.uniforms.transform);
     this.uniforms["resolution"] = [self.vrtwglQuad.canvas.clientWidth, self.vrtwglQuad.canvas.clientHeight];
