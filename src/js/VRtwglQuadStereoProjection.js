@@ -51,11 +51,13 @@ var fsRenderDisplay = "precision mediump float;\n"+
 "uniform sampler2D textureSource;\n"+
 "uniform mat4 transform;\n"+
 "uniform int renderMode;\n"+
+"uniform vec2 fovParams;\n"+
 "void main(void) {\n"+
 "  //normalize uv so it is between 0 and 1\n"+
 "  vec2 uv = gl_FragCoord.xy / resolution;\n"+
 "  uv.y = (1. - uv.y);\n"+
 "  bool leftImg=false;\n"+
+"  vec2 fov = fovParams;\n"+
 "  if (renderMode == 1) {\n"+
 "    if (uv.x<0.5) { \n"+
 "      uv.x *= 2.; \n"+
@@ -63,7 +65,11 @@ var fsRenderDisplay = "precision mediump float;\n"+
 "    else {\n"+
 "      uv.x = 2.*(uv.x - .5);\n"+
 "    }\n"+
+"    fov.y *= 2.;\n"+
 "  }\n"+
+"  //constrain to FOV\n"+
+"  uv.x = 0.5+fov.x*(uv.x-0.5);\n"+
+"  uv.y = 0.5+fov.y*(uv.y-0.5);\n"+
 "  //map uv.x 0..1 to -PI..PI and uv.y 0..1 to -PI/2..PI/2\n"+
 "  float lat = 0.5*PI*(2.*uv.y-1.0);\n"+
 "  float lon = PI*(2.0*uv.x-1.0);\n"+
@@ -158,9 +164,11 @@ VRtwglQuadStereoProjection = function() {
   this.fbRes = 2048;
   this.textureDescriptions = {};
   this.textures = [];
+  this.fovX = 120;
 
   this.uniforms = {
     resolution:[0,0],
+    fovParams:[0,0],
     textureSource:null,
     transform:twgl.m4.identity(),
     renderMode:VRRenderModes.STEREOSIDEBYSIDE
@@ -185,11 +193,13 @@ VRtwglQuadStereoProjection = function() {
   }
 
   this.render = function() {
-    // var axisYaw = twgl.v3.create(0,1,0);
-    // twgl.m4.axisRotate(this.uniforms.transform, axisYaw, 0.005, this.uniforms.transform);
     // var axisPitch = twgl.v3.create(0,0,1);
     // twgl.m4.axisRotate(this.uniforms.transform, axisPitch, 0.005, this.uniforms.transform);
+    // var axisYaw = twgl.v3.create(0,1,0);
+    // twgl.m4.axisRotate(this.uniforms.transform, axisYaw, 0.005, this.uniforms.transform);
     this.uniforms["resolution"] = [self.vrtwglQuad.canvas.clientWidth, self.vrtwglQuad.canvas.clientHeight];
+    var aspect = self.vrtwglQuad.canvas.clientHeight/self.vrtwglQuad.canvas.clientWidth;
+    this.uniforms["fovParams"] = [this.fovX/360.0, aspect*this.fovX/360.0];
     this.uniforms["textureSource"] = self.vrtwglQuadFb.getFramebufferTexture();
 
     self.vrtwglQuad.setUniforms(this.uniforms);
