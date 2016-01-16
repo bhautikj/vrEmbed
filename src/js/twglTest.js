@@ -65,6 +65,17 @@ runTestStereographic = function() {
     texDescB.V_r = [1.,1.];
     texArray.push(texDescB);
 
+    var texDescC = new VRTextureDescription();
+    texDescC.textureSource='src/assets/stereograph_b.jpg';
+    texDescC.isStereo = true;
+    texDescC.sphereFOV = [90,90];
+    texDescC.sphereCentre = [90,0];
+    texDescC.U_l = [0.,0.];
+    texDescC.V_l = [.5,1.];
+    texDescC.U_r = [.5,0.];
+    texDescC.V_r = [1.,1.];
+    // texArray.push(texDescC);
+
     vrtwglQuadStereoProjection.loadTextures(texArray);
 
     vrtwglQuadStereoProjection.resize();

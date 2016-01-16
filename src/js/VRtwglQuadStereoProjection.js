@@ -55,6 +55,7 @@ var fsRenderDisplay = "precision mediump float;\n"+
 "uniform int renderMode;\n"+
 "uniform vec2 fovParams;\n"+
 "uniform vec2 k;\n"+
+"uniform float ipdAdjust;\n"+
 "void main(void) {\n"+
 "  //normalize uv so it is between 0 and 1\n"+
 "  vec2 uv = gl_FragCoord.xy / resolution;\n"+
@@ -65,14 +66,16 @@ var fsRenderDisplay = "precision mediump float;\n"+
 "    fov.y *= 2.;\n"+
 "    if (uv.x<0.5) { \n"+
 "      uv.x *= 2.; \n"+
+"      uv.x += ipdAdjust;\n"+
 "      leftImg=true; }\n"+
 "    else {\n"+
 "      uv.x = 2.*(uv.x - .5);\n"+
+"      uv.x -= ipdAdjust;\n"+
 "    }\n"+
 "    // lens distorter\n"+
 "    float r2 = (uv.x-0.5)*(uv.x-0.5) + (uv.y-0.5)*(uv.y-0.5);\n"+
-"    uv.x = uv.x*(1. + k.x*r2 + k.y*r2*r2);\n"+
-"    uv.y = uv.y*(1. + k.x*r2 + k.y*r2*r2);\n"+
+"    uv.x = 0.5+(uv.x-0.5)*(1. + k.x*r2 + k.y*r2*r2);\n"+
+"    uv.y = 0.5+(uv.y-0.5)*(1. + k.x*r2 + k.y*r2*r2);\n"+
 "    uv.x = 0.5+fov.x*(uv.x-0.5);\n"+
 "    uv.y = 0.5+fov.y*(uv.y-0.5);\n"+
 "  } else {\n"+
@@ -182,7 +185,8 @@ VRtwglQuadStereoProjection = function() {
     textureSource:null,
     transform:twgl.m4.identity(),
     renderMode:VRRenderModes.STEREOSIDEBYSIDE,
-    k:[0,0]
+    k:[0,0],
+    ipdAdjust:0
   };
 
   this.uniformsFb = {
@@ -199,12 +203,18 @@ VRtwglQuadStereoProjection = function() {
     this.uniforms.k = [k1, k2];
   }
 
+  // positive 0.5 == centre moved to outer screen edges
+  // zero == centre at centre of l/r pairs
+  this.setIpdAdjust = function(ipdFrac) {
+    this.uniforms.ipdAdjust = ipdFrac;
+  }
+
   this.init = function(element){
     this.vrtwglQuad = new VRtwglQuad();
     this.vrtwglQuad.init(element, vs, fsRenderDisplay);
     this.setFOVX(120);
     this.setDistortionParams(0.51, 0.16);
-
+    this.setIpdAdjust(0.0);
     this.vrtwglQuadFb = new VRtwglQuad();
     this.vrtwglQuadFb.initFramebuffer(this.fbRes, this.vrtwglQuad.glContext, vs, fsWindowed);
   }
@@ -214,8 +224,8 @@ VRtwglQuadStereoProjection = function() {
   }
 
   this.render = function() {
-    var axisPitch = twgl.v3.create(0,0,1);
-    twgl.m4.axisRotate(this.uniforms.transform, axisPitch, 0.01, this.uniforms.transform);
+    // var axisPitch = twgl.v3.create(0,0,1);
+    // twgl.m4.axisRotate(this.uniforms.transform, axisPitch, 0.01, this.uniforms.transform);
     // var axisYaw = twgl.v3.create(0,1,0);
     // twgl.m4.axisRotate(this.uniforms.transform, axisYaw, 0.005, this.uniforms.transform);
     this.uniforms["resolution"] = [self.vrtwglQuad.canvas.clientWidth, self.vrtwglQuad.canvas.clientHeight];
