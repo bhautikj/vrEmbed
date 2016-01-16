@@ -61,10 +61,20 @@ var fsWindowed = "precision mediump float;\n"+
 "uniform vec2 resolution;\n"+
 "uniform sampler2D textureSource;\n"+
 "uniform mat4 transform;\n"+
+"uniform vec2 sphX;\n"+
+"uniform vec2 sphYX;\n"+
+"uniform vec4 uvL;\n"+
+"uniform vec4 uvR;\n"+
 "void main(void) {\n"+
 "  //normalize uv so it is between 0 and 1\n"+
 "  vec2 uv = gl_FragCoord.xy / resolution;\n"+
-// "  uv.y = (1. - uv.y);\n"+
+"  bool leftImg=false;\n"+
+"  if (uv.y<0.5) { \n"+
+"    uv.y *= 2.; \n"+
+"    leftImg=true; }\n"+
+"  else {\n"+
+"    uv.y = 2.*(uv.y - .5);\n"+
+"  }\n"+
 "  //map uv.x 0..1 to -PI..PI and uv.y 0..1 to -PI/2..PI/2\n"+
 "  float lat = 0.5*PI*(2.*uv.y-1.0);\n"+
 "  float lon = PI*(2.0*uv.x-1.0);\n"+
@@ -79,13 +89,22 @@ var fsWindowed = "precision mediump float;\n"+
 "  // map back to 0..1\n"+
 "  lonLat.x = (lonLat.x/(2.0*PI))+0.5;\n"+
 "  lonLat.y = (lonLat.y/(.5*PI))+0.5;\n"+
-"  vec2 sphX = vec2(0.25,0.25);\n"+
-"  vec2 sphY = vec2(0.75,0.75);\n"+
-"  vec2 sphYX = sphY-sphX;\n"+
 "  vec2 testPt = (lonLat-sphX);\n"+
 "  testPt = mod(testPt, 1.)/sphYX;\n"+
+"  // bail out if we're out of drawable region\n"+
 "  if (testPt.x<0. || testPt.x>1. || testPt.y<0. || testPt.y>1.){ discard; return;}\n"+
-"  gl_FragColor = texture2D(textureSource, lonLat);\n"+
+"  // now map to either left or right UV tex\n"+
+"  vec2 uvX;\n"+
+"  vec2 uvYX;\n"+
+"  if (leftImg == true) {\n"+
+"    uvX = uvL.xy;\n"+
+"    uvYX = uvL.zw;\n"+
+"  } else {\n"+
+"    uvX = uvR.xy;\n"+
+"    uvYX = uvR.zw;\n"+
+"  }\n"+
+"  vec2 texC = uvX + (testPt*uvYX);\n"+
+"  gl_FragColor = texture2D(textureSource, texC);\n"+
 "}\n"
 
 VRtwglQuadStereoProjection = function() {
@@ -142,7 +161,7 @@ VRtwglQuadStereoProjection = function() {
     requestAnimationFrame(self.anim);
   }
 
-  this.createOrientation = function(yaw, pitch) {
+  this.createOrientation = function(pitch, yaw) {
     var mat = twgl.m4.identity();
     var axisYaw = twgl.v3.create(0,1,0);
     twgl.m4.axisRotate(mat, axisYaw, yaw, mat);
@@ -156,9 +175,19 @@ VRtwglQuadStereoProjection = function() {
 
       for (var key in self.textures) {
         if (self.textures.hasOwnProperty(key)) {
-          //alert(key + " -> " + self.textures[key]);
+          var textureDesc = self.textureDescriptions[key];
           self.uniformsFb["textureSource"] = self.textures[key];
-          self.uniformsFb["transform"] = self.createOrientation(0.5*Math.PI*(2.*Math.random()-.5),Math.PI*(2.*Math.random()-.5));
+          self.uniformsFb["sphX"] = [0.5-0.5*(textureDesc.sphereFOV[0]/360.0),0.5-0.5*(textureDesc.sphereFOV[1]/180.0)];
+          self.uniformsFb["sphYX"] = [(textureDesc.sphereFOV[0]/360.0),(textureDesc.sphereFOV[1]/180.0)];
+          self.uniformsFb["transform"] = self.createOrientation(Math.PI*textureDesc.sphereCentre[0]/180.0, Math.PI*textureDesc.sphereCentre[1]/180.0);
+          self.uniformsFb["uvL"] = [textureDesc.U_l[0],
+                                    textureDesc.U_l[1],
+                                    textureDesc.V_l[0]-textureDesc.U_l[0],
+                                    textureDesc.V_l[1]-textureDesc.U_l[1]];
+          self.uniformsFb["uvR"] = [textureDesc.U_r[0],
+                                    textureDesc.U_r[1],
+                                    textureDesc.V_r[0]-textureDesc.U_r[0],
+                                    textureDesc.V_r[1]-textureDesc.U_r[1]];
           self.renderFb();
         }
       }

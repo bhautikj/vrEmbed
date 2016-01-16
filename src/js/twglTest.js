@@ -43,13 +43,26 @@ runTestStereographic = function() {
     vrtwglQuadStereoProjection.init(twglTestElement);
 
     var texArray = [];
-    // TODO: load multi texDesc
     var texDescA = new VRTextureDescription();
-    texDescA.textureSource='src/assets/rheingauer_dom.jpg';
+    texDescA.textureSource = 'src/assets/rheingauer_dom.jpg';
+    texDescA.isStereo = false;
+    texDescA.sphereFOV = [360,180];
+    texDescA.sphereCentre = [0,0];
+    texDescA.U_l = [0.,0.];
+    texDescA.V_l = [1.,1.];
+    texDescA.U_r = [0.,0.];
+    texDescA.V_r = [1.,1.];
     texArray.push(texDescA);
 
     var texDescB = new VRTextureDescription();
     texDescB.textureSource='src/assets/stereograph_b.jpg';
+    texDescB.isStereo = true;
+    texDescB.sphereFOV = [90,90];
+    texDescB.sphereCentre = [0,0];
+    texDescB.U_l = [0.,0.];
+    texDescB.V_l = [.5,1.];
+    texDescB.U_r = [.5,0.];
+    texDescB.V_r = [1.,1.];
     texArray.push(texDescB);
 
     vrtwglQuadStereoProjection.loadTextures(texArray);
