@@ -19,86 +19,6 @@ twgl = require('../js-ext/twgl-full.js');
 var Util = require('./VRutil.js');
 var util = new Util();
 
-// deviceorientation to rotation matrix
-// via: https://dev.opera.com/articles/w3c-device-orientation-usage/
-var degtorad = Math.PI / 180; // Degree-to-Radian conversion
-
-function setBaseRotationMatrix( alpha, beta, gamma, mat ) {
-	var _x = beta  ? beta  * degtorad : 0; // beta value
-	var _y = gamma ? gamma * degtorad : 0; // gamma value
-	var _z = alpha ? alpha * degtorad : 0; // alpha value
-
-	var cX = Math.cos( _x );
-	var cY = Math.cos( _y );
-	var cZ = Math.cos( _z );
-	var sX = Math.sin( _x );
-	var sY = Math.sin( _y );
-	var sZ = Math.sin( _z );
-
-	//
-	// ZXY-ordered rotation matrix construction.
-	//
-
-	var m11 = cZ * cY - sZ * sX * sY;
-	var m12 = - cX * sZ;
-	var m13 = cY * sZ * sX + cZ * sY;
-
-	var m21 = cY * sZ + cZ * sX * sY;
-	var m22 = cZ * cX;
-	var m23 = sZ * sY - cZ * cY * sX;
-
-	var m31 = - cX * sY;
-	var m32 = sX;
-	var m33 = cX * cY;
-
-  // twgl is column - major relative to this scheme
-  mat[0] = m11;
-  mat[1] = m21;
-  mat[2] = m31;
-  mat[3] = 0.0;
-  mat[4] = m12;
-  mat[5] = m22;
-  mat[6] = m32;
-  mat[7] = 0.0;
-  mat[8] = m13;
-  mat[9] = m23;
-  mat[10] = m33;
-  mat[11] = 0.0;
-  mat[12] = 0.0;
-  mat[13] = 0.0;
-  mat[14] = 0.0;
-  mat[15] = 1.0;
-
-  return mat;
-};
-
-function setScreenTransformationMatrix( screenOrientation, mat ) {
-	var orientationAngle = screenOrientation ? screenOrientation * degtorad : 0;
-
-	var cA = Math.cos( orientationAngle );
-	var sA = Math.sin( orientationAngle );
-
-	// Construct our screen transformation matrix
-  mat[0] = cA;
-  mat[1] = sA;
-  mat[2] = 0;
-  mat[3] = 0;
-  mat[4] = -1.0*sA;
-  mat[5] = cA;
-  mat[6] = 0.0;
-  mat[7] = 0.0;
-  mat[8] = 0.0;
-  mat[9] = 0.0;
-  mat[10] = 1.0;
-  mat[11] = 0.0;
-  mat[12] = 0.0;
-  mat[13] = 0.0;
-  mat[14] = 0.0;
-  mat[15] = 1.0;
-  return mat;
-}
-
-
 function VRLookControlBase() {
   var self = this;
   this.eulerX = 0.0;
@@ -110,7 +30,7 @@ function VRLookControlBase() {
 VRLookControlBase.prototype.updateBase = function(cameraMatrix) {
     twgl.m4.identity(this.baseMat);
     //roll
-    twgl.m4.rotateX(this.baseMat,this.eulerX),this.baseMat;
+    twgl.m4.rotateX(this.baseMat,this.eulerX, this.baseMat);
     //yaw
     twgl.m4.rotateY(this.baseMat,this.eulerY, this.baseMat);
     //pitch
@@ -174,18 +94,6 @@ VRGyroSpinner = function() {
 
   window.addEventListener('deviceorientation', this.onDeviceOrientationChange_.bind(this));
   window.addEventListener('orientationchange', this.onScreenOrientationChange_.bind(this));
-  /*
-  // Helper objects for calculating orientation.
-  this.finalQuaternion = new THREE.Quaternion();
-  this.tmpQuaternion = new THREE.Quaternion();
-  this.deviceEuler = new THREE.Euler();
-  this.screenTransform = new THREE.Quaternion();
-  // -PI/2 around the x-axis.
-  this.worldTransform = new THREE.Quaternion(-Math.sqrt(0.5), 0, 0, Math.sqrt(0.5));
-
-  // The quaternion for taking into account the reset position.
-  this.resetTransform = new THREE.Quaternion();
-  */
 
   this.baseRotation = twgl.m4.identity();
   this.screenTransform = twgl.m4.identity();
@@ -206,19 +114,7 @@ VRGyroSpinner.prototype.onScreenOrientationChange_ = function(screenOrientation)
 VRGyroSpinner.prototype.update = function(cameraMatrix){
   if (this.deviceOrientation == null)
     return;
-  this.baseRotation = setBaseRotationMatrix(this.deviceOrientation.alpha,
-                                            this.deviceOrientation.beta,
-                                            this.deviceOrientation.gamma,
-                                            this.baseMat);
-  this.screenTransform = setScreenTransformationMatrix(this.screenOrientation,
-                                                       this.screenTransform);
-  twgl.m4.multiply(this.baseRotation, this.screenTransform, this.baseMat);
-
-  //twgl.m4.rotateX(this.baseMat, Math.PI/2, this.baseMat);
-  //twgl.m4.rotateX(this.baseMat, Math.PI/2, this.baseMat);
-  // twgl.m4.rotateZ(this.baseMat, Math.PI/2, this.baseMat);
-
-  twgl.m4.copy(this.baseMat, cameraMatrix);
+	//TODO: update cameraMatrix here
 }
 
 VRGyroSpinner.prototype.isMobile = function() {
