@@ -14,23 +14,108 @@
   limitations under the License.
 **/
 
-var THREE = require('../js-ext/three.js');
+twgl = require('../js-ext/twgl-full.js');
 
 var Util = require('./VRutil.js');
 var util = new Util();
+
+// deviceorientation to rotation matrix
+// via: https://dev.opera.com/articles/w3c-device-orientation-usage/
+var degtorad = Math.PI / 180; // Degree-to-Radian conversion
+
+function setBaseRotationMatrix( alpha, beta, gamma, mat ) {
+	var _x = beta  ? beta  * degtorad : 0; // beta value
+	var _y = gamma ? gamma * degtorad : 0; // gamma value
+	var _z = alpha ? alpha * degtorad : 0; // alpha value
+
+	var cX = Math.cos( _x );
+	var cY = Math.cos( _y );
+	var cZ = Math.cos( _z );
+	var sX = Math.sin( _x );
+	var sY = Math.sin( _y );
+	var sZ = Math.sin( _z );
+
+	//
+	// ZXY-ordered rotation matrix construction.
+	//
+
+	var m11 = cZ * cY - sZ * sX * sY;
+	var m12 = - cX * sZ;
+	var m13 = cY * sZ * sX + cZ * sY;
+
+	var m21 = cY * sZ + cZ * sX * sY;
+	var m22 = cZ * cX;
+	var m23 = sZ * sY - cZ * cY * sX;
+
+	var m31 = - cX * sY;
+	var m32 = sX;
+	var m33 = cX * cY;
+
+  // twgl is column - major relative to this scheme
+  mat[0] = m11;
+  mat[1] = m21;
+  mat[2] = m31;
+  mat[3] = 0.0;
+  mat[4] = m12;
+  mat[5] = m22;
+  mat[6] = m32;
+  mat[7] = 0.0;
+  mat[8] = m13;
+  mat[9] = m23;
+  mat[10] = m33;
+  mat[11] = 0.0;
+  mat[12] = 0.0;
+  mat[13] = 0.0;
+  mat[14] = 0.0;
+  mat[15] = 1.0;
+
+  return mat;
+};
+
+function setScreenTransformationMatrix( screenOrientation, mat ) {
+	var orientationAngle = screenOrientation ? screenOrientation * degtorad : 0;
+
+	var cA = Math.cos( orientationAngle );
+	var sA = Math.sin( orientationAngle );
+
+	// Construct our screen transformation matrix
+  mat[0] = cA;
+  mat[1] = sA;
+  mat[2] = 0;
+  mat[3] = 0;
+  mat[4] = -1.0*sA;
+  mat[5] = cA;
+  mat[6] = 0.0;
+  mat[7] = 0.0;
+  mat[8] = 0.0;
+  mat[9] = 0.0;
+  mat[10] = 1.0;
+  mat[11] = 0.0;
+  mat[12] = 0.0;
+  mat[13] = 0.0;
+  mat[14] = 0.0;
+  mat[15] = 1.0;
+  return mat;
+}
+
 
 function VRLookControlBase() {
   var self = this;
   this.eulerX = 0.0;
   this.eulerY = 0.0;
   this.eulerZ = 0.0;
+  this.baseMat = twgl.m4.identity();
 }
 
-VRLookControlBase.prototype.updateBase = function(cameraObject) {
-    var devm = new THREE.Quaternion().setFromEuler(
-          new THREE.Euler(this.eulerX, this.eulerY, this.eulerZ, 'YXZ'));
-    cameraObject.quaternion.copy( devm );
-    cameraObject.updateMatrix();
+VRLookControlBase.prototype.updateBase = function(cameraMatrix) {
+    twgl.m4.identity(this.baseMat);
+    //roll
+    twgl.m4.rotateX(this.baseMat,this.eulerX),this.baseMat;
+    //yaw
+    twgl.m4.rotateY(this.baseMat,this.eulerY, this.baseMat);
+    //pitch
+    twgl.m4.rotateZ(this.baseMat,this.eulerZ, this.baseMat);
+    twgl.m4.copy(this.baseMat, cameraMatrix);
 };
 
 VRLookControlBase.prototype.setEuler = function(x,y,z) {
@@ -44,9 +129,9 @@ VRIdleSpinner = function() {
 
 VRIdleSpinner.prototype = new VRLookControlBase();
 
-VRIdleSpinner.prototype.update = function(cameraObject){
-  this.setEuler(0, this.eulerY+0.01, 0);
-  this.updateBase(cameraObject);
+VRIdleSpinner.prototype.update = function(cameraMatrix){
+  this.setEuler(0, 0, this.eulerZ+0.01);
+  this.updateBase(cameraMatrix);
 }
 
 var VRIdleSpinnerFactory = (function () {
@@ -74,12 +159,12 @@ VRMouseSpinner = function() {
 VRMouseSpinner.prototype = new VRLookControlBase();
 
 VRMouseSpinner.prototype.mouseMove = function(dX, dY){
-  this.eulerX = Math.min(Math.max(-Math.PI / 2, this.eulerX - dY * 0.01), Math.PI / 2);
-  this.eulerY = this.eulerY - dX * 0.01;
+  this.eulerY = Math.min(Math.max(-Math.PI / 2, this.eulerX - dY * 0.01), Math.PI / 2);
+  this.eulerZ = this.eulerY - dX * 0.01;
 }
 
-VRMouseSpinner.prototype.update = function(cameraObject){
-  this.updateBase(cameraObject);
+VRMouseSpinner.prototype.update = function(cameraMatrix){
+  this.updateBase(cameraMatrix);
 }
 
 // this implementation based heavily on: https://github.com/borismus/webvr-polyfill/blob/master/src/orientation-position-sensor-vr-device.js
@@ -89,7 +174,7 @@ VRGyroSpinner = function() {
 
   window.addEventListener('deviceorientation', this.onDeviceOrientationChange_.bind(this));
   window.addEventListener('orientationchange', this.onScreenOrientationChange_.bind(this));
-
+  /*
   // Helper objects for calculating orientation.
   this.finalQuaternion = new THREE.Quaternion();
   this.tmpQuaternion = new THREE.Quaternion();
@@ -100,6 +185,10 @@ VRGyroSpinner = function() {
 
   // The quaternion for taking into account the reset position.
   this.resetTransform = new THREE.Quaternion();
+  */
+
+  this.baseRotation = twgl.m4.identity();
+  this.screenTransform = twgl.m4.identity();
 
   this.init = false;
 }
@@ -114,44 +203,22 @@ VRGyroSpinner.prototype.onScreenOrientationChange_ = function(screenOrientation)
   this.screenOrientation = window.orientation;
 };
 
-VRGyroSpinner.prototype.getOrientation = function() {
-  if (this.deviceOrientation == null) {
-    return null;
-  }
-
-  this.init = true;
-
-  // Rotation around the z-axis.
-  var alpha = THREE.Math.degToRad(this.deviceOrientation.alpha);
-  // Front-to-back (in portrait) rotation (x-axis).
-  var beta = THREE.Math.degToRad(this.deviceOrientation.beta);
-  // Left to right (in portrait) rotation (y-axis).
-  var gamma = THREE.Math.degToRad(this.deviceOrientation.gamma);
-  var orient = THREE.Math.degToRad(this.screenOrientation);
-
-  // Use three.js to convert to quaternion. Lifted from
-  // https://github.com/richtr/threeVR/blob/master/js/DeviceOrientationController.js
-  this.deviceEuler.set(beta, alpha, -gamma, 'YXZ');
-  this.tmpQuaternion.setFromEuler(this.deviceEuler);
-  this.minusHalfAngle = -orient / 2;
-  this.screenTransform.set(0, Math.sin(this.minusHalfAngle), 0, Math.cos(this.minusHalfAngle));
-  // Take into account the reset transformation.
-  this.finalQuaternion.copy(this.resetTransform);
-  // And any rotations done via touch events.
-  //this.finalQuaternion.multiply(this.touchPanner.getOrientation());
-  this.finalQuaternion.multiply(this.tmpQuaternion);
-  this.finalQuaternion.multiply(this.screenTransform);
-  this.finalQuaternion.multiply(this.worldTransform);
-
-  return this.finalQuaternion;
-};
-
-
-VRGyroSpinner.prototype.update = function(cameraObject){
-  var orient = this.getOrientation();
-  if (orient == null)
+VRGyroSpinner.prototype.update = function(cameraMatrix){
+  if (this.deviceOrientation == null)
     return;
-  cameraObject.quaternion.copy( orient );
+  this.baseRotation = setBaseRotationMatrix(this.deviceOrientation.alpha,
+                                            this.deviceOrientation.beta,
+                                            this.deviceOrientation.gamma,
+                                            this.baseMat);
+  this.screenTransform = setScreenTransformationMatrix(this.screenOrientation,
+                                                       this.screenTransform);
+  twgl.m4.multiply(this.baseRotation, this.screenTransform, this.baseMat);
+
+  //twgl.m4.rotateX(this.baseMat, Math.PI/2, this.baseMat);
+  //twgl.m4.rotateX(this.baseMat, Math.PI/2, this.baseMat);
+  // twgl.m4.rotateZ(this.baseMat, Math.PI/2, this.baseMat);
+
+  twgl.m4.copy(this.baseMat, cameraMatrix);
 }
 
 VRGyroSpinner.prototype.isMobile = function() {
@@ -195,7 +262,7 @@ VRLookController = function() {
   this.vrGyroSpinner = VRGyroSpinnerFactory.getInstance();
 
   this.camera = null;
-  this.mode = VRLookMode.MOUSE;
+  this.mode = VRLookMode.IDLESPINNER;
 
   this.setCamera = function(camera){
     self.camera = camera;
@@ -210,7 +277,7 @@ VRLookController = function() {
     if (this.vrGyroSpinner.isMobile())
       this.mode = VRLookMode.GYRO;
     else
-      this.mode = VRLookMode.MOUSE;
+      this.mode = VRLookMode.IDLESPINNER;
   };
 
   this.update = function() {

@@ -1,5 +1,7 @@
 VRtwglQuad = require('./VRtwglQuad.js');
 VRRenderModes = require('./VRRenderModes.js');
+VRLookController = require('./VRControllers.js');
+
 twgl = require('../js-ext/twgl-full.js');
 
 var vs = "attribute vec4 position;\n"+
@@ -179,6 +181,10 @@ VRtwglQuadStereoProjection = function() {
   this.textures = [];
   this.fovX = 40;
 
+  this.controller = new VRLookController();
+  this.cameraMatrix = twgl.m4.identity();
+  this.controller.setCamera(this.cameraMatrix);
+
   this.uniforms = {
     resolution:[0,0],
     fovParams:[0,0],
@@ -224,6 +230,8 @@ VRtwglQuadStereoProjection = function() {
   }
 
   this.render = function() {
+    this.controller.update();
+    twgl.m4.copy(this.cameraMatrix, this.uniforms.transform);
     // var axisPitch = twgl.v3.create(0,0,1);
     // twgl.m4.axisRotate(this.uniforms.transform, axisPitch, 0.01, this.uniforms.transform);
     // var axisYaw = twgl.v3.create(0,1,0);
