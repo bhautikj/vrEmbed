@@ -59,6 +59,10 @@ VRtwglQuad = function() {
     var displayWidth  = self.parentElement.clientWidth;
     var displayHeight = self.parentElement.clientHeight;
 
+    // console.log("display:" + displayWidth+","+displayHeight);
+    // console.log("htmlcanvas:" + this.canvas.width+","+this.canvas.height);
+    // console.log("canvas:" + canvas.width+","+canvas.height);
+
     // Check if the canvas is not the same size.
     if (canvas.width  != displayWidth ||
         canvas.height != displayHeight) {
@@ -66,9 +70,9 @@ VRtwglQuad = function() {
       // Make the canvas the same size
       canvas.width  = displayWidth;
       canvas.height = displayHeight;
-
+      // console.log("resz:" + canvas.width+","+canvas.height);
       // Set the viewport to match
-      self.glContext.viewport(0, 0, canvas.width, canvas.height);
+      self.glContext.viewport(0, 0, displayWidth, displayHeight);
     }
   }
 

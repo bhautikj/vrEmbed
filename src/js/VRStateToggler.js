@@ -277,8 +277,10 @@ VRStateToggler.prototype.setButtonState = function(state) {
 VRStateToggler.prototype.setState = function(state) {
   if (this.vrStory!= null){
     var stateChangeWorked = this.vrStory.setState(state);
-    if (stateChangeWorked == false)
+    if (stateChangeWorked == false){
+      console.log("STATE CHANGE FAIL");
       return;
+    }
   } else {
     this.emit(state);
   }

@@ -8,10 +8,6 @@ VRStory = function() {
   var self = this;
   this.storyElement = null;
   this.parentElement = null;
-  // this.renderer = null;
-  //this.scene = null;
-  //this.vrCameraRig = null;
-  //this.effect = null;
 
   //--
   this.quad = null;
@@ -55,16 +51,18 @@ VRStory = function() {
   };
 
   this.windowedCallback = function() {
-    if (self.effect == null)
+    if (self.quad == null)
       return false;
-    self.effect.setRenderMode(THREE.VRViewerEffectModes.ONE_VIEWPORT);
+    //TODO: FIXOR
+    //self.effect.setRenderMode(THREE.VRViewerEffectModes.ONE_VIEWPORT);
     self.exitFullscreen();
     console.log("WINDOWED CALLBACK");
     return true;
   };
 
   this.windowedAnaglyphCallback = function() {
-    self.effect.setRenderMode(THREE.VRViewerEffectModes.ANAGLYPH);
+    //TODO: FIXOR
+    //self.effect.setRenderMode(THREE.VRViewerEffectModes.ANAGLYPH);
     self.exitFullscreen();
     console.log("WINDOWED ANAGLYPH CALLBACK");
     return true;
@@ -73,7 +71,8 @@ VRStory = function() {
   this.fullscreenCallback = function() {
     if (self.enterFullscreen() == false)
       return false;
-    self.effect.setRenderMode(THREE.VRViewerEffectModes.ONE_VIEWPORT);
+    //TODO: FIXOR
+    //self.effect.setRenderMode(THREE.VRViewerEffectModes.ONE_VIEWPORT);
     console.log("FULLSCREEN CALLBACK");
     return true;
   };
@@ -81,7 +80,8 @@ VRStory = function() {
   this.fullscreenAnaglyphCallback = function() {
     if (self.enterFullscreen() == false)
       return false;
-    self.effect.setRenderMode(THREE.VRViewerEffectModes.ANAGLYPH);
+    //TODO: FIXOR
+    //self.effect.setRenderMode(THREE.VRViewerEffectModes.ANAGLYPH);
     console.log("FULLSCREEN ANAGLYPH CALLBACK");
     return true;
   };
@@ -89,7 +89,8 @@ VRStory = function() {
   this.cardboardCallback = function() {
     if (self.enterFullscreen() == false)
       return false;
-    self.effect.setRenderMode(THREE.VRViewerEffectModes.TWO_VIEWPORTS);
+    //TODO: FIXOR
+    //self.effect.setRenderMode(THREE.VRViewerEffectModes.TWO_VIEWPORTS);
     console.log("CARDBOARD CALLBACK");
     return true;
   };
@@ -108,7 +109,7 @@ VRStory = function() {
       }
 
       if (this.isFullScreen) {
-        this.quad.resize;
+        this.quad.resize();
 
         if (this.manager.fallbackFullscreen == true){
           var canvas = this.quad.vrtwglQuad.canvas;
