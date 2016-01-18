@@ -1,3 +1,5 @@
+var VRSceneImg = require('./VRSceneImg.js');
+
 VRScene = function() {
   this.sceneElement = null;
   this.renderObjects = [];

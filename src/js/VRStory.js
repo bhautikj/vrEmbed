@@ -2,15 +2,22 @@ var VRStates = require('./VRStates.js');
 var VRStateToggler = require('./VRStateToggler.js');
 var VRLookController = require('./VRControllers.js');
 var VRScene = require('./VRScene.js');
+var VRManager = require('./VRManager.js');
 
 VRStory = function() {
   var self = this;
   this.storyElement = null;
   this.parentElement = null;
-  this.renderer = null;
-  this.scene = null;
-  this.vrCameraRig = null;
-  this.effect = null;
+  // this.renderer = null;
+  //this.scene = null;
+  //this.vrCameraRig = null;
+  //this.effect = null;
+
+  //--
+  this.quad = null;
+  this.cameraMatrix = twgl.m4.identity();
+  //--
+
   this.manager = null;
   this.storyManager = null;
   this.stateToggler = new VRStateToggler();
@@ -91,7 +98,7 @@ VRStory = function() {
     var containerWidth = this.parentElement.clientWidth;
     var containerHeight = this.parentElement.clientHeight;
 
-    if (this.effect != null) {
+    if (this.quad != null) {
       // check to see if we should drop back to windowed mode
       if (this.manager.fallbackFullscreen == true){
           if (this.manager.isLandscape() == false) {
@@ -101,18 +108,16 @@ VRStory = function() {
       }
 
       if (this.isFullScreen) {
-        this.vrCameraRig.resizeCamera(window.innerWidth, window.innerHeight, this.state);
-        this.effect.setSize(window.innerWidth, window.innerHeight);
+        this.quad.resize;
 
         if (this.manager.fallbackFullscreen == true){
-          var canvas = this.renderer.domElement.parentNode;
+          var canvas = this.quad.vrtwglQuad.canvas;
           canvas.style.width  = window.innerWidth+"px";
           canvas.style.height = window.innerHeight+"px";
         }
       }
       else {
-        this.vrCameraRig.resizeCamera(containerWidth, containerHeight, this.state);
-        this.effect.setSize(containerWidth, containerHeight);
+        this.quad.resize();
       }
     } else {
       console.log("SHOULD NEVER BE HERE");
@@ -165,33 +170,16 @@ VRStory = function() {
     var containerWidth = this.parentElement.clientWidth;
     var containerHeight = this.parentElement.clientHeight;
 
-    this.renderer = new THREE.WebGLRenderer({ antialias: true });
+    VRtwglQuadTest = require('./VRtwglQuadTest.js');
+    this.quad = new VRtwglQuadTest();
+    this.quad.init(this.parentElement);
+    this.quad.resize();
 
-    this.renderer.setPixelRatio(window.devicePixelRatio);
-    this.renderer.setSize( containerWidth, containerHeight );
-
-    // Append the canvas element created by the renderer to document body element.
-    // document.body.appendChild(renderer.domElement);
-    this.parentElement.appendChild( this.renderer.domElement );
-
-    // Create a three.js scene.
-    this.scene = new THREE.Scene();
-
-    this.vrCameraRig = new THREE.VRViewerCameraRig();
-    this.vrCameraRig.init(this.scene);
-    this.setupClassicStereoCam(this.vrCameraRig);
-
-    // Apply VR stereo rendering to renderer.
-    this.effect = new VRViewerEffect(this.renderer, 0);
-    // effect.setSize(window.innerWidth, window.innerHeight);
-    this.effect.setSize(containerWidth, containerHeight);
-
-    // Apply VR headset positional data to camera.
-    this.controls.setCamera(this.vrCameraRig._topTransform);
+    this.controls.setCamera(this.cameraMatrix);
   };
 
   this.isInViewport = function() {
-      var canvas = this.renderer.domElement.parentNode;
+      var canvas = this.quad.vrtwglQuad.canvas;
       var rect = canvas.getBoundingClientRect();
       var windowHeight = (window.innerHeight || document.documentElement.clientHeight);
       var windowWidth = (window.innerWidth || document.documentElement.clientWidth);
@@ -218,10 +206,8 @@ VRStory = function() {
 
     // Update VR headset position and apply to camera.
     self.controls.update();
-    self.manager.renderer.autoClear = false;
-    self.manager.renderer.clear();
 
-    self.manager.render(self.scene, self.vrCameraRig, timestamp);
+    self.manager.render(self.quad, self.cameraMatrix, timestamp);
 
     //   uniforms.iGlobalTime.value += 0.001;
 //     alert(timestamp);
@@ -241,7 +227,8 @@ VRStory = function() {
       for (objit = 0;objit<scene.renderObjects.length; objit++){
         var scenePhoto = scene.renderObjects[objit];
         if (scenePhoto.textureDescription!=null){
-          this.effect.setStereographicProjection(scenePhoto.textureDescription);
+          //TODO: FIXOR setup quad with stereo projection
+          //this.effect.setStereographicProjection(scenePhoto.textureDescription);
         }
       }
     }
@@ -268,7 +255,7 @@ VRStory = function() {
     this.storyElement.appendChild(this.stateToggler.buttonOptions);
 
 
-    this.manager = new VRManager(this.renderer, this.effect);
+    this.manager = new VRManager(this.quad);
     this.onResize();
     this.animate();
 
