@@ -90,12 +90,15 @@ var fsRenderDisplay = "precision mediump float;\n"+
 "  float lon = PI*(2.0*uv.x-1.0);\n"+
 "  // map lat/lon to point on unit sphere\n"+
 "  float r = cos(lat);\n"+
-"  vec4 sphere_pnt = vec4(r*cos(lon), r*sin(lon), sin(lat), 1.0);\n"+
+//"  vec4 sphere_pnt = vec4(r*cos(lon), r*sin(lon), sin(lat), 1.0);\n"+
+"  float x=r*cos(lon); float y=r*sin(lon); float z=sin(lat);\n"+
+"  vec4 sphere_pnt = vec4(x, z, -1.0*y, 1.0);\n"+
 "  sphere_pnt *= transform;\n"+
 "  // now map point in sphere back to lat/lon coords\n"+
 "  float sphere_pnt_len = length(sphere_pnt);\n"+
 "  sphere_pnt /= sphere_pnt_len;\n"+
 "  vec2 lonLat = vec2(atan(sphere_pnt.y, sphere_pnt.x), asin(sphere_pnt.z));\n"+
+//"  vec2 lonLat = vec2(atan(sphere_pnt.z, sphere_pnt.y), asin(sphere_pnt.x));\n"+
 "  // map back to 0..1\n"+
 "  lonLat.x = (lonLat.x/(2.0*PI))+0.5;\n"+
 "  lonLat.y = (lonLat.y/(.5*PI))+0.5;\n"+
@@ -214,6 +217,7 @@ VRtwglQuadStereoProjection = function() {
   this.setIpdAdjust = function(ipdFrac) {
     this.uniforms.ipdAdjust = ipdFrac;
   }
+
 
   this.init = function(element){
     this.vrtwglQuad = new VRtwglQuad();

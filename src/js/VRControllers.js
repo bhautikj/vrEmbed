@@ -19,6 +19,128 @@ twgl = require('../js-ext/twgl-full.js');
 var Util = require('./VRutil.js');
 var util = new Util();
 
+//via: http://osgjs.org/docs/annotated-source/FirstPersonManipulatorDeviceOrientationController.html
+var degtorad = Math.PI / 180.0;
+// assumed yxz rotation order
+var quatFromEuler = function ( x, y, z, order ) {
+	var quat = [];
+  var c1 = Math.cos( x / 2 );
+  var c2 = Math.cos( y / 2 );
+  var c3 = Math.cos( z / 2 );
+  var s1 = Math.sin( x / 2 );
+  var s2 = Math.sin( y / 2 );
+  var s3 = Math.sin( z / 2 );
+
+	if ( order === 'XYZ' ) {
+
+			quat[ 0 ] = s1 * c2 * c3 + c1 * s2 * s3;
+			quat[ 1 ] = c1 * s2 * c3 - s1 * c2 * s3;
+			quat[ 2 ] = c1 * c2 * s3 + s1 * s2 * c3;
+			quat[ 3 ] = c1 * c2 * c3 - s1 * s2 * s3;
+
+	} else if ( order === 'YXZ' ) {
+
+			quat[ 0 ] = s1 * c2 * c3 + c1 * s2 * s3;
+			quat[ 1 ] = c1 * s2 * c3 - s1 * c2 * s3;
+			quat[ 2 ] = c1 * c2 * s3 - s1 * s2 * c3;
+			quat[ 3 ] = c1 * c2 * c3 + s1 * s2 * s3;
+
+	} else if ( order === 'ZXY' ) {
+
+			quat[ 0 ] = s1 * c2 * c3 - c1 * s2 * s3;
+			quat[ 1 ] = c1 * s2 * c3 + s1 * c2 * s3;
+			quat[ 2 ] = c1 * c2 * s3 + s1 * s2 * c3;
+			quat[ 3 ] = c1 * c2 * c3 - s1 * s2 * s3;
+
+	} else if ( order === 'ZYX' ) {
+
+			quat[ 0 ] = s1 * c2 * c3 - c1 * s2 * s3;
+			quat[ 1 ] = c1 * s2 * c3 + s1 * c2 * s3;
+			quat[ 2 ] = c1 * c2 * s3 - s1 * s2 * c3;
+			quat[ 3 ] = c1 * c2 * c3 + s1 * s2 * s3;
+
+	} else if ( order === 'YZX' ) {
+
+			quat[ 0 ] = s1 * c2 * c3 + c1 * s2 * s3;
+			quat[ 1 ] = c1 * s2 * c3 + s1 * c2 * s3;
+			quat[ 2 ] = c1 * c2 * s3 - s1 * s2 * c3;
+			quat[ 3 ] = c1 * c2 * c3 - s1 * s2 * s3;
+
+	} else if ( order === 'XZY' ) {
+
+			quat[ 0 ] = s1 * c2 * c3 - c1 * s2 * s3;
+			quat[ 1 ] = c1 * s2 * c3 - s1 * c2 * s3;
+			quat[ 2 ] = c1 * c2 * s3 + s1 * s2 * c3;
+			quat[ 3 ] = c1 * c2 * c3 + s1 * s2 * s3;
+
+	}
+
+	return quat;
+};
+
+var quatIentity = function () {
+	return [0.,0.,0.,1.];
+}
+
+var quatMult = function (a, b) {
+	var result = [];
+  var ax = a[ 0 ];
+  var ay = a[ 1 ];
+  var az = a[ 2 ];
+  var aw = a[ 3 ];
+
+  var bx = b[ 0 ];
+  var by = b[ 1 ];
+  var bz = b[ 2 ];
+  var bw = b[ 3 ];
+
+  result[ 0 ] = ax * bw + ay * bz - az * by + aw * bx;
+  result[ 1 ] = -ax * bz + ay * bw + az * bx + aw * by;
+  result[ 2 ] = ax * by - ay * bx + az * bw + aw * bz;
+  result[ 3 ] = -ax * bx - ay * by - az * bz + aw * bw;
+  return result;
+}
+
+var quatToRotationMatrix = function(q, dstMat) {
+  var qX = q[0];
+  var qY = q[1];
+  var qZ = q[2];
+  var qW = q[3];
+
+  var qWqW = qW * qW;
+  var qWqX = qW * qX;
+  var qWqY = qW * qY;
+  var qWqZ = qW * qZ;
+  var qXqW = qX * qW;
+  var qXqX = qX * qX;
+  var qXqY = qX * qY;
+  var qXqZ = qX * qZ;
+  var qYqW = qY * qW;
+  var qYqX = qY * qX;
+  var qYqY = qY * qY;
+  var qYqZ = qY * qZ;
+  var qZqW = qZ * qW;
+  var qZqX = qZ * qX;
+  var qZqY = qZ * qY;
+  var qZqZ = qZ * qZ;
+
+  var d = qWqW + qXqX + qYqY + qZqZ;
+
+  var arr = [
+    (qWqW + qXqX - qYqY - qZqZ) / d,
+     2 * (qWqZ + qXqY) / d,
+     2 * (qXqZ - qWqY) / d, 0,
+    2 * (qXqY - qWqZ) / d,
+     (qWqW - qXqX + qYqY - qZqZ) / d,
+     2 * (qWqX + qYqZ) / d, 0,
+     2 * (qWqY + qXqZ) / d,
+     2 * (qYqZ - qWqX) / d,
+     (qWqW - qXqX - qYqY + qZqZ) / d, 0,
+    0, 0, 0, 1];
+
+  twgl.m4.copy(arr, dstMat);
+};
+
 function VRLookControlBase() {
   var self = this;
   this.eulerX = 0.0;
@@ -114,7 +236,26 @@ VRGyroSpinner.prototype.onScreenOrientationChange_ = function(screenOrientation)
 VRGyroSpinner.prototype.update = function(cameraMatrix){
   if (this.deviceOrientation == null)
     return;
-	//TODO: update cameraMatrix here
+
+		var alpha = this.deviceOrientation.alpha * degtorad;
+    var beta = this.deviceOrientation.beta * degtorad;
+    var gamma = this.deviceOrientation.gamma * degtorad;
+    var screenAngle = this.screenOrientation * degtorad;
+
+    var quat = quatFromEuler( beta, alpha, -gamma, 'YXZ' );
+    var minusHalfAngle = -screenAngle / 2.0;
+		var screenTransform = quatIentity();
+		screenTransform[ 1 ] = Math.sin( minusHalfAngle );
+    screenTransform[ 3 ] = Math.cos( minusHalfAngle );
+
+		// var worldTransform = [-Math.sqrt( 0.5 ), 0.0, 0.0, Math.sqrt( 0.5 )];
+		quat = quatMult( quat, screenTransform );
+		// quat = quatMult( quat, worldTransform );
+
+		quatToRotationMatrix(quat, cameraMatrix);
+
+		twgl.m4.rotateX(cameraMatrix,Math.PI/2.,cameraMatrix);
+		twgl.m4.rotateZ(cameraMatrix,Math.PI/2.,cameraMatrix);
 }
 
 VRGyroSpinner.prototype.isMobile = function() {
