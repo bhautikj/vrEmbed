@@ -97,8 +97,8 @@ var fsRenderDisplay = "precision mediump float;\n"+
 "  // now map point in sphere back to lat/lon coords\n"+
 "  float sphere_pnt_len = length(sphere_pnt);\n"+
 "  sphere_pnt /= sphere_pnt_len;\n"+
-"  vec2 lonLat = vec2(atan(sphere_pnt.y, sphere_pnt.x), asin(sphere_pnt.z));\n"+
-//"  vec2 lonLat = vec2(atan(sphere_pnt.z, sphere_pnt.y), asin(sphere_pnt.x));\n"+
+//"  vec2 lonLat = vec2(atan(sphere_pnt.y, sphere_pnt.x), asin(sphere_pnt.z));\n"+
+"  vec2 lonLat = vec2(atan(sphere_pnt.x, sphere_pnt.z), asin(-1.0*sphere_pnt.y));\n"+
 "  // map back to 0..1\n"+
 "  lonLat.x = (lonLat.x/(2.0*PI))+0.5;\n"+
 "  lonLat.y = (lonLat.y/(.5*PI))+0.5;\n"+

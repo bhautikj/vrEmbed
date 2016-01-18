@@ -158,6 +158,9 @@ VRLookControlBase.prototype.updateBase = function(cameraMatrix) {
     //pitch
     twgl.m4.rotateZ(this.baseMat,this.eulerZ, this.baseMat);
     twgl.m4.copy(this.baseMat, cameraMatrix);
+
+		twgl.m4.rotateY(cameraMatrix, Math.PI/2, cameraMatrix);
+		twgl.m4.rotateZ(cameraMatrix, Math.PI, cameraMatrix);
 };
 
 VRLookControlBase.prototype.setEuler = function(x,y,z) {
@@ -172,7 +175,7 @@ VRIdleSpinner = function() {
 VRIdleSpinner.prototype = new VRLookControlBase();
 
 VRIdleSpinner.prototype.update = function(cameraMatrix){
-  this.setEuler(0, 0, this.eulerZ+0.01);
+  this.setEuler(0, this.eulerY-0.01, 0);
   this.updateBase(cameraMatrix);
 }
 
@@ -255,8 +258,6 @@ VRGyroSpinner.prototype.update = function(cameraMatrix){
 		quatToRotationMatrix(quat, cameraMatrix);
 
 		twgl.m4.rotateX(cameraMatrix,Math.PI/2.,cameraMatrix);
-		twgl.m4.rotateZ(cameraMatrix,Math.PI/2.,cameraMatrix);
-		twgl.m4.rotateY(cameraMatrix,-Math.PI/2.,cameraMatrix);
 }
 
 VRGyroSpinner.prototype.isMobile = function() {
