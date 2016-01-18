@@ -14,6 +14,8 @@
   limitations under the License.
 **/
 
+var VRTextureDescription = require('./VRTextureDescription.js');
+
 VRScenePhoto = function() {
   this.scenePhoto = null;
   this.textureDescription = null;
@@ -21,8 +23,8 @@ VRScenePhoto = function() {
 
   this.parseSphereParams = function(str) {
     var arr = str.split(",");
-    this.textureDescription.sphereFOV = new [arr[0].trim(), arr[1].trim()];
-    this.textureDescription.sphereCentre = new [arr[2].trim(), arr[3].trim()];
+    this.textureDescription.sphereFOV = [arr[0].trim(), arr[1].trim()];
+    this.textureDescription.sphereCentre = [arr[2].trim(), arr[3].trim()];
   };
 
   this.parseTexParams = function(str) {

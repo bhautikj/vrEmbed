@@ -14,6 +14,8 @@
   limitations under the License.
 **/
 
+var VRStoryManager = require('./VRStoryManager.js');
+var VRStory = require('./VRStory.js');
 
 StoryParser = function () {
   this.storyManager = new VRStoryManager();
