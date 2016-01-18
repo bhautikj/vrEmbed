@@ -22,7 +22,7 @@ var util = new Util();
 //via: http://osgjs.org/docs/annotated-source/FirstPersonManipulatorDeviceOrientationController.html
 var degtorad = Math.PI / 180.0;
 // assumed yxz rotation order
-var quatFromEuler = function ( x, y, z, order ) {
+var quatFromEuler = function ( x, y, z  ) {
 	var quat = [];
   var c1 = Math.cos( x / 2 );
   var c2 = Math.cos( y / 2 );
@@ -31,49 +31,10 @@ var quatFromEuler = function ( x, y, z, order ) {
   var s2 = Math.sin( y / 2 );
   var s3 = Math.sin( z / 2 );
 
-	if ( order === 'XYZ' ) {
-
-			quat[ 0 ] = s1 * c2 * c3 + c1 * s2 * s3;
-			quat[ 1 ] = c1 * s2 * c3 - s1 * c2 * s3;
-			quat[ 2 ] = c1 * c2 * s3 + s1 * s2 * c3;
-			quat[ 3 ] = c1 * c2 * c3 - s1 * s2 * s3;
-
-	} else if ( order === 'YXZ' ) {
-
-			quat[ 0 ] = s1 * c2 * c3 + c1 * s2 * s3;
-			quat[ 1 ] = c1 * s2 * c3 - s1 * c2 * s3;
-			quat[ 2 ] = c1 * c2 * s3 - s1 * s2 * c3;
-			quat[ 3 ] = c1 * c2 * c3 + s1 * s2 * s3;
-
-	} else if ( order === 'ZXY' ) {
-
-			quat[ 0 ] = s1 * c2 * c3 - c1 * s2 * s3;
-			quat[ 1 ] = c1 * s2 * c3 + s1 * c2 * s3;
-			quat[ 2 ] = c1 * c2 * s3 + s1 * s2 * c3;
-			quat[ 3 ] = c1 * c2 * c3 - s1 * s2 * s3;
-
-	} else if ( order === 'ZYX' ) {
-
-			quat[ 0 ] = s1 * c2 * c3 - c1 * s2 * s3;
-			quat[ 1 ] = c1 * s2 * c3 + s1 * c2 * s3;
-			quat[ 2 ] = c1 * c2 * s3 - s1 * s2 * c3;
-			quat[ 3 ] = c1 * c2 * c3 + s1 * s2 * s3;
-
-	} else if ( order === 'YZX' ) {
-
-			quat[ 0 ] = s1 * c2 * c3 + c1 * s2 * s3;
-			quat[ 1 ] = c1 * s2 * c3 + s1 * c2 * s3;
-			quat[ 2 ] = c1 * c2 * s3 - s1 * s2 * c3;
-			quat[ 3 ] = c1 * c2 * c3 - s1 * s2 * s3;
-
-	} else if ( order === 'XZY' ) {
-
-			quat[ 0 ] = s1 * c2 * c3 - c1 * s2 * s3;
-			quat[ 1 ] = c1 * s2 * c3 - s1 * c2 * s3;
-			quat[ 2 ] = c1 * c2 * s3 + s1 * s2 * c3;
-			quat[ 3 ] = c1 * c2 * c3 + s1 * s2 * s3;
-
-	}
+	quat[ 0 ] = s1 * c2 * c3 + c1 * s2 * s3;
+	quat[ 1 ] = c1 * s2 * c3 - s1 * c2 * s3;
+	quat[ 2 ] = c1 * c2 * s3 - s1 * s2 * c3;
+	quat[ 3 ] = c1 * c2 * c3 + s1 * s2 * s3;
 
 	return quat;
 };
@@ -249,7 +210,7 @@ VRGyroSpinner.prototype.update = function(cameraMatrix){
     var gamma = this.deviceOrientation.gamma * degtorad;
     var screenAngle = this.screenOrientation * degtorad;
 
-    var quat = quatFromEuler( beta, alpha, -gamma, 'YXZ' );
+    var quat = quatFromEuler( beta, alpha, -gamma );
     var minusHalfAngle = -screenAngle / 2.0;
 		var screenTransform = quatIentity();
 		screenTransform[ 1 ] = Math.sin( minusHalfAngle );
