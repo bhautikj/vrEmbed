@@ -3,6 +3,7 @@ var twgl = require('../js-ext/twgl-full.js');
 VRtwglQuad = function() {
   var self = this;
 
+  this.container = null;
   this.canvas = null;
   this.glContext = null;
   this.programInfo = null;
@@ -29,8 +30,11 @@ VRtwglQuad = function() {
 
   this.init = function (elm, vs, fs){
     this.parentElement = elm.parentNode;
+    this.container = document.createElement('div');
     this.canvas = document.createElement('canvas');
-    elm.appendChild(this.canvas);
+    this.container.appendChild(this.canvas);
+    elm.appendChild(this.container);
+
     this.glContext = twgl.getWebGLContext(this.canvas);
 
     this.initCore(vs, fs);

@@ -112,7 +112,7 @@ VRStory = function() {
         this.quad.resize();
 
         if (this.manager.fallbackFullscreen == true){
-          var canvas = this.quad.getCanvas();
+          var canvas = this.quad.getContainer();
           canvas.style.width  = window.innerWidth+"px";
           canvas.style.height = window.innerHeight+"px";
         }
@@ -180,7 +180,7 @@ VRStory = function() {
   };
 
   this.isInViewport = function() {
-      var canvas = this.quad.getCanvas();
+      var canvas = this.quad.getContainer();
       var rect = canvas.getBoundingClientRect();
       var windowHeight = (window.innerHeight || document.documentElement.clientHeight);
       var windowWidth = (window.innerWidth || document.documentElement.clientWidth);
@@ -250,10 +250,10 @@ VRStory = function() {
         this.parentElement.removeEventListener("mousemove", self.mouseMove, false);
     }, false);
 
-    this.storyElement.appendChild(this.stateToggler.buttonLeft);
-    this.storyElement.appendChild(this.stateToggler.buttonMiddle);
-    this.storyElement.appendChild(this.stateToggler.buttonRight);
-    this.storyElement.appendChild(this.stateToggler.buttonOptions);
+    this.quad.getContainer().appendChild(this.stateToggler.buttonLeft);
+    this.quad.getContainer().appendChild(this.stateToggler.buttonMiddle);
+    this.quad.getContainer().appendChild(this.stateToggler.buttonRight);
+    this.quad.getContainer().appendChild(this.stateToggler.buttonOptions);
 
 
     this.manager = new VRManager(this.quad);

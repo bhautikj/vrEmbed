@@ -27,10 +27,10 @@ VRtwglQuadTest = function() {
     self.vrtwglQuad.resize();
   }
 
-  this.getCanvas = function() {
-    return this.vrtwglQuad.glContext.canvas;
+  this.getContainer = function() {
+    return this.vrtwglQuad.container;
   }
-  
+
   this.render = function() {
     var uniforms = {
       resolution: [self.vrtwglQuad.canvas.clientWidth, self.vrtwglQuad.canvas.clientHeight],

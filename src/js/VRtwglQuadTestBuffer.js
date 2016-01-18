@@ -45,8 +45,8 @@ VRtwglQuadTestBuffer = function() {
     this.vrtwglQuadFb.initFramebuffer(2048, this.vrtwglQuad.glContext, vs, fs);
   }
 
-  this.getCanvas = function() {
-    return this.vrtwglQuad.glContext.canvas;
+  this.getContainer = function() {
+    return this.vrtwglQuad.container;
   }
 
   this.resize = function() {
