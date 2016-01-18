@@ -240,6 +240,10 @@ VRGyroSpinner.prototype.update = function(cameraMatrix){
   if (this.deviceOrientation == null)
     return;
 
+		// document.getElementById("log").innerHTML = " a:" + Math.floor(this.deviceOrientation.alpha) +
+		// 																					" b:" + Math.floor(this.deviceOrientation.beta) +
+		// 																					" g:" + Math.floor(this.deviceOrientation.gamma);
+
 		var alpha = this.deviceOrientation.alpha * degtorad;
     var beta = this.deviceOrientation.beta * degtorad;
     var gamma = this.deviceOrientation.gamma * degtorad;
