@@ -188,6 +188,10 @@ VRtwglQuadStereoProjection = function() {
   this.cameraMatrix = twgl.m4.identity();
   this.controller.setCamera(this.cameraMatrix);
 
+  this.getCanvas = function() {
+    return this.vrtwglQuad.glContext.canvas;
+  }
+
   this.uniforms = {
     resolution:[0,0],
     fovParams:[0,0],

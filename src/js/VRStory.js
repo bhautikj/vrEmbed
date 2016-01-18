@@ -112,7 +112,7 @@ VRStory = function() {
         this.quad.resize();
 
         if (this.manager.fallbackFullscreen == true){
-          var canvas = this.quad.vrtwglQuad.canvas;
+          var canvas = this.quad.getCanvas();
           canvas.style.width  = window.innerWidth+"px";
           canvas.style.height = window.innerHeight+"px";
         }
@@ -180,7 +180,7 @@ VRStory = function() {
   };
 
   this.isInViewport = function() {
-      var canvas = this.quad.vrtwglQuad.canvas;
+      var canvas = this.quad.getCanvas();
       var rect = canvas.getBoundingClientRect();
       var windowHeight = (window.innerHeight || document.documentElement.clientHeight);
       var windowWidth = (window.innerWidth || document.documentElement.clientWidth);
