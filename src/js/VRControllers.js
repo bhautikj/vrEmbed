@@ -256,6 +256,7 @@ VRGyroSpinner.prototype.update = function(cameraMatrix){
 
 		twgl.m4.rotateX(cameraMatrix,Math.PI/2.,cameraMatrix);
 		twgl.m4.rotateZ(cameraMatrix,Math.PI/2.,cameraMatrix);
+		twgl.m4.rotateY(cameraMatrix,-Math.PI/2.,cameraMatrix);
 }
 
 VRGyroSpinner.prototype.isMobile = function() {
