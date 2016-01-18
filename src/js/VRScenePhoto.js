@@ -14,30 +14,23 @@
   limitations under the License.
 **/
 
-var THREE = require('../js-ext/three.js');
-
 VRScenePhoto = function() {
   this.scenePhoto = null;
   this.textureDescription = null;
   this.isStereo = false;
 
-  this.toVec2 = function(str) {
-    var arr = str.split(",");
-    return new THREE.Vector2(arr[0].trim(), arr[1].trim());
-  };
-
   this.parseSphereParams = function(str) {
     var arr = str.split(",");
-    this.textureDescription.sphereFOV = new THREE.Vector2(arr[0].trim(), arr[1].trim());
-    this.textureDescription.sphereCentre = new THREE.Vector2(arr[2].trim(), arr[3].trim());
+    this.textureDescription.sphereFOV = new [arr[0].trim(), arr[1].trim()];
+    this.textureDescription.sphereCentre = new [arr[2].trim(), arr[3].trim()];
   };
 
   this.parseTexParams = function(str) {
     var arr = str.split(",");
-    this.textureDescription.U_l = new THREE.Vector2(arr[0].trim(), arr[1].trim());
-    this.textureDescription.V_l = new THREE.Vector2(arr[2].trim(), arr[3].trim());
-    this.textureDescription.U_r = new THREE.Vector2(arr[4].trim(), arr[5].trim());
-    this.textureDescription.V_r = new THREE.Vector2(arr[6].trim(), arr[7].trim());
+    this.textureDescription.U_l = [arr[0].trim(), arr[1].trim()];
+    this.textureDescription.V_l = [arr[2].trim(), arr[3].trim()];
+    this.textureDescription.U_r = [arr[4].trim(), arr[5].trim()];
+    this.textureDescription.V_r = [arr[6].trim(), arr[7].trim()];
   };
 
   this.init = function(scenePhoto) {
