@@ -88,11 +88,12 @@ var fsRenderDisplay = "precision mediump float;\n"+
 "  //map uv.x 0..1 to -PI..PI and uv.y 0..1 to -PI/2..PI/2\n"+
 "  float lat = 0.5*PI*(2.*uv.y-1.0);\n"+
 "  float lon = PI*(2.0*uv.x-1.0);\n"+
-"  // map lat/lon to point on unit sphere\n"+
-"  float r = cos(lat);\n"+
-//"  vec4 sphere_pnt = vec4(r*cos(lon), r*sin(lon), sin(lat), 1.0);\n"+
-"  float x=r*cos(lon); float y=r*sin(lon); float z=sin(lat);\n"+
-"  vec4 sphere_pnt = vec4(x, z, -1.0*y, 1.0);\n"+
+
+"  vec2 pnt = vec2(lon, lat);\n"+
+"  float x2y2 = pnt.x * pnt.x + pnt.y * pnt.y;\n"+
+"  vec3 _sphere_pnt = vec3(2. * pnt, x2y2 - 1.) / (x2y2 + 1.);\n"+
+"  vec4 sphere_pnt = vec4(_sphere_pnt, 1.);\n"+
+
 "  sphere_pnt *= transform;\n"+
 "  // now map point in sphere back to lat/lon coords\n"+
 "  float sphere_pnt_len = length(sphere_pnt);\n"+

@@ -271,7 +271,7 @@ VRLookController = function() {
   this.vrGyroSpinner = VRGyroSpinnerFactory.getInstance();
 
   this.camera = null;
-  this.mode = VRLookMode.MOUSE;
+  this.mode = VRLookMode.IDLESPINNER;
 
   this.setCamera = function(camera){
     self.camera = camera;
@@ -286,7 +286,7 @@ VRLookController = function() {
     if (this.vrGyroSpinner.isMobile())
       this.mode = VRLookMode.GYRO;
     else
-      this.mode = VRLookMode.MOUSE;
+      this.mode = VRLookMode.IDLESPINNER;
   };
 
   this.update = function() {
