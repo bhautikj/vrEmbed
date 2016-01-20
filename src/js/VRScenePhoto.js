@@ -48,9 +48,10 @@ VRScenePhoto = function() {
     this.textureDescription.isStereo = this.scenePhoto.getAttribute("isStereo");
     if (this.textureDescription.isStereo.toLowerCase()=="true")
       this.isStereo = true;
-
     this.parseSphereParams(this.scenePhoto.getAttribute("sphereParams"));
-    this.parseTexParams(this.scenePhoto.getAttribute("texParams"));
+
+    if (this.textureDescription.isStereo.toLowerCase() == "true")
+      this.parseTexParams(this.scenePhoto.getAttribute("texParams"));
   };
 
   this.initFromURL = function(urlDict) {

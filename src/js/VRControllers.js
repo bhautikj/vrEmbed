@@ -111,18 +111,31 @@ function VRLookControlBase() {
 }
 
 VRLookControlBase.prototype.updateBase = function(cameraMatrix) {
-	// console.log(this.eulerY);
-  twgl.m4.identity(this.baseMat);
-  //roll
-  twgl.m4.rotateX(this.baseMat,this.eulerX, this.baseMat);
-  //yaw
-  twgl.m4.rotateY(this.baseMat,this.eulerY, this.baseMat);
-  //pitch
-  twgl.m4.rotateZ(this.baseMat,this.eulerZ, this.baseMat);
-  twgl.m4.copy(this.baseMat, cameraMatrix);
+	var quat = quatFromEuler( this.eulerX, this.eulerY, -1.*this.eulerZ );
 
-	twgl.m4.rotateY(cameraMatrix, Math.PI/2, cameraMatrix);
-	twgl.m4.rotateZ(cameraMatrix, Math.PI, cameraMatrix);
+	quatToRotationMatrix(quat, cameraMatrix);
+	var screenAngle = 0.0;
+	var minusHalfAngle = -screenAngle / 2.0;
+	var screenTransform = quatIentity();
+	screenTransform[ 1 ] = Math.sin( minusHalfAngle );
+	screenTransform[ 3 ] = Math.cos( minusHalfAngle );
+	quat = quatMult( quat, screenTransform );
+
+	twgl.m4.rotateX(cameraMatrix,Math.PI,cameraMatrix);
+//	twgl.m4.rotateY(cameraMatrix,Math.PI,cameraMatrix);
+
+	// console.log(this.eulerY);
+  // twgl.m4.identity(this.baseMat);
+	// //yaw
+  // twgl.m4.rotateY(this.baseMat,this.eulerY, this.baseMat);
+  // //pitch
+  // twgl.m4.rotateZ(this.baseMat,this.eulerZ, this.baseMat);
+	// //roll
+  // twgl.m4.rotateX(this.baseMat,this.eulerX, this.baseMat);
+  // twgl.m4.copy(this.baseMat, cameraMatrix);
+	//
+	// twgl.m4.rotateY(cameraMatrix, Math.PI/2, cameraMatrix);
+	// twgl.m4.rotateZ(cameraMatrix, Math.PI, cameraMatrix);
 	// console.log(cameraMatrix);
 };
 
@@ -167,9 +180,8 @@ VRMouseSpinner = function() {
 VRMouseSpinner.prototype = new VRLookControlBase();
 
 VRMouseSpinner.prototype.mouseMove = function(dX, dY){
-	// this.setEuler(0, this.eulerY-0.1, 0);
-  this.eulerZ = Math.min(Math.max(-Math.PI / 2, this.eulerZ - dY * 0.01), Math.PI / 2);
   this.eulerY = this.eulerY - dX * 0.01;
+	this.eulerX = Math.min(Math.max(-Math.PI / 2, this.eulerX - dY * 0.01), Math.PI / 2);
 }
 
 VRMouseSpinner.prototype.update = function(cameraMatrix){
@@ -271,7 +283,7 @@ VRLookController = function() {
   this.vrGyroSpinner = VRGyroSpinnerFactory.getInstance();
 
   this.camera = null;
-  this.mode = VRLookMode.IDLESPINNER;
+  this.mode = VRLookMode.MOUSE;
 
   this.setCamera = function(camera){
     self.camera = camera;
@@ -286,7 +298,7 @@ VRLookController = function() {
     if (this.vrGyroSpinner.isMobile())
       this.mode = VRLookMode.GYRO;
     else
-      this.mode = VRLookMode.IDLESPINNER;
+      this.mode = VRLookMode.MOUSE;
   };
 
   this.update = function() {
