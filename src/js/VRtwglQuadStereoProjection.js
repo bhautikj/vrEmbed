@@ -208,6 +208,10 @@ VRtwglQuadStereoProjection = function() {
     transform:twgl.m4.identity()
   };
 
+  this.setRenderMode = function(renderMode) {
+    this.uniforms.renderMode = renderMode;
+  }
+
   this.setFOVX = function(fovX) {
     this.fovX = fovX;
   }

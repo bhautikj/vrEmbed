@@ -1,8 +1,8 @@
 var VRStates = require('./VRStates.js');
 var VRStateToggler = require('./VRStateToggler.js');
-var VRLookController = require('./VRControllers.js');
 var VRScene = require('./VRScene.js');
 var VRManager = require('./VRManager.js');
+var VRRenderModes = require('./VRRenderModes.js');
 
 VRStory = function() {
   var self = this;
@@ -11,14 +11,12 @@ VRStory = function() {
 
   //--
   this.quad = null;
-  this.cameraMatrix = twgl.m4.identity();
   //--
 
   this.manager = null;
   this.storyManager = null;
   this.stateToggler = new VRStateToggler();
   this.stateToggler.setVRStory(this);
-  this.controls = new VRLookController();
   this.state = VRStates.INACTIVE;
   this.lastVisibleCheck = 0;
   this.isVisible = true;
@@ -53,16 +51,14 @@ VRStory = function() {
   this.windowedCallback = function() {
     if (self.quad == null)
       return false;
-    //TODO: FIXOR
-    //self.effect.setRenderMode(THREE.VRViewerEffectModes.ONE_VIEWPORT);
+    self.quad.setRenderMode(VRRenderModes.MONOCULAR);
     self.exitFullscreen();
     console.log("WINDOWED CALLBACK");
     return true;
   };
 
   this.windowedAnaglyphCallback = function() {
-    //TODO: FIXOR
-    //self.effect.setRenderMode(THREE.VRViewerEffectModes.ANAGLYPH);
+    self.quad.setRenderMode(VRRenderModes.STEREOANAGLYPH);
     self.exitFullscreen();
     console.log("WINDOWED ANAGLYPH CALLBACK");
     return true;
@@ -71,8 +67,7 @@ VRStory = function() {
   this.fullscreenCallback = function() {
     if (self.enterFullscreen() == false)
       return false;
-    //TODO: FIXOR
-    //self.effect.setRenderMode(THREE.VRViewerEffectModes.ONE_VIEWPORT);
+    self.quad.setRenderMode(VRRenderModes.MONOCULAR);
     console.log("FULLSCREEN CALLBACK");
     return true;
   };
@@ -80,8 +75,7 @@ VRStory = function() {
   this.fullscreenAnaglyphCallback = function() {
     if (self.enterFullscreen() == false)
       return false;
-    //TODO: FIXOR
-    //self.effect.setRenderMode(THREE.VRViewerEffectModes.ANAGLYPH);
+    self.quad.setRenderMode(VRRenderModes.STEREOANAGLYPH);
     console.log("FULLSCREEN ANAGLYPH CALLBACK");
     return true;
   };
@@ -89,8 +83,7 @@ VRStory = function() {
   this.cardboardCallback = function() {
     if (self.enterFullscreen() == false)
       return false;
-    //TODO: FIXOR
-    //self.effect.setRenderMode(THREE.VRViewerEffectModes.TWO_VIEWPORTS);
+    self.quad.setRenderMode(VRRenderModes.STEREOSIDEBYSIDE);
     console.log("CARDBOARD CALLBACK");
     return true;
   };
@@ -158,25 +151,14 @@ VRStory = function() {
     return success;
   };
 
-  this.setupClassicStereoCam = function( vrCameraRig ) {
-    var INTERPUPILLARY_DISTANCE = 0.06;
-    var DEFAULT_MAX_FOV_LEFT_RIGHT = 40.0;
-    vrCameraRig.setupClassicStereoCam( INTERPUPILLARY_DISTANCE*-0.5,
-                                      INTERPUPILLARY_DISTANCE*0.5,
-                                      DEFAULT_MAX_FOV_LEFT_RIGHT,
-                                      DEFAULT_MAX_FOV_LEFT_RIGHT);
-  }
-
   this.setupSceneRenderer = function() {
     var containerWidth = this.parentElement.clientWidth;
     var containerHeight = this.parentElement.clientHeight;
 
-    VRtwglQuadTest = require('./VRtwglQuadTest.js');
-    this.quad = new VRtwglQuadTest();
+    VRtwglQuadStereoProjection = require('./VRtwglQuadStereoProjection.js');
+    this.quad = new VRtwglQuadStereoProjection();
     this.quad.init(this.parentElement);
     this.quad.resize();
-
-    this.controls.setCamera(this.cameraMatrix);
   };
 
   this.isInViewport = function() {
@@ -205,10 +187,7 @@ VRStory = function() {
     if (this.isVisible == false)
       return;
 
-    // Update VR headset position and apply to camera.
-    self.controls.update();
-
-    self.manager.render(self.quad, self.cameraMatrix, timestamp);
+    self.manager.render(timestamp);
 
     //   uniforms.iGlobalTime.value += 0.001;
 //     alert(timestamp);
@@ -227,10 +206,11 @@ VRStory = function() {
       var scene = this.sceneList[sceneit];
       for (objit = 0;objit<scene.renderObjects.length; objit++){
         var scenePhoto = scene.renderObjects[objit];
+        var textureDescriptions = []
         if (scenePhoto.textureDescription!=null){
-          //TODO: FIXOR setup quad with stereo projection
-          //this.effect.setStereographicProjection(scenePhoto.textureDescription);
+          textureDescriptions.push(scenePhoto.textureDescription);
         }
+        this.quad.loadTextures(textureDescriptions);
       }
     }
 
@@ -239,7 +219,7 @@ VRStory = function() {
       var mx = ev.movementX || ev.mozMovementX || ev.webkitMovementX || 0;
       var my = ev.movementY || ev.mozMovementY || ev.webkitMovementY || 0;
       //console.log(mx + "," + my);
-      self.controls.mouseMove(mx, my);
+      self.quad.controller.mouseMove(mx, my);
     };
 
     this.parentElement.addEventListener("mousedown", function (ev) {

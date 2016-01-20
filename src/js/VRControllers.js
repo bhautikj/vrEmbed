@@ -111,17 +111,19 @@ function VRLookControlBase() {
 }
 
 VRLookControlBase.prototype.updateBase = function(cameraMatrix) {
-    twgl.m4.identity(this.baseMat);
-    //roll
-    twgl.m4.rotateX(this.baseMat,this.eulerX, this.baseMat);
-    //yaw
-    twgl.m4.rotateY(this.baseMat,this.eulerY, this.baseMat);
-    //pitch
-    twgl.m4.rotateZ(this.baseMat,this.eulerZ, this.baseMat);
-    twgl.m4.copy(this.baseMat, cameraMatrix);
+	// console.log(this.eulerY);
+  twgl.m4.identity(this.baseMat);
+  //roll
+  twgl.m4.rotateX(this.baseMat,this.eulerX, this.baseMat);
+  //yaw
+  twgl.m4.rotateY(this.baseMat,this.eulerY, this.baseMat);
+  //pitch
+  twgl.m4.rotateZ(this.baseMat,this.eulerZ, this.baseMat);
+  twgl.m4.copy(this.baseMat, cameraMatrix);
 
-		twgl.m4.rotateY(cameraMatrix, Math.PI/2, cameraMatrix);
-		twgl.m4.rotateZ(cameraMatrix, Math.PI, cameraMatrix);
+	twgl.m4.rotateY(cameraMatrix, Math.PI/2, cameraMatrix);
+	twgl.m4.rotateZ(cameraMatrix, Math.PI, cameraMatrix);
+	// console.log(cameraMatrix);
 };
 
 VRLookControlBase.prototype.setEuler = function(x,y,z) {
@@ -165,11 +167,14 @@ VRMouseSpinner = function() {
 VRMouseSpinner.prototype = new VRLookControlBase();
 
 VRMouseSpinner.prototype.mouseMove = function(dX, dY){
-  this.eulerY = Math.min(Math.max(-Math.PI / 2, this.eulerX - dY * 0.01), Math.PI / 2);
-  this.eulerZ = this.eulerY - dX * 0.01;
+	this.setEuler(0, this.eulerY-0.1, 0);
+  // this.eulerY = Math.min(Math.max(-Math.PI / 2, this.eulerX - dY * 0.01), Math.PI / 2);
+  // this.eulerZ = this.eulerY - dX * 0.01;
 }
 
 VRMouseSpinner.prototype.update = function(cameraMatrix){
+	// this.setEuler(0, this.eulerY-0.1, 0);
+	console.log(this.eulerY);
   this.updateBase(cameraMatrix);
 }
 
@@ -289,13 +294,13 @@ VRLookController = function() {
 
     switch(this.mode) {
       case VRLookMode.MOUSE:
-        self.vrMouseSpinner.update(this.camera);
+        this.vrMouseSpinner.update(this.camera);
         break;
       case VRLookMode.IDLESPINNER:
-        self.vrIdleSpinner.update(this.camera);
+        this.vrIdleSpinner.update(this.camera);
         break;
       case VRLookMode.GYRO:
-        self.vrGyroSpinner.update(this.camera);
+        this.vrGyroSpinner.update(this.camera);
         break;
     }
   };
