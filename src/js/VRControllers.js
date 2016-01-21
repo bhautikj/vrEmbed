@@ -171,7 +171,6 @@ VRMouseSpinner.prototype.update = function(cameraMatrix){
   this.updateBase(cameraMatrix);
 }
 
-// this implementation based heavily on: https://github.com/borismus/webvr-polyfill/blob/master/src/orientation-position-sensor-vr-device.js
 VRGyroSpinner = function() {
   this.deviceOrientation = null;
   this.screenOrientation = window.orientation;
@@ -199,10 +198,6 @@ VRGyroSpinner.prototype.update = function(cameraMatrix){
   if (this.deviceOrientation == null)
     return;
 
-		// document.getElementById("log").innerHTML = " a:" + Math.floor(this.deviceOrientation.alpha) +
-		// 																					" b:" + Math.floor(this.deviceOrientation.beta) +
-		// 																					" g:" + Math.floor(this.deviceOrientation.gamma);
-
 		var alpha = this.deviceOrientation.alpha * degtorad;
     var beta = this.deviceOrientation.beta * degtorad;
     var gamma = this.deviceOrientation.gamma * degtorad;
@@ -214,9 +209,7 @@ VRGyroSpinner.prototype.update = function(cameraMatrix){
 		screenTransform[ 1 ] = Math.sin( minusHalfAngle );
     screenTransform[ 3 ] = Math.cos( minusHalfAngle );
 
-		// var worldTransform = [-Math.sqrt( 0.5 ), 0.0, 0.0, Math.sqrt( 0.5 )];
 		quat = quatMult( quat, screenTransform );
-		// quat = quatMult( quat, worldTransform );
 
 		quatToRotationMatrix(quat, cameraMatrix);
 
