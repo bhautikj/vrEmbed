@@ -198,21 +198,21 @@ VRStory = function() {
     this.storyManager = storyManager;
     this.parentElement = this.storyElement.parentNode;
 
-    this.stateToggler.configureStereo(this.isStereo);
-
     this.setupSceneRenderer();
 
     for(sceneit = 0;sceneit<this.sceneList.length; sceneit++) {
       var scene = this.sceneList[sceneit];
+      var textureDescriptions = []
       for (objit = 0;objit<scene.renderObjects.length; objit++){
         var scenePhoto = scene.renderObjects[objit];
-        var textureDescriptions = []
         if (scenePhoto.textureDescription!=null){
           textureDescriptions.push(scenePhoto.textureDescription);
         }
-        this.quad.loadTextures(textureDescriptions);
       }
+      this.quad.loadTextures(textureDescriptions);
     }
+
+    this.stateToggler.configureStereo(this.isStereo);
 
 
     this.mouseMove = function(ev) {
