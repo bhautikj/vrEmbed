@@ -111,32 +111,13 @@ function VRLookControlBase() {
 }
 
 VRLookControlBase.prototype.updateBase = function(cameraMatrix) {
-	var quat = quatFromEuler( this.eulerX, this.eulerY, -1.*this.eulerZ );
+  twgl.m4.identity(this.baseMat);
+	twgl.m4.rotateX(this.baseMat, Math.PI, this.baseMat);
 
-	quatToRotationMatrix(quat, cameraMatrix);
-	var screenAngle = 0.0;
-	var minusHalfAngle = -screenAngle / 2.0;
-	var screenTransform = quatIentity();
-	screenTransform[ 1 ] = Math.sin( minusHalfAngle );
-	screenTransform[ 3 ] = Math.cos( minusHalfAngle );
-	quat = quatMult( quat, screenTransform );
-
-	twgl.m4.rotateX(cameraMatrix,Math.PI,cameraMatrix);
-//	twgl.m4.rotateY(cameraMatrix,Math.PI,cameraMatrix);
-
-	// console.log(this.eulerY);
-  // twgl.m4.identity(this.baseMat);
-	// //yaw
-  // twgl.m4.rotateY(this.baseMat,this.eulerY, this.baseMat);
-  // //pitch
-  // twgl.m4.rotateZ(this.baseMat,this.eulerZ, this.baseMat);
-	// //roll
-  // twgl.m4.rotateX(this.baseMat,this.eulerX, this.baseMat);
-  // twgl.m4.copy(this.baseMat, cameraMatrix);
-	//
-	// twgl.m4.rotateY(cameraMatrix, Math.PI/2, cameraMatrix);
-	// twgl.m4.rotateZ(cameraMatrix, Math.PI, cameraMatrix);
-	// console.log(cameraMatrix);
+	twgl.m4.rotateX(this.baseMat,this.eulerX, this.baseMat);
+  twgl.m4.rotateY(this.baseMat,this.eulerY, this.baseMat);
+  twgl.m4.rotateZ(this.baseMat,this.eulerZ, this.baseMat);
+  twgl.m4.copy(this.baseMat, cameraMatrix);
 };
 
 VRLookControlBase.prototype.setEuler = function(x,y,z) {
