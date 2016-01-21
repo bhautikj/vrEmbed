@@ -14,19 +14,10 @@
   limitations under the License.
 **/
 
-VRTextureDescription = function () {
-  this.textureSource = "";
-  this.metaSource = "";
-  this.isStereo = false;
-  // in degrees
-  this.sphereFOV = [360,180];
-  // in degrees
-  this.sphereCentre = [0,0];
-  // in uv coords (0,1)
-  this.U_r = [0,0];
-  this.V_r = [1,1];
-  this.U_l = [0,0];
-  this.V_l = [1,1];
+VRRenderModes = {
+  MONOCULAR: 0,
+  STEREOSIDEBYSIDE: 1,
+  STEREOANAGLYPH: 2
 };
 
-module.exports = VRTextureDescription;
+module.exports = VRRenderModes;

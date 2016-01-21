@@ -14,7 +14,7 @@
   limitations under the License.
 **/
 
-var StoryParser = require('./VRParser.js');
+var StoryParser = require('./VRStoryParser.js');
 var VRURLParser = require('./VRURLParser.js');
 
 var domReady = require('../js-ext/domready.js')
