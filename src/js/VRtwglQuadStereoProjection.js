@@ -93,14 +93,18 @@ var fsRenderDisplay = "precision mediump float;\n"+
 "  vec3 _sphere_pnt = vec3(2. * pnt, x2y2 - 1.) / (x2y2 + 1.);\n"+
 "  vec4 sphere_pnt = vec4(_sphere_pnt, 1.);\n"+
 "  sphere_pnt *= transform;\n"+
-"  // now map point in sphere back to lat/lon coords\n"+
-"  float sphere_pnt_len = length(sphere_pnt);\n"+
-"  sphere_pnt /= sphere_pnt_len;\n"+
-//"  vec2 lonLat = vec2(atan(sphere_pnt.y, sphere_pnt.x), asin(sphere_pnt.z));\n"+
-"  vec2 lonLat = vec2(atan(sphere_pnt.x, sphere_pnt.z), asin(-1.0*sphere_pnt.y));\n"+
-"  // map back to 0..1\n"+
-"  lonLat.x = (lonLat.x/(2.0*PI))+0.5;\n"+
-"  lonLat.y = (lonLat.y/(.5*PI))+0.5;\n"+
+"  float r = length(sphere_pnt);\n"+
+"  float _lon = atan(sphere_pnt.y, sphere_pnt.x);\n"+
+"  float _lat = 2.0*(acos(sphere_pnt.z / r) - PI*.5) + PI*.5;\n"+
+"  _lon = mod(_lon, 2.*PI);\n"+
+"  vec2 lonLat = vec2(_lon/(PI*2.), _lat/(PI));\n"+
+// "  // now map point in sphere back to lat/lon coords\n"+
+// "  float sphere_pnt_len = length(sphere_pnt);\n"+
+// "  sphere_pnt /= sphere_pnt_len;\n"+
+// "  vec2 lonLat = vec2(atan(sphere_pnt.x, sphere_pnt.z), asin(-1.0*sphere_pnt.y));\n"+
+// "  // map back to 0..1\n"+
+// "  lonLat.x = (lonLat.x/(2.0*PI))+0.5;\n"+
+// "  lonLat.y = (lonLat.y/(.5*PI))+0.5;\n"+
 "  // vanilla monocular render\n"+
 "  if (renderMode == 0) {\n"+
 "    lonLat.y *= 0.5;\n"+

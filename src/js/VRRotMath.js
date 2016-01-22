@@ -79,8 +79,26 @@ var quatIdentity = function () {
 	return [0.,0.,0.,1.];
 }
 
+var quatFromAxisAngle = function ( axis, angle ) {
+  var result = [];
+	// http://www.euclideanspace.com/maths/geometry/rotations/conversions/angleToQuaternion/index.htm
+	// assumes axis is normalized
+	var halfAngle = angle / 2, s = Math.sin( halfAngle );
+
+	result[0] = axis[0] * s;
+	result[1] = axis[1] * s;
+	result[2] = axis[2] * s;
+	result[3] = Math.cos( halfAngle );
+  return result;
+}
+
 VRRotMath = function() {
+  this.xrot = quatFromAxisAngle( [1, 0, 0], Math.PI / 2 );
+  this.zrot = quatFromAxisAngle( [0, 0, 1], Math.PI / 2 );
+
   this.gyroToMat = function(_alpha, _beta, _gamma, _orientation) {
+    // document.getElementById("log").innerHTML = "PING";
+
     // Rotation around the z-axis.
     var alpha = degToRad(_alpha);
     // Front-to-back (in portrait) rotation (x-axis).
@@ -99,6 +117,15 @@ VRRotMath = function() {
     finalQuaternion = multiplyQuat(finalQuaternion, tmpQuaternion);
     finalQuaternion = multiplyQuat(finalQuaternion, screenTransform);
     finalQuaternion = multiplyQuat(finalQuaternion, worldTransform);
+
+    //conjugate the rotation
+    finalQuaternion[0] = -1.*finalQuaternion[0];
+    finalQuaternion[1] = -1.*finalQuaternion[1];
+    finalQuaternion[2] = -1.*finalQuaternion[2];
+
+    finalQuaternion = multiplyQuat(finalQuaternion, this.xrot);
+    finalQuaternion = multiplyQuat(finalQuaternion, this.zrot);
+
     return makeRotationMatrixFromQuaternion(finalQuaternion);
   }
 }

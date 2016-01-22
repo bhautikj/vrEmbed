@@ -31,13 +31,18 @@ function VRLookControlBase() {
 }
 
 VRLookControlBase.prototype.updateBase = function(cameraMatrix) {
-  twgl.m4.identity(this.baseMat);
-	twgl.m4.rotateX(this.baseMat, Math.PI, this.baseMat);
-
-	twgl.m4.rotateX(this.baseMat,this.eulerX, this.baseMat);
-  twgl.m4.rotateY(this.baseMat,this.eulerY, this.baseMat);
-  twgl.m4.rotateZ(this.baseMat,this.eulerZ, this.baseMat);
-  twgl.m4.copy(this.baseMat, cameraMatrix);
+	var rotMat = vrRotMath.gyroToMat(this.eulerX,
+																	 this.eulerY,
+																   this.eulerZ,
+																   0);
+  twgl.m4.copy(rotMat, cameraMatrix);
+  // twgl.m4.identity(this.baseMat);
+	// twgl.m4.rotateX(this.baseMat, Math.PI, this.baseMat);
+	//
+	// twgl.m4.rotateX(this.baseMat,this.eulerX, this.baseMat);
+  // twgl.m4.rotateY(this.baseMat,this.eulerY, this.baseMat);
+  // twgl.m4.rotateZ(this.baseMat,this.eulerZ, this.baseMat);
+  // twgl.m4.copy(this.baseMat, cameraMatrix);
 };
 
 VRLookControlBase.prototype.setEuler = function(x,y,z) {
@@ -81,8 +86,8 @@ VRMouseSpinner = function() {
 VRMouseSpinner.prototype = new VRLookControlBase();
 
 VRMouseSpinner.prototype.mouseMove = function(dX, dY){
-  this.eulerY = this.eulerY - dX * 0.01;
-	this.eulerX = Math.min(Math.max(-Math.PI / 2, this.eulerX - dY * 0.01), Math.PI / 2);
+	this.eulerX = Math.min(Math.max(-Math.PI / 2, this.eulerX - dY * 1.01), Math.PI / 2);
+  this.eulerY = this.eulerY - (dX * 1.01);
 }
 
 VRMouseSpinner.prototype.update = function(cameraMatrix){
