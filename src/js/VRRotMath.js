@@ -1,6 +1,6 @@
+twgl = require('../js-ext/twgl-full.js');
+
 // create quaternion from euler, YXZ order
-//var devm = new THREE.Quaternion().setFromEuler(
-//      new THREE.Euler(this.eulerX, this.eulerY, this.eulerZ, 'YXZ'));
 var setFromEulerYXZ = function (_x, _y, _z) {
   var c1 = Math.cos( _x / 2 );
 	var c2 = Math.cos( _y / 2 );
@@ -118,16 +118,20 @@ VRRotMath = function() {
     finalQuaternion = multiplyQuat(finalQuaternion, screenTransform);
     finalQuaternion = multiplyQuat(finalQuaternion, worldTransform);
 
-    //conjugate the rotation
-    finalQuaternion[0] = -1.*finalQuaternion[0];
+    //flip some axes yo
+    finalQuaternion[0] = 1.*finalQuaternion[0];
     finalQuaternion[1] = -1.*finalQuaternion[1];
-    finalQuaternion[2] = -1.*finalQuaternion[2];
+    finalQuaternion[2] = 1.*finalQuaternion[2];
     finalQuaternion[3] = 1.*finalQuaternion[3];
 
-    finalQuaternion = multiplyQuat(finalQuaternion, this.xrot);
-    finalQuaternion = multiplyQuat(finalQuaternion, this.zrot);
+//    finalQuaternion = multiplyQuat(finalQuaternion, this.xrot);
+//    finalQuaternion = multiplyQuat(finalQuaternion, this.zrot);
 
-    return makeRotationMatrixFromQuaternion(finalQuaternion);
+    var outMat = makeRotationMatrixFromQuaternion(finalQuaternion);
+    // return outMat;
+    // fix roll... how?
+    //twgl.m4.scale(outMat, [1,1,1], outMat);
+    return outMat;
   }
 }
 
