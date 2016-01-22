@@ -19,6 +19,10 @@ twgl = require('../js-ext/twgl-full.js');
 var Util = require('./VRutil.js');
 var util = new Util();
 
+var VRRotMath = require('./VRRotMath.js');
+var vrRotMath = new VRRotMath();
+
+
 //via: http://osgjs.org/docs/annotated-source/FirstPersonManipulatorDeviceOrientationController.html
 var degtorad = Math.PI / 180.0;
 // assumed yxz rotation order
@@ -198,22 +202,11 @@ VRGyroSpinner.prototype.update = function(cameraMatrix){
   if (this.deviceOrientation == null)
     return;
 
-		var alpha = this.deviceOrientation.alpha * degtorad;
-    var beta = this.deviceOrientation.beta * degtorad;
-    var gamma = this.deviceOrientation.gamma * degtorad;
-    var screenAngle = this.screenOrientation * degtorad;
-
-    var quat = quatFromEuler( beta, alpha, -gamma );
-    var minusHalfAngle = -screenAngle / 2.0;
-		var screenTransform = quatIentity();
-		screenTransform[ 1 ] = Math.sin( minusHalfAngle );
-    screenTransform[ 3 ] = Math.cos( minusHalfAngle );
-
-		quat = quatMult( quat, screenTransform );
-
-		quatToRotationMatrix(quat, cameraMatrix);
-
-		twgl.m4.rotateX(cameraMatrix,Math.PI/2.,cameraMatrix);
+	var rotMat = vrRotMath.gyroToMat(this.deviceOrientation.alpha,
+																	 this.deviceOrientation.beta,
+																   this.deviceOrientation.gamma,
+																   this.screenOrientation);
+  twgl.m4.copy(rotMat, cameraMatrix);
 }
 
 VRGyroSpinner.prototype.isMobile = function() {
