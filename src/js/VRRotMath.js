@@ -122,6 +122,7 @@ VRRotMath = function() {
     finalQuaternion[0] = -1.*finalQuaternion[0];
     finalQuaternion[1] = -1.*finalQuaternion[1];
     finalQuaternion[2] = -1.*finalQuaternion[2];
+    finalQuaternion[3] = 1.*finalQuaternion[3];
 
     finalQuaternion = multiplyQuat(finalQuaternion, this.xrot);
     finalQuaternion = multiplyQuat(finalQuaternion, this.zrot);
