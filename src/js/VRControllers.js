@@ -31,18 +31,18 @@ function VRLookControlBase() {
 }
 
 VRLookControlBase.prototype.updateBase = function(cameraMatrix) {
-	var rotMat = vrRotMath.gyroToMat(this.eulerX,
-																	 this.eulerY,
-																   this.eulerZ,
-																   0);
-  twgl.m4.copy(rotMat, cameraMatrix);
-  // twgl.m4.identity(this.baseMat);
-	// twgl.m4.rotateX(this.baseMat, Math.PI, this.baseMat);
-	//
-	// twgl.m4.rotateX(this.baseMat,this.eulerX, this.baseMat);
-  // twgl.m4.rotateY(this.baseMat,this.eulerY, this.baseMat);
-  // twgl.m4.rotateZ(this.baseMat,this.eulerZ, this.baseMat);
-  // twgl.m4.copy(this.baseMat, cameraMatrix);
+	var rotMat = twgl.m4.identity();
+
+	twgl.m4.copy(rotMat, cameraMatrix);
+	twgl.m4.rotateX(cameraMatrix, Math.PI/2, cameraMatrix);
+	twgl.m4.rotateZ(cameraMatrix, Math.PI/2, cameraMatrix);
+
+	//roll
+	twgl.m4.rotateX(cameraMatrix, this.eulerX, cameraMatrix);
+	//pitch
+	twgl.m4.rotateY(cameraMatrix, this.eulerY, cameraMatrix);
+	//yaw
+	twgl.m4.rotateZ(cameraMatrix, this.eulerZ, cameraMatrix);
 };
 
 VRLookControlBase.prototype.setEuler = function(x,y,z) {
@@ -57,7 +57,7 @@ VRIdleSpinner = function() {
 VRIdleSpinner.prototype = new VRLookControlBase();
 
 VRIdleSpinner.prototype.update = function(cameraMatrix){
-  this.setEuler(0, this.eulerY-0.01, 0);
+  this.setEuler(0, this.eulerZ-0.01, 0);
   this.updateBase(cameraMatrix);
 }
 
@@ -86,21 +86,12 @@ VRMouseSpinner = function() {
 VRMouseSpinner.prototype = new VRLookControlBase();
 
 VRMouseSpinner.prototype.mouseMove = function(dX, dY){
-	//this.eulerX = Math.min(Math.max(-Math.PI / 2, this.eulerX - dX * 1.01), Math.PI / 2);
   this.eulerY = this.eulerY + (dY * 0.01);
 	this.eulerZ = this.eulerZ - (dX * 0.01);
 }
 
 VRMouseSpinner.prototype.update = function(cameraMatrix){
-	var rotMat = twgl.m4.identity();
-
-	twgl.m4.copy(rotMat, cameraMatrix);
-	twgl.m4.rotateX(cameraMatrix, Math.PI/2, cameraMatrix);
-	twgl.m4.rotateZ(cameraMatrix, Math.PI/2, cameraMatrix);
-
-	twgl.m4.rotateX(cameraMatrix, this.eulerX, cameraMatrix);
-	twgl.m4.rotateY(cameraMatrix, this.eulerY, cameraMatrix);
-	twgl.m4.rotateZ(cameraMatrix, this.eulerZ, cameraMatrix);
+	this.updateBase(cameraMatrix);
 }
 
 VRGyroSpinner = function() {
