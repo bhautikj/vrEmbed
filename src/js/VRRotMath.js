@@ -53,8 +53,6 @@ var makeRotationMatrixFromQuaternion = function ( q ) {
 	te[ 14 ] = 0;
 	te[ 15 ] = 1;
 
-  //document.getElementById("log").innerHTML = te[0] + "," + te[1];
-
 	return te;
 }
 
@@ -79,18 +77,7 @@ var quatIdentity = function () {
 	return [0.,0.,0.,1.];
 }
 
-var quatFromAxisAngle = function ( axis, angle ) {
-  var result = [];
-	// http://www.euclideanspace.com/maths/geometry/rotations/conversions/angleToQuaternion/index.htm
-	// assumes axis is normalized
-	var halfAngle = angle / 2, s = Math.sin( halfAngle );
 
-	result[0] = axis[0] * s;
-	result[1] = axis[1] * s;
-	result[2] = axis[2] * s;
-	result[3] = Math.cos( halfAngle );
-  return result;
-}
 
 VRRotMath = function() {
   this.gyroToMat = function(_alpha, _beta, _gamma, _orientation) {

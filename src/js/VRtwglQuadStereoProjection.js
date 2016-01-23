@@ -59,7 +59,7 @@ var fsRenderDisplay = "precision mediump float;\n"+
 "uniform vec2 k;\n"+
 "uniform float ipdAdjust;\n"+
 "void main(void) {\n"+
-"  //normalize uv so it is between 0 and 1\n"+
+   //normalize uv so it is between 0 and 1
 "  vec2 uv = gl_FragCoord.xy / resolution;\n"+
 "  uv.y = (1. - uv.y);\n"+
 "  bool leftImg=false;\n"+
@@ -74,18 +74,18 @@ var fsRenderDisplay = "precision mediump float;\n"+
 "      uv.x = 2.*(uv.x - .5);\n"+
 "      uv.x -= ipdAdjust;\n"+
 "    }\n"+
-"    // lens distorter\n"+
+     // lens distorter
 "    float r2 = (uv.x-0.5)*(uv.x-0.5) + (uv.y-0.5)*(uv.y-0.5);\n"+
 "    uv.x = 0.5+(uv.x-0.5)*(1. + k.x*r2 + k.y*r2*r2);\n"+
 "    uv.y = 0.5+(uv.y-0.5)*(1. + k.x*r2 + k.y*r2*r2);\n"+
 "    uv.x = 0.5+fov.x*(uv.x-0.5);\n"+
 "    uv.y = 0.5+fov.y*(uv.y-0.5);\n"+
 "  } else {\n"+
-"    //constrain to FOV\n"+
+     //constrain to FOV
 "    uv.x = 0.5+fov.x*(uv.x-0.5);\n"+
 "    uv.y = 0.5+fov.y*(uv.y-0.5);\n"+
 "  }\n"+
-"  //map uv.x 0..1 to -PI..PI and uv.y 0..1 to -PI/2..PI/2\n"+
+   //map uv.x 0..1 to -PI..PI and uv.y 0..1 to -PI/2..PI/2
 "  float lat = 0.5*PI*(2.*uv.y-1.0);\n"+
 "  float lon = PI*(2.0*uv.x-1.0);\n"+
 "  vec2 pnt = vec2(lon, lat);\n"+
@@ -98,14 +98,7 @@ var fsRenderDisplay = "precision mediump float;\n"+
 "  float _lat = 2.0*(acos(sphere_pnt.z / r) - PI*.5) + PI*.5;\n"+
 "  _lon = mod(_lon, 2.*PI);\n"+
 "  vec2 lonLat = vec2(_lon/(PI*2.), _lat/(PI));\n"+
-// "  // now map point in sphere back to lat/lon coords\n"+
-// "  float sphere_pnt_len = length(sphere_pnt);\n"+
-// "  sphere_pnt /= sphere_pnt_len;\n"+
-// "  vec2 lonLat = vec2(atan(sphere_pnt.x, sphere_pnt.z), asin(-1.0*sphere_pnt.y));\n"+
-// "  // map back to 0..1\n"+
-// "  lonLat.x = (lonLat.x/(2.0*PI))+0.5;\n"+
-// "  lonLat.y = (lonLat.y/(.5*PI))+0.5;\n"+
-"  // vanilla monocular render\n"+
+   // vanilla monocular render
 "  if (renderMode == 0) {\n"+
 "    lonLat.y *= 0.5;\n"+
 "    gl_FragColor = texture2D(textureSource, lonLat);\n"+
@@ -118,7 +111,7 @@ var fsRenderDisplay = "precision mediump float;\n"+
 "      gl_FragColor = texture2D(textureSource, lonLat);\n"+
 "    }\n"+
 "  } else if (renderMode == 2) {\n"+
-"    // anaglyph render\n"+
+    // anaglyph render
 "    vec4 colorL, colorR;\n"+
 "    colorL = texture2D(textureSource, vec2(lonLat.x, lonLat.y*0.5));\n"+
 "    colorR = texture2D(textureSource, vec2(lonLat.x, 0.5+lonLat.y*0.5));\n"+
