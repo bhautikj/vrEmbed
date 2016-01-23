@@ -93,9 +93,6 @@ var quatFromAxisAngle = function ( axis, angle ) {
 }
 
 VRRotMath = function() {
-  this.xrot = quatFromAxisAngle( [1, 0, 0], Math.PI / 2 );
-  this.zrot = quatFromAxisAngle( [0, 0, 1], Math.PI / 2 );
-
   this.gyroToMat = function(_alpha, _beta, _gamma, _orientation) {
     // document.getElementById("log").innerHTML = "PING";
 
@@ -124,14 +121,11 @@ VRRotMath = function() {
     finalQuaternion[2] = -1.*finalQuaternion[2];
     finalQuaternion[3] = 1.*finalQuaternion[3];
 
-    //document.getElementById("log").innerHTML = Math.floor(yaw) + "," + Math.floor(pitch) + "," + Math.floor(roll);
-
-//    finalQuaternion = multiplyQuat(finalQuaternion, this.xrot);
-//    finalQuaternion = multiplyQuat(finalQuaternion, this.zrot);
-
-
     var outMat = makeRotationMatrixFromQuaternion(finalQuaternion);
     twgl.m4.transpose(outMat,outMat);
+    twgl.m4.rotateX(outMat,Math.PI/2,outMat);
+    twgl.m4.rotateZ(outMat,Math.PI/2,outMat);
+
     return outMat;
   }
 }
