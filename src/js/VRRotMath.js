@@ -109,7 +109,7 @@ VRRotMath = function() {
 
     // Inspired by
     // https://github.com/richtr/threeVR/blob/master/js/DeviceOrientationController.js
-    var tmpQuaternion = setFromEulerYXZ(beta, alpha, -gamma);
+    var tmpQuaternion = setFromEulerYXZ(beta, alpha, -1.0*gamma);
     var minusHalfAngle = -orient / 2;
     var screenTransform = [0, Math.sin(minusHalfAngle), 0, Math.cos(minusHalfAngle)];
     var worldTransform = [-Math.sqrt(0.5), 0, 0, Math.sqrt(0.5)];
@@ -119,18 +119,19 @@ VRRotMath = function() {
     finalQuaternion = multiplyQuat(finalQuaternion, worldTransform);
 
     //flip some axes yo
-    finalQuaternion[0] = 1.*finalQuaternion[0];
-    finalQuaternion[1] = -1.*finalQuaternion[1];
-    finalQuaternion[2] = 1.*finalQuaternion[2];
+    finalQuaternion[0] = -1.*finalQuaternion[0];
+    finalQuaternion[1] = 1.*finalQuaternion[1];
+    finalQuaternion[2] = -1.*finalQuaternion[2];
     finalQuaternion[3] = 1.*finalQuaternion[3];
+
+    //document.getElementById("log").innerHTML = Math.floor(yaw) + "," + Math.floor(pitch) + "," + Math.floor(roll);
 
 //    finalQuaternion = multiplyQuat(finalQuaternion, this.xrot);
 //    finalQuaternion = multiplyQuat(finalQuaternion, this.zrot);
 
+
     var outMat = makeRotationMatrixFromQuaternion(finalQuaternion);
-    // return outMat;
-    // fix roll... how?
-    //twgl.m4.scale(outMat, [1,1,1], outMat);
+    twgl.m4.transpose(outMat,outMat);
     return outMat;
   }
 }
