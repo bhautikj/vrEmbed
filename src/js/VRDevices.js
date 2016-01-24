@@ -65,7 +65,7 @@ VRDevices = {
     // % of screen width parallax to introduce in stereo
     // 0: no adjstment
     // 0.5: rotation centre moved to far left/right screen edges
-    ipdAdjust: calculateIPDAdjust(90,64),
+    ipdAdjust: calculateIPDAdjust(VRScreenWidths.iPhone5,64),
     // lens distortion params: [k1, k2] in k1*r^2 + k2+r^4
     k: [0.441,0.156]
   },
@@ -81,7 +81,7 @@ VRDevices = {
     // % of screen width parallax to introduce in stereo
     // 0: no adjstment
     // 0.5: rotation centre moved to far left/right screen edges
-    ipdAdjust: calculateIPDAdjust(112,64),
+    ipdAdjust: calculateIPDAdjust(VRScreenWidths.iPhone6p,64),
     // lens distortion params: [k1, k2] in k1*r^2 + k2+r^4
     k: [0.34,0.55]
   },
@@ -97,7 +97,7 @@ VRDevices = {
     // % of screen width parallax to introduce in stereo
     // 0: no adjstment
     // 0.5: rotation centre moved to far left/right screen edges
-    ipdAdjust: calculateIPDAdjust(114,60),
+    ipdAdjust: calculateIPDAdjust(VRScreenWidths.GalaxyS6,60),
     // lens distortion params: [k1, k2] in k1*r^2 + k2+r^4
     k: [0.215,0.215]
   },
@@ -113,7 +113,7 @@ VRDevices = {
     // % of screen width parallax to introduce in stereo
     // 0: no adjstment
     // 0.5: rotation centre moved to far left/right screen edges
-    ipdAdjust: calculateIPDAdjust(114,60),
+    ipdAdjust: calculateIPDAdjust(VRScreenWidths.iPhone6,60),
     // lens distortion params: [k1, k2] in k1*r^2 + k2+r^4
     k: [0.093,0.018]
   },
