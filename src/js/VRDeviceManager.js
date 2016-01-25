@@ -14,7 +14,7 @@ VRScreenWidths = {
 };
 
 var calculateIPDAdjust = function(screenWidth, lensIPD) {
-  return (lensIPD*0.5-screenWidth*0.25)/(screenWidth*0.25);
+  return 0.1*(lensIPD*0.5-screenWidth*0.25)/(screenWidth*0.25);
 }
 
 // some params via:
