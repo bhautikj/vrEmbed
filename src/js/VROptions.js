@@ -89,11 +89,6 @@ function VROptionsCore() {
       radioButton.value = deviceName;
       radioButton.addEventListener("click", this.radioClick);
 
-      this.deviceButtons[deviceName] = radioButton;
-      // radioButton.style.display = 'none';
-      //radioItem1.defaultChecked = true;
-      //radioItem1.checked = true
-
       //var deviceLabelText = '<img src=' + device.icon + ' width=100px"/>' + ;
       var radioImgNode = document.createElement("img");
       radioImgNode.setAttribute('src', device.icon);
@@ -106,6 +101,9 @@ function VROptionsCore() {
       radioLabel.appendChild(radioImgNode);
       radioLabel.appendChild(radioTextNode);
       radioLabel.appendChild(document.createElement("br"));
+
+      this.deviceButtons[deviceName] = [radioButton, radioLabel];
+
       objDiv.appendChild(radioLabel);
     }
   }
@@ -116,21 +114,26 @@ function VROptionsCore() {
   }
 
   this.syncDeviceButtonsToManager = function() {
-    var currentDevice = this.vrDeviceManager.getCurrentDevice();
+    var currentDevice = this.vrDeviceManager.currentDeviceName;
+    //console.log(currentDevice.name);
     for (var key in this.deviceButtons) {
       if (key === 'length' || !this.deviceButtons.hasOwnProperty(key)) continue;
 
-      if (this.vrDeviceManager.getDevice(key) == currentDevice)
-        this.deviceButtons[key].checked = true;
+      //console.log(this.vrDeviceManager.getDevice(key).name, currentDevice.name);
+      if (key == currentDevice){
+        this.deviceButtons[key][0].checked = true;
+        //this.deviceButtons[key][1].style.border = "2px solid #F00";
+      }
       else
-        this.deviceButtons[key].checked = false;
+        this.deviceButtons[key][0].checked = false;
+        //this.deviceButtons[key][1].style.border = "2px solid transparent";
     }
   }
 
   this.syncManagerToDeviceButtons = function() {
     for (var key in this.deviceButtons) {
       if (key === 'length' || !this.deviceButtons.hasOwnProperty(key)) continue;
-        if (this.deviceButtons[key].checked == true) {
+        if (this.deviceButtons[key][0].checked == true) {
           this.vrDeviceManager.setCurrentDevice(key);
           break;
         }
@@ -147,10 +150,12 @@ function VROptionsCore() {
 
   this.showDialog = function() {
     document.body.appendChild(this.dialog);
+    this.syncDeviceButtonsToManager();
   }
 
   this.hideDialog = function() {
     document.body.removeChild(this.dialog);
+    this.syncManagerToDeviceButtons();
   }
 
   this.onClickLeft_ = function(e) {
