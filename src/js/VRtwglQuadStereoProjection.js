@@ -1,6 +1,7 @@
 VRtwglQuad = require('./VRtwglQuad.js');
 VRRenderModes = require('./VRRenderModes.js');
 VRLookController = require('./VRControllers.js');
+VRDeviceManager = require('./VRDeviceManager.js');
 
 twgl = require('../js-ext/twgl-full.js');
 
@@ -170,8 +171,10 @@ var fsWindowed = "precision mediump float;\n"+
 "  gl_FragColor = texture2D(textureSource, texC);\n"+
 "}\n"
 
+
 VRtwglQuadStereoProjection = function() {
   var self = this;
+  this.vrDeviceManager = VRDeviceManager;
   this.vrtwglQuad = null;
   this.vrtwglQuadFb = null;
   this.textureSet = [];
@@ -204,32 +207,38 @@ VRtwglQuadStereoProjection = function() {
     transform:twgl.m4.identity()
   };
 
-  this.setRenderMode = function(renderMode) {
-    this.uniforms.renderMode = renderMode;
-  }
+  // this.setRenderMode = function(renderMode) {
+  //   this.uniforms.renderMode = renderMode;
+  // }
+  //
+  // this.setFOVX = function(fovX) {
+  //   this.fovX = fovX;
+  // }
+  //
+  // this.setDistortionParams = function(k1, k2) {
+  //   this.uniforms.k = [k1, k2];
+  // }
+  //
+  // // positive 0.5 == centre moved to outer screen edges
+  // // zero == centre at centre of l/r pairs
+  // this.setIpdAdjust = function(ipdFrac) {
+  //   this.uniforms.ipdAdjust = ipdFrac;
+  // }
 
-  this.setFOVX = function(fovX) {
-    this.fovX = fovX;
-  }
-
-  this.setDistortionParams = function(k1, k2) {
-    this.uniforms.k = [k1, k2];
-  }
-
-  // positive 0.5 == centre moved to outer screen edges
-  // zero == centre at centre of l/r pairs
-  this.setIpdAdjust = function(ipdFrac) {
-    this.uniforms.ipdAdjust = ipdFrac;
+  this.setupFromDevice = function(device) {
+    this.uniforms.renderMode = device.renderMode;
+    this.fovX = device.hfov;
+    this.uniforms.k = device.k;
+    this.uniforms.ipdAdjust = device.ipdAdjust;
   }
 
 
   this.init = function(element){
     this.vrtwglQuad = new VRtwglQuad();
     this.vrtwglQuad.init(element, vs, fsRenderDisplay);
+
     // device config params
-    this.setFOVX(107);
-    this.setDistortionParams(0.51, 0.16);
-    this.setIpdAdjust(0.0);
+    this.setupFromDevice (this.vrDeviceManager.getWindowedDevice());
     // ---
     this.vrtwglQuadFb = new VRtwglQuad();
     this.vrtwglQuadFb.initFramebuffer(this.fbRes, this.vrtwglQuad.glContext, vs, fsWindowed);

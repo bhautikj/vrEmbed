@@ -17,10 +17,7 @@
 VRStates = {
   INACTIVE: 0,
   WINDOWED: 1,
-  WINDOWED_ANAGLYPH: 2,
-  FULLSCREEN: 3,
-  FULLSCREEN_ANAGLYPH: 4,
-  CARDBOARD: 5
+  FULLSCREEN: 2,
 };
 
 module.exports = VRStates;

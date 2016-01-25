@@ -3,11 +3,13 @@ var VRStateToggler = require('./VRStateToggler.js');
 var VRScene = require('./VRScene.js');
 var VRManager = require('./VRManager.js');
 var VRRenderModes = require('./VRRenderModes.js');
+var VRDeviceManager = require('./VRDeviceManager.js');
 
 VRStory = function() {
   var self = this;
   this.storyElement = null;
   this.parentElement = null;
+  this.vrDeviceManager = VRDeviceManager;
 
   //--
   this.quad = null;
@@ -51,40 +53,17 @@ VRStory = function() {
   this.windowedCallback = function() {
     if (self.quad == null)
       return false;
-    self.quad.setRenderMode(VRRenderModes.MONOCULAR);
+    self.quad.setupFromDevice (this.vrDeviceManager.getWindowedDevice());
     self.exitFullscreen();
     console.log("WINDOWED CALLBACK");
-    return true;
-  };
-
-  this.windowedAnaglyphCallback = function() {
-    self.quad.setRenderMode(VRRenderModes.STEREOANAGLYPH);
-    self.exitFullscreen();
-    console.log("WINDOWED ANAGLYPH CALLBACK");
     return true;
   };
 
   this.fullscreenCallback = function() {
     if (self.enterFullscreen() == false)
       return false;
-    self.quad.setRenderMode(VRRenderModes.MONOCULAR);
+    self.quad.setupFromDevice (this.vrDeviceManager.getCurrentDevice());
     console.log("FULLSCREEN CALLBACK");
-    return true;
-  };
-
-  this.fullscreenAnaglyphCallback = function() {
-    if (self.enterFullscreen() == false)
-      return false;
-    self.quad.setRenderMode(VRRenderModes.STEREOANAGLYPH);
-    console.log("FULLSCREEN ANAGLYPH CALLBACK");
-    return true;
-  };
-
-  this.cardboardCallback = function() {
-    if (self.enterFullscreen() == false)
-      return false;
-    self.quad.setRenderMode(VRRenderModes.STEREOSIDEBYSIDE);
-    console.log("CARDBOARD CALLBACK");
     return true;
   };
 
@@ -124,20 +103,11 @@ VRStory = function() {
     self.state = state;
     var success = false;
     switch (state) {
-      case VRStates.CARDBOARD:
-        success = self.cardboardCallback();
-        break;
       case VRStates.FULLSCREEN:
         success = self.fullscreenCallback();
         break;
-      case VRStates.FULLSCREEN_ANAGLYPH:
-        success = self.fullscreenAnaglyphCallback();
-        break;
       case VRStates.WINDOWED:
         success = self.windowedCallback();
-        break;
-      case VRStates.WINDOWED_ANAGLYPH:
-        success = self.windowedAnaglyphCallback();
         break;
     }
 
@@ -188,9 +158,6 @@ VRStory = function() {
       return;
 
     self.manager.render(timestamp);
-
-    //   uniforms.iGlobalTime.value += 0.001;
-//     alert(timestamp);
   };
 
   this.init = function(storyElement, storyManager) {
@@ -214,7 +181,6 @@ VRStory = function() {
 
     this.stateToggler.configureStereo(this.isStereo);
 
-
     this.mouseMove = function(ev) {
       var mx = ev.movementX || ev.mozMovementX || ev.webkitMovementX || 0;
       var my = ev.movementY || ev.mozMovementY || ev.webkitMovementY || 0;
@@ -234,7 +200,6 @@ VRStory = function() {
     this.quad.getContainer().appendChild(this.stateToggler.buttonMiddle);
     this.quad.getContainer().appendChild(this.stateToggler.buttonRight);
     this.quad.getContainer().appendChild(this.stateToggler.buttonOptions);
-
 
     this.manager = new VRManager(this.quad);
     this.onResize();

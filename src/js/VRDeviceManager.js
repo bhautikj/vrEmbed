@@ -43,7 +43,7 @@ VRDevices = {
     // renderer mode
     renderMode: VRRenderModes.STEREOANAGLYPH,
     // icon
-    icon: VRIcons.logoFullscreen,
+    icon: VRIcons.logoAnaglyph,
     // horizontal field-of-view
     hfov: 60,
     // % of screen width parallax to introduce in stereo
@@ -119,4 +119,49 @@ VRDevices = {
   },
 };
 
-module.exports = VRDevices;
+VRDeviceManager = function() {
+  this.currentDevice = VRDevices["ANAGLYPH"];
+  this.windowedDevice = VRDevices["FULLSCREEN"];
+
+  this.getDeviceList = function() {
+    var deviceList = [];
+    for (var key in VRDevices) {
+      if (key === 'length' || !VRDevices.hasOwnProperty(key)) continue;
+      deviceList.push(key);
+    }
+    return deviceList;
+  }
+
+  this.setCurrentDevice = function(deviceName) {
+    this.currentDevice = VRDevices[deviceName];
+  }
+
+  this.getCurrentDevice = function() {
+    return this.currentDevice;
+  }
+
+  this.getWindowedDevice = function() {
+    return this.windowedDevice;
+  }
+}
+
+var VRDeviceManagerFactory = (function () {
+  var instance;
+
+  function createInstance() {
+      var vrDeviceManager = new VRDeviceManager();
+      return vrDeviceManager;
+  }
+
+  return {
+      getInstance: function () {
+          if (!instance) {
+              instance = createInstance();
+          }
+          return instance;
+      }
+  };
+})();
+
+
+module.exports = VRDeviceManagerFactory.getInstance();

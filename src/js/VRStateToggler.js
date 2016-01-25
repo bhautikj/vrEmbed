@@ -18,7 +18,6 @@ var VRStates = require('./VRStates.js');
 var VRLogos = require('./VRIcons.js');
 var Emitter = require('../js-ext/emitter.js');
 
-
 /**
  * VR state machine:
  *
@@ -39,7 +38,6 @@ VRStateToggler = function() {
 
   this.logoCardboard = VRLogos.logoCardboard;
   this.logoFullscreen = VRLogos.logoFullscreen;
-  this.logoAnaglyph = VRLogos.logoAnaglyph;
   this.logoWindowed = VRLogos.logoWindowed;
   this.logoSettings = VRLogos.logoSettings;
   this.logoVrEmbed = VRLogos.logoVrEmbed;
@@ -211,64 +209,30 @@ VRStateToggler.prototype.setButtonState = function(state) {
     this.setupButton(this.buttonOptions, this.logoSettings, 'settings', true);
 
     switch (state) {
-      case VRStates.CARDBOARD:
-        this.setupButton(this.buttonOptions, "", "", false);
-        this.setupButton(this.buttonLeft, "", "", false);
-        this.setupButton(this.buttonMiddle, this.logoWindowed, 'Windowed mode', true);
-        this.setupButton(this.buttonRight, "", "", false);
-        break;
       case VRStates.FULLSCREEN:
         this.setupButton(this.buttonLeft, "", "", false);
         this.setupButton(this.buttonMiddle, this.logoWindowed, 'Windowed mode', true);
         this.setupButton(this.buttonRight, "", "", false);
         break;
-      case VRStates.FULLSCREEN_ANAGLYPH:
-        this.setupButton(this.buttonOptions, "", "", false);
-        this.setupButton(this.buttonLeft, "", "", false);
-        this.setupButton(this.buttonMiddle, this.logoWindowed, 'Windowed mode', true);
-        this.setupButton(this.buttonRight, "", "", false);
-        break;
       case VRStates.WINDOWED:
-        this.setupButton(this.buttonLeft, this.logoCardboard, 'Immersive mode', true);
+      this.setupButton(this.buttonLeft, "", "", false);
         this.setupButton(this.buttonMiddle, this.logoFullscreen, 'Fullscreen mode', true);
-        this.setupButton(this.buttonRight, this.logoAnaglyph, 'Fullscreen Red-blue mode', true);
-        break;
-      case VRStates.WINDOWED_ANAGLYPH:
-        this.setupButton(this.buttonLeft,  "", "", false);
-        this.setupButton(this.buttonMiddle, this.logoWindowed, 'Windowed mode', true);
-        this.setupButton(this.buttonRight, this.logoAnaglyph, 'Fullscreen mode', true);
+        this.setupButton(this.buttonRight, "", "", false);
         break;
     }
   } else {
     this.setupButton(this.buttonOptions, this.logoSettings, 'settings', true);
 
     switch (state) {
-      case VRStates.CARDBOARD:
-        this.setupButton(this.buttonOptions, "", "", false);
-        this.setupButton(this.buttonLeft, "", "", false);
-        this.setupButton(this.buttonMiddle, this.logoWindowed, 'Windowed mode', true);
-        this.setupButton(this.buttonRight, "", "", false);
-        break;
       case VRStates.FULLSCREEN:
         this.setupButton(this.buttonLeft, "", "", false);
         this.setupButton(this.buttonMiddle, this.logoWindowed, 'Windowed mode', true);
         this.setupButton(this.buttonRight, "", "", false);
         break;
-      case VRStates.FULLSCREEN_ANAGLYPH:
-        this.setupButton(this.buttonOptions, "", "", false);
-        this.setupButton(this.buttonLeft, "", "", false);
-        this.setupButton(this.buttonMiddle, this.logoWindowed, 'Windowed mode', true);
-        this.setupButton(this.buttonRight, "", "", false);
-        break;
       case VRStates.WINDOWED:
-        this.setupButton(this.buttonLeft, this.logoCardboard, 'Immersive mode', true);
+      this.setupButton(this.buttonLeft, "", "", false);
         this.setupButton(this.buttonMiddle, this.logoFullscreen, 'Fullscreen mode', true);
         this.setupButton(this.buttonRight, "", "", false);
-        break;
-      case VRStates.WINDOWED_ANAGLYPH:
-        this.setupButton(this.buttonLeft,  "", "", false);
-        this.setupButton(this.buttonMiddle, this.logoWindowed, 'Windowed mode', true);
-        this.setupButton(this.buttonRight, this.logoAnaglyph, 'Fullscreen mode', true);
         break;
     }
   }
@@ -289,14 +253,8 @@ VRStateToggler.prototype.setState = function(state) {
 
 VRStateToggler.prototype.stateChange = function(buttonSrc) {
   switch (buttonSrc) {
-    case this.logoCardboard:
-      this.setState(VRStates.CARDBOARD);
-      break;
     case this.logoFullscreen:
       this.setState(VRStates.FULLSCREEN);
-      break;
-    case this.logoAnaglyph:
-      this.setState(VRStates.FULLSCREEN_ANAGLYPH);
       break;
     case this.logoWindowed:
       this.setState(VRStates.WINDOWED);
