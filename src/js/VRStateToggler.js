@@ -46,13 +46,8 @@ VRStateToggler.prototype.setVRStory = function(vrStory) {
   this.isStereo = false;
 };
 
-VRStateToggler.prototype.createMiddleButton = function() {
-  this.buttonMiddle = document.createElement('img');
-  var s = this.buttonMiddle.style;
+var setupButtonStyleBase = function(s) {
   s.position = 'absolute';
-  s.bottom = '5px';
-  s.left = 0;
-  s.right = 0;
   s.marginLeft = 'auto';
   s.marginRight = 'auto';
   s.width = '56px'
@@ -65,6 +60,15 @@ VRStateToggler.prototype.createMiddleButton = function() {
   s.MozUserSelect = 'none';
   s.cursor = 'pointer';
   s.opacity = '0.8';
+}
+
+VRStateToggler.prototype.createMiddleButton = function() {
+  this.buttonMiddle = document.createElement('img');
+  var s = this.buttonMiddle.style;
+  setupButtonStyleBase(s);
+  s.left = 0;
+  s.right = 0;
+  s.bottom = '5px';
   // Prevent button from being dragged.
   this.buttonMiddle.draggable = false;
   this.buttonMiddle.addEventListener('dragstart', function(e) {
@@ -75,21 +79,10 @@ VRStateToggler.prototype.createMiddleButton = function() {
 VRStateToggler.prototype.createOptionsButton = function() {
   this.buttonOptions = document.createElement('img');
   var s = this.buttonOptions.style;
-  s.position = 'absolute';
-  s.top = '5px';
+  setupButtonStyleBase(s);
   s.left = 0;
   s.right = 5;
-  s.marginLeft = 'auto';
-  s.width = '56px'
-  s.height = '56px';
-  s.backgroundSize = 'cover';
-  s.backgroundColor = 'transparent';
-  s.border = 0;
-  s.userSelect = 'none';
-  s.webkitUserSelect = 'none';
-  s.MozUserSelect = 'none';
-  s.cursor = 'pointer';
-  s.opacity = '0.8';
+  s.top = '5px';
   // Prevent button from being dragged.
   this.buttonOptions.draggable = false;
   this.buttonOptions.addEventListener('dragstart', function(e) {
@@ -113,7 +106,6 @@ VRStateToggler.prototype.onClickOptions_ = function(e) {
   e.stopPropagation();
   e.preventDefault();
   this.buttonOptionsClick();
-//   this.emit('clickRight');
 }
 
 VRStateToggler.prototype.setupButton = function(button, src, title, isVisible) {

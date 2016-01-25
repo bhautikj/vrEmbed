@@ -15,9 +15,22 @@
 **/
 
 var VRLogos = require('./VRIcons.js');
+var VRDeviceManager = require('./VRDeviceManager.js');
+
+var createDialogTextStyle = function(t) {
+  t.width = '300px';
+  t.position = 'relative';
+  t.margin = '10px auto';
+  t.padding = '5px 20px 10px 20px';
+  t.borderRadius = '5px';
+  t.background = '#fff';
+  // t.pointerEvents = 'auto';
+}
 
 function VROptionsCore() {
   var self = this;
+  this.vrDeviceManager = VRDeviceManager;
+  this.deviceButtons = [];
 
   this.init = function() {
     this.dialog = document.createElement('div');
@@ -30,37 +43,106 @@ function VROptionsCore() {
     s.background = 'rgba(0,0,0,0.8)';
     s.zIndex = '99999';
     s.opacity = '1';
-    s.pointerEvents = 'none';
+    //s.pointerEvents = 'none';
+    s.pointerEvents = 'auto';
     s.color = '#000';
     s.fontFamily = '"Lucida Console",Monaco,monospace';
 
     this.dialogText = document.createElement('div');
     var t = this.dialogText.style;
-    t.width = '300px';
-    t.minHeight = '150px';
-  	t.position = 'relative';
-  	t.margin = '10% auto';
-  	t.padding = '5px 20px 13px 20px';
-  	t.borderRadius = '10px';
-  	t.background = '#fff';
-    s.pointerEvents = 'auto';
+    createDialogTextStyle(t);
+    t.minHeight = '100px';
+
+    this.dialogDevices = document.createElement('div');
+    var u = this.dialogDevices.style;
+    createDialogTextStyle(u);
+    u.maxHeight = '100px';
+    u.overflow = 'scroll';
 
     this.dialog.appendChild(this.dialogText);
+    this.dialog.appendChild(this.dialogDevices);
     this.dialog.addEventListener('click', this.onClickLeft_.bind(this));
     this.dialog.addEventListener('touchstart', this.onClickLeft_.bind(this));
 
     this.setupDialogOptions();
+    this.setupDialogDevices();
   }
 
   this.setupDialogOptions = function() {
     var tex = "";
-    tex += '<a href="https://github.com/bhautikj/vrEmbed" target="_blank" style="color: inherit; text-decoration: none;">'
+    tex += '<a href="http://vrEmbed.org" target="_blank" style="color: inherit; text-decoration: none;">'
     tex += '<img src=' + VRLogos.logoVrEmbed + ' width=100px style="float: right; margin: 0 0 2px 2px;"/>';
-    tex += ' vrEmbed by Bhautik Joshi 2015</a><div style="clear:left;">';
-    tex += '-> <img src=' + VRLogos.logoCardboard + ' width=50px> <a href="" style="color: inherit; text-decoration: none;">V1</a> <a href="" style="color: inherit; text-decoration: none;">V2</a><br/>';
-    tex += '-> Open in editor<br/>';
-    tex += '-> <a href="https://github.com/bhautikj/vrEmbed" target="_blank" style="color: inherit; text-decoration: none;">View code on github</a>';
+    tex += '<br/>vrEmbed<br/> (c) Bhautik Joshi 2015-16</a><div style="clear:left;">';
     this.dialogText.innerHTML = tex;
+  }
+
+  this.createRadio = function(objDiv){
+    var devices = this.vrDeviceManager.getDeviceList();
+    for(deviceit = 0;deviceit<devices.length; deviceit++) {
+      var deviceName = devices[deviceit];
+      var device = this.vrDeviceManager.getDevice(deviceName);
+
+      var radioButton = document.createElement("input");
+      radioButton.type = "radio";
+      radioButton.name = "deviceSelector";
+      radioButton.id = "device" + deviceit;
+      radioButton.value = deviceName;
+      radioButton.addEventListener("click", this.radioClick);
+
+      this.deviceButtons[deviceName] = radioButton;
+      // radioButton.style.display = 'none';
+      //radioItem1.defaultChecked = true;
+      //radioItem1.checked = true
+
+      //var deviceLabelText = '<img src=' + device.icon + ' width=100px"/>' + ;
+      var radioImgNode = document.createElement("img");
+      radioImgNode.setAttribute('src', device.icon);
+      radioImgNode.setAttribute('height', '25px');
+      var radioTextNode = document.createTextNode(device.name);
+
+      var radioLabel = document.createElement("label");
+      radioLabel.htmlFor = radioButton.id;
+      radioLabel.appendChild(radioButton);
+      radioLabel.appendChild(radioImgNode);
+      radioLabel.appendChild(radioTextNode);
+      radioLabel.appendChild(document.createElement("br"));
+      objDiv.appendChild(radioLabel);
+    }
+  }
+
+  this.radioClick = function() {
+    // console.log("BLERGH");
+    self.syncManagerToDeviceButtons();
+  }
+
+  this.syncDeviceButtonsToManager = function() {
+    var currentDevice = this.vrDeviceManager.getCurrentDevice();
+    for (var key in this.deviceButtons) {
+      if (key === 'length' || !this.deviceButtons.hasOwnProperty(key)) continue;
+
+      if (this.vrDeviceManager.getDevice(key) == currentDevice)
+        this.deviceButtons[key].checked = true;
+      else
+        this.deviceButtons[key].checked = false;
+    }
+  }
+
+  this.syncManagerToDeviceButtons = function() {
+    for (var key in this.deviceButtons) {
+      if (key === 'length' || !this.deviceButtons.hasOwnProperty(key)) continue;
+        if (this.deviceButtons[key].checked == true) {
+          this.vrDeviceManager.setCurrentDevice(key);
+          break;
+        }
+    }
+  }
+
+  this.setupDialogDevices = function() {
+    var tex = "";
+    tex += 'Choose device:<br/>';
+    this.dialogDevices.innerHTML = tex;
+    this.createRadio(this.dialogDevices);
+    this.syncDeviceButtonsToManager();
   }
 
   this.showDialog = function() {

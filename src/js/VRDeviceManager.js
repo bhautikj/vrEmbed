@@ -132,6 +132,10 @@ VRDeviceManager = function() {
     return deviceList;
   }
 
+  this.getDevice = function(deviceName) {
+    return VRDevices[deviceName];
+  }
+
   this.setCurrentDevice = function(deviceName) {
     this.currentDevice = VRDevices[deviceName];
   }
