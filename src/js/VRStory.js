@@ -196,9 +196,7 @@ VRStory = function() {
         this.parentElement.removeEventListener("mousemove", self.mouseMove, false);
     }, false);
 
-    this.quad.getContainer().appendChild(this.stateToggler.buttonLeft);
     this.quad.getContainer().appendChild(this.stateToggler.buttonMiddle);
-    this.quad.getContainer().appendChild(this.stateToggler.buttonRight);
     this.quad.getContainer().appendChild(this.stateToggler.buttonOptions);
 
     this.manager = new VRManager(this.quad);
