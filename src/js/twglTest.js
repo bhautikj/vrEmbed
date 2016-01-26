@@ -15,6 +15,7 @@ runTest = function() {
     vrTwglQuadTest.anim();
   }
 }
+
 runTestBuffer = function() {
   VRtwglQuadTestBuffer = require('./VRtwglQuadTestBuffer.js');
 
@@ -85,6 +86,6 @@ runTestStereographic = function() {
 }
 
 
-//runTestBuffer();
+runTestBuffer();
 //runTest();
-runTestStereographic();
+//runTestStereographic();

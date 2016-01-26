@@ -171,17 +171,17 @@ var fsWindowed = "precision mediump float;\n"+
 "  gl_FragColor = texture2D(textureSource, texC);\n"+
 "}\n"
 
-
 VRtwglQuadStereoProjection = function() {
   var self = this;
   this.vrDeviceManager = VRDeviceManager;
   this.vrtwglQuad = null;
   this.vrtwglQuadFb = null;
   this.textureSet = [];
-  this.fbRes = 2048;
+  this.fbRes = 4096;
   this.textureDescriptions = {};
   this.textures = [];
   this.fovX = 40;
+  this.texLoaded = false;
 
   this.controller = new VRLookController();
   this.cameraMatrix = twgl.m4.identity();
@@ -207,31 +207,12 @@ VRtwglQuadStereoProjection = function() {
     transform:twgl.m4.identity()
   };
 
-  // this.setRenderMode = function(renderMode) {
-  //   this.uniforms.renderMode = renderMode;
-  // }
-  //
-  // this.setFOVX = function(fovX) {
-  //   this.fovX = fovX;
-  // }
-  //
-  // this.setDistortionParams = function(k1, k2) {
-  //   this.uniforms.k = [k1, k2];
-  // }
-  //
-  // // positive 0.5 == centre moved to outer screen edges
-  // // zero == centre at centre of l/r pairs
-  // this.setIpdAdjust = function(ipdFrac) {
-  //   this.uniforms.ipdAdjust = ipdFrac;
-  // }
-
   this.setupFromDevice = function(device) {
     this.uniforms.renderMode = device.renderMode;
     this.fovX = device.hfov;
     this.uniforms.k = device.k;
     this.uniforms.ipdAdjust = device.ipdAdjust;
   }
-
 
   this.init = function(element){
     this.vrtwglQuad = new VRtwglQuad();
@@ -240,6 +221,7 @@ VRtwglQuadStereoProjection = function() {
     // device config params
     this.setupFromDevice (this.vrDeviceManager.getWindowedDevice());
     // ---
+
     this.vrtwglQuadFb = new VRtwglQuad();
     this.vrtwglQuadFb.initFramebuffer(this.fbRes, this.vrtwglQuad.glContext, vs, fsWindowed);
   }
@@ -249,12 +231,11 @@ VRtwglQuadStereoProjection = function() {
   }
 
   this.render = function() {
+    if (!self.texLoaded)
+      return;
+
     this.controller.update();
     twgl.m4.copy(this.cameraMatrix, this.uniforms.transform);
-    // var axisPitch = twgl.v3.create(0,0,1);
-    // twgl.m4.axisRotate(this.uniforms.transform, axisPitch, 0.01, this.uniforms.transform);
-    // var axisYaw = twgl.v3.create(0,1,0);
-    // twgl.m4.axisRotate(this.uniforms.transform, axisYaw, 0.005, this.uniforms.transform);
     this.uniforms["resolution"] = [self.vrtwglQuad.canvas.clientWidth, self.vrtwglQuad.canvas.clientHeight];
     var aspect = self.vrtwglQuad.canvas.clientHeight/self.vrtwglQuad.canvas.clientWidth;
     this.uniforms["fovParams"] = [this.fovX/360.0, aspect*this.fovX/360.0];
@@ -285,7 +266,6 @@ VRtwglQuadStereoProjection = function() {
 
   this.texturesLoaded = function(err, textures, sources) {
       //alert("TEXTURES LOADED");
-
       for (var key in self.textures) {
         if (self.textures.hasOwnProperty(key)) {
           var textureDesc = self.textureDescriptions[key];
@@ -302,8 +282,12 @@ VRtwglQuadStereoProjection = function() {
                                     textureDesc.V_r[0]-textureDesc.U_r[0],
                                     textureDesc.V_r[1]-textureDesc.U_r[1]];
           self.renderFb();
+          var gl = self.vrtwglQuad.glContext;
+          gl.deleteTexture(self.textures[key]);
         }
       }
+
+      self.texLoaded = true;
   }
 
   this.loadTextures = function (textureDescriptions) {
