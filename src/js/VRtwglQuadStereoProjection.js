@@ -242,6 +242,15 @@ VRtwglQuadStereoProjection = function() {
 
     this.vrtwglQuadFbGui = new VRtwglQuad();
     this.vrtwglQuadFbGui.initFramebuffer(this.fbResGui, this.vrtwglQuad.glContext, vs, fsWindowed);
+
+
+    var gl = this.vrtwglQuad.glContext;
+    this.canvasTex = new VRCanvasTex();
+    this.canvasTex.init(gl);
+    this.canvasAnim = 0.0;
+    this.canvasSet = [];
+    this.canvasSet.push(this.canvasTex);
+    this.populateGuiTex(this.canvasSet,0);
   }
 
   this.resize = function() {
