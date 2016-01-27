@@ -45,11 +45,10 @@ VRtwglQuad = function() {
     this.initCore(vs, fs);
     this.fbSize = fbSize;
     var attachments = [
-      { format: this.glContext.RGBA, type: this.glContext.UNSIGNED_BYTE, min: this.glContext.LINEAR, mag: this.glContext.NEAREST, wrap: this.glContext.CLAMP_TO_EDGE },
+      { format: this.glContext.RGBA, type: this.glContext.UNSIGNED_BYTE, min: this.glContext.LINEAR, mag: this.glContext.LINEAR, wrap: this.glContext.CLAMP_TO_EDGE },
       // { format: this.glContext.DEPTH_STENCIL, },
     ];
-    // this.glContext.getExtension('OES_texture_float_linear');
-    this.framebufferInfo = twgl.createFramebufferInfo(this.glContext, undefined, this.fbSize, this.fbSize);
+    this.framebufferInfo = twgl.createFramebufferInfo(this.glContext, attachments, this.fbSize, this.fbSize);
   }
 
   this.getFramebufferTexture = function() {
