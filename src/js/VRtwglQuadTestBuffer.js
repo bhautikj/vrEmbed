@@ -1,4 +1,5 @@
 VRtwglQuad = require('./VRtwglQuad.js');
+var twgl = require('../js-ext/twgl-full.js');
 
 var vsTex = "attribute vec4 position;\n"+
 "void main() {\n"+
@@ -43,6 +44,9 @@ VRtwglQuadTestBuffer = function() {
 
     this.vrtwglQuadFb = new VRtwglQuad();
     this.vrtwglQuadFb.initFramebuffer(2048, this.vrtwglQuad.glContext, vs, fs);
+
+    //var gl = this.vrtwglQuad.glContext;
+    //this.glTex = twgl.createTexture(gl, {min: gl.LINEAR,mag: gl.LINEAR, src: 'rheingauer_dom.jpg'});
   }
 
   this.getContainer = function() {
@@ -63,7 +67,7 @@ VRtwglQuadTestBuffer = function() {
 
     var uniforms = {
       resolution: [self.vrtwglQuad.canvas.clientWidth, self.vrtwglQuad.canvas.clientHeight],
-      textureSource: self.vrtwglQuadFb.getFramebufferTexture()
+      textureSource: self.vrtwglQuadFb.getFramebufferTexture() //this.glTex
     };
 
     self.vrtwglQuad.setUniforms(uniforms);

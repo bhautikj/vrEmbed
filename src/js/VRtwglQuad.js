@@ -46,7 +46,7 @@ VRtwglQuad = function() {
     this.fbSize = fbSize;
     var attachments = [
       { format: this.glContext.RGBA, type: this.glContext.UNSIGNED_BYTE, min: this.glContext.LINEAR, mag: this.glContext.NEAREST, wrap: this.glContext.CLAMP_TO_EDGE },
-      { format: this.glContext.DEPTH_STENCIL, },
+      // { format: this.glContext.DEPTH_STENCIL, },
     ];
     // this.glContext.getExtension('OES_texture_float_linear');
     this.framebufferInfo = twgl.createFramebufferInfo(this.glContext, undefined, this.fbSize, this.fbSize);
@@ -94,6 +94,13 @@ VRtwglQuad = function() {
     twgl.setBuffersAndAttributes(self.glContext, self.programInfo, self.bufferInfo);
     twgl.setUniforms(self.programInfo, this.uniforms);
     twgl.drawBufferInfo(self.glContext, self.glContext.TRIANGLES, self.bufferInfo);
+  }
+
+  this.clearFrameBuffer = function(r, g, b, a) {
+    twgl.bindFramebufferInfo(self.glContext, self.framebufferInfo);
+    this.glContext.clearColor(r, g, b, a);
+    this.glContext.clear(this.glContext.COLOR_BUFFER_BIT);
+    twgl.bindFramebufferInfo(self.glContext, null);
   }
 
   this.renderFramebuffer = function() {
