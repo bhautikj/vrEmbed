@@ -177,6 +177,7 @@ VRtwglQuadStereoProjection = function() {
   this.vrDeviceManager = VRDeviceManager;
   this.vrtwglQuad = null;
   this.vrtwglQuadFb = null;
+  this.vrtwglQuadFbGui = null;
   this.textureSet = [];
   this.fbRes = 2048;
   this.textureDescriptions = {};
@@ -207,6 +208,12 @@ VRtwglQuadStereoProjection = function() {
     transform:twgl.m4.identity()
   }
 
+  this.uniformsFbGui = {
+    resolution:[this.fbRes,this.fbRes],
+    textureSource:null,
+    transform:twgl.m4.identity()
+  }
+
   this.setupFromDevice = function(device) {
     this.uniforms.renderMode = device.renderMode;
     this.fovX = device.hfov;
@@ -225,6 +232,16 @@ VRtwglQuadStereoProjection = function() {
     this.vrtwglQuadFb = new VRtwglQuad();
     this.vrtwglQuadFb.initFramebuffer(this.fbRes, this.vrtwglQuad.glContext, vs, fsWindowed);
     self.vrtwglQuadFb.clearFrameBuffer(0, 0, 0, 0);
+
+    this.vrtwglQuadFbGui = new VRtwglQuad();
+    this.vrtwglQuadFbGui.initFramebuffer(this.fbRes, this.vrtwglQuad.glContext, vs, fsWindowed);
+    self.vrtwglQuadFbGui.clearFrameBuffer(0, 1.0, 0, 1.0);
+
+
+    //TEMP
+    this.vrCanvasTex = new VRCanvasTex();
+    this.vrCanvasTex.init(this.vrtwglQuad.glContext);
+    this.vrCanvasTex.update(0);
   }
 
   this.resize = function() {
@@ -237,7 +254,7 @@ VRtwglQuadStereoProjection = function() {
     this.uniforms["resolution"] = [self.vrtwglQuad.canvas.clientWidth, self.vrtwglQuad.canvas.clientHeight];
     var aspect = self.vrtwglQuad.canvas.clientHeight/self.vrtwglQuad.canvas.clientWidth;
     this.uniforms["fovParams"] = [this.fovX/360.0, aspect*this.fovX/360.0];
-    this.uniforms["textureSource"] = self.vrtwglQuadFb.getFramebufferTexture();
+    this.uniforms["textureSource"] = self.vrtwglQuadFbGui.getFramebufferTexture();
 
     self.vrtwglQuad.setUniforms(this.uniforms);
     self.vrtwglQuad.render();
@@ -246,6 +263,11 @@ VRtwglQuadStereoProjection = function() {
   this.renderFb = function() {
     self.vrtwglQuadFb.setUniforms(this.uniformsFb);
     self.vrtwglQuadFb.renderFramebuffer();
+  }
+
+  this.renderFbGui = function() {
+    self.vrtwglQuadFbGui.setUniforms(this.uniformsFbGui);
+    self.vrtwglQuadFbGui.renderFramebuffer();
   }
 
   this.anim = function() {
@@ -267,19 +289,19 @@ VRtwglQuadStereoProjection = function() {
     for (var key in self.textures) {
       if (self.textures.hasOwnProperty(key)) {
         var textureDesc = self.textureDescriptions[key];
-        self.uniformsFb["textureSource"] = self.textures[key];
-        self.uniformsFb["sphX"] = [0.5-0.5*(textureDesc.sphereFOV[0]/360.0),0.5-0.5*(textureDesc.sphereFOV[1]/180.0)];
-        self.uniformsFb["sphYX"] = [(textureDesc.sphereFOV[0]/360.0),(textureDesc.sphereFOV[1]/180.0)];
-        self.uniformsFb["transform"] = self.createOrientation(Math.PI*textureDesc.sphereCentre[0]/180.0, Math.PI*textureDesc.sphereCentre[1]/180.0);
-        self.uniformsFb["uvL"] = [textureDesc.U_l[0],
+        self.uniformsFbGui["textureSource"] = self.vrCanvasTex.glTex;//self.textures[key];
+        self.uniformsFbGui["sphX"] = [0.5-0.5*(textureDesc.sphereFOV[0]/360.0),0.5-0.5*(textureDesc.sphereFOV[1]/180.0)];
+        self.uniformsFbGui["sphYX"] = [(textureDesc.sphereFOV[0]/360.0),(textureDesc.sphereFOV[1]/180.0)];
+        self.uniformsFbGui["transform"] = self.createOrientation(Math.PI*textureDesc.sphereCentre[0]/180.0, Math.PI*textureDesc.sphereCentre[1]/180.0);
+        self.uniformsFbGui["uvL"] = [textureDesc.U_l[0],
                                   textureDesc.U_l[1],
                                   textureDesc.V_l[0]-textureDesc.U_l[0],
                                   textureDesc.V_l[1]-textureDesc.U_l[1]];
-        self.uniformsFb["uvR"] = [textureDesc.U_r[0],
+        self.uniformsFbGui["uvR"] = [textureDesc.U_r[0],
                                   textureDesc.U_r[1],
                                   textureDesc.V_r[0]-textureDesc.U_r[0],
                                   textureDesc.V_r[1]-textureDesc.U_r[1]];
-        self.renderFb();
+        self.renderFbGui();
         var gl = self.vrtwglQuad.glContext;
         gl.deleteTexture(self.textures[key]);
       }
