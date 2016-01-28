@@ -124,8 +124,8 @@ var fsRenderDisplay = "precision mediump float;\n"+
 var fsWindowed = "precision mediump float;\n"+
 "#define PI 3.141592653589793\n"+
 "uniform vec2 resolution;\n"+
+"uniform sampler2D textureGui;\n"+
 "uniform sampler2D textureSource;\n"+
-//"uniform sampler2D textureGui;\n"+
 "uniform mat4 transform;\n"+
 "uniform vec2 sphX;\n"+
 "uniform vec2 sphYX;\n"+
@@ -170,8 +170,6 @@ var fsWindowed = "precision mediump float;\n"+
 "    uvYX = uvR.zw;\n"+
 "  }\n"+
 "  vec2 texC = uvX + (testPt*uvYX);\n"+
-//"  vec4 imgColor = texture2D(textureSource, texC);\n"+
-//"  vec4 guiColor = texture2D(textureGui, texC);\n"+
 "  gl_FragColor = texture2D(textureSource, texC); \n"+
 "}\n"
 
@@ -240,7 +238,7 @@ VRtwglQuadStereoProjection = function() {
 
     this.vrtwglQuadFbGui = new VRtwglQuad();
     this.vrtwglQuadFbGui.initFramebuffer(this.fbRes/2, this.vrtwglQuad.glContext, vs, fsWindowed);
-    self.vrtwglQuadFbGui.clearFrameBuffer(0, 0.0, 0, 0.0);
+    self.vrtwglQuadFbGui.clearFrameBuffer(0, 0, 0, 0);
 
     this.guiGen();
   }
