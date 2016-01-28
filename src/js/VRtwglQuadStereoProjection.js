@@ -11,11 +11,6 @@ var vs = "attribute vec4 position;\n"+
 "  gl_Position = position;\n"+
 "}\n";
 
-var fsReset = "precision mediump float;\n"+
-"void main(void) {\n"+
-"  gl_FragColor = vec4(0.0,0.0,0.0,0.0);\n"+
-"}\n"
-
 var fsTest = "precision mediump float;\n"+
 "#define PI 3.141592653589793\n"+
 "uniform vec2 resolution;\n"+
@@ -182,10 +177,8 @@ VRtwglQuadStereoProjection = function() {
   this.vrDeviceManager = VRDeviceManager;
   this.vrtwglQuad = null;
   this.vrtwglQuadFb = null;
-  this.vrtwglQuadFbGui = null;
   this.textureSet = [];
   this.fbRes = 2048;
-  this.fbGuiRes = 2048;
   this.textureDescriptions = {};
   this.textures = [];
   this.fovX = 40;
@@ -206,19 +199,13 @@ VRtwglQuadStereoProjection = function() {
     renderMode:VRRenderModes.STEREOSIDEBYSIDE,
     k:[0,0],
     ipdAdjust:0
-  };
+  }
 
   this.uniformsFb = {
     resolution:[this.fbRes,this.fbRes],
     textureSource:null,
     transform:twgl.m4.identity()
-  };
-
-  this.uniformsFbGui = {
-    resolution:[this.fbGuiRes,this.fbGuiRes],
-    textureSource:null,
-    transform:twgl.m4.identity()
-  };
+  }
 
   this.setupFromDevice = function(device) {
     this.uniforms.renderMode = device.renderMode;
@@ -238,20 +225,6 @@ VRtwglQuadStereoProjection = function() {
     this.vrtwglQuadFb = new VRtwglQuad();
     this.vrtwglQuadFb.initFramebuffer(this.fbRes, this.vrtwglQuad.glContext, vs, fsWindowed);
     self.vrtwglQuadFb.clearFrameBuffer(0, 0, 0, 0);
-
-
-    this.vrtwglQuadFbGui = new VRtwglQuad();
-    this.vrtwglQuadFbGui.initFramebuffer(this.fbResGui, this.vrtwglQuad.glContext, vs, fsWindowed);
-    self.vrtwglQuadFbGui.clearFrameBuffer(0, 1.0, 0, 1.0);
-
-    var gl = this.vrtwglQuad.glContext;
-    this.canvasTex = new VRCanvasTex();
-    this.canvasTex.init(gl);
-
-    this.canvasTexSet = [];
-    this.canvasTexSet.push(this.canvasTex);
-
-    this.canvasAnim = 0.0;
   }
 
   this.resize = function() {
@@ -264,11 +237,7 @@ VRtwglQuadStereoProjection = function() {
     this.uniforms["resolution"] = [self.vrtwglQuad.canvas.clientWidth, self.vrtwglQuad.canvas.clientHeight];
     var aspect = self.vrtwglQuad.canvas.clientHeight/self.vrtwglQuad.canvas.clientWidth;
     this.uniforms["fovParams"] = [this.fovX/360.0, aspect*this.fovX/360.0];
-    //this.uniforms["textureSource"] = self.vrtwglQuadFb.getFramebufferTexture();
-
-    // this.canvasAnim += 0.01;
-    // this.populateGuiTex(this.canvasTexSet, this.canvasAnim);
-    this.uniforms["textureSource"] = self.vrtwglQuadFbGui.getFramebufferTexture();
+    this.uniforms["textureSource"] = self.vrtwglQuadFb.getFramebufferTexture();
 
     self.vrtwglQuad.setUniforms(this.uniforms);
     self.vrtwglQuad.render();
@@ -277,11 +246,6 @@ VRtwglQuadStereoProjection = function() {
   this.renderFb = function() {
     self.vrtwglQuadFb.setUniforms(this.uniformsFb);
     self.vrtwglQuadFb.renderFramebuffer();
-  }
-
-  this.renderFbGui = function() {
-    self.vrtwglQuadFbGui.setUniforms(this.uniformsFbGui);
-    self.vrtwglQuadFbGui.renderFramebuffer();
   }
 
   this.anim = function() {
@@ -296,30 +260,6 @@ VRtwglQuadStereoProjection = function() {
     var axisPitch = twgl.v3.create(0,0,1);
     twgl.m4.axisRotate(mat, axisPitch, pitch, mat);
     return mat;
-  }
-
-
-  this.populateGuiTex = function(canvasSet, timestamp) {
-    for(texIt = 0;texIt < canvasSet.length; texIt++) {
-      var vrCanvasTex = canvasSet[texIt];
-      vrCanvasTex.update(timestamp);
-      var textureDesc = vrCanvasTex.vrTextureDescription;
-
-      this.uniformsFbGui["textureSource"] = vrCanvasTex.glTex;
-      this.uniformsFbGui["sphX"] = [0.5-0.5*(textureDesc.sphereFOV[0]/360.0),0.5-0.5*(textureDesc.sphereFOV[1]/180.0)];
-      this.uniformsFbGui["sphYX"] = [(textureDesc.sphereFOV[0]/360.0),(textureDesc.sphereFOV[1]/180.0)];
-      //this.uniformsFbGui["transform"] = this.createOrientation(Math.PI*textureDesc.sphereCentre[0]/180.0, Math.PI*textureDesc.sphereCentre[1]/180.0);
-      // this.uniformsFbGui["transform"] = twgl.m4.identity();
-      self.uniformsFbGui["uvL"] = [textureDesc.U_l[0],
-                                textureDesc.U_l[1],
-                                textureDesc.V_l[0]-textureDesc.U_l[0],
-                                textureDesc.V_l[1]-textureDesc.U_l[1]];
-      self.uniformsFbGui["uvR"] = [textureDesc.U_r[0],
-                                textureDesc.U_r[1],
-                                textureDesc.V_r[0]-textureDesc.U_r[0],
-                                textureDesc.V_r[1]-textureDesc.U_r[1]];
-      self.renderFbGui();
-    }
   }
 
   this.texturesLoaded = function(err, textures, sources) {
