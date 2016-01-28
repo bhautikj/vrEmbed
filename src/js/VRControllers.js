@@ -16,7 +16,7 @@
 
 twgl = require('../js-ext/twgl-full.js');
 
-var Util = require('./VRutil.js');
+var Util = require('./VRUtil.js');
 var util = new Util();
 
 var VRRotMath = require('./VRRotMath.js');

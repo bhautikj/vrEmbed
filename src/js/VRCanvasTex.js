@@ -6,16 +6,19 @@ VRCanvasTex = function() {
   this.glTex = null;
   this.init = function(gl) {
     this.vrTextureDescription = new VRTextureDescription();
-    this.vrTextureDescription.sphereFOV = [45,45];
-    this.vrTextureDescription.sphereCentre = [0,90];
+    // this.vrTextureDescription.sphereFOV = [360,180];
+    // this.vrTextureDescription.sphereCentre = [0,0];
 
     this.ctx = document.createElement("canvas").getContext("2d");
     this.ctx.canvas.width  = 256;
     this.ctx.canvas.height = 256;
     this.gl=gl;
+
+    this.backupTex = twgl.createTexture(gl, { src: "./rheingauer_dom.jpg"});
   }
 
-  this.update = function(time) {
+  this.update = function(timey) {
+    var time = 30;
     this.ctx.fillStyle = "#00f";
     this.ctx.strokeStyle = "#ff0";
     this.ctx.lineWidth = "10";
