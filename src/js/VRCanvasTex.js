@@ -5,7 +5,7 @@ VRCanvasTex = function() {
   this.gl = null;
   this.glTex = null;
   this.backupTex = null;
-  
+
   this.init = function(gl) {
     this.vrTextureDescription = new VRTextureDescription();
     // this.vrTextureDescription.sphereFOV = [360,180];
