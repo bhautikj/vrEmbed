@@ -19,8 +19,7 @@ VRCanvasTex = function() {
     this.backupTex = twgl.createTexture(gl, { src: "./rheingauer_dom.jpg"});
   }
 
-  this.update = function(timey) {
-    var time = 30;
+  this.update = function(time) {
     this.ctx.fillStyle = "#00f";
     this.ctx.strokeStyle = "#ff0";
     this.ctx.lineWidth = "10";

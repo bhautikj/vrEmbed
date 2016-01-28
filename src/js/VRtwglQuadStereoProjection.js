@@ -125,6 +125,7 @@ var fsWindowed = "precision mediump float;\n"+
 "#define PI 3.141592653589793\n"+
 "uniform vec2 resolution;\n"+
 "uniform sampler2D textureSource;\n"+
+//"uniform sampler2D textureGui;\n"+
 "uniform mat4 transform;\n"+
 "uniform vec2 sphX;\n"+
 "uniform vec2 sphYX;\n"+
@@ -169,7 +170,9 @@ var fsWindowed = "precision mediump float;\n"+
 "    uvYX = uvR.zw;\n"+
 "  }\n"+
 "  vec2 texC = uvX + (testPt*uvYX);\n"+
-"  gl_FragColor = texture2D(textureSource, texC);\n"+
+//"  vec4 imgColor = texture2D(textureSource, texC);\n"+
+//"  vec4 guiColor = texture2D(textureGui, texC);\n"+
+"  gl_FragColor = texture2D(textureSource, texC); \n"+
 "}\n"
 
 VRtwglQuadStereoProjection = function() {
@@ -183,6 +186,7 @@ VRtwglQuadStereoProjection = function() {
   this.textureDescriptions = {};
   this.textures = [];
   this.fovX = 40;
+  this.tick = 0.0;
 
   this.controller = new VRLookController();
   this.cameraMatrix = twgl.m4.identity();
@@ -196,6 +200,7 @@ VRtwglQuadStereoProjection = function() {
     resolution:[0,0],
     fovParams:[0,0],
     textureSource:null,
+    textureGui:null,
     transform:twgl.m4.identity(),
     renderMode:VRRenderModes.STEREOSIDEBYSIDE,
     k:[0,0],
@@ -209,7 +214,7 @@ VRtwglQuadStereoProjection = function() {
   }
 
   this.uniformsFbGui = {
-    resolution:[this.fbRes,this.fbRes],
+    resolution:[this.fbRes/2,this.fbRes/2],
     textureSource:null,
     transform:twgl.m4.identity()
   }
@@ -234,20 +239,22 @@ VRtwglQuadStereoProjection = function() {
     self.vrtwglQuadFb.clearFrameBuffer(0, 0, 0, 0);
 
     this.vrtwglQuadFbGui = new VRtwglQuad();
-    this.vrtwglQuadFbGui.initFramebuffer(this.fbRes, this.vrtwglQuad.glContext, vs, fsWindowed);
-    self.vrtwglQuadFbGui.clearFrameBuffer(0, 1.0, 0, 1.0);
+    this.vrtwglQuadFbGui.initFramebuffer(this.fbRes/2, this.vrtwglQuad.glContext, vs, fsWindowed);
+    self.vrtwglQuadFbGui.clearFrameBuffer(0, 0.0, 0, 0.0);
 
+    this.guiGen();
+  }
 
+  this.guiGen = function() {
     this.canvasSet = [];
     for(texIt = 0;texIt < 5; texIt++) {
       var vrCanvasTex = new VRCanvasTex();
       vrCanvasTex.init(this.vrtwglQuad.glContext);
       vrCanvasTex.vrTextureDescription.sphereFOV = [60,60];
       vrCanvasTex.vrTextureDescription.sphereCentre = [180*(Math.random()-0.5), 180*(Math.random()-0.5)];
-      vrCanvasTex.update(0);
+      vrCanvasTex.update(self.tick);
       this.canvasSet.push(vrCanvasTex);
     }
-
   }
 
   this.resize = function() {
@@ -257,7 +264,8 @@ VRtwglQuadStereoProjection = function() {
   this.render = function() {
     this.controller.update();
     //update gui
-    //self.renderGuiSphere(self.canvasSet);
+    self.tick += 0.01;
+    self.renderGuiSphere(self.canvasSet);
 
 
     twgl.m4.copy(this.cameraMatrix, this.uniforms.transform);
@@ -265,6 +273,7 @@ VRtwglQuadStereoProjection = function() {
     var aspect = self.vrtwglQuad.canvas.clientHeight/self.vrtwglQuad.canvas.clientWidth;
     this.uniforms["fovParams"] = [this.fovX/360.0, aspect*this.fovX/360.0];
     this.uniforms["textureSource"] = self.vrtwglQuadFb.getFramebufferTexture();
+    this.uniforms["textureGui"] = self.vrtwglQuadFbGui.getFramebufferTexture();
 
     self.vrtwglQuad.setUniforms(this.uniforms);
     self.vrtwglQuad.render();
@@ -298,6 +307,7 @@ VRtwglQuadStereoProjection = function() {
     for(texIt = 0;texIt < canvasSet.length; texIt++) {
       var canvasTex = canvasSet[texIt];
       var textureDesc = canvasTex.vrTextureDescription;
+      canvasTex.update(self.tick);
       self.uniformsFbGui["textureSource"] = canvasTex.glTex;
       self.uniformsFbGui["sphX"] = [0.5-0.5*(textureDesc.sphereFOV[0]/360.0),0.5-0.5*(textureDesc.sphereFOV[1]/180.0)];
       self.uniformsFbGui["sphYX"] = [(textureDesc.sphereFOV[0]/360.0),(textureDesc.sphereFOV[1]/180.0)];
