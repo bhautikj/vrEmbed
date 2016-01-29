@@ -16,7 +16,7 @@ VRCanvasTex = function() {
     this.ctx.canvas.height = 256;
     this.gl=gl;
 
-    this.backupTex = twgl.createTexture(gl, { src: "./rheingauer_dom.jpg"});
+    //this.backupTex = twgl.createTexture(gl, { src: "./rheingauer_dom.jpg"});
   }
 
   this.update = function(time) {

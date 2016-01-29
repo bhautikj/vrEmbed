@@ -55,6 +55,7 @@ var fsRenderDisplay = "precision mediump float;\n"+
 "#define PI 3.141592653589793\n"+
 "uniform vec2 resolution;\n"+
 "uniform sampler2D textureSource;\n"+
+"uniform sampler2D textureGui;\n"+
 "uniform mat4 transform;\n"+
 "uniform int renderMode;\n"+
 "uniform vec2 fovParams;\n"+
@@ -101,17 +102,19 @@ var fsRenderDisplay = "precision mediump float;\n"+
 "  _lon = mod(_lon, 2.*PI);\n"+
 "  vec2 lonLat = vec2(_lon/(PI*2.), _lat/(PI));\n"+
    // vanilla monocular render
-"  if (renderMode == 0) {\n"+
-"    lonLat.y *= 0.5;\n"+
-"    gl_FragColor = texture2D(textureSource, lonLat);\n"+
-"  } else if (renderMode == 1) {\n"+
-"    if (leftImg == true) {\n"+
+"  if (renderMode != 2) {\n"+
+"    if (renderMode == 0) {\n"+
 "      lonLat.y *= 0.5;\n"+
-"      gl_FragColor = texture2D(textureSource, lonLat);\n"+
 "    } else {\n"+
-"      lonLat.y = 0.5 + lonLat.y*0.5;\n"+
-"      gl_FragColor = texture2D(textureSource, lonLat);\n"+
+"      if (leftImg == true) {\n"+
+"        lonLat.y *= 0.5;\n"+
+"      } else {\n"+
+"        lonLat.y = 0.5 + lonLat.y*0.5;\n"+
+"      }\n"+
 "    }\n"+
+"    vec4 spherePx = texture2D(textureSource, lonLat);\n"+
+"    vec4 guiPx = texture2D(textureGui, lonLat);\n"+
+"    gl_FragColor = guiPx*guiPx.a + spherePx*(1.-guiPx.a);\n"+
 "  } else if (renderMode == 2) {\n"+
     // anaglyph render
 "    vec4 colorL, colorR;\n"+
@@ -124,7 +127,6 @@ var fsRenderDisplay = "precision mediump float;\n"+
 var fsWindowed = "precision mediump float;\n"+
 "#define PI 3.141592653589793\n"+
 "uniform vec2 resolution;\n"+
-"uniform sampler2D textureGui;\n"+
 "uniform sampler2D textureSource;\n"+
 "uniform mat4 transform;\n"+
 "uniform vec2 sphX;\n"+
