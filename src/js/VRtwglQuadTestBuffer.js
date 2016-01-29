@@ -1,5 +1,5 @@
 VRtwglQuad = require('./VRtwglQuad.js');
-VRCanvasTex = require('./VRCanvasTex.js');
+VRCanvasFactory = require('./VRCanvasFactory.js');
 
 var twgl = require('../js-ext/twgl-full.js');
 
@@ -98,7 +98,7 @@ VRtwglQuadTestBuffer = function() {
     this.vrtwglQuadFb.initFramebuffer(2048, this.vrtwglQuad.glContext, vs, fsWindowed);
 
     var gl = this.vrtwglQuad.glContext;
-    this.canvasTex = new VRCanvasTex();
+    this.canvasTex = VRCanvasFactory.createCanvasSpinner();
     this.canvasTex.init(gl);
     this.canvasAnim = 0.0;
     //this.glTex = twgl.createTexture(gl, {min: gl.LINEAR,mag: gl.LINEAR, src: 'rheingauer_dom.jpg'});
