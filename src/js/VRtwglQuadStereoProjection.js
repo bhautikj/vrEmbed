@@ -117,9 +117,13 @@ var fsRenderDisplay = "precision mediump float;\n"+
 "    gl_FragColor = guiPx*guiPx.a + spherePx*(1.-guiPx.a);\n"+
 "  } else if (renderMode == 2) {\n"+
     // anaglyph render
-"    vec4 colorL, colorR;\n"+
-"    colorL = texture2D(textureSource, vec2(lonLat.x, lonLat.y*0.5));\n"+
-"    colorR = texture2D(textureSource, vec2(lonLat.x, 0.5+lonLat.y*0.5));\n"+
+"    vec4 colorL, colorR, colorLSphere, colorLGui, colorRSphere, colorRGui;\n"+
+"    colorLSphere = texture2D(textureSource, vec2(lonLat.x, lonLat.y*0.5));\n"+
+"    colorLGui = texture2D(textureGui, vec2(lonLat.x, lonLat.y*0.5));\n"+
+"    colorL = colorLGui*colorLGui.a + colorLSphere*(1.-colorLGui.a);\n"+
+"    colorRSphere = texture2D(textureSource, vec2(lonLat.x, 0.5+lonLat.y*0.5));\n"+
+"    colorRGui = texture2D(textureGui, vec2(lonLat.x, 0.5+lonLat.y*0.5));\n"+
+"    colorR = colorRGui*colorRGui.a + colorRSphere*(1.-colorRGui.a);\n"+
 "    gl_FragColor = vec4( colorL.g * 0.7 + colorL.b * 0.3, colorR.g, colorR.b, colorL.a + colorR.a ) * 1.1;\n"+
 "  }\n"+
 "}\n"
