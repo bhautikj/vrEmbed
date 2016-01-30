@@ -290,6 +290,12 @@ VRtwglQuadStereoProjection = function() {
 
   this.render = function() {
     this.controller.update();
+    // var rotString = "";
+    // var dir = this.controller.getHeading();
+    // rotString += "yaw: " + Math.floor(dir[0]);
+    // rotString += " pitch: " + Math.floor(dir[1]);
+    // rotString += " roll: " + Math.floor(dir[2]);
+    // document.getElementById("log").innerHTML = rotString;
     twgl.m4.copy(this.cameraMatrix, this.uniforms.transform);
     this.uniforms["resolution"] = [self.vrtwglQuad.canvas.clientWidth, self.vrtwglQuad.canvas.clientHeight];
     var aspect = self.vrtwglQuad.canvas.clientHeight/self.vrtwglQuad.canvas.clientWidth;

@@ -1,0 +1,73 @@
+<!--
+Copyright 2015 Bhautik J Joshi
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+ -->
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<title>vrEmbed test</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, shrink-to-fit=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+<style>
+body {
+  background-color: #0ff;
+  color: #000;
+  margin: 0px;
+  padding: 0;
+/*   width: 100%; */
+/*   height: 100%; */
+/*   position: fixed; */
+/*   overflow: hidden; */
+}
+
+div.stretchy-wrapper {
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 */
+  /* Other aspect ratios to try:
+  * 56.25% = 16:9
+  * 75% = 4:3
+  * 66.66% = 3:2
+  * 62.5% = 8:5
+  */
+  position: relative;
+/*   background: blue; */
+}
+
+div.stretchy-wrapper > div {
+  position: absolute;
+  top: 0; bottom: 0; left: 0; right: 0;
+
+  color: white;
+  font-size: 24px;
+  text-align: center;
+}
+
+</style>
+</head>
+
+<body>
+<p id="log">test</p>
+
+<a class="vrEmbedPhoto" src="img/16mm_100deg_02.jpg" isStereo="false" sphereParams="100,66,0,0"></a><script async src="bin/vrEmbed.js" charset="utf-8"></script>
+
+</body>
+
+
+</html>

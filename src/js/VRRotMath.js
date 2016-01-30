@@ -77,7 +77,13 @@ var quatIdentity = function () {
 	return [0.,0.,0.,1.];
 }
 
-
+// http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToEuler/
+var _matToEuler = function(mat) {
+  var x = Math.atan2(-mat[2],mat[0]);
+  var y = Math.atan2(-mat[9],mat[5]);
+  var z = Math.asin(mat[1]);
+  return [x,y,z];
+}
 
 VRRotMath = function() {
   this.gyroToMat = function(_alpha, _beta, _gamma, _orientation) {
@@ -114,6 +120,10 @@ VRRotMath = function() {
     twgl.m4.rotateZ(outMat,Math.PI/2,outMat);
 
     return outMat;
+  }
+
+  this.matToEuler = function(mat) {
+    return _matToEuler(mat);
   }
 }
 
