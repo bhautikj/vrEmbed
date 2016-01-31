@@ -67,7 +67,7 @@ VRCanvasTextBox.prototype.init = function(gl, message, hfov, options) {
     options["fontface"] : "Arial";
 
   var fontsize = options.hasOwnProperty("fontsize") ?
-    options["fontsize"] : 18;
+    options["fontsize"] : 12;
 
   var borderThickness = options.hasOwnProperty("borderThickness") ?
     options["borderThickness"] : 4;
@@ -79,10 +79,16 @@ VRCanvasTextBox.prototype.init = function(gl, message, hfov, options) {
     options["backgroundColor"] : { r:255, g:255, b:255, a:1.0 };
 
   this.ctx.font = "Bold " + fontsize + "px " + fontface;
+  //this.ctx.font="72px Arial";
+  //this.ctx.font = fontsize + "px " + fontface;
+  //console.log(this.ctx.font);
 
+  var heightMult = 1.4;//12->1.4
   // get size data (height depends only on font size)
   var metrics = this.ctx.measureText( message );
   var textWidth = metrics.width;
+  this.ctx.canvas.width  = (textWidth + 2*borderThickness);
+  this.ctx.canvas.height = (fontsize *heightMult + 2*borderThickness);
 
   // background color
   this.ctx.fillStyle   = "rgba(" + backgroundColor.r + "," + backgroundColor.g + ","
@@ -91,21 +97,25 @@ VRCanvasTextBox.prototype.init = function(gl, message, hfov, options) {
   this.ctx.strokeStyle = "rgba(" + borderColor.r + "," + borderColor.g + ","
                   + borderColor.b + "," + borderColor.a + ")";
 
+  // debug
+  // this.ctx.fillStyle = "blue";
+  // this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.width);
+
   this.ctx.lineWidth = borderThickness;
-  roundRect(this.ctx, borderThickness/2, borderThickness/2, textWidth + borderThickness, fontsize * 1.4 + borderThickness, 6);
+  roundRect(this.ctx, borderThickness/2, borderThickness/2, textWidth + borderThickness, fontsize *heightMult + borderThickness, 6);
   // 1.4 is extra height factor for text below baseline: g,j,p,q.
 
-  // this.ctx.canvas.width  = (textWidth + borderThickness);
-  // this.ctx.canvas.height = (fontsize * 1.4 + borderThickness);
 
   // text color
   this.ctx.fillStyle = "rgba(0, 0, 0, 1.0)";
 
+  this.ctx.font = "Bold " + fontsize + "px " + fontface;
+  this.ctx.textAlign="start";
   this.ctx.fillText( message, borderThickness, fontsize + borderThickness);
 
-  var w = textWidth + borderThickness;
-  var h = fontsize * 1.4 + borderThickness;
-  this.vrTextureDescription.sphereFOV = [hfov,hfov];
+  var w = this.ctx.canvas.width;
+  var h = this.ctx.canvas.height;
+  this.vrTextureDescription.sphereFOV = [hfov,h*hfov/w];
 }
 
 VRCanvasTextBox.prototype.update = function(time) {

@@ -3,6 +3,7 @@ VRRenderModes = require('./VRRenderModes.js');
 VRLookController = require('./VRControllers.js');
 VRDeviceManager = require('./VRDeviceManager.js');
 VRCanvasFactory = require('./VRCanvasFactory.js');
+VRGui = require('./VRGui.js');
 
 twgl = require('../js-ext/twgl-full.js');
 
@@ -191,6 +192,7 @@ VRtwglQuadStereoProjection = function() {
   this.textures = [];
   this.fovX = 40;
   this.tick = 0.0;
+  this.vrGui = null;
 
   this.controller = new VRLookController();
   this.cameraMatrix = twgl.m4.identity();
@@ -246,26 +248,31 @@ VRtwglQuadStereoProjection = function() {
     this.vrtwglQuadFbGui.initFramebuffer(this.fbRes, this.vrtwglQuad.glContext, vs, fsWindowed);
     self.vrtwglQuadFbGui.clearFrameBuffer(0, 0, 0, 0);
 
+    this.vrGui = new VRGui();
+    this.vrGui.init(this.vrtwglQuad.glContext);
+
     this.guiGen();
-    //update gui
-    self.tick += 0.01;
-    self.renderGuiSphere(self.canvasSet);
   }
 
   this.guiGen = function() {
-    this.canvasSet = [];
     for(texIt = 0;texIt < 5; texIt++) {
-      var vrCanvasTextBox = VRCanvasFactory.createCanvasTextBox();
-      vrCanvasTextBox.init(this.vrtwglQuad.glContext, "HELLO WORLD", 60, {fontsize:24});
-      vrCanvasTextBox.vrTextureDescription.sphereCentre = [180*(Math.random()-0.5), 180*(Math.random()-0.5)];
-      vrCanvasTextBox.update(self.tick);
-      this.canvasSet.push(vrCanvasTextBox);
+      var sz = 15.+Math.random()*10.;
+      var x = 90.*(Math.random()-0.5);
+      var y = 45.*(Math.random()-0.5);
+      console.log(sz + "," + x + "," +y);
+      this.vrGui.createTextBox(sz,
+                               x,
+                               y,
+                               null,
+                               "NEXT",
+                               {fontsize:72, borderThickness:10});
     }
+    this.renderGui();
   }
 
-  this.renderGuiSphere = function(canvasSet) {
-    for(texIt = 0;texIt < canvasSet.length; texIt++) {
-      var canvasTex = canvasSet[texIt];
+  this.renderGui = function() {
+    for(texIt = 0;texIt < self.vrGui.canvasSet.length; texIt++) {
+      var canvasTex = self.vrGui.canvasSet[texIt][0];
       var textureDesc = canvasTex.vrTextureDescription;
       canvasTex.update(self.tick);
       self.uniformsFbGui["textureSource"] = canvasTex.glTex;
