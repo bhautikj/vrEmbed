@@ -255,18 +255,24 @@ VRtwglQuadStereoProjection = function() {
   }
 
   this.guiGen = function() {
-    for(texIt = 0;texIt < 5; texIt++) {
-      var sz = 15.+Math.random()*10.;
-      var x = 90.*(Math.random()-0.5);
-      var y = 45.*(Math.random()-0.5);
-      // console.log(sz + "," + x + "," +y);
-      this.vrGui.createTextBox(sz,
-                               x,
-                               y,
-                               null,
+    // for(texIt = 0;texIt < 5; texIt++) {
+    //   var sz = 15.+Math.random()*10.;
+    //   var x = 90.*(Math.random()-0.5);
+    //   var y = 45.*(Math.random()-0.5);
+    //   // console.log(sz + "," + x + "," +y);
+    //   this.vrGui.createTextBox(sz,
+    //                            x,
+    //                            y,
+    //                            "ssss",
+    //                            "NEXT",
+    //                            {fontsize:72, borderThickness:10});
+    // }
+      this.vrGui.createTextBox(60,
+                               0,
+                               0,
+                               "ssss",
                                "NEXT",
                                {fontsize:72, borderThickness:10});
-    }
     this.renderGui();
   }
 

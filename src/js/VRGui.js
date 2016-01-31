@@ -3,7 +3,9 @@
 function pointInDomain (testPoint, origin, domainSize, u, uv) {
   var normalizedPoint = (testPoint - origin + domainSize)%domainSize;
   var normalizedU = (u - origin + domainSize)%domainSize;
-  if ((normalizedPoint - normalizedU)<uv)
+  // console.log(normalizedPoint + "," + normalizedU + "," + (normalizedPoint - normalizedU));
+  var diff = (normalizedPoint - normalizedU);
+  if (diff>0 && diff<uv)
     return true;
   else
     return false;
@@ -24,6 +26,7 @@ VRGuiTimer = function() {
   this.in = false;
   this.startTime = Number.MAX_VALUE;
   this.callbackFired = false;
+  this.timeout = 250; // in ms - for all gui events
 
   this.init = function(canvas, callback) {
     this.canvas = canvas;
@@ -45,9 +48,12 @@ VRGuiTimer = function() {
     if (this.callback == null)
       return 0.0;
 
+
     if (this.isInBoundingBox(pt, this.canvas.vrTextureDescription)) {
       // start timer
       if (this.in == false) {
+        // console.log("IN");
+        // console.log(pt);
         this.in = true;
         this.startTime = timestamp;
         this.callbackFired = false;
@@ -64,23 +70,27 @@ VRGuiTimer = function() {
         }
       }
     } else {
-      this.in == false;
+      if (this.in == true) {
+        // console.log("OUT");
+        // console.log(pt);
+      }
+      this.in = false;
       this.startTime = Number.MAX_VALUE;
       this.callbackFired = false;
+      return 0.0;
     }
-
-    this.fireCallback = function() {
-      this.callbackFired = true;
-      console.log("FIRING CALLBACK!");
-    }
-
   }
+
+  this.fireCallback = function() {
+    this.callbackFired = true;
+    console.log("FIRING CALLBACK!");
+  }
+
 }
 
 VRGui = function() {
   this.canvasSet = [];
   this.gl = null;
-  this.timeout = 250; // in ms - for all gui events
 
   this.init = function(gl) {
     this.gl = gl;
@@ -94,6 +104,8 @@ VRGui = function() {
         rv = tv;
       }
     }
+    if (rv>0.0)
+      console.log(rv);
     return rv;
   }
 
