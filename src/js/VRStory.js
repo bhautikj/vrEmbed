@@ -4,12 +4,14 @@ var VRScene = require('./VRScene.js');
 var VRManager = require('./VRManager.js');
 var VRRenderModes = require('./VRRenderModes.js');
 var VRDeviceManager = require('./VRDeviceManager.js');
+var VRGui = require('./VRGui.js');
 
 VRStory = function() {
   var self = this;
   this.storyElement = null;
   this.parentElement = null;
   this.vrDeviceManager = VRDeviceManager;
+  this.vrGui = null;
 
   //--
   this.quad = null;
@@ -158,7 +160,44 @@ VRStory = function() {
       return;
 
     self.manager.render(timestamp);
+
+    var now = Date.now();
+    var dir = this.quad.controller.getHeading();
+    if (this.vrGui != null) {
+      var actionPercent = this.vrGui.update([dir[0], dir[1]],now);
+    }
   };
+
+  this.setupScene = function(sceneIdx) {
+    //TODO: teardown previous scene!
+    var scene = this.sceneList[sceneIdx];
+    var textureDescriptions = []
+    for (objit = 0;objit<scene.renderObjects.length; objit++){
+      var scenePhoto = scene.renderObjects[objit];
+      if (scenePhoto.textureDescription!=null){
+        textureDescriptions.push(scenePhoto.textureDescription);
+      }
+    }
+    this.quad.loadTextures(textureDescriptions);
+    this.stateToggler.configureStereo(this.isStereo);
+  }
+
+  this.guiGen = function() {
+    for(texIt = 0;texIt < 5; texIt++) {
+      var sz = 15.+Math.random()*10.;
+      var x = 90.*(Math.random()-0.5);
+      var y = 45.*(Math.random()-0.5);
+      // console.log(sz + "," + x + "," +y);
+      this.vrGui.createTextBox(sz,
+                               x,
+                               y,
+                               "ssss",
+                               "NEXT",
+                               {fontsize:72, borderThickness:10});
+    }
+    this.quad.renderGui();
+  }
+
 
   this.init = function(storyElement, storyManager) {
     this.storyElement = storyElement;
@@ -166,20 +205,12 @@ VRStory = function() {
     this.parentElement = this.storyElement.parentNode;
 
     this.setupSceneRenderer();
+    this.vrGui = new VRGui();
+    this.vrGui.init(this.quad.getContext());
+    this.quad.setVrGui(this.vrGui);
 
-    for(sceneit = 0;sceneit<this.sceneList.length; sceneit++) {
-      var scene = this.sceneList[sceneit];
-      var textureDescriptions = []
-      for (objit = 0;objit<scene.renderObjects.length; objit++){
-        var scenePhoto = scene.renderObjects[objit];
-        if (scenePhoto.textureDescription!=null){
-          textureDescriptions.push(scenePhoto.textureDescription);
-        }
-      }
-      this.quad.loadTextures(textureDescriptions);
-    }
-
-    this.stateToggler.configureStereo(this.isStereo);
+    //TODO: setup gui here
+    this.setupScene(0);
 
     this.mouseMove = function(ev) {
       var mx = ev.movementX || ev.mozMovementX || ev.webkitMovementX || 0;
@@ -202,6 +233,7 @@ VRStory = function() {
     this.manager = new VRManager(this.quad);
     this.onResize();
     this.animate();
+    this.guiGen();
 
     this.stateToggler.setState(VRStates.WINDOWED);
 

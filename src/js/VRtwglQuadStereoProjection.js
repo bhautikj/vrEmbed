@@ -3,7 +3,6 @@ VRRenderModes = require('./VRRenderModes.js');
 VRLookController = require('./VRControllers.js');
 VRDeviceManager = require('./VRDeviceManager.js');
 VRCanvasFactory = require('./VRCanvasFactory.js');
-VRGui = require('./VRGui.js');
 
 twgl = require('../js-ext/twgl-full.js');
 
@@ -202,6 +201,14 @@ VRtwglQuadStereoProjection = function() {
     return this.vrtwglQuad.container;
   }
 
+  this.getContext = function() {
+    return this.vrtwglQuad.glContext;
+  }
+
+  this.setVrGui = function(vrGui) {
+    this.vrGui = vrGui;
+  }
+
   this.uniforms = {
     resolution:[0,0],
     fovParams:[0,0],
@@ -248,35 +255,14 @@ VRtwglQuadStereoProjection = function() {
     this.vrtwglQuadFbGui.initFramebuffer(this.fbRes, this.vrtwglQuad.glContext, vs, fsWindowed);
     self.vrtwglQuadFbGui.clearFrameBuffer(0, 0, 0, 0);
 
-    this.vrGui = new VRGui();
-    this.vrGui.init(this.vrtwglQuad.glContext);
-
-    this.guiGen();
-  }
-
-  this.guiGen = function() {
-    // for(texIt = 0;texIt < 5; texIt++) {
-    //   var sz = 15.+Math.random()*10.;
-    //   var x = 90.*(Math.random()-0.5);
-    //   var y = 45.*(Math.random()-0.5);
-    //   // console.log(sz + "," + x + "," +y);
-    //   this.vrGui.createTextBox(sz,
-    //                            x,
-    //                            y,
-    //                            "ssss",
-    //                            "NEXT",
-    //                            {fontsize:72, borderThickness:10});
-    // }
-      this.vrGui.createTextBox(60,
-                               0,
-                               0,
-                               "ssss",
-                               "NEXT",
-                               {fontsize:72, borderThickness:10});
-    this.renderGui();
   }
 
   this.renderGui = function() {
+    if (this.vrGui == null) {
+      console.log("ERROR: trying to render before gui is ready");
+      return;
+    }
+
     for(texIt = 0;texIt < self.vrGui.canvasSet.length; texIt++) {
       var canvasTex = self.vrGui.canvasSet[texIt][0];
       var textureDesc = canvasTex.vrTextureDescription;
@@ -302,10 +288,7 @@ VRtwglQuadStereoProjection = function() {
   }
 
   this.render = function() {
-    var now = Date.now();
     this.controller.update();
-    var dir = this.controller.getHeading();
-    var actionPercent = this.vrGui.update([dir[0], dir[1]],now);
     twgl.m4.copy(this.cameraMatrix, this.uniforms.transform);
     this.uniforms["resolution"] = [self.vrtwglQuad.canvas.clientWidth, self.vrtwglQuad.canvas.clientHeight];
     var aspect = self.vrtwglQuad.canvas.clientHeight/self.vrtwglQuad.canvas.clientWidth;
