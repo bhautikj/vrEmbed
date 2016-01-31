@@ -162,11 +162,37 @@ VRStory = function() {
     self.manager.render(timestamp);
 
     var now = Date.now();
-    var dir = this.quad.controller.getHeading();
-    if (this.vrGui != null) {
-      var actionPercent = this.vrGui.update([dir[0], dir[1]],now);
+    var dir = self.quad.controller.getHeading();
+    if (self.vrGui != null) {
+      var actionPercent = self.vrGui.update([dir[0], dir[1]],now);
+      self.drawReticle(actionPercent);
     }
   };
+
+  this.drawReticle = function(actionPercent) {
+    var _ctx = this.quad.vrtwglQuad.get2dContext();
+    if (_ctx == null)
+      return;
+    var ctx = _ctx[0];
+    var w = _ctx[1];
+    var h = _ctx[2];
+
+    ctx.clearRect(0, 0, w, h);
+
+    // draw aiming reiticle
+    ctx.beginPath();
+    ctx.lineWidth = 6;
+    ctx.strokeStyle = "rgba(255,255,255,0.8)";
+    ctx.arc(w/2,h/2,15,0,2*Math.PI);
+    ctx.stroke();
+
+
+    ctx.beginPath();
+    ctx.strokeStyle = "rgba(0,0,0,1.0)";
+    ctx.lineWidth = 5;
+    ctx.arc(w/2,h/2,15,-0.5*Math.PI,-0.5*Math.PI+actionPercent*2*Math.PI);
+    ctx.stroke();
+  }
 
   this.setupScene = function(sceneIdx) {
     //TODO: teardown previous scene!
