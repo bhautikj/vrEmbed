@@ -198,7 +198,6 @@ VRStory = function() {
     this.quad.renderGui();
   }
 
-
   this.init = function(storyElement, storyManager) {
     this.storyElement = storyElement;
     this.storyManager = storyManager;

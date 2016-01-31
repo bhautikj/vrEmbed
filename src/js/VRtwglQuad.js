@@ -32,12 +32,29 @@ VRtwglQuad = function() {
     this.parentElement = elm.parentNode;
     this.container = document.createElement('div');
     this.canvas = document.createElement('canvas');
+    var t = this.canvas.style;
+    t.height = "100%";
+    t.width = "100%";
+    t.display = "block";
+
     this.container.appendChild(this.canvas);
     elm.appendChild(this.container);
 
     this.glContext = twgl.getWebGLContext(this.canvas);
 
     this.initCore(vs, fs);
+  }
+
+  this.setCanvasFullscreen = function() {
+    var t = this.canvas.style;
+    t.height = "100vh";
+    t.width = "100vw";
+  }
+
+  this.setCanvasWindowed = function() {
+    var t = this.canvas.style;
+    t.height = "100%";
+    t.width = "100%";
   }
 
   this.initFramebuffer = function(fbSize, glContext, vs, fs) {
