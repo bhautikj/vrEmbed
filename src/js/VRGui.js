@@ -104,8 +104,8 @@ VRGui = function() {
         rv = tv;
       }
     }
-    if (rv>0.0)
-      console.log(rv);
+    // if (rv>0.0)
+    //   console.log(rv);
     return rv;
   }
 

@@ -178,26 +178,33 @@ VRStory = function() {
     var h = _ctx[2];
 
     ctx.clearRect(0, 0, w, h);
+    var recticleList = [];
 
     var renderMode = this.quad.getRenderMode();
     if (renderMode != VRRenderModes.STEREOSIDEBYSIDE){
+      recticleList.push([w/2,h/2]);
+    } else {
+      var ipdAdjust = this.quad.getIPDAdjust();
+      recticleList.push([w/4 - ipdAdjust*w/2, h/2]);
+      recticleList.push([3*w/4 + ipdAdjust*w/2, h/2]);
+    }
+
+    for (objit = 0;objit<recticleList.length; objit++){
+      var reticle = recticleList[objit];
       // draw aiming reiticle
       ctx.beginPath();
       ctx.lineWidth = 6;
       ctx.strokeStyle = "rgba(255,255,255,0.8)";
-      ctx.arc(w/2,h/2,15,0,2*Math.PI);
+      ctx.arc(reticle[0],reticle[1],15,0,2*Math.PI);
       ctx.stroke();
 
 
       ctx.beginPath();
       ctx.strokeStyle = "rgba(0,0,0,1.0)";
       ctx.lineWidth = 5;
-      ctx.arc(w/2,h/2,15,-0.5*Math.PI,-0.5*Math.PI+actionPercent*2*Math.PI);
+      ctx.arc(reticle[0],reticle[1],15,-0.5*Math.PI,-0.5*Math.PI+actionPercent*2*Math.PI);
       ctx.stroke();
-    } else {
-      console.log("OH GODS NO");
     }
-
   }
 
   this.setupScene = function(sceneIdx) {
