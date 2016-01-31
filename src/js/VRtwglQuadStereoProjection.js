@@ -259,7 +259,7 @@ VRtwglQuadStereoProjection = function() {
       var sz = 15.+Math.random()*10.;
       var x = 90.*(Math.random()-0.5);
       var y = 45.*(Math.random()-0.5);
-      console.log(sz + "," + x + "," +y);
+      // console.log(sz + "," + x + "," +y);
       this.vrGui.createTextBox(sz,
                                x,
                                y,
@@ -296,13 +296,10 @@ VRtwglQuadStereoProjection = function() {
   }
 
   this.render = function() {
+    var now = Date.now();
     this.controller.update();
-    // var rotString = "";
-    // var dir = this.controller.getHeading();
-    // rotString += "yaw: " + Math.floor(dir[0]);
-    // rotString += " pitch: " + Math.floor(dir[1]);
-    // rotString += " roll: " + Math.floor(dir[2]);
-    // document.getElementById("log").innerHTML = rotString;
+    var dir = this.controller.getHeading();
+    var actionPercent = this.vrGui.update([dir[0], dir[1]],now);
     twgl.m4.copy(this.cameraMatrix, this.uniforms.transform);
     this.uniforms["resolution"] = [self.vrtwglQuad.canvas.clientWidth, self.vrtwglQuad.canvas.clientHeight];
     var aspect = self.vrtwglQuad.canvas.clientHeight/self.vrtwglQuad.canvas.clientWidth;
