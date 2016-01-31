@@ -239,6 +239,10 @@ VRtwglQuadStereoProjection = function() {
     this.uniforms.ipdAdjust = device.ipdAdjust;
   }
 
+  this.getRenderMode = function() {
+    return this.uniforms.renderMode;
+  }
+
   this.init = function(element){
     this.vrtwglQuad = new VRtwglQuad();
     this.vrtwglQuad.init(element, vs, fsRenderDisplay);
