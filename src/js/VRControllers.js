@@ -222,7 +222,7 @@ VRLookController = function() {
   this.getHeading = function() {
     if(this.mode==VRLookMode.GYRO)
       return [(180.0*this.euler[0]/Math.PI + 270.0)%360.0 - 180.0,
-              -180.0*this.euler[2]/Math.PI,
+              180.0*this.euler[2]/Math.PI,
               -180.0*this.euler[1]/Math.PI + 90.0];
     else
       return [180.0*this.euler[2]/Math.PI,
