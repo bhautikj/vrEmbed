@@ -42,6 +42,7 @@ VRtwglQuad = function() {
     t.height = "100%";
     t.width = "100%";
     t.display = "block";
+    t.position = 'absolute';
 
     var s = this.canvas2d.style;
     s.position = 'absolute';
@@ -71,8 +72,10 @@ VRtwglQuad = function() {
 
   this.setCanvasFullscreen = function() {
     var t = this.canvas.style;
-    t.height = "100vh";
-    t.width = "100vw";
+    // t.height = "100vh";
+    // t.width = "100vw";
+    t.position = 'relative';
+
     var s = this.canvas2d.style;
     s.height = "100vh";
     s.width = "100vw";
@@ -82,6 +85,8 @@ VRtwglQuad = function() {
     var t = this.canvas.style;
     t.height = "100%";
     t.width = "100%";
+    t.position = 'absolute';
+
     var s = this.canvas2d.style;
     s.height = "100%";
     s.width = "100%";
