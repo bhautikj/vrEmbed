@@ -64,7 +64,8 @@ var fsRenderDisplay = "precision mediump float;\n"+
 "void main(void) {\n"+
    //normalize uv so it is between 0 and 1
 "  vec2 uv = gl_FragCoord.xy / resolution;\n"+
-"  uv.y = (1. - uv.y);\n"+
+//"  uv.x = (1. - uv.x);\n"+
+//"  uv.y = (1. - uv.y);\n"+
 "  bool leftImg=false;\n"+
 "  vec2 fov = fovParams;\n"+
 "  if (renderMode == 1) {\n"+
@@ -97,7 +98,7 @@ var fsRenderDisplay = "precision mediump float;\n"+
 "  vec4 sphere_pnt = vec4(_sphere_pnt, 1.);\n"+
 "  sphere_pnt *= transform;\n"+
 "  float r = length(sphere_pnt);\n"+
-"  float _lon = atan(sphere_pnt.y, sphere_pnt.x);\n"+
+"  float _lon = -1.*atan(sphere_pnt.y, sphere_pnt.x);\n"+
 "  float _lat = 2.0*(acos(sphere_pnt.z / r) - PI*.5) + PI*.5;\n"+
 "  _lon = mod(_lon, 2.*PI);\n"+
 "  vec2 lonLat = vec2(_lon/(PI*2.), _lat/(PI));\n"+

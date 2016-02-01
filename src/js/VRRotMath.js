@@ -57,6 +57,25 @@ function matFromScreen( screenOrientation ) {
 	return r_s;
 }
 
+function matWorld() {
+  var d2r = Math.PI / 180;
+
+	var x = 90 * d2r;
+
+	var cA = Math.cos( x );
+	var sA = Math.sin( x );
+
+	// Construct our world transformation matrix
+	var r_w = [
+		1,     0,    0, 0,
+		0,     cA,   -sA, 0,
+		0,     sA,   cA, 0,
+    0, 0, 0, 1
+	];
+
+	return r_w;
+}
+
 // create quaternion from euler, YXZ order
 var setFromEulerYXZ = function (_x, _y, _z) {
   var c1 = Math.cos( _x / 2 );
@@ -176,11 +195,11 @@ VRRotMath = function() {
 
     var orientMat = matFromOrient(_alpha, _beta, _gamma);
     var screenMat = matFromScreen(-_orientation);
+    // var worldMat = matWorld();
 
     var outMat = twgl.m4.multiply(orientMat, screenMat);
-
-    twgl.m4.rotateZ(outMat,-Math.PI/2,outMat);
-    twgl.m4.rotateX(outMat,Math.PI,outMat);
+    // twgl.m4.rotateX(outMat,Math.PI,outMat);
+    // twgl.m4.rotateZ(outMat,-Math.PI/2,outMat);
 
     return outMat;
   }
