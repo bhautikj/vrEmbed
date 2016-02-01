@@ -2,6 +2,7 @@ VRtwglQuad = require('./VRtwglQuad.js');
 VRRenderModes = require('./VRRenderModes.js');
 VRLookController = require('./VRControllers.js');
 VRDeviceManager = require('./VRDeviceManager.js');
+VRCanvasFactory = require('./VRCanvasFactory.js');
 
 twgl = require('../js-ext/twgl-full.js');
 
@@ -54,6 +55,7 @@ var fsRenderDisplay = "precision mediump float;\n"+
 "#define PI 3.141592653589793\n"+
 "uniform vec2 resolution;\n"+
 "uniform sampler2D textureSource;\n"+
+"uniform sampler2D textureGui;\n"+
 "uniform mat4 transform;\n"+
 "uniform int renderMode;\n"+
 "uniform vec2 fovParams;\n"+
@@ -62,7 +64,6 @@ var fsRenderDisplay = "precision mediump float;\n"+
 "void main(void) {\n"+
    //normalize uv so it is between 0 and 1
 "  vec2 uv = gl_FragCoord.xy / resolution;\n"+
-"  uv.y = (1. - uv.y);\n"+
 "  bool leftImg=false;\n"+
 "  vec2 fov = fovParams;\n"+
 "  if (renderMode == 1) {\n"+
@@ -95,27 +96,33 @@ var fsRenderDisplay = "precision mediump float;\n"+
 "  vec4 sphere_pnt = vec4(_sphere_pnt, 1.);\n"+
 "  sphere_pnt *= transform;\n"+
 "  float r = length(sphere_pnt);\n"+
-"  float _lon = atan(sphere_pnt.y, sphere_pnt.x);\n"+
+"  float _lon = -1.*atan(sphere_pnt.y, sphere_pnt.x);\n"+
 "  float _lat = 2.0*(acos(sphere_pnt.z / r) - PI*.5) + PI*.5;\n"+
 "  _lon = mod(_lon, 2.*PI);\n"+
 "  vec2 lonLat = vec2(_lon/(PI*2.), _lat/(PI));\n"+
    // vanilla monocular render
-"  if (renderMode == 0) {\n"+
-"    lonLat.y *= 0.5;\n"+
-"    gl_FragColor = texture2D(textureSource, lonLat);\n"+
-"  } else if (renderMode == 1) {\n"+
-"    if (leftImg == true) {\n"+
+"  if (renderMode != 2) {\n"+
+"    if (renderMode == 0) {\n"+
 "      lonLat.y *= 0.5;\n"+
-"      gl_FragColor = texture2D(textureSource, lonLat);\n"+
 "    } else {\n"+
-"      lonLat.y = 0.5 + lonLat.y*0.5;\n"+
-"      gl_FragColor = texture2D(textureSource, lonLat);\n"+
+"      if (leftImg == true) {\n"+
+"        lonLat.y *= 0.5;\n"+
+"      } else {\n"+
+"        lonLat.y = 0.5 + lonLat.y*0.5;\n"+
+"      }\n"+
 "    }\n"+
+"    vec4 spherePx = texture2D(textureSource, lonLat);\n"+
+"    vec4 guiPx = texture2D(textureGui, lonLat);\n"+
+"    gl_FragColor = guiPx*guiPx.a + spherePx*(1.-guiPx.a);\n"+
 "  } else if (renderMode == 2) {\n"+
     // anaglyph render
-"    vec4 colorL, colorR;\n"+
-"    colorL = texture2D(textureSource, vec2(lonLat.x, lonLat.y*0.5));\n"+
-"    colorR = texture2D(textureSource, vec2(lonLat.x, 0.5+lonLat.y*0.5));\n"+
+"    vec4 colorL, colorR, colorLSphere, colorLGui, colorRSphere, colorRGui;\n"+
+"    colorLSphere = texture2D(textureSource, vec2(lonLat.x, lonLat.y*0.5));\n"+
+"    colorLGui = texture2D(textureGui, vec2(lonLat.x, lonLat.y*0.5));\n"+
+"    colorL = colorLGui*colorLGui.a + colorLSphere*(1.-colorLGui.a);\n"+
+"    colorRSphere = texture2D(textureSource, vec2(lonLat.x, 0.5+lonLat.y*0.5));\n"+
+"    colorRGui = texture2D(textureGui, vec2(lonLat.x, 0.5+lonLat.y*0.5));\n"+
+"    colorR = colorRGui*colorRGui.a + colorRSphere*(1.-colorRGui.a);\n"+
 "    gl_FragColor = vec4( colorL.g * 0.7 + colorL.b * 0.3, colorR.g, colorR.b, colorL.a + colorR.a ) * 1.1;\n"+
 "  }\n"+
 "}\n"
@@ -168,20 +175,22 @@ var fsWindowed = "precision mediump float;\n"+
 "    uvYX = uvR.zw;\n"+
 "  }\n"+
 "  vec2 texC = uvX + (testPt*uvYX);\n"+
-"  gl_FragColor = texture2D(textureSource, texC);\n"+
+"  gl_FragColor = texture2D(textureSource, texC); \n"+
 "}\n"
-
 
 VRtwglQuadStereoProjection = function() {
   var self = this;
   this.vrDeviceManager = VRDeviceManager;
   this.vrtwglQuad = null;
   this.vrtwglQuadFb = null;
+  this.vrtwglQuadFbGui = null;
   this.textureSet = [];
   this.fbRes = 2048;
   this.textureDescriptions = {};
   this.textures = [];
   this.fovX = 40;
+  this.tick = 0.0;
+  this.vrGui = null;
 
   this.controller = new VRLookController();
   this.cameraMatrix = twgl.m4.identity();
@@ -191,39 +200,36 @@ VRtwglQuadStereoProjection = function() {
     return this.vrtwglQuad.container;
   }
 
+  this.getContext = function() {
+    return this.vrtwglQuad.glContext;
+  }
+
+  this.setVrGui = function(vrGui) {
+    this.vrGui = vrGui;
+  }
+
   this.uniforms = {
     resolution:[0,0],
     fovParams:[0,0],
     textureSource:null,
+    textureGui:null,
     transform:twgl.m4.identity(),
     renderMode:VRRenderModes.STEREOSIDEBYSIDE,
     k:[0,0],
     ipdAdjust:0
-  };
+  }
 
   this.uniformsFb = {
     resolution:[this.fbRes,this.fbRes],
     textureSource:null,
     transform:twgl.m4.identity()
-  };
+  }
 
-  // this.setRenderMode = function(renderMode) {
-  //   this.uniforms.renderMode = renderMode;
-  // }
-  //
-  // this.setFOVX = function(fovX) {
-  //   this.fovX = fovX;
-  // }
-  //
-  // this.setDistortionParams = function(k1, k2) {
-  //   this.uniforms.k = [k1, k2];
-  // }
-  //
-  // // positive 0.5 == centre moved to outer screen edges
-  // // zero == centre at centre of l/r pairs
-  // this.setIpdAdjust = function(ipdFrac) {
-  //   this.uniforms.ipdAdjust = ipdFrac;
-  // }
+  this.uniformsFbGui = {
+    resolution:[this.fbRes,this.fbRes],
+    textureSource:null,
+    transform:twgl.m4.identity()
+  }
 
   this.setupFromDevice = function(device) {
     this.uniforms.renderMode = device.renderMode;
@@ -232,6 +238,13 @@ VRtwglQuadStereoProjection = function() {
     this.uniforms.ipdAdjust = device.ipdAdjust;
   }
 
+  this.getRenderMode = function() {
+    return this.uniforms.renderMode;
+  }
+
+  this.getIPDAdjust = function() {
+    return this.uniforms.ipdAdjust;
+  }
 
   this.init = function(element){
     this.vrtwglQuad = new VRtwglQuad();
@@ -240,8 +253,43 @@ VRtwglQuadStereoProjection = function() {
     // device config params
     this.setupFromDevice (this.vrDeviceManager.getWindowedDevice());
     // ---
+
     this.vrtwglQuadFb = new VRtwglQuad();
     this.vrtwglQuadFb.initFramebuffer(this.fbRes, this.vrtwglQuad.glContext, vs, fsWindowed);
+    self.vrtwglQuadFb.clearFrameBuffer(0, 0, 0, 0);
+
+    this.vrtwglQuadFbGui = new VRtwglQuad();
+    this.vrtwglQuadFbGui.initFramebuffer(this.fbRes, this.vrtwglQuad.glContext, vs, fsWindowed);
+    self.vrtwglQuadFbGui.clearFrameBuffer(0, 0, 0, 0);
+
+  }
+
+  this.renderGui = function() {
+    if (this.vrGui == null) {
+      console.log("ERROR: trying to render before gui is ready");
+      return;
+    }
+
+    self.vrtwglQuadFbGui.clearFrameBuffer(0, 0, 0, 0);
+
+    for(texIt = 0;texIt < self.vrGui.canvasSet.length; texIt++) {
+      var canvasTex = self.vrGui.canvasSet[texIt][0];
+      var textureDesc = canvasTex.vrTextureDescription;
+      canvasTex.update(self.tick);
+      self.uniformsFbGui["textureSource"] = canvasTex.glTex;
+      self.uniformsFbGui["sphX"] = [0.5-0.5*(textureDesc.sphereFOV[0]/360.0),0.5-0.5*(textureDesc.sphereFOV[1]/180.0)];
+      self.uniformsFbGui["sphYX"] = [(textureDesc.sphereFOV[0]/360.0),(textureDesc.sphereFOV[1]/180.0)];
+      self.uniformsFbGui["transform"] = self.createOrientation(Math.PI*textureDesc.sphereCentre[0]/180.0, Math.PI*textureDesc.sphereCentre[1]/180.0);
+      self.uniformsFbGui["uvL"] = [textureDesc.U_l[0],
+                                textureDesc.U_l[1],
+                                textureDesc.V_l[0]-textureDesc.U_l[0],
+                                textureDesc.V_l[1]-textureDesc.U_l[1]];
+      self.uniformsFbGui["uvR"] = [textureDesc.U_r[0],
+                                textureDesc.U_r[1],
+                                textureDesc.V_r[0]-textureDesc.U_r[0],
+                                textureDesc.V_r[1]-textureDesc.U_r[1]];
+      self.renderFbGui();
+    }
   }
 
   this.resize = function() {
@@ -251,14 +299,11 @@ VRtwglQuadStereoProjection = function() {
   this.render = function() {
     this.controller.update();
     twgl.m4.copy(this.cameraMatrix, this.uniforms.transform);
-    // var axisPitch = twgl.v3.create(0,0,1);
-    // twgl.m4.axisRotate(this.uniforms.transform, axisPitch, 0.01, this.uniforms.transform);
-    // var axisYaw = twgl.v3.create(0,1,0);
-    // twgl.m4.axisRotate(this.uniforms.transform, axisYaw, 0.005, this.uniforms.transform);
     this.uniforms["resolution"] = [self.vrtwglQuad.canvas.clientWidth, self.vrtwglQuad.canvas.clientHeight];
     var aspect = self.vrtwglQuad.canvas.clientHeight/self.vrtwglQuad.canvas.clientWidth;
     this.uniforms["fovParams"] = [this.fovX/360.0, aspect*this.fovX/360.0];
     this.uniforms["textureSource"] = self.vrtwglQuadFb.getFramebufferTexture();
+    this.uniforms["textureGui"] = self.vrtwglQuadFbGui.getFramebufferTexture();
 
     self.vrtwglQuad.setUniforms(this.uniforms);
     self.vrtwglQuad.render();
@@ -269,6 +314,11 @@ VRtwglQuadStereoProjection = function() {
     self.vrtwglQuadFb.renderFramebuffer();
   }
 
+  this.renderFbGui = function() {
+    self.vrtwglQuadFbGui.setUniforms(this.uniformsFbGui);
+    self.vrtwglQuadFbGui.renderFramebuffer();
+  }
+
   this.anim = function() {
     self.render();
     requestAnimationFrame(self.anim);
@@ -276,34 +326,36 @@ VRtwglQuadStereoProjection = function() {
 
   this.createOrientation = function(pitch, yaw) {
     var mat = twgl.m4.identity();
-    var axisYaw = twgl.v3.create(0,1,0);
-    twgl.m4.axisRotate(mat, axisYaw, yaw, mat);
     var axisPitch = twgl.v3.create(0,0,1);
     twgl.m4.axisRotate(mat, axisPitch, pitch, mat);
+    var axisYaw = twgl.v3.create(0,1,0);
+    twgl.m4.axisRotate(mat, axisYaw, yaw, mat);
     return mat;
   }
 
   this.texturesLoaded = function(err, textures, sources) {
-      //alert("TEXTURES LOADED");
-
-      for (var key in self.textures) {
-        if (self.textures.hasOwnProperty(key)) {
-          var textureDesc = self.textureDescriptions[key];
-          self.uniformsFb["textureSource"] = self.textures[key];
-          self.uniformsFb["sphX"] = [0.5-0.5*(textureDesc.sphereFOV[0]/360.0),0.5-0.5*(textureDesc.sphereFOV[1]/180.0)];
-          self.uniformsFb["sphYX"] = [(textureDesc.sphereFOV[0]/360.0),(textureDesc.sphereFOV[1]/180.0)];
-          self.uniformsFb["transform"] = self.createOrientation(Math.PI*textureDesc.sphereCentre[0]/180.0, Math.PI*textureDesc.sphereCentre[1]/180.0);
-          self.uniformsFb["uvL"] = [textureDesc.U_l[0],
-                                    textureDesc.U_l[1],
-                                    textureDesc.V_l[0]-textureDesc.U_l[0],
-                                    textureDesc.V_l[1]-textureDesc.U_l[1]];
-          self.uniformsFb["uvR"] = [textureDesc.U_r[0],
-                                    textureDesc.U_r[1],
-                                    textureDesc.V_r[0]-textureDesc.U_r[0],
-                                    textureDesc.V_r[1]-textureDesc.U_r[1]];
-          self.renderFb();
-        }
+    self.vrtwglQuadFb.clearFrameBuffer(0, 0, 0, 0);
+    //alert("TEXTURES LOADED");
+    for (var key in self.textures) {
+      if (self.textures.hasOwnProperty(key)) {
+        var textureDesc = self.textureDescriptions[key];
+        self.uniformsFb["textureSource"] = self.textures[key];
+        self.uniformsFb["sphX"] = [0.5-0.5*(textureDesc.sphereFOV[0]/360.0),0.5-0.5*(textureDesc.sphereFOV[1]/180.0)];
+        self.uniformsFb["sphYX"] = [(textureDesc.sphereFOV[0]/360.0),(textureDesc.sphereFOV[1]/180.0)];
+        self.uniformsFb["transform"] = self.createOrientation(Math.PI*textureDesc.sphereCentre[0]/180.0, Math.PI*textureDesc.sphereCentre[1]/180.0);
+        self.uniformsFb["uvL"] = [textureDesc.U_l[0],
+                                  textureDesc.U_l[1],
+                                  textureDesc.V_l[0]-textureDesc.U_l[0],
+                                  textureDesc.V_l[1]-textureDesc.U_l[1]];
+        self.uniformsFb["uvR"] = [textureDesc.U_r[0],
+                                  textureDesc.U_r[1],
+                                  textureDesc.V_r[0]-textureDesc.U_r[0],
+                                  textureDesc.V_r[1]-textureDesc.U_r[1]];
+        self.renderFb();
+        var gl = self.vrtwglQuad.glContext;
+        gl.deleteTexture(self.textures[key]);
       }
+    }
   }
 
   this.loadTextures = function (textureDescriptions) {
@@ -322,6 +374,11 @@ VRtwglQuadStereoProjection = function() {
 
     var gl = self.vrtwglQuad.glContext;
     this.textures = twgl.createTextures(gl, texArray, this.texturesLoaded);
+  }
+
+  this.teardown = function() {
+    this.textures = [];
+    this.textureDescriptions = [];
   }
 
 }

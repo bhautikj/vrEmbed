@@ -32,6 +32,8 @@ VRManager = function(quad) {
     } else if(document.webkitExitFullscreen) {
       document.webkitExitFullscreen();
     }
+
+    this.quad.vrtwglQuad.setCanvasWindowed();
   };
 
   this.enterFullscreen = function() {
@@ -61,6 +63,8 @@ VRManager = function(quad) {
       this.oldScroll = window.onscroll;
       window.onscroll = function () { canvas.scrollIntoView(true); };
     }
+
+    this.quad.vrtwglQuad.setCanvasFullscreen();
 
     return true;
   }

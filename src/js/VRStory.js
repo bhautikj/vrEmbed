@@ -4,12 +4,14 @@ var VRScene = require('./VRScene.js');
 var VRManager = require('./VRManager.js');
 var VRRenderModes = require('./VRRenderModes.js');
 var VRDeviceManager = require('./VRDeviceManager.js');
+var VRGui = require('./VRGui.js');
 
 VRStory = function() {
   var self = this;
   this.storyElement = null;
   this.parentElement = null;
   this.vrDeviceManager = VRDeviceManager;
+  this.vrGui = null;
 
   //--
   this.quad = null;
@@ -23,6 +25,7 @@ VRStory = function() {
   this.lastVisibleCheck = 0;
   this.isVisible = true;
   this.isStereo = false;
+  this.currentSceneIndex = 0;
 
   this.isFullScreen = false;
 
@@ -158,7 +161,116 @@ VRStory = function() {
       return;
 
     self.manager.render(timestamp);
+
+    var now = Date.now();
+    var dir = self.quad.controller.getHeading();
+    // document.getElementById("log").innerHTML = Math.floor(dir[0]) + "," +
+    //                                            Math.floor(dir[1]) + "," +
+    //                                            Math.floor(dir[2]);
+    if (self.vrGui != null) {
+      var actionPercent = self.vrGui.update([dir[0], dir[1]],now);
+      self.drawReticle(actionPercent);
+    }
   };
+
+  this.drawReticle = function(actionPercent) {
+    var _ctx = this.quad.vrtwglQuad.get2dContext();
+    if (_ctx == null)
+      return;
+    var ctx = _ctx[0];
+    var w = _ctx[1];
+    var h = _ctx[2];
+
+    ctx.clearRect(0, 0, w, h);
+    var recticleList = [];
+
+    var renderMode = this.quad.getRenderMode();
+    if (renderMode != VRRenderModes.STEREOSIDEBYSIDE){
+      recticleList.push([w/2,h/2]);
+    } else {
+      var ipdAdjust = this.quad.getIPDAdjust();
+      recticleList.push([w/4 - ipdAdjust*w/2, h/2]);
+      recticleList.push([3*w/4 + ipdAdjust*w/2, h/2]);
+    }
+
+    for (objit = 0;objit<recticleList.length; objit++){
+      var reticle = recticleList[objit];
+      // draw aiming reiticle
+      ctx.beginPath();
+      ctx.lineWidth = 6;
+      ctx.strokeStyle = "rgba(255,255,255,0.8)";
+      ctx.arc(reticle[0],reticle[1],15,0,2*Math.PI);
+      ctx.stroke();
+
+
+      ctx.beginPath();
+      ctx.strokeStyle = "rgba(0,0,0,1.0)";
+      ctx.lineWidth = 5;
+      ctx.arc(reticle[0],reticle[1],15,-0.5*Math.PI,-0.5*Math.PI+actionPercent*2*Math.PI);
+      ctx.stroke();
+    }
+  }
+
+  this.setupScene = function(sceneIdx) {
+    console.log("SETTING UP SCENE INDEX:" + sceneIdx);
+    this.vrGui.teardown();
+    this.quad.teardown();
+
+    var scene = this.sceneList[sceneIdx];
+    var textureDescriptions = []
+    for (objit = 0;objit<scene.renderObjects.length; objit++){
+      var scenePhoto = scene.renderObjects[objit];
+      if (scenePhoto.textureDescription!=null){
+        textureDescriptions.push(scenePhoto.textureDescription);
+      }
+    }
+    this.quad.loadTextures(textureDescriptions);
+    this.stateToggler.configureStereo(this.isStereo);
+
+    this.currentSceneIndex = sceneIdx;
+    this.guiGen();
+  }
+
+  this.nextScene = function() {
+    var numScenes = self.sceneList.length;
+    var nextScene = (self.currentSceneIndex + 1)%numScenes;
+
+    if (nextScene != self.currentSceneIndex) {
+      self.setupScene (nextScene);
+      self.currentSceneIndex = nextScene;
+    }
+  }
+
+  this.prevScene = function() {
+    var numScenes = self.sceneList.length;
+    var nextScene = (self.currentSceneIndex - 1)%numScenes;
+
+    if (nextScene != self.currentSceneIndex) {
+      self.setupScene (nextScene);
+    }
+  }
+
+  this.guiGen = function() {
+   var numScenes = self.sceneList.length;
+   if (self.currentSceneIndex>0) {
+     this.vrGui.createTextBox(15,
+                               -30,
+                               -30,
+                               this.prevScene,
+                               "prev",
+                               {fontsize:72, borderThickness:10});
+   }
+
+   if (self.currentSceneIndex<(numScenes-1)) {
+     this.vrGui.createTextBox(15,
+                              30,
+                              -30,
+                              this.nextScene,
+                              "next",
+                              {fontsize:72, borderThickness:10});
+    }
+    this.quad.renderGui();
+  }
 
   this.init = function(storyElement, storyManager) {
     this.storyElement = storyElement;
@@ -166,20 +278,11 @@ VRStory = function() {
     this.parentElement = this.storyElement.parentNode;
 
     this.setupSceneRenderer();
+    this.vrGui = new VRGui();
+    this.vrGui.init(this.quad.getContext());
+    this.quad.setVrGui(this.vrGui);
 
-    for(sceneit = 0;sceneit<this.sceneList.length; sceneit++) {
-      var scene = this.sceneList[sceneit];
-      var textureDescriptions = []
-      for (objit = 0;objit<scene.renderObjects.length; objit++){
-        var scenePhoto = scene.renderObjects[objit];
-        if (scenePhoto.textureDescription!=null){
-          textureDescriptions.push(scenePhoto.textureDescription);
-        }
-      }
-      this.quad.loadTextures(textureDescriptions);
-    }
-
-    this.stateToggler.configureStereo(this.isStereo);
+    this.setupScene(this.currentSceneIndex);
 
     this.mouseMove = function(ev) {
       var mx = ev.movementX || ev.mozMovementX || ev.webkitMovementX || 0;
