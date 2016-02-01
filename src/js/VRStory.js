@@ -212,7 +212,7 @@ VRStory = function() {
   }
 
   this.setupScene = function(sceneIdx) {
-    console.log("SETTING UP SCENE INDEX:" + sceneIdx);
+    // console.log("SETTING UP SCENE INDEX:" + sceneIdx);
     this.vrGui.teardown();
     this.quad.teardown();
 
