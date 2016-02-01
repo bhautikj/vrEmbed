@@ -198,8 +198,9 @@ VRRotMath = function() {
     // var worldMat = matWorld();
 
     var outMat = twgl.m4.multiply(orientMat, screenMat);
-    // twgl.m4.rotateX(outMat,Math.PI,outMat);
-    // twgl.m4.rotateZ(outMat,-Math.PI/2,outMat);
+
+    // fix pitch
+    twgl.m4.rotateZ(outMat,-Math.PI/2,outMat);
 
     return outMat;
   }
