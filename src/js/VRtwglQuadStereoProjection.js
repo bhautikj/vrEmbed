@@ -185,7 +185,7 @@ VRtwglQuadStereoProjection = function() {
   this.vrtwglQuadFb = null;
   this.vrtwglQuadFbGui = null;
   this.textureSet = [];
-  this.fbRes = 2048;
+  this.fbRes = 4096;
   this.textureDescriptions = {};
   this.textures = [];
   this.fovX = 40;
@@ -299,7 +299,7 @@ VRtwglQuadStereoProjection = function() {
   this.render = function() {
     this.controller.update();
     twgl.m4.copy(this.cameraMatrix, this.uniforms.transform);
-    this.uniforms["resolution"] = [self.vrtwglQuad.canvas.clientWidth, self.vrtwglQuad.canvas.clientHeight];
+    this.uniforms["resolution"] = self.vrtwglQuad.realSize;
     var aspect = self.vrtwglQuad.canvas.clientHeight/self.vrtwglQuad.canvas.clientWidth;
     this.uniforms["fovParams"] = [this.fovX/360.0, aspect*this.fovX/360.0];
     this.uniforms["textureSource"] = self.vrtwglQuadFb.getFramebufferTexture();

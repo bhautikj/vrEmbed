@@ -11,10 +11,10 @@ VRtwglQuad = function() {
   this.bufferInfo = null;
   this.parentElement = null;
   this.uniforms = null;
-  this.fbSize = 4;
+  this.fbSize = 4096;
   this.canvas2dWidth = 1024;
   this.canvas2dHeight = 1024;
-
+  this.realSize = [0,0];
 
   this.initCore = function(vs, fs) {
     this.programInfo = twgl.createProgramInfo(this.glContext , [vs, fs]);
@@ -41,6 +41,8 @@ VRtwglQuad = function() {
     var t = this.canvas.style;
     t.height = "100%";
     t.width = "100%";
+    // t.height = this.realSize[0]+"px";
+    // t.width = this.realSize[1]+"px";
     t.display = "block";
     t.position = 'absolute';
 
@@ -73,6 +75,8 @@ VRtwglQuad = function() {
   this.setCanvasFullscreen = function() {
     var t = this.canvas.style;
     t.position = 'relative';
+    t.height = this.realSize[0];
+    t.width = this.realSize[1];
 
     var s = this.canvas2d.style;
     s.height = "100vh";
@@ -112,14 +116,22 @@ VRtwglQuad = function() {
   this.resize = function() {
     // Get the canvas from the WebGL context
     var canvas = self.glContext.canvas;
+    var realToCSSPixels = window.devicePixelRatio || 1;
+    //var realToCSSPixels = 3;
 
     // Lookup the size the browser is displaying the canvas.
-    var displayWidth  = self.parentElement.clientWidth;
-    var displayHeight = self.parentElement.clientHeight;
+    //var displayWidth  = self.parentElement.clientWidth;
+    //var displayHeight = self.parentElement.clientHeight;
+    var displayWidth  = Math.floor(canvas.clientWidth  * realToCSSPixels);
+    var displayHeight = Math.floor(canvas.clientHeight * realToCSSPixels);
 
-    // console.log("display:" + displayWidth+","+displayHeight);
-    // console.log("htmlcanvas:" + this.canvas.width+","+this.canvas.height);
-    // console.log("canvas:" + canvas.width+","+canvas.height);
+    self.realSize = [displayWidth, displayHeight];
+
+    document.getElementById("log").innerHTML = "r2c:" + window.devicePixelRatio;
+
+    document.getElementById("log").innerHTML += " display:" + displayWidth+","+displayHeight;
+    document.getElementById("log").innerHTML += " htmlcanvas:" + this.canvas.width+","+this.canvas.height;
+    document.getElementById("log").innerHTML += " canvas:" + canvas.width+","+canvas.height;
 
     // Check if the canvas is not the same size.
     if (canvas.width  != displayWidth ||
