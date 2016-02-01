@@ -17,6 +17,33 @@ var setFromEulerYXZ = function (_x, _y, _z) {
   return [x,y,z,w];
 }
 
+function getQuaternion( alpha, beta, gamma ) {
+  var d2r = Math.PI / 180;
+
+  var _x = beta  ? beta  * d2r : 0; // beta value
+  var _y = gamma ? gamma * d2r : 0; // gamma value
+  var _z = alpha ? alpha * d2r : 0; // alpha value
+
+  var cX = Math.cos( _x/2 );
+  var cY = Math.cos( _y/2 );
+  var cZ = Math.cos( _z/2 );
+  var sX = Math.sin( _x/2 );
+  var sY = Math.sin( _y/2 );
+  var sZ = Math.sin( _z/2 );
+
+  //
+  // ZXY quaternion construction.
+  //
+
+  var w = cX * cY * cZ - sX * sY * sZ;
+  var x = sX * cY * cZ - cX * sY * sZ;
+  var y = cX * sY * cZ + sX * cY * sZ;
+  var z = cX * cY * sZ + sX * sY * cZ;
+
+  return [x,y,z,w];
+  //return [ w, x, y, z ];
+}
+
 
 var makeRotationMatrixFromQuaternion = function ( q ) {
 	var te = [1,0,0,0,
@@ -86,6 +113,10 @@ var _matToEuler = function(mat) {
 }
 
 VRRotMath = function() {
+  // this.gyroToMat = function(_alpha, _beta, _gamma, _orientation) {
+  //
+  // }
+
   this.gyroToMat = function(_alpha, _beta, _gamma, _orientation) {
     // document.getElementById("log").innerHTML = "PING";
 
@@ -116,8 +147,12 @@ VRRotMath = function() {
 
     var outMat = makeRotationMatrixFromQuaternion(finalQuaternion);
     twgl.m4.transpose(outMat,outMat);
-    twgl.m4.rotateX(outMat,Math.PI/2,outMat);
-    twgl.m4.rotateZ(outMat,Math.PI/2,outMat);
+
+    // TODO: ERROR IS HERE THAT IS CAUSING COUNTER-ROLL BOO HISS 
+    // twgl.m4.rotateX(outMat,Math.PI/2,outMat);
+    // twgl.m4.rotateZ(outMat,Math.PI/2,outMat);
+
+    // document.getElementById("log").innerHTML = Math.floor(180*roll/Math.PI);
 
     return outMat;
   }
