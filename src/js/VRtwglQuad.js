@@ -32,9 +32,18 @@ VRtwglQuad = function() {
     this.bufferInfo = twgl.createBufferInfoFromArrays(this.glContext, arrays);
   }
 
+  //TODO: READ!
+  // https://www.khronos.org/webgl/wiki/HandlingHighDPI
+  // http://stackoverflow.com/questions/15892387/how-to-render-webgl-content-using-high-dpi-devices
   this.init = function (elm, vs, fs){
     this.parentElement = elm.parentNode;
     this.container = document.createElement('div');
+    var ds = this.container.style;
+    ds.width = "100%";
+    ds.height = "100%";
+    ds.margin = "0px";
+    ds.padding = "0px";
+
     this.canvas = document.createElement('canvas');
     this.canvas2d = document.createElement('canvas');
 
@@ -44,7 +53,7 @@ VRtwglQuad = function() {
     // t.height = this.realSize[0]+"px";
     // t.width = this.realSize[1]+"px";
     t.display = "block";
-    t.position = 'absolute';
+    // t.position = 'absolute';
 
     var s = this.canvas2d.style;
     s.position = 'absolute';
@@ -75,8 +84,8 @@ VRtwglQuad = function() {
   this.setCanvasFullscreen = function() {
     var t = this.canvas.style;
     t.position = 'relative';
-    t.height = this.realSize[0];
-    t.width = this.realSize[1];
+    // t.height = this.realSize[0];
+    // t.width = this.realSize[1];
 
     var s = this.canvas2d.style;
     s.height = "100vh";
@@ -132,6 +141,7 @@ VRtwglQuad = function() {
     document.getElementById("log").innerHTML += " display:" + displayWidth+","+displayHeight;
     document.getElementById("log").innerHTML += " htmlcanvas:" + this.canvas.width+","+this.canvas.height;
     document.getElementById("log").innerHTML += " canvas:" + canvas.width+","+canvas.height;
+    document.getElementById("log").innerHTML += " pcanvas:" + this.canvas.style.width+","+this.canvas.style.height;
 
     // Check if the canvas is not the same size.
     if (canvas.width  != displayWidth ||
