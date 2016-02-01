@@ -116,6 +116,7 @@ VRRotMath = function() {
   // this.gyroToMat = function(_alpha, _beta, _gamma, _orientation) {
   //
   // }
+  this.timer = 0.0;
 
   this.gyroToMat = function(_alpha, _beta, _gamma, _orientation) {
     // document.getElementById("log").innerHTML = "PING";
@@ -130,7 +131,7 @@ VRRotMath = function() {
 
     // Inspired by
     // https://github.com/richtr/threeVR/blob/master/js/DeviceOrientationController.js
-    var tmpQuaternion = setFromEulerYXZ(beta, alpha, -1.0*gamma);
+    var tmpQuaternion = setFromEulerYXZ(beta, alpha, -gamma);
     var minusHalfAngle = -orient / 2;
     var screenTransform = [0, Math.sin(minusHalfAngle), 0, Math.cos(minusHalfAngle)];
     var worldTransform = [-Math.sqrt(0.5), 0, 0, Math.sqrt(0.5)];
@@ -148,9 +149,11 @@ VRRotMath = function() {
     var outMat = makeRotationMatrixFromQuaternion(finalQuaternion);
     twgl.m4.transpose(outMat,outMat);
 
-    // TODO: ERROR IS HERE THAT IS CAUSING COUNTER-ROLL BOO HISS 
-    // twgl.m4.rotateX(outMat,Math.PI/2,outMat);
-    // twgl.m4.rotateZ(outMat,Math.PI/2,outMat);
+    twgl.m4.rotateX(outMat,Math.PI/2,outMat);
+    twgl.m4.rotateZ(outMat,Math.PI/2,outMat);
+
+    // X-axis: roll
+    // Z-axis: definitely pitch
 
     // document.getElementById("log").innerHTML = Math.floor(180*roll/Math.PI);
 
