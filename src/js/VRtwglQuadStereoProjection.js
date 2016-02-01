@@ -64,8 +64,6 @@ var fsRenderDisplay = "precision mediump float;\n"+
 "void main(void) {\n"+
    //normalize uv so it is between 0 and 1
 "  vec2 uv = gl_FragCoord.xy / resolution;\n"+
-//"  uv.x = (1. - uv.x);\n"+
-//"  uv.y = (1. - uv.y);\n"+
 "  bool leftImg=false;\n"+
 "  vec2 fov = fovParams;\n"+
 "  if (renderMode == 1) {\n"+

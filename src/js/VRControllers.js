@@ -225,7 +225,7 @@ VRLookController = function() {
               -180.0*this.euler[2]/Math.PI,
               -180.0*this.euler[1]/Math.PI + 90.0];
     else
-      return [-180.0*this.euler[2]/Math.PI,
+      return [180.0*this.euler[2]/Math.PI,
               -180.0*this.euler[1]/Math.PI,
               180.0*this.euler[0]/Math.PI];
   }
