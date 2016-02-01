@@ -34,8 +34,10 @@ VRLookControlBase.prototype.updateBase = function(cameraMatrix) {
   var rotMat = twgl.m4.identity();
 
   twgl.m4.copy(rotMat, cameraMatrix);
+  // twgl.m4.rotateY(cameraMatrix, Math.PI/2, cameraMatrix);
   twgl.m4.rotateX(cameraMatrix, Math.PI/2, cameraMatrix);
   twgl.m4.rotateZ(cameraMatrix, Math.PI/2, cameraMatrix);
+  twgl.m4.rotateX(cameraMatrix, Math.PI, cameraMatrix);
 
   //roll
   twgl.m4.rotateX(cameraMatrix, this.eulerX, cameraMatrix);
