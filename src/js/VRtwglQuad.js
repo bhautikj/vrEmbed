@@ -72,8 +72,6 @@ VRtwglQuad = function() {
 
   this.setCanvasFullscreen = function() {
     var t = this.canvas.style;
-    // t.height = "100vh";
-    // t.width = "100vw";
     t.position = 'relative';
 
     var s = this.canvas2d.style;
