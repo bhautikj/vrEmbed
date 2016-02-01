@@ -84,6 +84,7 @@ VRGuiTimer = function() {
   this.fireCallback = function() {
     this.callbackFired = true;
     console.log("FIRING CALLBACK!");
+    this.callback();
   }
 
 }
@@ -94,6 +95,13 @@ VRGui = function() {
 
   this.init = function(gl) {
     this.gl = gl;
+  }
+
+  this.teardown = function() {
+    for(texIt = 0;texIt < this.canvasSet.length; texIt++) {
+      this.canvasSet[texIt][0].teardown();
+    }
+    this.canvasSet = [];
   }
 
   this.update = function(pt, timestamp) {

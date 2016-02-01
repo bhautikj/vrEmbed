@@ -25,6 +25,7 @@ VRStory = function() {
   this.lastVisibleCheck = 0;
   this.isVisible = true;
   this.isStereo = false;
+  this.currentSceneIndex = 0;
 
   this.isFullScreen = false;
 
@@ -211,7 +212,10 @@ VRStory = function() {
   }
 
   this.setupScene = function(sceneIdx) {
-    //TODO: teardown previous scene!
+    console.log("SETTING UP SCENE INDEX:" + sceneIdx);
+    this.vrGui.teardown();
+    this.quad.teardown();
+
     var scene = this.sceneList[sceneIdx];
     var textureDescriptions = []
     for (objit = 0;objit<scene.renderObjects.length; objit++){
@@ -222,20 +226,48 @@ VRStory = function() {
     }
     this.quad.loadTextures(textureDescriptions);
     this.stateToggler.configureStereo(this.isStereo);
+
+    this.currentSceneIndex = sceneIdx;
+    this.guiGen();
+  }
+
+  this.nextScene = function() {
+    var numScenes = self.sceneList.length;
+    var nextScene = (self.currentSceneIndex + 1)%numScenes;
+
+    if (nextScene != self.currentSceneIndex) {
+      self.setupScene (nextScene);
+      self.currentSceneIndex = nextScene;
+    }
+  }
+
+  this.prevScene = function() {
+    var numScenes = self.sceneList.length;
+    var nextScene = (self.currentSceneIndex - 1)%numScenes;
+
+    if (nextScene != self.currentSceneIndex) {
+      self.setupScene (nextScene);
+    }
   }
 
   this.guiGen = function() {
-    for(texIt = 0;texIt < 5; texIt++) {
-      var sz = 15.+Math.random()*10.;
-      var x = 90.*(Math.random()-0.5);
-      var y = 45.*(Math.random()-0.5);
-      // console.log(sz + "," + x + "," +y);
-      this.vrGui.createTextBox(sz,
-                               x,
-                               y,
-                               "ssss",
-                               "NEXT",
+   var numScenes = self.sceneList.length;
+   if (self.currentSceneIndex>0) {
+     this.vrGui.createTextBox(15,
+                               -30,
+                               -30,
+                               this.prevScene,
+                               "prev",
                                {fontsize:72, borderThickness:10});
+   }
+
+   if (self.currentSceneIndex<(numScenes-1)) {
+     this.vrGui.createTextBox(15,
+                              30,
+                              -30,
+                              this.nextScene,
+                              "next",
+                              {fontsize:72, borderThickness:10});
     }
     this.quad.renderGui();
   }
@@ -250,8 +282,7 @@ VRStory = function() {
     this.vrGui.init(this.quad.getContext());
     this.quad.setVrGui(this.vrGui);
 
-    //TODO: setup gui here
-    this.setupScene(0);
+    this.setupScene(this.currentSceneIndex);
 
     this.mouseMove = function(ev) {
       var mx = ev.movementX || ev.mozMovementX || ev.webkitMovementX || 0;
@@ -274,7 +305,6 @@ VRStory = function() {
     this.manager = new VRManager(this.quad);
     this.onResize();
     this.animate();
-    this.guiGen();
 
     this.stateToggler.setState(VRStates.WINDOWED);
 

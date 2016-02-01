@@ -23,15 +23,22 @@ function VRCanvasBase() {
   this.glTex = null;
   this.backupTex = null;
   this.vrTextureDescription = null;
+  this.canvas = null;
   this.ctx = null;
 }
 
 VRCanvasBase.prototype.initBase = function(gl) {
   this.vrTextureDescription = new VRTextureDescription();
-  this.ctx = document.createElement("canvas").getContext("2d");
+  this.canvas = document.createElement("canvas");
+  this.ctx = this.canvas.getContext("2d");
   this.ctx.canvas.width  = 512;
   this.ctx.canvas.height = 512;
   this.gl=gl;
+}
+
+
+VRCanvasBase.prototype.teardown = function() {
+  // document.removeChild(this.canvas);
 }
 
 VRCanvasBase.prototype.updateBase = function() {
@@ -73,10 +80,10 @@ VRCanvasTextBox.prototype.init = function(gl, message, hfov, options) {
     options["borderThickness"] : 4;
 
   var borderColor = options.hasOwnProperty("borderColor") ?
-    options["borderColor"] : { r:0, g:0, b:0, a:1.0 };
+    options["borderColor"] : { r:0, g:0, b:0, a:0.7 };
 
   var backgroundColor = options.hasOwnProperty("backgroundColor") ?
-    options["backgroundColor"] : { r:255, g:255, b:255, a:1.0 };
+    options["backgroundColor"] : { r:255, g:255, b:255, a:0.7};
 
   this.ctx.font = "Bold " + fontsize + "px " + fontface;
   //this.ctx.font="72px Arial";
@@ -107,7 +114,7 @@ VRCanvasTextBox.prototype.init = function(gl, message, hfov, options) {
 
 
   // text color
-  this.ctx.fillStyle = "rgba(0, 0, 0, 1.0)";
+  this.ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
 
   this.ctx.font = "Bold " + fontsize + "px " + fontface;
   this.ctx.textAlign="start";

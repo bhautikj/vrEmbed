@@ -270,6 +270,8 @@ VRtwglQuadStereoProjection = function() {
       return;
     }
 
+    self.vrtwglQuadFbGui.clearFrameBuffer(0, 0, 0, 0);
+
     for(texIt = 0;texIt < self.vrGui.canvasSet.length; texIt++) {
       var canvasTex = self.vrGui.canvasSet[texIt][0];
       var textureDesc = canvasTex.vrTextureDescription;
@@ -332,6 +334,7 @@ VRtwglQuadStereoProjection = function() {
   }
 
   this.texturesLoaded = function(err, textures, sources) {
+    self.vrtwglQuadFb.clearFrameBuffer(0, 0, 0, 0);
     //alert("TEXTURES LOADED");
     for (var key in self.textures) {
       if (self.textures.hasOwnProperty(key)) {
@@ -371,6 +374,11 @@ VRtwglQuadStereoProjection = function() {
 
     var gl = self.vrtwglQuad.glContext;
     this.textures = twgl.createTextures(gl, texArray, this.texturesLoaded);
+  }
+
+  this.teardown = function() {
+    this.textures = [];
+    this.textureDescriptions = [];
   }
 
 }
