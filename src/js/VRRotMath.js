@@ -81,10 +81,34 @@ VRRotMath = function() {
 
     var outMat = twgl.m4.multiply(orientMat, screenMat);
 
+    // var pt = twgl.m4.transformPoint(outMat, [1,0,0]);
+    // document.getElementById("log").innerHTML = Math.floor(pt[0]*10) + "," + Math.floor(pt[1]*10) + "," + Math.floor(pt[2]*10);
+
     // fix pitch
     twgl.m4.rotateZ(outMat,-Math.PI/2,outMat);
-
     return outMat;
+// /// TEST
+//     var euler = this.matToEuler(outMat);
+//     var yaw = (euler[0] + 1.5*Math.PI)%(Math.PI*2) - Math.PI; // z
+//     var pitch = euler[2]; // -y
+//
+//     // document.getElementById("log").innerHTML = Math.floor(180*yaw/Math.PI) + "," +
+//     //                                            Math.floor(180*pitch/Math.PI);
+//
+//     var cameraMatrix = twgl.m4.identity();
+//
+//     twgl.m4.rotateX(cameraMatrix, Math.PI/2, cameraMatrix);
+//     twgl.m4.rotateZ(cameraMatrix, Math.PI/2, cameraMatrix);
+//     twgl.m4.rotateX(cameraMatrix, Math.PI, cameraMatrix);
+//
+//     //roll
+//     //twgl.m4.rotateX(cameraMatrix, this.eulerX, cameraMatrix);
+//     //pitch
+//     twgl.m4.rotateY(cameraMatrix, -pitch, cameraMatrix);
+//     //yaw
+//     twgl.m4.rotateZ(cameraMatrix, yaw, cameraMatrix);
+//
+//     return cameraMatrix;
   }
 
   this.matToEuler = function(mat) {

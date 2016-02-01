@@ -163,9 +163,9 @@ VRStory = function() {
 
     var now = Date.now();
     var dir = self.quad.controller.getHeading();
-    document.getElementById("log").innerHTML = Math.floor(dir[0]) + "," +
-                                               Math.floor(dir[1]) + "," +
-                                               Math.floor(dir[2]);
+    // document.getElementById("log").innerHTML = Math.floor(dir[0]) + "," +
+    //                                            Math.floor(dir[1]) + "," +
+    //                                            Math.floor(dir[2]);
     if (self.vrGui != null) {
       var actionPercent = self.vrGui.update([dir[0], dir[1]],now);
       self.drawReticle(actionPercent);
