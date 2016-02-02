@@ -261,7 +261,6 @@ VRtwglQuadStereoProjection = function() {
     this.vrtwglQuadFbGui = new VRtwglQuad();
     this.vrtwglQuadFbGui.initFramebuffer(this.fbRes, this.vrtwglQuad.glContext, vs, fsWindowed);
     self.vrtwglQuadFbGui.clearFrameBuffer(0, 0, 0, 0);
-
   }
 
   this.renderGui = function() {
