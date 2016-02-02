@@ -117,21 +117,22 @@ VRtwglQuad = function() {
     var displayWidth  = self.parentElement.clientWidth;
     var displayHeight = self.parentElement.clientHeight;
 
+    // console.log(displayWidth + "," + displayHeight);
     // console.log("display:" + displayWidth+","+displayHeight);
     // console.log("htmlcanvas:" + this.canvas.width+","+this.canvas.height);
     // console.log("canvas:" + canvas.width+","+canvas.height);
 
-    // Check if the canvas is not the same size.
-    if (canvas.width  != displayWidth ||
-        canvas.height != displayHeight) {
-
-      // Make the canvas the same size
-      canvas.width  = displayWidth;
-      canvas.height = displayHeight;
-      // console.log("resz:" + canvas.width+","+canvas.height);
-      // Set the viewport to match
-      self.glContext.viewport(0, 0, displayWidth, displayHeight);
-    }
+    // // Check if the canvas is not the same size.
+    // if (canvas.width  != displayWidth ||
+    //     canvas.height != displayHeight) {
+    //
+    //   // Make the canvas the same size
+    //   canvas.width  = displayWidth;
+    //   canvas.height = displayHeight;
+    //   // console.log("resz:" + canvas.width+","+canvas.height);
+    //   // Set the viewport to match
+    //   self.glContext.viewport(0, 0, displayWidth, displayHeight);
+    // }
 
     // pin to width
     var ctx = this.canvas2d.getContext("2d");
@@ -146,6 +147,8 @@ VRtwglQuad = function() {
   }
 
   this.render = function() {
+    var devicePixelRatio = window.devicePixelRatio || 1;
+    twgl.resizeCanvasToDisplaySize(self.glContext.canvas, devicePixelRatio);
     self.glContext.useProgram(self.programInfo.program);
     twgl.setBuffersAndAttributes(self.glContext, self.programInfo, self.bufferInfo);
     twgl.setUniforms(self.programInfo, this.uniforms);

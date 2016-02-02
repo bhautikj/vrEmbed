@@ -148,8 +148,9 @@ VRtwglQuadTestBuffer = function() {
     self.vrtwglQuadFb.setUniforms(uniformsFb);
     self.vrtwglQuadFb.renderFramebuffer();
 
+    // console.log("RES:" + self.vrtwglQuad.canvas.width + "," +self.vrtwglQuad.canvas.height)
     var uniforms = {
-     resolution: [self.vrtwglQuad.canvas.clientWidth, self.vrtwglQuad.canvas.clientHeight],
+     resolution: [self.vrtwglQuad.canvas.width, self.vrtwglQuad.canvas.height],
      textureSource: self.vrtwglQuadFb.getFramebufferTexture()
     };
 
