@@ -261,7 +261,6 @@ VRtwglQuadStereoProjection = function() {
     this.vrtwglQuadFbGui = new VRtwglQuad();
     this.vrtwglQuadFbGui.initFramebuffer(this.fbRes, this.vrtwglQuad.glContext, vs, fsWindowed);
     self.vrtwglQuadFbGui.clearFrameBuffer(0, 0, 0, 0);
-
   }
 
   this.renderGui = function() {
@@ -299,8 +298,8 @@ VRtwglQuadStereoProjection = function() {
   this.render = function() {
     this.controller.update();
     twgl.m4.copy(this.cameraMatrix, this.uniforms.transform);
-    this.uniforms["resolution"] = [self.vrtwglQuad.canvas.clientWidth, self.vrtwglQuad.canvas.clientHeight];
-    var aspect = self.vrtwglQuad.canvas.clientHeight/self.vrtwglQuad.canvas.clientWidth;
+    this.uniforms["resolution"] = [self.vrtwglQuad.canvas.width, self.vrtwglQuad.canvas.height];
+    var aspect = self.vrtwglQuad.canvas.height/self.vrtwglQuad.canvas.width;
     this.uniforms["fovParams"] = [this.fovX/360.0, aspect*this.fovX/360.0];
     this.uniforms["textureSource"] = self.vrtwglQuadFb.getFramebufferTexture();
     this.uniforms["textureGui"] = self.vrtwglQuadFbGui.getFramebufferTexture();

@@ -91,8 +91,7 @@ VRStory = function() {
           canvas.style.width  = window.innerWidth+"px";
           canvas.style.height = window.innerHeight+"px";
         }
-      }
-      else {
+      } else {
         this.quad.resize();
       }
     } else {
