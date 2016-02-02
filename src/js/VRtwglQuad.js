@@ -11,9 +11,9 @@ VRtwglQuad = function() {
   this.bufferInfo = null;
   this.parentElement = null;
   this.uniforms = null;
-  this.fbSize = 4;
-  this.canvas2dWidth = 1024;
-  this.canvas2dHeight = 1024;
+  this.fbSize = 2048;
+  this.canvas2dWidth = 2048;
+  this.canvas2dHeight = 2048;
   this.viewportDims = [0,0];
 
 
@@ -161,6 +161,11 @@ VRtwglQuad = function() {
     twgl.setBuffersAndAttributes(self.glContext, self.programInfo, self.bufferInfo);
     twgl.setUniforms(self.programInfo, this.uniforms);
     twgl.drawBufferInfo(self.glContext, self.glContext.TRIANGLES, self.bufferInfo);
+
+    var vp = self.glContext.getParameter(self.glContext.VIEWPORT);
+
+
+    document.getElementById("log").innerHTML = vp[2] + "," + vp[3];
   }
 
   this.get2dContext = function() {
