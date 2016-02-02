@@ -11,10 +11,10 @@ VRtwglQuad = function() {
   this.bufferInfo = null;
   this.parentElement = null;
   this.uniforms = null;
-  this.fbSize = 4;
+  this.fbSize = 2048;
   this.canvas2dWidth = 1024;
   this.canvas2dHeight = 1024;
-
+  this.realSize = [0,0];
 
   this.initCore = function(vs, fs) {
     this.programInfo = twgl.createProgramInfo(this.glContext , [vs, fs]);
@@ -32,17 +32,28 @@ VRtwglQuad = function() {
     this.bufferInfo = twgl.createBufferInfoFromArrays(this.glContext, arrays);
   }
 
+  //TODO: READ!
+  // https://www.khronos.org/webgl/wiki/HandlingHighDPI
+  // http://stackoverflow.com/questions/15892387/how-to-render-webgl-content-using-high-dpi-devices
   this.init = function (elm, vs, fs){
     this.parentElement = elm.parentNode;
     this.container = document.createElement('div');
+    var ds = this.container.style;
+    ds.width = "100%";
+    ds.height = "100%";
+    ds.margin = "0px";
+    ds.padding = "0px";
+
     this.canvas = document.createElement('canvas');
     this.canvas2d = document.createElement('canvas');
 
     var t = this.canvas.style;
     t.height = "100%";
     t.width = "100%";
-    t.display = "block";
-    t.position = 'absolute';
+    // t.height = this.realSize[0]+"px";
+    // t.width = this.realSize[1]+"px";
+    // t.display = "block";
+    // t.position = 'absolute';
 
     var s = this.canvas2d.style;
     s.position = 'absolute';
@@ -73,6 +84,8 @@ VRtwglQuad = function() {
   this.setCanvasFullscreen = function() {
     var t = this.canvas.style;
     t.position = 'relative';
+    // t.height = this.realSize[0];
+    // t.width = this.realSize[1];
 
     var s = this.canvas2d.style;
     s.height = "100vh";
@@ -112,18 +125,23 @@ VRtwglQuad = function() {
   this.resize = function() {
     // Get the canvas from the WebGL context
     var canvas = self.glContext.canvas;
+    var realToCSSPixels = window.devicePixelRatio || 1;
+    // var realToCSSPixels = 3;
 
     // Lookup the size the browser is displaying the canvas.
-    var displayWidth  = self.parentElement.clientWidth;
-    var displayHeight = self.parentElement.clientHeight;
+    //var displayWidth  = self.parentElement.clientWidth;
+    //var displayHeight = self.parentElement.clientHeight;
+    var displayWidth  = Math.floor(canvas.clientWidth  * realToCSSPixels);
+    var displayHeight = Math.floor(canvas.clientHeight * realToCSSPixels);
 
-    // console.log("display:" + displayWidth+","+displayHeight);
-    // console.log("htmlcanvas:" + this.canvas.width+","+this.canvas.height);
-    // console.log("canvas:" + canvas.width+","+canvas.height);
+    self.realSize = [displayWidth, displayHeight];
 
     // Check if the canvas is not the same size.
     if (canvas.width  != displayWidth ||
         canvas.height != displayHeight) {
+
+      // self.canvas.style.width = displayWidth+"px";
+      // self.canvas.style.height = displayHeight+"px";
 
       // Make the canvas the same size
       canvas.width  = displayWidth;
@@ -131,6 +149,18 @@ VRtwglQuad = function() {
       // console.log("resz:" + canvas.width+","+canvas.height);
       // Set the viewport to match
       self.glContext.viewport(0, 0, displayWidth, displayHeight);
+
+
+      // var maxdims = self.glContext.getParameter(self.glContext.MAX_VIEWPORT_DIMS);
+      // var dims =  self.glContext.getParameter( self.glContext.VIEWPORT);
+      // document.getElementById("log").innerHTML = "r2c:" + window.devicePixelRatio;
+      // document.getElementById("log").innerHTML += "maxdims:" + maxdims[0] + "," + maxdims[1];
+      // document.getElementById("log").innerHTML += "dims:" + dims[0] + "," + dims[1] +"," + dims[2] + "," + dims[3];
+      //
+      // document.getElementById("log").innerHTML += " display:" + displayWidth+","+displayHeight;
+      // document.getElementById("log").innerHTML += " htmlcanvas:" + this.canvas.width+","+this.canvas.height;
+      // document.getElementById("log").innerHTML += " canvas:" + canvas.width+","+canvas.height;
+      // document.getElementById("log").innerHTML += " pcanvas:" + this.canvas.style.width+","+this.canvas.style.height;
     }
 
     // pin to width
@@ -146,6 +176,12 @@ VRtwglQuad = function() {
   }
 
   this.render = function() {
+    // twgl.resizeCanvasToDisplaySize(self.glContext.canvas, window.devicePixelRatio);
+    // var maxdims = self.glContext.getParameter(self.glContext.MAX_VIEWPORT_DIMS);
+    // var dims =  self.glContext.getParameter( self.glContext.VIEWPORT);
+    // document.getElementById("log").innerHTML = "r2c:" + window.devicePixelRatio;
+    // document.getElementById("log").innerHTML += "maxdims:" + maxdims[0] + "," + maxdims[1];
+    // document.getElementById("log").innerHTML += "dims:" + dims[0] + "," + dims[1] +"," + dims[2] + "," + dims[3];
     self.glContext.useProgram(self.programInfo.program);
     twgl.setBuffersAndAttributes(self.glContext, self.programInfo, self.bufferInfo);
     twgl.setUniforms(self.programInfo, this.uniforms);
