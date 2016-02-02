@@ -117,6 +117,15 @@ VRtwglQuad = function() {
     var displayWidth  = self.parentElement.clientWidth;
     var displayHeight = self.parentElement.clientHeight;
 
+    console.log(displayWidth + "," + displayHeight);
+    var devicePixelRatio = window.devicePixelRatio || 1;
+
+    canvas.width = displayWidth * devicePixelRatio;
+    canvas.height = displayHeight * devicePixelRatio;
+    canvas.clientWidth = displayWidth;
+    canvas.clientHeight = displayHeight;
+    self.glContext.viewport(0, 0, displayWidth * devicePixelRatio, displayHeight * devicePixelRatio);
+
     // console.log(displayWidth + "," + displayHeight);
     // console.log("display:" + displayWidth+","+displayHeight);
     // console.log("htmlcanvas:" + this.canvas.width+","+this.canvas.height);
@@ -133,6 +142,8 @@ VRtwglQuad = function() {
     //   // Set the viewport to match
     //   self.glContext.viewport(0, 0, displayWidth, displayHeight);
     // }
+
+    // twgl.resizeCanvasToDisplaySize(canvas, devicePixelRatio);
 
     // pin to width
     var ctx = this.canvas2d.getContext("2d");
