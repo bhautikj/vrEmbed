@@ -122,8 +122,8 @@ VRtwglQuad = function() {
 
     canvas.width = displayWidth * devicePixelRatio;
     canvas.height = displayHeight * devicePixelRatio;
-    canvas.clientWidth = displayWidth;
-    canvas.clientHeight = displayHeight;
+    canvas.style.width = displayWidth + "px";
+    canvas.style.height = displayHeight + "px";
     self.glContext.viewport(0, 0, displayWidth * devicePixelRatio, displayHeight * devicePixelRatio);
 
     // console.log(displayWidth + "," + displayHeight);
@@ -158,8 +158,8 @@ VRtwglQuad = function() {
   }
 
   this.render = function() {
-    var devicePixelRatio = window.devicePixelRatio || 1;
-    twgl.resizeCanvasToDisplaySize(self.glContext.canvas, devicePixelRatio);
+    //var devicePixelRatio = window.devicePixelRatio || 1;
+    //twgl.resizeCanvasToDisplaySize(self.glContext.canvas, devicePixelRatio);
     self.glContext.useProgram(self.programInfo.program);
     twgl.setBuffersAndAttributes(self.glContext, self.programInfo, self.bufferInfo);
     twgl.setUniforms(self.programInfo, this.uniforms);
