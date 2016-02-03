@@ -73,7 +73,7 @@ var _matToEuler = function(mat) {
 
 VRRotMath = function() {
   this.timer = 0.0;
-  this.gyroToMat = function(_alpha, _beta, _gamma, _orientation) {
+  this.gyroToMat = function(_alpha, _beta, _gamma, _orientation, _offset) {
 
     // based on: https://dev.opera.com/articles/w3c-device-orientation-usage/
     var orientMat = matFromOrient(_alpha, _beta, _gamma);
@@ -84,8 +84,8 @@ VRRotMath = function() {
     // var pt = twgl.m4.transformPoint(outMat, [1,0,0]);
     // document.getElementById("log").innerHTML = Math.floor(pt[0]*10) + "," + Math.floor(pt[1]*10) + "," + Math.floor(pt[2]*10);
 
-    // fix pitch
-    twgl.m4.rotateZ(outMat,-Math.PI/2,outMat);
+    // fix yaw
+    twgl.m4.rotateZ(outMat,-Math.PI/2 + _offset,outMat);
     return outMat;
 // /// TEST
 //     var euler = this.matToEuler(outMat);

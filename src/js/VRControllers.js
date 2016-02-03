@@ -110,6 +110,8 @@ VRGyroSpinner = function() {
   this.baseRotation = twgl.m4.identity();
   this.screenTransform = twgl.m4.identity();
 
+  this.yawOffset = 0;
+
   this.init = false;
 }
 
@@ -123,6 +125,10 @@ VRGyroSpinner.prototype.onScreenOrientationChange_ = function(screenOrientation)
   this.screenOrientation = window.orientation;
 };
 
+VRGyroSpinner.prototype.setYawOffset = function(yawOffset){
+  this.yawOffset = yawOffset;
+}
+
 VRGyroSpinner.prototype.update = function(cameraMatrix){
   if (this.deviceOrientation == null)
     return;
@@ -130,7 +136,8 @@ VRGyroSpinner.prototype.update = function(cameraMatrix){
   var rotMat = vrRotMath.gyroToMat(this.deviceOrientation.alpha,
     this.deviceOrientation.beta,
     this.deviceOrientation.gamma,
-    this.screenOrientation);
+    this.screenOrientation,
+    this.yawOffset);
   twgl.m4.copy(rotMat, cameraMatrix);
 
   var eulerAng = vrRotMath.matToEuler(rotMat);
@@ -228,6 +235,13 @@ VRLookController = function() {
       return [180.0*this.euler[2]/Math.PI,
               -180.0*this.euler[1]/Math.PI,
               180.0*this.euler[0]/Math.PI];
+  }
+
+  this.resetHeading = function(){
+    if (this.mode == VRLookMode.GYRO) {
+      var yawdeg = (180.0*this.euler[0]/Math.PI + 270.0)%360.0 - 180.0
+      this.vrGyroSpinner.setYawOffset (-1.0*Math.PI*yawdeg/180.0); //-1.0*this.heading[0]/Math.PI)
+    }
   }
 };
 
