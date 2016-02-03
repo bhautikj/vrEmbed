@@ -48,7 +48,6 @@ VRGuiTimer = function() {
     if (this.callback == null)
       return 0.0;
 
-
     if (this.isInBoundingBox(pt, this.canvas.vrTextureDescription)) {
       // start timer
       if (this.in == false) {
@@ -104,7 +103,8 @@ VRGui = function() {
     this.canvasSet = [];
   }
 
-  this.update = function(pt, timestamp) {
+  this.update = function(_pt, timestamp) {
+    var pt = [_pt[0],1.2*_pt[1]];
     var rv = 0.0;
     for(texIt = 0;texIt < this.canvasSet.length; texIt++) {
       var tv = this.canvasSet[texIt][1].update(pt, timestamp);
