@@ -133,7 +133,7 @@ VRStateToggler.prototype.setButtonState = function(state) {
       break;
     case VRStates.WINDOWED:
       this.setupButton(this.buttonOptions, this.logoSettings, 'settings', true);
-      this.setupButton(this.buttonMiddle, this.logoFullscreen, 'Fullscreen mode', true);
+      this.setupButton(this.buttonMiddle, this.logoCardboard, 'Fullscreen mode', true);
       break;
   }
 };
@@ -153,7 +153,7 @@ VRStateToggler.prototype.setState = function(state) {
 
 VRStateToggler.prototype.stateChange = function(buttonSrc) {
   switch (buttonSrc) {
-    case this.logoFullscreen:
+    case this.logoCardboard:
       this.setState(VRStates.FULLSCREEN);
       break;
     case this.logoWindowed:

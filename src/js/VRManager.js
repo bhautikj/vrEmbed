@@ -1,9 +1,12 @@
+Wakelock = require('../js-ext/wakelock.js');
+
 VRManager = function(quad) {
   this.quad = quad;
   this.fallbackFullscreen = false;
   this.oldScroll = null;
   this.fallbackWidth = null;
   this.fallbackHeight = null;
+  this.wakelock = new Wakelock();
 
   this.isLandscape = function() {
     if(window.innerWidth > window.innerHeight)
@@ -33,6 +36,7 @@ VRManager = function(quad) {
       document.webkitExitFullscreen();
     }
 
+    this.wakelock.release();
     this.quad.vrtwglQuad.setCanvasWindowed();
   };
 
@@ -65,6 +69,7 @@ VRManager = function(quad) {
     }
 
     this.quad.vrtwglQuad.setCanvasFullscreen();
+    this.wakelock.request();
 
     return true;
   }
