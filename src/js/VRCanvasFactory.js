@@ -31,8 +31,8 @@ VRCanvasBase.prototype.initBase = function(gl) {
   this.vrTextureDescription = new VRTextureDescription();
   this.canvas = document.createElement("canvas");
   this.ctx = this.canvas.getContext("2d");
-  this.ctx.canvas.width  = 512;
-  this.ctx.canvas.height = 512;
+  this.ctx.canvas.width  = 2048;
+  this.ctx.canvas.height = 2048;
   this.gl=gl;
 }
 

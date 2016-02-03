@@ -6,7 +6,8 @@ VRCanvasFactory = require('./VRCanvasFactory.js');
 
 twgl = require('../js-ext/twgl-full.js');
 
-var vs = "attribute vec4 position;\n"+
+var vs = "precision highp float;\n"+
+"attribute vec4 position;\n"+
 "void main() {\n"+
 "  gl_Position = position;\n"+
 "}\n";
@@ -51,7 +52,7 @@ var fsFull360180 = "precision mediump float;\n"+
 
 // display lens distorter equations:
 // https://support.google.com/cardboard/manufacturers/answer/6324808?hl=en
-var fsRenderDisplay = "precision mediump float;\n"+
+var fsRenderDisplay = "precision highp float;\n"+
 "#define PI 3.141592653589793\n"+
 "uniform vec2 resolution;\n"+
 "uniform sampler2D textureSource;\n"+
@@ -127,7 +128,7 @@ var fsRenderDisplay = "precision mediump float;\n"+
 "  }\n"+
 "}\n"
 
-var fsWindowed = "precision mediump float;\n"+
+var fsWindowed = "precision highp float;\n"+
 "#define PI 3.141592653589793\n"+
 "uniform vec2 resolution;\n"+
 "uniform sampler2D textureSource;\n"+
@@ -261,6 +262,8 @@ VRtwglQuadStereoProjection = function() {
     this.vrtwglQuadFbGui = new VRtwglQuad();
     this.vrtwglQuadFbGui.initFramebuffer(this.fbRes, this.vrtwglQuad.glContext, vs, fsWindowed);
     self.vrtwglQuadFbGui.clearFrameBuffer(0, 0, 0, 0);
+
+    self.vrtwglQuad.resetViewport();
   }
 
   this.renderGui = function() {
@@ -289,6 +292,8 @@ VRtwglQuadStereoProjection = function() {
                                 textureDesc.V_r[1]-textureDesc.U_r[1]];
       self.renderFbGui();
     }
+
+    self.vrtwglQuad.resetViewport();
   }
 
   this.resize = function() {
@@ -355,6 +360,8 @@ VRtwglQuadStereoProjection = function() {
         gl.deleteTexture(self.textures[key]);
       }
     }
+
+    self.vrtwglQuad.resetViewport();
   }
 
   this.loadTextures = function (textureDescriptions) {
