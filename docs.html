@@ -1,0 +1,181 @@
+<!--
+  Copyright 2015 Bhautik J Joshi
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>vrEmbed by Bhautik Joshi</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, shrink-to-fit=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+<script src="vrEmbed.min.js" charset="utf-8"></script>
+
+<style>
+body {
+  background-color: #ddd;
+  color: #111;
+  margin: 10px;
+  padding: 0;
+  font-family: Arial, Gadget, sans-serif;
+}
+
+div.code {
+  background-color: #ccc;
+  color: #000;
+  margin: 10px;
+  padding: 4px;
+  font-family: "Lucida Console", Monaco, monospace;
+  /*text-align: center;*/
+}
+
+div.figure {
+  margin: 10px;
+  padding: 4px;
+  text-align: center;
+}
+
+
+div.stretchy-wrapper {
+  width: 640px;
+  height: 480px;
+  max-width: 640px;
+  max-height: 480px;
+  position: relative;
+}
+
+div.stretchy-wrapper > div {
+  position: absolute;
+  top: 0; bottom: 0; left: 0; right: 0;
+  color: white;
+  font-size: 24px;
+  text-align: center;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="figure"><img src="src/assets/vrEmbedLogo.png" width=200px/><br/><i>(c) Bhautik Joshi, 2015-16</i></div>
+
+<h1>Using vrEmbed</h1>
+A vrEmbed looks like this and only has a few basic controls:
+<div class="figure"><img src="src/assets/vrembed_interface.jpg"/></div><br/>
+<div class="figure"><img src="src/assets/vrembed_interface_fullscreen.png"/></div>
+Bottom center is the 'fullscreen' button which will take the vrEmbed and make it fullscreen. On mobile you need to turn the device on its side to landscape orientaiton to enger this mode. This is the mode to use if you are using a VR headset such as Google Cardboard or Gear VR.
+<div class="figure"><img src="src/assets/vrembed_interface_reticle.png"/></div>
+In the centre of the screen is a target; this indicates the current view direction. When wearing a headset, hover the target over interactive elements on the display and it will 'count down' (the circle will fill) until the action is taken. An example is the 'prev' and 'next' buttons in the scene that take you to the previous or next scene.
+<div class="figure"><img src="src/assets/vrembed_interface_settings.png"/></div>
+On the top right you can hit the settings button to access the device selection menu that allows you to select how you want the vrEmbed displayed when in fullscreen mode:
+<div class="figure"><img src="src/assets/vrembed_interface_devices.png"/></div>
+The <b>fullscreen</b> device is just a plain window; <b>red-blue</b> is for when you are using red-blue glasses. The rest of the devices listed are side-by-side stereo modes for when you are using VR headsets.
+
+<h1>Creating a vrEmbed</h1>
+<h2>Single image</h2>
+If you have a single image, there are two quick methods for creating a vrEmbed. Lets just work with this image - http://vrembed.org/src/assets/rheingauer_dom.jpg - as an example:
+<div class="figure"><img src="src/assets/rheingauer_dom.jpg" width=300px/><br/><a href="https://commons.wikimedia.org/wiki/File:Rheingauer_Dom,_Geisenheim,_360_Panorama_(Equirectangular_projection).jpg" target="_blank">(source)</a></div>
+<h3>Passing it directly to vrEmbed.org</h3>
+You can take your image URL and pass it directly to vrEmbed like so:
+<div class="code">https://vrEmbed.org/?src=//vrembed.org/src/assets/rheingauer_dom.jpg&amp;isStereo=false&amp;sphereParams=360,180,0,0</div>
+Visit the link:<a href="http://vrembed.org/?src=//vrembed.org/src/assets/rheingauer_dom.jpg&isStereo=false&sphereParams=360,180,0,0" target="_blank">http://vrembed.org/?src=//vrembed.org/src/assets/rheingauer_dom.jpg&isStereo=false&sphereParams=360,180,0,0</a>
+<h3>Creating an embed code</h3>
+You can also create an embed code to do the same, and use this fragment of HTML code wherever you like to embed the html (barring pages that don't support HTML snippets, such as facebook or twitter). So, for example, this:
+<div class="code">&lt;a class=&quot;vrEmbedPhoto&quot; src=&quot;http://vrembed.org/src/assets/rheingauer_dom.jpg&quot; isStereo=&quot;false&quot; sphereParams=&quot;360,180,0,0&quot;&gt;&lt;/a&gt;&lt;script async src=&quot;//vrEmbed.org/vrEmbed.min.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/div&gt;&lt;/script&gt;</div>
+Becomes:
+<div align=center>
+<a class="vrEmbedPhoto" src="src/assets/rheingauer_dom.jpg" isStereo="false" sphereParams="360,180,0,0" width=640px height=480px></a><script async src="vrEmbed.min.js" charset="utf-8"></div></script>
+</div>
+<h2>Multiple images</h2>
+Multiple images can be arranged into a scene, but require a more complex embed code:
+<div class="code">&lt;div&gt;<br/>
+  &nbsp;&lt;story&gt;<br/>
+  &nbsp;&nbsp;&lt;scene&gt;<br/>
+      &nbsp;&nbsp;&nbsp;&lt;photo src=&quot;http://vrembed.org/src/assets/byobw_2014_a.jpg&quot; isStereo=&quot;false&quot; sphereParams=&quot;100,66,60,0&quot;/&gt;<br/>
+      &nbsp;&nbsp;&nbsp;&lt;photo src=&quot;http://vrembed.org/src/assets/byobw_2014_b.jpg&quot; isStereo=&quot;false&quot; sphereParams=&quot;100,66,-60,-20&quot;/&gt;<br/>
+    &nbsp;&nbsp;&lt;/scene&gt;<br/>
+  &nbsp;&lt;/story&gt;&lt;script async src=&quot;//vrEmbed.org/vrEmbed.min.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;<br/>
+&lt;/div&gt;</div>
+<div align=center><div class="stretchy-wrapper"><div>
+  <story>
+    <scene>
+      <photo src="src/assets/byobw_2014_a.jpg" isStereo="false" sphereParams="100,66,60,0"/>
+      <photo src="src/assets/byobw_2014_b.jpg" isStereo="false" sphereParams="100,66,-60,-20"/>
+    </scene>
+  </story><script async src="bin/vrEmbed.js" charset="utf-8"></script>
+</div></div></div>
+<h2>Multiple scenes</h2>
+Multiple sets of images can be arranged into multiple scenes to build a story:
+<div class="code">&lt;div&gt;<br/>
+  &nbsp;&lt;story&gt;<br/>
+  &nbsp;&nbsp;&lt;scene&gt;<br/>
+      &nbsp;&nbsp;&nbsp;&lt;photo src=&quot;http://vrembed.org/src/assets/byobw_2013_a.jpg&quot; isStereo=&quot;false&quot; sphereParams=&quot;100,66,60,-10&quot;/&gt;<br/>
+      &nbsp;&nbsp;&nbsp;&lt;photo src=&quot;http://vrembed.org/src/assets/byobw_2013_b.jpg&quot; isStereo=&quot;false&quot; sphereParams=&quot;100,66,-60,0&quot;/&gt;<br/>
+    &nbsp;&nbsp;&lt;/scene&gt;<br/>
+  &nbsp;&nbsp;&lt;scene&gt;<br/>
+      &nbsp;&nbsp;&nbsp;&lt;photo src=&quot;http://vrembed.org/src/assets/byobw_2014_a.jpg&quot; isStereo=&quot;false&quot; sphereParams=&quot;100,66,60,0&quot;/&gt;<br/>
+      &nbsp;&nbsp;&nbsp;&lt;photo src=&quot;http://vrembed.org/src/assets/byobw_2014_b.jpg&quot; isStereo=&quot;false&quot; sphereParams=&quot;100,66,-60,-20&quot;/&gt;<br/>
+    &nbsp;&nbsp;&lt;/scene&gt;<br/>
+  &nbsp;&lt;/story&gt;&lt;script async src=&quot;//vrEmbed.org/vrEmbed.min.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;<br/>
+&lt;/div&gt;</div>
+<div align=center><div class="stretchy-wrapper"><div>
+  <story>
+    <scene>
+      <photo src="src/assets/byobw_2013_a.jpg" isStereo="false" sphereParams="100,66,60,-10"/>
+      <photo src="src/assets/byobw_2013_b.jpg" isStereo="false" sphereParams="100,66,-60,0"/>
+    </scene>
+    <scene>
+      <photo src="src/assets/byobw_2014_a.jpg" isStereo="false" sphereParams="100,66,60,0"/>
+      <photo src="src/assets/byobw_2014_b.jpg" isStereo="false" sphereParams="100,66,-60,-20"/>
+    </scene>
+  </story><script async src="bin/vrEmbed.js" charset="utf-8"></script>
+</div></div></div>
+
+<h1>vrEmbed parameters</h1>
+The above examples used special parameters to set up the images inside the scenes.
+
+<h2>Required parameters</h2>
+<h3>src</h3>
+<div class="code">src=&quot;foo.jpg&quot;</div>
+Simply point the code at where your image lives online.
+
+<h3>Needed: isStereo</h3>
+<div class="code">isStereo=&quot;false&quot;</div>
+If your image is a composite of left and right images, set this to <b>true</b> otherwise just leave it as <b>false</b>.
+
+<h3>sphereParams</h3>
+<div class="code">sphereParams=&quot;w,h,x,y&quot;</div>
+<div class="figure"><img src="src/assets/image_size.png" width=300px/></div>
+<b>h</b> and <b>w</b> refer to the vertical height and horizontal width of your image on the sphere, in degrees. If you have a full, 360 by 180 panorama then <b>w=360</b> and <b>h=180</b>.
+<div class="figure"><img src="src/assets/image_location.png" width=300px/></div>
+<b>x</b> and <b>y</b> refer to where on the sphere the <i>centre</i> of your image is. <b>x</b> goes from left to right from -180 to 180; 0 is stright ahead of the viewer, -90 is directly to the left and 90 is directly to the right. <b>y</b> goes from top to bottom -90 to 90; 0 is straight ahead of the viewer, -90 is directly above and 90 is directly below.
+
+<h2>Optional parameters</h2>
+<h3>texParams</h3>
+<div class="code">texParams=&quot;LTx,LTy,LBx,LBy,RTx,RTy,RBx,RBy&quot;</div>
+<div class="figure"><img src="src/assets/stereo_image_coords.png" width=300px/></div>
+More advanced users can set up their embed with a 3D (i.e. stereo) image. For vrEmbed we currently assume that the left and right images combined together into the <i>same</i> image, typically side-by-side or top-and-bottom. We need to tell vrEmbed where the left and right images are. We measure the x-coordinate from left to right going from 0.0 to 1.0, amd the y-coordinate from top to bottom also going from 0.0 to 1.0. Note that at the moment we <i>do not</i> support pixel coordinates - these are floating-point values (this may change depending on need).<br/>
+We define <b>(LTx,LTy)</b> as the top-left coordinate of the left image, <b>(LBx,LBy)</b> as the bottom-right coordinate of the left image.  <b>(RTx,RTy)</b> and <b>(RBx,RBy)</b> correspondingly match the right image.
+
+<h3>Optional: width and height</h3>
+You can set the width and height of the embed using width and height parameters, which both need to be set (e.g. width=640px height=480px); otherwise the embed defaults to creating a 16:9 ratio embed that takes up the width of the container.
+
+</body>
+
+
+</html>
