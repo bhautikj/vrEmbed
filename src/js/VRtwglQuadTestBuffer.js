@@ -140,9 +140,6 @@ VRtwglQuadTestBuffer = function() {
   }
 
   this.render = function() {
-    //var uniformsFb = {
-    //  resolution: [2048, 2048]
-    //};
     var uniformsFb = this.getWindowedUniforms(this.canvasTex, this.canvasTex.vrTextureDescription);
 
     self.vrtwglQuadFb.setUniforms(uniformsFb);

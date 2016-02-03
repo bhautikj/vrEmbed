@@ -11,9 +11,9 @@ VRtwglQuad = function() {
   this.bufferInfo = null;
   this.parentElement = null;
   this.uniforms = null;
-  this.fbSize = 4;
-  this.canvas2dWidth = 1024;
-  this.canvas2dHeight = 1024;
+  this.fbSize = 2048;
+  this.canvas2dWidth = 2048;
+  this.canvas2dHeight = 2048;
   this.viewportDims = [0,0];
 
 
@@ -67,7 +67,14 @@ VRtwglQuad = function() {
     this.container.appendChild(this.canvas2d);
     elm.appendChild(this.container);
 
+
+    this.canvas.width=this.fbSize;
+    this.canvas.height=this.fbSize;
+    this.canvas.style.width=this.fbSize+"px";
+    this.canvas.style.height=this.fbSize+"px";
+
     this.glContext = twgl.getWebGLContext(this.canvas);
+
     this.initCore(vs, fs);
   }
 
@@ -93,8 +100,8 @@ VRtwglQuad = function() {
 
   this.initFramebuffer = function(fbSize, glContext, vs, fs) {
     this.glContext = glContext;
-    this.initCore(vs, fs);
     this.fbSize = fbSize;
+    this.initCore(vs, fs);
     var attachments = [
       { format: this.glContext.RGBA, type: this.glContext.UNSIGNED_BYTE, min: this.glContext.LINEAR, mag: this.glContext.LINEAR, wrap: this.glContext.CLAMP_TO_EDGE },
       // { format: this.glContext.DEPTH_STENCIL, },
@@ -110,6 +117,10 @@ VRtwglQuad = function() {
     return this.fbSize;
   }
 
+  this.getDevicePixelRatio = function() {
+    return window.devicePixelRatio || 1;
+  }
+
   this.fixViewportSize = function() {
     // Get the canvas from the WebGL context
     var canvas = self.glContext.canvas;
@@ -118,24 +129,16 @@ VRtwglQuad = function() {
     var displayWidth  = self.parentElement.clientWidth;
     var displayHeight = self.parentElement.clientHeight;
 
-    var devicePixelRatio = window.devicePixelRatio || 1;
+    var devicePixelRatio = this.getDevicePixelRatio();
     canvas.width = Math.floor(displayWidth * devicePixelRatio);
     canvas.height = Math.floor(displayHeight * devicePixelRatio);
     canvas.style.width = displayWidth + "px";
     canvas.style.height = displayHeight + "px";
     self.glContext.viewport(0, 0, Math.floor(displayWidth * devicePixelRatio), Math.floor(displayHeight * devicePixelRatio));
-
-    // document.getElementById("log").innerHTML = "actual:" + self.container.width + " style:" + self.container.style.width;
-    //
-    // var res = 2048;
-    // canvas.width = res;
-    // canvas.height = res;
-    // canvas.style.width = displayWidth + "px";
-    // canvas.style.height = displayHeight + "px";
-    // self.glContext.viewport(0, 0, res, res);
   }
 
   this.resize = function() {
+    // this line of code is load bearing. don't remove it.
     this.fixViewportSize();
 
     // Lookup the size the browser is displaying the canvas.
@@ -155,12 +158,12 @@ VRtwglQuad = function() {
   }
 
   this.render = function() {
-    //var devicePixelRatio = window.devicePixelRatio || 1;
-    //twgl.resizeCanvasToDisplaySize(self.glContext.canvas, devicePixelRatio);
+    twgl.resizeCanvasToDisplaySize(self.glContext.canvas, self.getDevicePixelRatio());
     self.glContext.useProgram(self.programInfo.program);
     twgl.setBuffersAndAttributes(self.glContext, self.programInfo, self.bufferInfo);
     twgl.setUniforms(self.programInfo, this.uniforms);
     twgl.drawBufferInfo(self.glContext, self.glContext.TRIANGLES, self.bufferInfo);
+
   }
 
   this.get2dContext = function() {
@@ -181,6 +184,13 @@ VRtwglQuad = function() {
     twgl.bindFramebufferInfo(self.glContext, self.framebufferInfo);
     this.render();
     twgl.bindFramebufferInfo(self.glContext, null);
+  }
+
+  this.resetViewport = function() {
+    var devicePixelRatio = self.getDevicePixelRatio();
+    var displayWidth  = self.parentElement.clientWidth;
+    var displayHeight = self.parentElement.clientHeight;
+    self.glContext.viewport(0, 0, Math.floor(displayWidth * devicePixelRatio), Math.floor(displayHeight * devicePixelRatio));
   }
 }
 
