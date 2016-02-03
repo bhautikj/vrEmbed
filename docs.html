@@ -1,3 +1,4 @@
+
 <!--
   Copyright 2015 Bhautik J Joshi
 
@@ -52,10 +53,8 @@ div.figure {
 
 
 div.stretchy-wrapper {
-  width: 640px;
-  height: 480px;
-  max-width: 640px;
-  max-height: 480px;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 */
   position: relative;
 }
 
@@ -99,7 +98,7 @@ You can also create an embed code to do the same, and use this fragment of HTML 
 <div class="code">&lt;a class=&quot;vrEmbedPhoto&quot; src=&quot;http://vrembed.org/src/assets/rheingauer_dom.jpg&quot; isStereo=&quot;false&quot; sphereParams=&quot;360,180,0,0&quot;&gt;&lt;/a&gt;&lt;script async src=&quot;//vrEmbed.org/vrEmbed.min.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/div&gt;&lt;/script&gt;</div>
 Becomes:
 <div align=center>
-<a class="vrEmbedPhoto" src="src/assets/rheingauer_dom.jpg" isStereo="false" sphereParams="360,180,0,0" width=640px height=480px></a><script async src="vrEmbed.min.js" charset="utf-8"></div></script>
+<a class="vrEmbedPhoto" src="src/assets/rheingauer_dom.jpg" isStereo="false" sphereParams="360,180,0,0"></a><script async src="vrEmbed.min.js" charset="utf-8"></div></script>
 </div>
 <h2>Multiple images</h2>
 Multiple images can be arranged into a scene, but require a more complex embed code:

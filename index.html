@@ -1,3 +1,4 @@
+
 <!--
   Copyright 2015 Bhautik J Joshi
 
@@ -31,13 +32,13 @@
 body {
   background-color: #ccc;
   color: #111;
-  margin: 10px;
+  margin: 0px;
   padding: 0;
   font-family: Arial, Gadget, sans-serif;
 }
 
 div.code {
-  background-color: #ddd;
+  background-color: #eee;
   color: #111;
   margin: 10px;
   padding: 4px;
@@ -52,10 +53,8 @@ div.figure {
 }
 
 div.stretchy-wrapper {
-  width: 640px;
-  height: 480px;
-  max-width: 640px;
-  max-height: 480px;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 */
   position: relative;
 }
 
@@ -78,7 +77,7 @@ div.stretchy-wrapper > div {
 vrEmbed is an easy-to-use tool to take any picture you can find and turn it into an interactive VR scene. From this:
 <div class="figure"><img src="src/assets/rheingauer_dom.jpg" width=300px/><br/><a href="https://commons.wikimedia.org/wiki/File:Rheingauer_Dom,_Geisenheim,_360_Panorama_(Equirectangular_projection).jpg" target="_blank">(source)</a></div>
 to this:
-<a class="vrEmbedPhoto" src="src/assets/rheingauer_dom.jpg" isStereo="false" sphereParams="360,180,0,0" width=640px height=480px></a><script async src="vrEmbed.min.js" charset="utf-8"></div></script><br/><br/>
+<a class="vrEmbedPhoto" src="src/assets/rheingauer_dom.jpg" isStereo="false" sphereParams="360,180,0,0"></a><script async src="vrEmbed.min.js" charset="utf-8"></div></script><br/><br/>
 Using a one-line embed code:
 <div class="code">&lt;a class=&quot;vrEmbedPhoto&quot; src=&quot;src/assets/rheingauer_dom.jpg&quot; isStereo=&quot;false&quot; sphereParams=&quot;360,180,0,0&quot;&gt;&lt;/a&gt;&lt;script async src=&quot;//vrEmbed.org/vrEmbed.min.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/div&gt;&lt;/script&gt;</div>
 </div><br/>
