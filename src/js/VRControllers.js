@@ -35,9 +35,9 @@ VRLookControlBase.prototype.updateBase = function(cameraMatrix) {
 
   twgl.m4.copy(rotMat, cameraMatrix);
   // twgl.m4.rotateY(cameraMatrix, Math.PI/2, cameraMatrix);
-  twgl.m4.rotateX(cameraMatrix, Math.PI/2, cameraMatrix);
-  twgl.m4.rotateZ(cameraMatrix, Math.PI/2, cameraMatrix);
   twgl.m4.rotateX(cameraMatrix, Math.PI, cameraMatrix);
+  // twgl.m4.rotateZ(cameraMatrix, Math.PI/2, cameraMatrix);
+  // twgl.m4.rotateX(cameraMatrix, Math.PI, cameraMatrix);
 
   //roll
   twgl.m4.rotateX(cameraMatrix, this.eulerX, cameraMatrix);
@@ -132,6 +132,11 @@ VRGyroSpinner.prototype.setYawOffset = function(yawOffset){
 VRGyroSpinner.prototype.update = function(cameraMatrix){
   if (this.deviceOrientation == null)
     return;
+
+  // document.getElementById("log").innerHTML = " alpha:  " + Math.floor(this.deviceOrientation.alpha) +
+  //                                            " beta:   " + Math.floor(this.deviceOrientation.beta) +
+  //                                            " gamma:  " + Math.floor(this.deviceOrientation.gamma) +
+  //                                            " orient: " + Math.floor(this.screenOrientation);
 
   var rotMat = vrRotMath.gyroToMat(this.deviceOrientation.alpha,
     this.deviceOrientation.beta,
