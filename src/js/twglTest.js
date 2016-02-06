@@ -132,7 +132,7 @@ runTestMatrix = function() {
   for (objit = 0;objit<orientList.length; objit++){
     var name = orientList[objit]["name"];
     var orient = orientList[objit]["orient"];
-    var rotMat = rotMath.gyroToMat(orient[0], orient[1], orient[2], orient[3], 0);
+    var rotMat = rotMath.gyroToMat(orient[0], orient[1], orient[2], orient[3], 0)[0];
 
     var fov = 0.5;
     for (uvit = 0; uvit<uvList.length; uvit++) {

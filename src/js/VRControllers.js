@@ -143,12 +143,14 @@ VRGyroSpinner.prototype.update = function(cameraMatrix){
     this.deviceOrientation.gamma,
     this.screenOrientation,
     this.yawOffset);
-  twgl.m4.copy(rotMat, cameraMatrix);
+  twgl.m4.copy(rotMat[0], cameraMatrix);
 
   var eulerAng = vrRotMath.matToEuler(rotMat);
-  this.eulerX = eulerAng[0];
-  this.eulerY = eulerAng[1];
-  this.eulerZ = eulerAng[2];
+  // yaw
+  this.eulerX = rotMat[1];
+  // pitch
+  this.eulerY = rotMat[2];
+  this.eulerZ = 0;
 }
 
 VRGyroSpinner.prototype.isMobile = function() {
@@ -233,11 +235,9 @@ VRLookController = function() {
   // return yaw, pitch, roll in degrees
   this.getHeading = function() {
     if(this.mode==VRLookMode.GYRO)
-      return [(180.0*this.euler[0]/Math.PI + 270.0)%360.0 - 180.0,
-              180.0*this.euler[2]/Math.PI,
-              -180.0*this.euler[1]/Math.PI + 90.0];
+      return [this.euler[0], this.euler[1], this.euler[2]];
     else
-      return [180.0*this.euler[2]/Math.PI,
+      return [-180.0*this.euler[2]/Math.PI,
               -180.0*this.euler[1]/Math.PI,
               180.0*this.euler[0]/Math.PI];
   }

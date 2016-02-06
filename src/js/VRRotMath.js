@@ -69,6 +69,7 @@ VRRotMath = function() {
 						pitch: _beta * degRad,
 						roll: _gamma * degRad
 				})
+
     var mat = twgl.m4.identity();
 
     // pitch
@@ -78,7 +79,10 @@ VRRotMath = function() {
     // disable roll - doesn't make sense in stereo yet
     twgl.m4.rotateX(mat, Math.PI, mat);
 
-    return mat;
+    var yaw = (360 + -180*orientation.yaw/Math.PI)%360.0 -180.0; //-180->180
+    var pitch = -180.0*orientation.pitch/Math.PI;
+    // document.getElementById("log").innerHTML = Math.floor(yaw) + "," + Math.floor(pitch);
+    return [mat, yaw, pitch];
   }
 
   this.matToEuler = function(mat) {
