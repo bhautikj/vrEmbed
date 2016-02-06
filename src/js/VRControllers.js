@@ -35,9 +35,9 @@ VRLookControlBase.prototype.updateBase = function(cameraMatrix) {
 
   twgl.m4.copy(rotMat, cameraMatrix);
   // twgl.m4.rotateY(cameraMatrix, Math.PI/2, cameraMatrix);
-  twgl.m4.rotateX(cameraMatrix, Math.PI/2, cameraMatrix);
-  twgl.m4.rotateZ(cameraMatrix, Math.PI/2, cameraMatrix);
   twgl.m4.rotateX(cameraMatrix, Math.PI, cameraMatrix);
+  // twgl.m4.rotateZ(cameraMatrix, Math.PI/2, cameraMatrix);
+  // twgl.m4.rotateX(cameraMatrix, Math.PI, cameraMatrix);
 
   //roll
   twgl.m4.rotateX(cameraMatrix, this.eulerX, cameraMatrix);
@@ -133,17 +133,24 @@ VRGyroSpinner.prototype.update = function(cameraMatrix){
   if (this.deviceOrientation == null)
     return;
 
+  // document.getElementById("log").innerHTML = " alpha:  " + Math.floor(this.deviceOrientation.alpha) +
+  //                                            " beta:   " + Math.floor(this.deviceOrientation.beta) +
+  //                                            " gamma:  " + Math.floor(this.deviceOrientation.gamma) +
+  //                                            " orient: " + Math.floor(this.screenOrientation);
+
   var rotMat = vrRotMath.gyroToMat(this.deviceOrientation.alpha,
     this.deviceOrientation.beta,
     this.deviceOrientation.gamma,
     this.screenOrientation,
     this.yawOffset);
-  twgl.m4.copy(rotMat, cameraMatrix);
+  twgl.m4.copy(rotMat[0], cameraMatrix);
 
   var eulerAng = vrRotMath.matToEuler(rotMat);
-  this.eulerX = eulerAng[0];
-  this.eulerY = eulerAng[1];
-  this.eulerZ = eulerAng[2];
+  // yaw
+  this.eulerX = rotMat[1];
+  // pitch
+  this.eulerY = rotMat[2];
+  this.eulerZ = 0;
 }
 
 VRGyroSpinner.prototype.isMobile = function() {
@@ -228,11 +235,9 @@ VRLookController = function() {
   // return yaw, pitch, roll in degrees
   this.getHeading = function() {
     if(this.mode==VRLookMode.GYRO)
-      return [(180.0*this.euler[0]/Math.PI + 270.0)%360.0 - 180.0,
-              180.0*this.euler[2]/Math.PI,
-              -180.0*this.euler[1]/Math.PI + 90.0];
+      return [this.euler[0], this.euler[1], this.euler[2]];
     else
-      return [180.0*this.euler[2]/Math.PI,
+      return [-180.0*this.euler[2]/Math.PI,
               -180.0*this.euler[1]/Math.PI,
               180.0*this.euler[0]/Math.PI];
   }

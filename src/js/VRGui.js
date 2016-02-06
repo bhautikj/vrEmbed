@@ -20,6 +20,8 @@ function pointInDomain (testPoint, origin, domainSize, u, uv) {
   // (-190+540)%360 = 350 YASSS
 }
 
+navigator.vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate;
+
 VRGuiTimer = function() {
   this.canvas = null;
   this.callback = null;
@@ -56,6 +58,11 @@ VRGuiTimer = function() {
         this.in = true;
         this.startTime = timestamp;
         this.callbackFired = false;
+        if (navigator.vibrate) {
+        	// vibration API supported
+          navigator.vibrate(100);
+        }
+
         return 0;
       } else {
         var diff = timestamp-this.startTime;

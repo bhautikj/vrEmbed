@@ -65,6 +65,7 @@ var fsRenderDisplay = "precision highp float;\n"+
 "void main(void) {\n"+
    //normalize uv so it is between 0 and 1
 "  vec2 uv = gl_FragCoord.xy / resolution;\n"+
+"  uv.x = (1. - uv.x);\n"+
 "  bool leftImg=false;\n"+
 "  vec2 fov = fovParams;\n"+
 "  if (renderMode == 1) {\n"+
@@ -91,16 +92,17 @@ var fsRenderDisplay = "precision highp float;\n"+
    //map uv.x 0..1 to -PI..PI and uv.y 0..1 to -PI/2..PI/2
 "  float lat = 0.5*PI*(2.*uv.y-1.0);\n"+
 "  float lon = PI*(2.0*uv.x-1.0);\n"+
-"  vec2 pnt = vec2(lon, lat);\n"+
-"  float x2y2 = pnt.x * pnt.x + pnt.y * pnt.y;\n"+
-"  vec3 _sphere_pnt = vec3(2. * pnt, x2y2 - 1.) / (x2y2 + 1.);\n"+
-"  vec4 sphere_pnt = vec4(_sphere_pnt, 1.);\n"+
+   // map lat/lon to point on unit sphere
+"  float r = cos(lat);\n"+
+"  vec4 sphere_pnt = vec4(r*cos(lon), r*sin(lon), sin(lat), 1.0);\n"+
 "  sphere_pnt *= transform;\n"+
-"  float r = length(sphere_pnt);\n"+
-"  float _lon = -1.*atan(sphere_pnt.y, sphere_pnt.x);\n"+
-"  float _lat = 2.0*(acos(sphere_pnt.z / r) - PI*.5) + PI*.5;\n"+
-"  _lon = mod(_lon, 2.*PI);\n"+
-"  vec2 lonLat = vec2(_lon/(PI*2.), _lat/(PI));\n"+
+   // now map point in sphere back to lat/lon coords
+"  float sphere_pnt_len = length(sphere_pnt);\n"+
+"  sphere_pnt /= sphere_pnt_len;\n"+
+"  vec2 lonLat = vec2(atan(sphere_pnt.y, sphere_pnt.x), asin(sphere_pnt.z));\n"+
+    // map back to 0..1
+"  lonLat.x = (lonLat.x/(2.0*PI))+0.5;\n"+
+"  lonLat.y = (lonLat.y/(.5*PI))+0.5;\n"+
    // vanilla monocular render
 "  if (renderMode != 2) {\n"+
 "    if (renderMode == 0) {\n"+
