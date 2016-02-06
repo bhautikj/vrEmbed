@@ -60,7 +60,7 @@ VRGuiTimer = function() {
         this.callbackFired = false;
         if (navigator.vibrate) {
         	// vibration API supported
-          vibrate(100);
+          navigator.vibrate(100);
         }
 
         return 0;
