@@ -48,7 +48,6 @@ VRURLParser = function () {
     var numArgs = 0;
     for (var key in this.params) {
       numArgs+=1;
-      //console.log(this.params[key]);
     }
 
 

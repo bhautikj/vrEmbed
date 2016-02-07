@@ -362,28 +362,19 @@ VRStory = function() {
   };
 
   this.initFromURLSource = function(scenePhoto, storyManager) {
-    // div wrap vrEmbedPhoto
-    var stretchyDiv = document.createElement('div');
-    var s = stretchyDiv.style;
-    //s.position = 'relative';
+    var innerMost = document.createElement('div');
+    var s = innerMost.style;
+    s.position = 'absolute';
     s.width = '100%';
-    s.paddingBottom = '100%';
+    s.height = '100%';
+    s.margin = '0px';
+    s.padding = '0px';
+    s.border = '0px';
+    s.overflow = 'hidden';
 
-    var innerDiv = document.createElement('div');
-    var t = innerDiv.style;
-    t.position = 'absolute';
-    t.top = '0';
-    t.bottom = '0';
-    t.left = '0';
-    t.right = '0';
-    t.color = 'white';
-    t.fontSize = '24px';
-    t.textAlign = 'center';
-
-    var innerMost = document.createElement('a');
-    innerDiv.appendChild(innerMost);
-    stretchyDiv.appendChild(innerDiv);
-    document.body.appendChild(stretchyDiv);
+    document.body.appendChild(innerMost);
+    document.body.style.margin = '0px';
+    document.body.style.padding = '0px';
 
     var vrScene = new VRScene();
     vrScene.initFromURLSource(scenePhoto);

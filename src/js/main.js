@@ -85,7 +85,6 @@ if (!window.VRURLPARSER_INIT){
     }
 
     window.addEventListener('resize', onResize, false);
-
     storyParser.initFromURLSource(urlParser.scenePhoto);
 
     return;
