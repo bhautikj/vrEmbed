@@ -189,16 +189,23 @@ VRtwglQuadStereoProjection = function() {
   this.vrtwglQuadFb = null;
   this.vrtwglQuadFbGui = null;
   this.textureSet = [];
-  this.fbRes = 4096;
   this.textureDescriptions = {};
   this.textures = [];
   this.fovX = 40;
   this.tick = 0.0;
   this.vrGui = null;
-
   this.controller = new VRLookController();
   this.cameraMatrix = twgl.m4.identity();
   this.controller.setCamera(this.cameraMatrix);
+
+  this.pickResolution = function() {
+    var util = new Util();
+    if (util.isMobile())
+      return 2048;
+    else
+      return 4096;
+  }
+  this.fbRes = this.pickResolution();
 
   this.getContainer = function() {
     return this.vrtwglQuad.container;
@@ -253,12 +260,6 @@ VRtwglQuadStereoProjection = function() {
   this.init = function(element){
     this.vrtwglQuad = new VRtwglQuad();
     this.vrtwglQuad.init(element, vs, fsRenderDisplay);
-
-    // halve res on mobile, sorry :(
-    var util = new Util();
-    if (util.isMobile()) {
-      this.fbRes /= 2;
-    }
 
     // device config params
     this.setupFromDevice (this.vrDeviceManager.getWindowedDevice());
