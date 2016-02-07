@@ -148,9 +148,13 @@ VRDeviceManager = function() {
     if (setCookie!="") {
       this.currentDeviceName = setCookie;
       this.currentDevice = VRDevices[this.currentDeviceName];
-    } else {
-      this.flushToCookie();
-    }
+    } 
+  }
+
+  this.firstTime = function() {
+    var deviceCookieName = this.version + "_VRDEVICEMANAGER";
+    var setCookie = this.getCookie(deviceCookieName);
+    return setCookie=="";
   }
 
   this.flushToCookie = function() {

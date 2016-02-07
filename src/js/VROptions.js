@@ -15,6 +15,7 @@
 **/
 
 var VRLogos = require('./VRIcons.js');
+var VRStates = require('./VRStates.js');
 var VRDeviceManager = require('./VRDeviceManager.js');
 
 var createDialogTextStyle = function(t) {
@@ -31,6 +32,7 @@ function VROptionsCore() {
   var self = this;
   this.vrDeviceManager = VRDeviceManager;
   this.deviceButtons = [];
+  this.story = null;
 
   this.init = function() {
     this.dialog = document.createElement('div');
@@ -73,6 +75,14 @@ function VROptionsCore() {
     tex += '<a href="http://vrEmbed.org" target="_blank" style="color: inherit; text-decoration: none;">'
     tex += '<img src=' + VRLogos.logoVrEmbed + ' width=100px style="float: right; margin: 0 0 2px 2px;"/>';
     tex += '<br/>vrEmbed<br/> (c) Bhautik Joshi 2015-16</a><div style="clear:left;">';
+    this.dialogText.innerHTML = tex;
+  }
+
+  this.setupDialogSetup = function() {
+    var tex = "";
+    tex += '<a href="http://vrEmbed.org" target="_blank" style="color: inherit; text-decoration: none;">'
+    tex += '<img src=' + VRLogos.logoVrEmbed + ' width=100px style="float: right; margin: 0 0 2px 2px;"/>';
+    tex += '</a><b>Please select device:</b><br/><div style="clear:left;">';
     this.dialogText.innerHTML = tex;
   }
 
@@ -149,13 +159,26 @@ function VROptionsCore() {
   }
 
   this.showDialog = function() {
+    this.setupDialogOptions();
     document.body.appendChild(this.dialog);
     this.syncDeviceButtonsToManager();
+  }
+
+  this.showDialogFirstTime = function(story) {
+    this.setupDialogSetup();
+    document.body.appendChild(this.dialog);
+    this.syncDeviceButtonsToManager();
+    this.story = story;
   }
 
   this.hideDialog = function() {
     document.body.removeChild(this.dialog);
     this.syncManagerToDeviceButtons();
+
+    if (this.story != null) {
+      this.story.stateToggler.setState(VRStates.FULLSCREEN);
+      this.story = null;
+    }
   }
 
   this.onClickLeft_ = function(e) {

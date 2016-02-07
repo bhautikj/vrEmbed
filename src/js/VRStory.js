@@ -5,6 +5,7 @@ var VRManager = require('./VRManager.js');
 var VRRenderModes = require('./VRRenderModes.js');
 var VRDeviceManager = require('./VRDeviceManager.js');
 var VRGui = require('./VRGui.js');
+var VROptions = require('./VROptions.js');
 
 VRStory = function() {
   var self = this;
@@ -12,6 +13,7 @@ VRStory = function() {
   this.parentElement = null;
   this.vrDeviceManager = VRDeviceManager;
   this.vrGui = null;
+  this.vrOptions = new VROptions();
 
   //--
   this.quad = null;
@@ -33,6 +35,12 @@ VRStory = function() {
 
 
   this.enterFullscreen = function(){
+    if (this.vrDeviceManager.firstTime()){
+      console.log("FIRST");
+      this.vrOptions.options.showDialogFirstTime(self);
+      return false;
+    }
+    
     if (self.manager.enterFullscreen() == false)
       return false;
 
