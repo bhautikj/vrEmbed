@@ -256,8 +256,8 @@ VRStory = function() {
                                -30,
                                -30,
                                this.prevScene,
-                               "prev",
-                               {fontsize:72, borderThickness:10});
+                               " prev ",
+                               {fontsize:72, borderThickness:4});
    }
 
    if (self.currentSceneIndex<(numScenes-1)) {
@@ -265,8 +265,8 @@ VRStory = function() {
                               30,
                               -30,
                               this.nextScene,
-                              "next",
-                              {fontsize:72, borderThickness:10});
+                              " next ",
+                              {fontsize:72, borderThickness:4});
     }
     this.quad.renderGui();
   }

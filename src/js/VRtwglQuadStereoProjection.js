@@ -3,6 +3,7 @@ VRRenderModes = require('./VRRenderModes.js');
 VRLookController = require('./VRControllers.js');
 VRDeviceManager = require('./VRDeviceManager.js');
 VRCanvasFactory = require('./VRCanvasFactory.js');
+Util = require('./VRUtil.js');
 
 twgl = require('../js-ext/twgl-full.js');
 
@@ -188,7 +189,7 @@ VRtwglQuadStereoProjection = function() {
   this.vrtwglQuadFb = null;
   this.vrtwglQuadFbGui = null;
   this.textureSet = [];
-  this.fbRes = 2048;
+  this.fbRes = 4096;
   this.textureDescriptions = {};
   this.textures = [];
   this.fovX = 40;
@@ -252,6 +253,12 @@ VRtwglQuadStereoProjection = function() {
   this.init = function(element){
     this.vrtwglQuad = new VRtwglQuad();
     this.vrtwglQuad.init(element, vs, fsRenderDisplay);
+
+    // halve res on mobile, sorry :(
+    var util = new Util();
+    if (util.isMobile()) {
+      this.fbRes /= 2;
+    }
 
     // device config params
     this.setupFromDevice (this.vrDeviceManager.getWindowedDevice());

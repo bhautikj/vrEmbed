@@ -101,6 +101,8 @@ VRtwglQuad = function() {
   this.initFramebuffer = function(fbSize, glContext, vs, fs) {
     this.glContext = glContext;
     this.fbSize = fbSize;
+    this.canvas2dWidth = fbSize;
+    this.canvas2dHeight = fbSize;    
     this.initCore(vs, fs);
     var attachments = [
       { format: this.glContext.RGBA, type: this.glContext.UNSIGNED_BYTE, min: this.glContext.LINEAR, mag: this.glContext.LINEAR, wrap: this.glContext.CLAMP_TO_EDGE },
