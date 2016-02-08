@@ -30,10 +30,10 @@
 
 <style>
 body {
-  background-color: #ccc;
-  color: #111;
+  background-color: #fff;
+  color: #333;
   margin: 0px;
-  padding: 0;
+  padding: 0px;
   font-family: Arial, Gadget, sans-serif;
 }
 
@@ -67,11 +67,93 @@ div.stretchy-wrapper > div {
 }
 
 </style>
+
+<style>
+/*grid junk*/
+
+*, *:after, *:before {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+[class*='col-'] {
+  float: left;
+}
+
+.col-2-3 {
+  background-color: #fff;
+  width: 66.66%;
+}
+.col-1-3 {
+  background-color: #fff;
+  width: 33.33%;
+}
+.grid {
+  background-color: #f90;
+}
+.grid:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+[class*='col-'] {
+  padding-right: 0px;
+}
+[class*='col-']:last-of-type {
+  padding-right: 0px;
+}
+
+.module {
+  padding: 20px;
+  color: #fff;
+  background: #666;
+}
+
+.centered {
+  text-align: center;
+}
+
+.width220 {
+  min-with: 220px;
+}
+
+div.header-wrap {
+  width: 100%;
+  height: 220px;
+  /*padding-bottom: 56.25%; */
+  position: relative;
+}
+
+div.header-wrap > div {
+  position: absolute;
+  top: 0; bottom: 0; left: 0; right: 0;
+  color: white;
+  font-size: 24px;
+  text-align: center;
+}
+
+</style>
 </head>
 
 <body>
 
-<div class="figure"><img src="src/assets/vrEmbedLogo.png" width=200px/><br/><i>(c) Bhautik Joshi, 2015-16</i></div>
+<div class="grid">
+  <div class="col-1-3">
+    <div class="module centered width220">
+      <img src="src/assets/vrEmbedLogo.png" width=150px/><br/><i>(c) Bhautik Joshi, 2015-16</i>
+    </div>
+  </div>
+   <div class="col-2-3">
+     <div class="header-wrap"><div>
+     <story>
+       <scene>
+         <photo src="src/assets/rheingauer_dom.jpg" isStereo="false" sphereParams="360,180,0,0"/>
+       </scene>
+     </story><script async src="vrEmbed.min.js" charset="utf-8"></script>
+   </div></div>
+   </div>
+</div>
 
 <div align=center>
 vrEmbed is an easy-to-use tool to take any picture you can find and turn it into an interactive VR scene. From this:
