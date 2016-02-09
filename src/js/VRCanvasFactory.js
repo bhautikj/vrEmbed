@@ -77,13 +77,13 @@ VRCanvasTextBox.prototype.init = function(gl, message, hfov, options) {
     options["fontsize"] : 12;
 
   var borderThickness = options.hasOwnProperty("borderThickness") ?
-    options["borderThickness"] : 4;
+    options["borderThickness"] : 1;
 
   var borderColor = options.hasOwnProperty("borderColor") ?
-    options["borderColor"] : { r:0, g:0, b:0, a:0.7 };
+    options["borderColor"] : { r:255, g:255, b:255, a:1.0 };
 
   var backgroundColor = options.hasOwnProperty("backgroundColor") ?
-    options["backgroundColor"] : { r:255, g:255, b:255, a:0.7};
+    options["backgroundColor"] : { r:0, g:0, b:0, a:0.7};
 
   this.ctx.font = "Bold " + fontsize + "px " + fontface;
   //this.ctx.font="72px Arial";
@@ -114,9 +114,11 @@ VRCanvasTextBox.prototype.init = function(gl, message, hfov, options) {
 
 
   // text color
-  this.ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+  this.ctx.fillStyle = "rgba(" + borderColor.r + "," + borderColor.g + ","
+                       + borderColor.b + "," + borderColor.a + ")";
 
-  this.ctx.font = "Bold " + fontsize + "px " + fontface;
+  //this.ctx.font = "Bold " + fontsize + "px " + fontface;
+  this.ctx.font = fontsize + "px " + fontface;
   this.ctx.textAlign="start";
   this.ctx.fillText( message, borderThickness, fontsize + borderThickness);
 

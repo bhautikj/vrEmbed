@@ -71,6 +71,8 @@ VRManager = function(quad) {
     this.quad.vrtwglQuad.setCanvasFullscreen();
     this.wakelock.request();
 
+
+
     return true;
   }
 

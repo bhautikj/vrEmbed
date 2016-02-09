@@ -29,7 +29,7 @@ VRDevices = {
     // icon
     icon: VRIcons.logoFullscreen,
     // horizontal field-of-view
-    hfov: 60,
+    hfov: 120,
     // % of screen width parallax to introduce in stereo
     // 0: no adjstment
     // 0.5: rotation centre moved to far left/right screen edges
@@ -124,17 +124,37 @@ VRDeviceManager = function() {
   this.currentDeviceName = "ANAGLYPH";
   this.currentDevice = VRDevices[this.currentDeviceName];
   this.windowedDevice = VRDevices["FULLSCREEN"];
+  this.useLocalStorage = true;
 
+  this.isLocalStorageNameSupported = function() {
+    var testKey = 'test', storage = window.localStorage;
+    try {
+      storage.setItem(testKey, '1');
+      storage.removeItem(testKey);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
 
   this.init = function() {
     var deviceCookieName = this.version + "_VRDEVICEMANAGER";
+
+    if (!this.isLocalStorageNameSupported()) {
+      this.useLocalStorage = false;
+    }
+
     var setCookie = this.getCookie(deviceCookieName);
     if (setCookie!="") {
       this.currentDeviceName = setCookie;
       this.currentDevice = VRDevices[this.currentDeviceName];
-    } else {
-      this.flushToCookie();
     }
+  }
+
+  this.firstTime = function() {
+    var deviceCookieName = this.version + "_VRDEVICEMANAGER";
+    var setCookie = this.getCookie(deviceCookieName);
+    return setCookie=="";
   }
 
   this.flushToCookie = function() {
@@ -142,22 +162,24 @@ VRDeviceManager = function() {
     this.setCookie(deviceCookieName, this.currentDeviceName);
   }
 
-  this.setCookie = function(cname, cvalue, exdays) {
-    var d = new Date();
-    d.setTime(d.getTime() + (exdays*24*60*60*1000));
-    var expires = "expires="+d.toUTCString();
-    document.cookie = cname + "=" + cvalue + "; " + expires;
+
+  this.setCookie = function(cname, cvalue) {
+    if (!this.useLocalStorage)
+      return;
+
+    var storage = window.localStorage;
+    storage.cname = cvalue;
   }
 
   this.getCookie = function(cname) {
-    var name = cname + "=";
-    var ca = document.cookie.split(';');
-    for(var i=0; i<ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0)==' ') c = c.substring(1);
-        if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
-    }
-    return "";
+    if (!this.useLocalStorage)
+      return "";
+
+    var storage = window.localStorage;
+    if (storage.cname == undefined)
+      return "";
+    else
+      return storage.cname;
   }
 
   this.getDeviceList = function() {
