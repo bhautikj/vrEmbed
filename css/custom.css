@@ -20,6 +20,20 @@ div.header-wrap > div {
   text-align: center;
 }
 
+div.stretchy-wrapper {
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 */
+  position: relative;
+}
+
+div.stretchy-wrapper > div {
+  position: absolute;
+  top: 0; bottom: 0; left: 0; right: 0;
+  color: white;
+  font-size: 24px;
+  text-align: center;
+}
+
 .logoOverlay {
    position: absolute;
    top: 5px;
@@ -34,7 +48,6 @@ div.header-wrap > div {
   margin: 10px;
   padding: 4px;
   font-family: "Lucida Console", Monaco, monospace;
-  text-align: center;
   word-wrap: break-word;
 }
 
