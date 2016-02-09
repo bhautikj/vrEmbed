@@ -1,220 +1,162 @@
 
-<!--
-  Copyright 2015 Bhautik J Joshi
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-      http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
- -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>vrEmbed by Bhautik Joshi</title>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, shrink-to-fit=no">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
-<vrEditor></vrEditor>
-<script src="vrEmbed.min.js" charset="utf-8"></script>
+  <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta charset="utf-8">
+  <title>vrEmbed by Bhautik Joshi</title>
+  <meta name="description" content="vrEmbed.org">
+  <meta name="author" content="Bhautik Joshi">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, shrink-to-fit=no">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
-<style>
-body {
-  background-color: #fff;
-  color: #333;
-  margin: 0px;
-  padding: 0px;
-  font-family: Arial, Gadget, sans-serif;
-}
+  <!-- Stop page loading and launch editor first if URL params are specified
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <vrEditor></vrEditor>
 
-div.code {
-  background-color: #eee;
-  color: #111;
-  margin: 10px;
-  padding: 4px;
-  font-family: "Lucida Console", Monaco, monospace;
-  text-align: center;
-  word-wrap: break-word;
-}
+  <!-- FONT
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link href='//fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
 
-div.figure {
-  margin: 10px;
-  padding: 4px;
-  text-align: center;
-}
+  <!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/skeleton.css">
+  <link rel="stylesheet" href="css/custom.css">
 
-div.stretchy-wrapper {
-  width: 100%;
-  padding-bottom: 56.25%; /* 16:9 */
-  position: relative;
-}
+  <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="icon" type="image/png" href="src/assets/vrEmbedLogo_32.png">
 
-div.stretchy-wrapper > div {
-  position: absolute;
-  top: 0; bottom: 0; left: 0; right: 0;
-  color: white;
-  font-size: 24px;
-  text-align: center;
-}
-
-</style>
-
-<style>
-/*grid junk*/
-
-*, *:after, *:before {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-}
-
-[class*='col-'] {
-  float: left;
-}
-
-.col-2-3 {
-  background-color: #fff;
-  width: 66.66%;
-
-}
-.col-1-3 {
-  background-color: #fff;
-  width: 33.33%;
-}
-.grid {
-  background-color: #f90;
-}
-.grid:after {
-  content: "";
-  display: table;
-  clear: both;
-}
-[class*='col-'] {
-  padding-right: 20px;
-}
-[class*='col-']:last-of-type {
-  padding-right: 0px;
-}
-
-.module {
-  padding: 20px;
-  color: #fff;
-  background: #666;
-}
-
-.centered {
-  text-align: center;
-}
-
-.width220 {
-  min-with: 220px;
-}
-
-div.header-wrap {
-  width: 100%;
-  height: 220px;
-  /*padding-bottom: 56.25%; */
-  position: relative;
-}
-
-div.header-wrap > div {
-  position: absolute;
-  top: 0; bottom: 0; left: 0; right: 0;
-  color: white;
-  font-size: 24px;
-  text-align: center;
-}
-
-
-.logoOverlay {
-   position: absolute;
-   top: 5px;
-   right: 5px;
-   left: 5;
-}
-.grid-pad {
-  padding: 20px 0 20px 20px;
-  [class*='col-']:last-of-type {
-    padding-right: 20px;
-}
-
-</style>
 </head>
-
 <body>
 
-<div class="grid">
-   <div class="header-wrap"><div>
-   <story>
-     <scene>
-       <photo src="src/assets/rheingauer_dom.jpg" isStereo="false" sphereParams="360,180,90,0"/>
-     </scene>
-   </story><script async src="vrEmbed.min.js" charset="utf-8"></script>
- </div></div>
- <div class="logoOverlay">
- <img src="src/assets/vrEmbedLogo.png" width=200px/><br/>
- </div>
- <br/>
-</div>
+  <!-- Primary Page Layout
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
 
-<br/><br/>
-
-
-<div class="grid">
-  <div class="col-1-3">
-    <article class="module">
-      Using a one-line embed code to turn an image into an interactive VR scene:
-      <div class="code">&lt;a class=&quot;vrEmbedPhoto&quot; src=&quot;src/assets/rheingauer_dom.jpg&quot; isStereo=&quot;false&quot; sphereParams=&quot;360,180,0,0&quot;&gt;&lt;/a&gt;&lt;script async src=&quot;//vrEmbed.org/vrEmbed.min.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/div&gt;&lt;/script&gt;</div>
-    </article>
-     <article class="module">
-       <img src="src/assets/rheingauer_dom.jpg" width=100%/><br/><a href="https://commons.wikimedia.org/wiki/File:Rheingauer_Dom,_Geisenheim,_360_Panorama_(Equirectangular_projection).jpg" target="_blank">(source)</a>
-     </article>
+  <br/>
+  <div class="container">
+    <div class="row">
+      <div class="twelve columns">
+        <div class="header-wrap"><div>
+            <story noGui="true">
+              <scene>
+                <photo src="src/assets/rheingauer_dom.jpg" isStereo="false" sphereParams="360,180,90,0"/>
+              </scene>
+            </story><script async src="bin/vrEmbed.js" charset="utf-8"></script>
+          </div></div>
+          <div class="logoOverlay"><img src="src/assets/vrEmbedLogo.png" width=100%/></div>
+      </div>
+    </div>
+    <div class="row headerBar">
+      (c) Bhautik Joshi 2016<br/>
+    </div>
   </div>
-  <div class="col-2-3">
-    <aside class="module">
-      <a class="vrEmbedPhoto" src="src/assets/rheingauer_dom.jpg" isStereo="false" sphereParams="360,180,0,0"></a><script async src="vrEmbed.min.js" charset="utf-8"></div></script><br/><br/>
-    </aside>
+
+  <div class="section hero">
+    <div class="container">
+      <div class="one-half column">
+        <h2>vrEmbed.org</h2>
+        <h4>Simple Virtual Reality embeds you can use anywhere.</h4>
+      </div>
+      <div class="one-half column">
+        <h4>PUPPIES</h4>
+      </div>
+    </div>
   </div>
-</div>
+
+  <div class="container">
+    <div class="row">
+      <br/>
+    </div>
+    <div class="row">
+    </div>
+  </div>
+
+  <div class="section values">
+    <div class="container">
+      <div class="row">
+        <div class="one-third column value">
+          <h2 class="value-multiplier">Simple</h2>
+          <h5 class="value-heading">Do one job well</h5>
+          <p class="value-description">Not a game engine - vrEmbed is optimized to take your images and give you versatile options to display them in VR.</p>
+        </div>
+        <div class="one-third column value">
+          <h2 class="value-multiplier">Small</h2>
+          <h5 class="value-heading">No waiting</h5>
+          <p class="value-description">The javascript is less than <i>120kb</i></p>
+        </div>
+        <div class="one-third column value">
+          <h2 class="value-multiplier">Easy</h2>
+          <h5 class="value-heading">Build embds fast</h5>
+          <p class="value-description">Simple embed codes to create a vrEmbed from <i>any</i> image - these can be chained together to make entire VR stories!</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="one-third column value">
+          <h2 class="value-multiplier">Accessible</h2>
+          <h5 class="value-heading">Stereo blind</h5>
+          <p class="value-description">At least 10% of the population can't use VR headsets or see 3D - vrEmbed won't leave these users behind.</p>
+        </div>
+        <div class="one-third column value">
+          <h2 class="value-multiplier">Compatible</h2>
+          <h5 class="value-heading">Headset support</h5>
+          <p class="value-description">vrEmbed has a support for an ever-growing range of viewing modes, from red-blue glasses to Google Cardboard and beyond.</p>
+        </div>
+        <div class="one-third column value">
+          <h2 class="value-multiplier">Free</h2>
+          <h5 class="value-heading">Open Source</h5>
+          <p class="value-description">vrEmbed is <a href="https://github.com/bhautikj/vrEmbed/" target="_blank">open source</a>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- <div class="section hero">
+    <div class="container">
+      <div class="row">
+        <div class="one-half column">
+          <h4 class="hero-heading">Stop coding non-responsive sites. Let users view sites from anywhere.</h4>
+          <a class="button button-primary" href="http://getskeleton.com">Try Skeleton</a>
+        </div>
+        <div class="one-half column phones">
+          <img class="phone" src="images/iphone.png">
+          <img class="phone" src="images/iphone.png">
+        </div>
+      </div>
+    </div>
+  </div> -->
+  <!-- <div class="section get-help">
+    <div class="container">
+      <h3 class="section-heading">Need help getting started?</h3>
+      <p class="section-description">Skeleton is an amazingly easy place to start with responsive development. If you want to learn more, just visit the documentation!</p>
+      <a class="button button-primary" href="http://getskeleton.com">View Skeleton Docs</a>
+    </div>
+  </div> -->
+
+  <!-- <div class="section categories">
+    <div class="container">
+      <h3 class="section-heading">Responsive Images</h3>
+      <p class="section-description">Skeleton images sit easily in grid with .u-max-full-width class. I suggest exploring solution to serving different images based on device size.</p>
+      <div class="row">
+        <div class="one-half column category">
+          <img class="u-max-full-width" src="images/placeholder.png">
+        </div>
+        <div class="one-half column category">
+          <img class="u-max-full-width" src="images/placeholder.png">
+        </div>
+      </div>
+    </div>
+  </div> -->
 
 
-<br/>
 
-<b>Get started!</b> Read the <a href="docs.html" target="_blank">documentation</a> for a how-to and practical examples!
 
-<h1>Why use vrEmbed?</h1>
-vrEmbed is:
-<ul>
-  <li><b>Fast:</b> vrEmbed is designed for fast performance on mobile browsers</li>
-  <li><b>Small:</b> the minified javascript is less than <i>120kb</i> (with plans to make it less than 100kb!)</li>
-  <li><b>Accessible:</b> at least 10% of the population can't use VR headsets or see 3D - vrEmbed has good support for the stereo blind</li>
-  <li><b>Easy-to-use:</b> there are simple embed codes to create a vrEmbed from <i>any</i> image; these can be easily arranged together to make entire VR stories!</li>
-  <li><b>Free:</b> vrEmbed is <a href="https://github.com/bhautikj/vrEmbed" target="_blank">open-source</a>!</li>
-</ul>
-
-<div align=center><div class="stretchy-wrapper"><div>
-  <story>
-    <scene>
-      <photo src="src/assets/byobw_2013_a.jpg" isStereo="false" sphereParams="100,66,60,-10"/>
-      <photo src="src/assets/byobw_2013_b.jpg" isStereo="false" sphereParams="100,66,-60,0"/>
-    </scene>
-    <scene>
-      <photo src="src/assets/byobw_2014_a.jpg" isStereo="false" sphereParams="100,66,60,0"/>
-      <photo src="src/assets/byobw_2014_b.jpg" isStereo="false" sphereParams="100,66,-60,-20"/>
-    </scene>
-  </story><script async src="vrEmbed.min.js" charset="utf-8"></script>
-</div></div></div>
-
+<!-- End Document
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
 </body>
-
 </html>

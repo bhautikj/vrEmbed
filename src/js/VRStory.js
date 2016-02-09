@@ -13,6 +13,7 @@ VRStory = function() {
   this.parentElement = null;
   this.vrDeviceManager = VRDeviceManager;
   this.vrGui = null;
+  this.noGui = false;
   this.vrOptions = new VROptions();
 
   //--
@@ -40,7 +41,7 @@ VRStory = function() {
       this.vrOptions.options.showDialogFirstTime(self);
       return false;
     }
-    
+
     if (self.manager.enterFullscreen() == false)
       return false;
 
@@ -142,16 +143,16 @@ VRStory = function() {
   };
 
   this.isInViewport = function() {
-      var canvas = this.quad.getContainer();
-      var rect = canvas.getBoundingClientRect();
-      var windowHeight = (window.innerHeight || document.documentElement.clientHeight);
-      var windowWidth = (window.innerWidth || document.documentElement.clientWidth);
+    var canvas = this.quad.getContainer();
+    var rect = canvas.getBoundingClientRect();
+    var windowHeight = (window.innerHeight || document.documentElement.clientHeight);
+    var windowWidth = (window.innerWidth || document.documentElement.clientWidth);
 
-      // http://stackoverflow.com/questions/325933/determine-whether-two-date-ranges-overlap
-      var vertInView = (rect.top <= windowHeight) && ((rect.top + rect.height) >= 0);
-      var horInView = (rect.left <= windowWidth) && ((rect.left + rect.width) >= 0);
+    // http://stackoverflow.com/questions/325933/determine-whether-two-date-ranges-overlap
+    var vertInView = (rect.top <= (windowHeight+5)) && ((rect.top + rect.height) >= -5);
+    var horInView = (rect.left <= (windowWidth+5)) && ((rect.left + rect.width) >= -5);
 
-      return (vertInView && horInView);
+    return (vertInView && horInView);
   }
 
   this.checkVisible = function() {
@@ -306,8 +307,10 @@ VRStory = function() {
         this.parentElement.removeEventListener("mousemove", self.mouseMove, false);
     }, false);
 
-    this.quad.getContainer().appendChild(this.stateToggler.buttonMiddle);
-    this.quad.getContainer().appendChild(this.stateToggler.buttonOptions);
+    if (this.noGui == false) {
+      this.quad.getContainer().appendChild(this.stateToggler.buttonMiddle);
+      this.quad.getContainer().appendChild(this.stateToggler.buttonOptions);
+    }
 
     this.manager = new VRManager(this.quad);
     this.onResize();
@@ -395,6 +398,10 @@ VRStory = function() {
   }
 
   this.initStory = function(storyElement, storyManager) {
+    var noGui = storyElement.getAttribute("noGui");
+    if (noGui != null && noGui == "true")
+      this.noGui = true;
+
     var scenes=storyElement.children;
     for(sceneit = 0;sceneit < scenes.length; sceneit++) {
       var scene = scenes[sceneit];
