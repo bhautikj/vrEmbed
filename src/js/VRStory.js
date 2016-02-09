@@ -149,7 +149,8 @@ VRStory = function() {
     var windowWidth = (window.innerWidth || document.documentElement.clientWidth);
 
     // http://stackoverflow.com/questions/325933/determine-whether-two-date-ranges-overlap
-    var vertInView = (rect.top <= (windowHeight+5)) && ((rect.top + rect.height) >= -5);
+    //var vertInView = (rect.top <= (windowHeight+5)) && ((rect.top + rect.height) >= -5);
+    var vertInView = (rect.top <= (windowHeight+5));
     var horInView = (rect.left <= (windowWidth+5)) && ((rect.left + rect.width) >= -5);
 
     return (vertInView && horInView);
