@@ -358,7 +358,15 @@ VRStory = function() {
       var mx = ev.movementX || ev.mozMovementX || ev.webkitMovementX || 0;
       var my = ev.movementY || ev.mozMovementY || ev.webkitMovementY || 0;
       //console.log(mx + "," + my);
-      self.quad.controller.mouseMove(mx, my);
+
+      ev = ev || window.event;
+
+      var target = ev.target || ev.srcElement,
+          rect = target.getBoundingClientRect(),
+          offsetX = ev.clientX - rect.left,
+          offsetY = ev.clientY - rect.top;
+
+      self.quad.controller.mouseMove(mx, my, offsetX/rect.width, offsetY/rect.height);
     };
 
     this.parentElement.addEventListener("mousedown", function (ev) {
