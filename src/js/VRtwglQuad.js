@@ -15,6 +15,7 @@ VRtwglQuad = function() {
   this.canvas2dWidth = 2048;
   this.canvas2dHeight = 2048;
   this.viewportDims = [0,0];
+  this.isFullScreen = false;
 
 
   this.initCore = function(vs, fs) {
@@ -43,8 +44,6 @@ VRtwglQuad = function() {
     this.canvas2d = document.createElement('canvas');
 
     var t = this.canvas.style;
-    // t.height = "100%";
-    // t.width = "100%";
     t.display = "block";
     t.position = 'absolute';
 
@@ -64,17 +63,10 @@ VRtwglQuad = function() {
     s.top = '0px';
     s.height = "100%";
     s.width = "100%";
-    // s.display = "block";
 
     this.container.appendChild(this.canvas);
     this.container.appendChild(this.canvas2d);
     elm.appendChild(this.container);
-
-
-    this.canvas.width=this.fbSize;
-    this.canvas.height=this.fbSize;
-    this.canvas.style.width=this.fbSize+"px";
-    this.canvas.style.height=this.fbSize+"px";
 
     this.glContext = twgl.getWebGLContext(this.canvas);
 
@@ -88,17 +80,19 @@ VRtwglQuad = function() {
     var s = this.canvas2d.style;
     s.height = "100vh";
     s.width = "100vw";
+
+    this.isFullScreen = true;
   }
 
   this.setCanvasWindowed = function() {
     var t = this.canvas.style;
-    // t.height = "100%";
-    // t.width = "100%";
     t.position = 'absolute';
 
     var s = this.canvas2d.style;
     s.height = "100%";
     s.width = "100%";
+
+    this.isFullScreen = false;
   }
 
   this.initFramebuffer = function(fbSize, glContext, vs, fs) {
@@ -130,9 +124,14 @@ VRtwglQuad = function() {
     // Get the canvas from the WebGL context
     var canvas = self.glContext.canvas;
 
-    // Lookup the size the browser is displaying the canvas.
-    var displayWidth  = self.parentElement.clientWidth;
-    var displayHeight = self.parentElement.clientHeight;
+    var displayWidth = window.innerWidth;
+    var displayHeight = window.innerHeight;
+
+    if (!this.isFullScreen) {
+      // Lookup the size the browser is displaying the canvas.
+      displayWidth  = self.parentElement.clientWidth;
+      displayHeight = self.parentElement.clientHeight;
+    }
 
     var devicePixelRatio = this.getDevicePixelRatio();
     canvas.width = Math.floor(displayWidth * devicePixelRatio);
