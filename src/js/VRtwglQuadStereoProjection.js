@@ -197,6 +197,9 @@ VRtwglQuadStereoProjection = function() {
   this.controller = new VRLookController();
   this.cameraMatrix = twgl.m4.identity();
   this.controller.setCamera(this.cameraMatrix);
+  this.textureLoadStartAnim = Date.now();
+  this.textureLoadEndAnim = this.textureLoadStartAnim + 1000;
+  this.texReady = false;
 
   this.pickResolution = function() {
     var util = new Util();
@@ -372,6 +375,11 @@ VRtwglQuadStereoProjection = function() {
     }
 
     self.vrtwglQuad.resetViewport();
+
+    self.texReady = true;
+    console.log(self.texReady);
+    self.textureLoadStartAnim = Date.now();
+    self.textureLoadEndAnim = self.textureLoadStartAnim + 250;
   }
 
   this.loadTextures = function (textureDescriptions) {
@@ -388,6 +396,9 @@ VRtwglQuadStereoProjection = function() {
       this.textureDescriptions[texIt] = textureDescriptions[texIt];
     }
 
+    this.texReady = false;
+    this.textureLoadStartAnim = Date.now();
+    this.textureLoadEndAnim = this.textureLoadStartAnim + 1000;
     var gl = self.vrtwglQuad.glContext;
     this.textures = twgl.createTextures(gl, texArray, this.texturesLoaded);
   }

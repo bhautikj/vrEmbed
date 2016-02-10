@@ -163,6 +163,10 @@ VRStory = function() {
     this.isVisible = this.isInViewport();
   }
 
+  this.animPow = function(val) {
+    return 2.*(Math.pow(2.,val)/2. - 0.5);
+  }
+
   // Request animation frame loop function
   this.animate = function(timestamp) {
     this.checkVisible();
@@ -178,9 +182,67 @@ VRStory = function() {
     //                                            Math.floor(dir[2]);
     if (self.vrGui != null) {
       var actionPercent = self.vrGui.update([dir[0], dir[1]],now);
+      self.clearCtx();
       self.drawReticle(actionPercent);
+
+      if (self.quad.texReady == false) {
+        var pc = Math.min((now-self.quad.textureLoadStartAnim)/(self.quad.textureLoadEndAnim-self.quad.textureLoadStartAnim),1.0);
+        if (pc>=0.01) {
+          self.drawLoader(now, this.animPow(pc));
+        }
+      } else {
+        var pc = Math.min((now-self.quad.textureLoadStartAnim)/(self.quad.textureLoadEndAnim-self.quad.textureLoadStartAnim),1.0);
+        if (pc>=0.01) {
+          self.drawLoader(now, this.animPow(1.0-pc));
+        }
+      }
     }
   };
+
+  this.clearCtx = function() {
+    var _ctx = this.quad.vrtwglQuad.get2dContext();
+    if (_ctx == null)
+      return;
+    var ctx = _ctx[0];
+    var w = _ctx[1];
+    var h = _ctx[2];
+
+    ctx.clearRect(0, 0, w, h);
+  }
+
+  this.drawLoader = function(now, sz) {
+    var _ctx = this.quad.vrtwglQuad.get2dContext();
+    if (_ctx == null)
+      return;
+    var ctx = _ctx[0];
+    var w = _ctx[1];
+    var h = _ctx[2];
+
+    var angTime = (now % 1500)/1500.0;
+    var ang = 2*Math.PI*(angTime);
+
+    var white = "#ffffff";
+    var black = "#000000";
+    var grey = "#666666";
+    var orange = "#ff9900";
+    ctx.beginPath();
+    ctx.lineWidth = 12;
+    ctx.strokeStyle = black;
+    ctx.fillStyle = white;
+    ctx.arc(w/2,h/2,sz*100,0,2*Math.PI);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.strokeStyle = grey;
+    ctx.arc(w/2,h/2,sz*(100-20),ang,ang+0.5*Math.PI);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.strokeStyle = orange;
+    ctx.arc(w/2,h/2,sz*(100-40),-2.*ang,-2.*ang+0.1*Math.PI);
+    ctx.stroke();
+  }
 
   this.drawReticle = function(actionPercent) {
     var _ctx = this.quad.vrtwglQuad.get2dContext();
@@ -190,7 +252,6 @@ VRStory = function() {
     var w = _ctx[1];
     var h = _ctx[2];
 
-    ctx.clearRect(0, 0, w, h);
     var recticleList = [];
 
     var renderMode = this.quad.getRenderMode();
