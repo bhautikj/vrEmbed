@@ -31,17 +31,19 @@ function VRLookControlBase() {
 }
 
 VRLookControlBase.prototype.updateBase = function(cameraMatrix) {
-  var rotMat = twgl.m4.identity();
+  this.baseMat = twgl.m4.identity();
 
-  twgl.m4.copy(rotMat, cameraMatrix);
-  twgl.m4.rotateX(cameraMatrix, Math.PI, cameraMatrix);
+  twgl.m4.rotateX(this.baseMat, Math.PI, this.baseMat);
   //roll
-  twgl.m4.rotateX(cameraMatrix, this.eulerX, cameraMatrix);
+  twgl.m4.rotateX(this.baseMat, this.eulerX, this.baseMat);
   //pitch
-  twgl.m4.rotateY(cameraMatrix, this.eulerY, cameraMatrix);
+  twgl.m4.rotateY(this.baseMat, this.eulerY, this.baseMat);
   //yaw
-  twgl.m4.rotateZ(cameraMatrix, this.eulerZ, cameraMatrix);
+  twgl.m4.rotateZ(this.baseMat, this.eulerZ, this.baseMat);
+
+  twgl.m4.copy(this.baseMat, cameraMatrix);
 };
+
 
 VRLookControlBase.prototype.setEuler = function(x,y,z) {
   this.eulerX = x;
@@ -197,8 +199,8 @@ VRLookController = function() {
     self.camera = camera;
   };
 
-  this.mouseMove = function(dx, dy) {
-    self.vrMouseSpinner.mouseMove(dx, dy);
+  this.mouseMove = function(dx, dy, px, py) {
+    self.vrMouseSpinner.mouseMove(dx, dy, px, py);
   };
 
   this.checkModes = function() {
