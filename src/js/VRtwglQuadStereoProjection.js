@@ -313,6 +313,51 @@ VRtwglQuadStereoProjection = function() {
     self.vrtwglQuad.resize();
   }
 
+  this.guiToLonLat = function(pt) {
+    var uv = [pt[0], pt[1]];
+    uv[0] = (1. - uv[0]);
+    var leftImg = false;
+    
+    /*
+    vec2 fov = fovParams;
+    if (renderMode == 1) {
+      fov[1] *= 2.;
+      if (uv[0]<0.5) {
+        uv[0] *= 2.;
+        uv[0] += ipdAdjust;
+        leftImg=true; }
+      else {
+        uv[0] = 2.*(uv[0] - .5);
+        uv[0] -= ipdAdjust;
+      }
+         // lens distorter
+      float r2 = (uv[0]-0.5)*(uv[0]-0.5) + (uv[1]-0.5)*(uv[1]-0.5);
+      uv[0] = 0.5+(uv[0]-0.5)*(1. + k[0]*r2 + k[1]*r2*r2);
+      uv[1] = 0.5+(uv[1]-0.5)*(1. + k[0]*r2 + k[1]*r2*r2);
+      uv[0] = 0.5+fov[0]*(uv[0]-0.5);
+      uv[1] = 0.5+fov[1]*(uv[1]-0.5);
+    } else {
+         //constrain to FOV
+      uv[0] = 0.5+fov[0]*(uv[0]-0.5);
+      uv[1] = 0.5+fov[1]*(uv[1]-0.5);
+    }
+       //map uv[0] 0..1 to -PI..PI and uv[1] 0..1 to -PI/2..PI/2
+    float lat = 0.5*PI*(2.*uv[1]-1.0);
+    float lon = PI*(2.0*uv[0]-1.0);
+       // map lat/lon to point on unit sphere
+    float r = cos(lat);
+    vec4 sphere_pnt = vec4(r*cos(lon), r*sin(lon), sin(lat), 1.0);
+    sphere_pnt *= transform;
+       // now map point in sphere back to lat/lon coords
+    float sphere_pnt_len = length(sphere_pnt);
+    sphere_pnt /= sphere_pnt_len;
+    vec2 lonLat = vec2(atan(sphere_pnt[1], sphere_pnt[0]), asin(sphere_pnt.z));
+        // map back to 0..1
+    lonLat[0] = (lonLat[0]/(2.0*PI))+0.5;
+    lonLat[1] = (lonLat[1]/(.5*PI))+0.5;
+    */
+  }
+
   this.render = function() {
     this.controller.update();
     twgl.m4.copy(this.cameraMatrix, this.uniforms.transform);
