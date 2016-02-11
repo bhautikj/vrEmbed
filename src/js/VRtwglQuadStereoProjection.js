@@ -353,8 +353,8 @@ VRtwglQuadStereoProjection = function() {
       uv[1] = 0.5+fov[1]*(uv[1]-0.5);
     }
        //map uv[0] 0..1 to -PI..PI and uv[1] 0..1 to -PI/2..PI/2
-    float lat = 0.5*PI*(2.*uv[1]-1.0);
-    float lon = PI*(2.0*uv[0]-1.0);
+       "  lonLat.x = (lonLat.x/(2.0*PI))+0.5;\n"+
+       "  lonLat.y = (lonLat.y/(PI))+0.5;\n"+
        // map lat/lon to point on unit sphere
     float r = cos(lat);
     vec4 sphere_pnt = vec4(r*cos(lon), r*sin(lon), sin(lat), 1.0);
