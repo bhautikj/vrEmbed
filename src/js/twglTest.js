@@ -45,7 +45,7 @@ runTestStereographic = function() {
 
     var texArray = [];
     var texDescA = new VRTextureDescription();
-    texDescA.textureSource = 'src/assets/rheingauer_dom.jpg';
+    texDescA.textureSource = 'src/assets/rheingauer_dom_crv.jpg';
     texDescA.isStereo = false;
     texDescA.sphereFOV = [360,180];
     texDescA.sphereCentre = [0,0];
@@ -58,8 +58,8 @@ runTestStereographic = function() {
     var texDescB = new VRTextureDescription();
     texDescB.textureSource='src/assets/stereograph_b.jpg';
     texDescB.isStereo = true;
-    texDescB.sphereFOV = [90,90];
-    texDescB.sphereCentre = [0,0];
+    texDescB.sphereFOV = [30,30];
+    texDescB.sphereCentre = [30,30];
     texDescB.U_l = [0.,0.];
     texDescB.V_l = [.5,1.];
     texDescB.U_r = [.5,0.];
@@ -163,7 +163,7 @@ runTestMatrix = function() {
 
 };
 
-runTestMatrix();
+// runTestMatrix();
 //runTestBuffer();
-//runTest();
-//runTestStereographic();
+// runTest();
+runTestStereographic();

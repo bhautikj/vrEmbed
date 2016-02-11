@@ -29,7 +29,7 @@ VRDevices = {
     // icon
     icon: VRIcons.logoFullscreen,
     // horizontal field-of-view
-    hfov: 120,
+    hfov: 180,
     // % of screen width parallax to introduce in stereo
     // 0: no adjstment
     // 0.5: rotation centre moved to far left/right screen edges

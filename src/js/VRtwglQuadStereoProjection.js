@@ -13,6 +13,16 @@ var vs = "precision highp float;\n"+
 "  gl_Position = position;\n"+
 "}\n";
 
+var fsTex = "precision mediump float;\n"+
+"uniform vec2 resolution;\n"+
+"uniform sampler2D textureSource;\n"+
+"void main(void) {\n"+
+"  //normalize uv so it is between 0 and 1\n"+
+"  vec2 uv = gl_FragCoord.xy / resolution;\n"+
+"  uv.y = (1. - uv.y);\n"+
+"  gl_FragColor = texture2D(textureSource, uv);\n"+
+"}\n";
+
 var fsTest = "precision mediump float;\n"+
 "#define PI 3.141592653589793\n"+
 "uniform vec2 resolution;\n"+
@@ -150,20 +160,20 @@ var fsWindowed = "precision highp float;\n"+
 "  else {\n"+
 "    uv.y = 2.*(uv.y - .5);\n"+
 "  }\n"+
-"  //map uv.x 0..1 to -PI..PI and uv.y 0..1 to -PI/2..PI/2\n"+
-"  float lat = 0.5*PI*(2.*uv.y-1.0);\n"+
+  // map uv.x 0..1 to -PI..PI and uv.y 0..1 to -PI/2..PI/2
 "  float lon = PI*(2.0*uv.x-1.0);\n"+
-"  // map lat/lon to point on unit sphere\n"+
+"  float lat = 0.5*PI*(2.*uv.y-1.0);\n"+
 "  float r = cos(lat);\n"+
 "  vec4 sphere_pnt = vec4(r*cos(lon), r*sin(lon), sin(lat), 1.0);\n"+
 "  sphere_pnt *= transform;\n"+
-"  // now map point in sphere back to lat/lon coords\n"+
+   // now map point in sphere back to lat/lon coords
 "  float sphere_pnt_len = length(sphere_pnt);\n"+
-"  sphere_pnt /= sphere_pnt_len;\n"+
+  // disabling this seems to fix the scaling wonkiness??
+  // "  sphere_pnt /= sphere_pnt_len;\n"+
 "  vec2 lonLat = vec2(atan(sphere_pnt.y, sphere_pnt.x), asin(sphere_pnt.z));\n"+
-"  // map back to 0..1\n"+
+  // map back to 0..1
 "  lonLat.x = (lonLat.x/(2.0*PI))+0.5;\n"+
-"  lonLat.y = (lonLat.y/(.5*PI))+0.5;\n"+
+"  lonLat.y = (lonLat.y/(PI))+0.5;\n"+
 "  vec2 testPt = (lonLat-sphX);\n"+
 "  testPt = mod(testPt, 1.)/sphYX;\n"+
 "  // bail out if we're out of drawable region\n"+
@@ -317,7 +327,7 @@ VRtwglQuadStereoProjection = function() {
     var uv = [pt[0], pt[1]];
     uv[0] = (1. - uv[0]);
     var leftImg = false;
-    
+
     /*
     vec2 fov = fovParams;
     if (renderMode == 1) {
@@ -362,8 +372,9 @@ VRtwglQuadStereoProjection = function() {
     this.controller.update();
     twgl.m4.copy(this.cameraMatrix, this.uniforms.transform);
     this.uniforms["resolution"] = [self.vrtwglQuad.canvas.width, self.vrtwglQuad.canvas.height];
-    var aspect = self.vrtwglQuad.canvas.height/self.vrtwglQuad.canvas.width;
+    var aspect = 2.0*self.vrtwglQuad.canvas.height/self.vrtwglQuad.canvas.width;
     this.uniforms["fovParams"] = [this.fovX/360.0, aspect*this.fovX/360.0];
+    // console.log(this.uniforms["fovParams"]);
     this.uniforms["textureSource"] = self.vrtwglQuadFb.getFramebufferTexture();
     this.uniforms["textureGui"] = self.vrtwglQuadFbGui.getFramebufferTexture();
 

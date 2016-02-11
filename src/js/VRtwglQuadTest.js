@@ -13,6 +13,15 @@ var fs = "precision mediump float;\n"+
 "  gl_FragColor = vec4( uv.x,uv.y, 0.0, 1.0 );\n"+
 "}\n";
 
+var fsSin = "precision mediump float;\n"+
+"uniform vec2 resolution;\n"+
+"void main(void) {\n"+
+"  //normalize uv so it is between 0 and 1\n"+
+"  vec2 uv = gl_FragCoord.xy / resolution;\n"+
+"  float uxs = cos(uv.x);\n"+
+"  float usx = acos(uxs);\n"+
+"  gl_FragColor = vec4( usx-uv.x,0.0, 0.0, 1.0 );\n"+
+"}\n";
 
 VRtwglQuadTest = function() {
   var self = this;
@@ -20,7 +29,7 @@ VRtwglQuadTest = function() {
 
   this.init = function(element){
     this.vrtwglQuad = new VRtwglQuad();
-    this.vrtwglQuad.init(element, vs, fs);
+    this.vrtwglQuad.init(element, vs, fsSin);
   }
 
   this.resize = function() {
