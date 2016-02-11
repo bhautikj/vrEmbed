@@ -109,11 +109,12 @@ var fsRenderDisplay = "precision highp float;\n"+
 "  sphere_pnt *= transform;\n"+
    // now map point in sphere back to lat/lon coords
 "  float sphere_pnt_len = length(sphere_pnt);\n"+
-"  sphere_pnt /= sphere_pnt_len;\n"+
+  // disabling this seems to fix the scaling wonkiness??
+  // "  sphere_pnt /= sphere_pnt_len;\n"+
 "  vec2 lonLat = vec2(atan(sphere_pnt.y, sphere_pnt.x), asin(sphere_pnt.z));\n"+
-    // map back to 0..1
+  // map back to 0..1
 "  lonLat.x = (lonLat.x/(2.0*PI))+0.5;\n"+
-"  lonLat.y = (lonLat.y/(.5*PI))+0.5;\n"+
+"  lonLat.y = (lonLat.y/(PI))+0.5;\n"+
    // vanilla monocular render
 "  if (renderMode != 2) {\n"+
 "    if (renderMode == 0) {\n"+
