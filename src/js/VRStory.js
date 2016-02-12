@@ -192,7 +192,14 @@ VRStory = function() {
 
     // pointer events override gyro events
     if (self.quad.controller.pointer != null) {
-      var dir = self.quad.guiToLonLat([0.5,0.5]);
+      var xPos = 0.5;
+      var renderMode = this.quad.getRenderMode();
+      if (renderMode == VRRenderModes.STEREOSIDEBYSIDE){
+        var ipdAdjust = this.quad.getIPDAdjust();
+        xPos=0.25 - ipdAdjust*0.5;
+      }
+
+      var dir = self.quad.guiToLonLat([xPos,0.5]);
       // var dir = self.quad.guiToLonLat(self.quad.controller.pointer);
       this.direction[0] = dir[0];
       this.direction[1] = -1.0*dir[1];
@@ -248,23 +255,29 @@ VRStory = function() {
     var black = "#000000";
     var grey = "#666666";
     var orange = "#ff9900";
-    ctx.beginPath();
-    ctx.lineWidth = 12;
-    ctx.strokeStyle = black;
-    ctx.fillStyle = white;
-    ctx.arc(w/2,h/2,sz*100,0,2*Math.PI);
-    ctx.fill();
-    ctx.stroke();
 
-    ctx.beginPath();
-    ctx.strokeStyle = grey;
-    ctx.arc(w/2,h/2,sz*(100-20),ang,ang+0.5*Math.PI);
-    ctx.stroke();
+    var recticleList = this.getReticlePositions();
 
-    ctx.beginPath();
-    ctx.strokeStyle = orange;
-    ctx.arc(w/2,h/2,sz*(100-40),-2.*ang,-2.*ang+0.1*Math.PI);
-    ctx.stroke();
+    for (objit = 0;objit<recticleList.length; objit++){
+      var reticle = recticleList[objit];
+      ctx.beginPath();
+      ctx.lineWidth = 12;
+      ctx.strokeStyle = black;
+      ctx.fillStyle = white;
+      ctx.arc(reticle[0],reticle[1],sz*100,0,2*Math.PI);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.strokeStyle = grey;
+      ctx.arc(reticle[0],reticle[1],sz*(100-20),ang,ang+0.5*Math.PI);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.strokeStyle = orange;
+      ctx.arc(reticle[0],reticle[1],sz*(100-40),-2.*ang,-2.*ang+0.1*Math.PI);
+      ctx.stroke();
+    }
   }
 
   this.getReticlePositions = function() {
