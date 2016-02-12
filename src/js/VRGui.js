@@ -112,6 +112,8 @@ VRGui = function() {
 
   this.update = function(_pt, timestamp) {
     var pt = [_pt[0],_pt[1]];
+    // document.getElementById("log").innerHTML = Math.floor(_pt[0]) + "," + Math.floor(_pt[1]);
+
     var rv = 0.0;
     for(texIt = 0;texIt < this.canvasSet.length; texIt++) {
       var tv = this.canvasSet[texIt][1].update(pt, timestamp);

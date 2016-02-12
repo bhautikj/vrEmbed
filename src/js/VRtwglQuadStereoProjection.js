@@ -365,7 +365,7 @@ VRtwglQuadStereoProjection = function() {
     var r = Math.cos(lat);
     var sphere_pnt = [r*Math.cos(lon), r*Math.sin(lon), Math.sin(lat)];
     // sphere_pnt *= transform;
-    sphere_pnt = twgl.m4.transformDirection(uniforms.transform, sphere_pnt);
+    sphere_pnt = twgl.m4.transformPoint(uniforms.transform, sphere_pnt);
 
     // now map point in sphere back to lat/lon coords
     var lonLat = [Math.atan2(sphere_pnt[1], sphere_pnt[0]), Math.asin(sphere_pnt[2])];

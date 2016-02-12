@@ -194,6 +194,7 @@ VRLookController = function() {
   this.camera = null;
   this.mode = VRLookMode.MOUSE;
   this.euler = [0,0,0];
+  this.pointer = null;
 
   this.setCamera = function(camera){
     self.camera = camera;
@@ -201,6 +202,11 @@ VRLookController = function() {
 
   this.mouseMove = function(dx, dy, px, py) {
     self.vrMouseSpinner.mouseMove(dx, dy, px, py);
+    this.pointer = [px,py];
+  };
+
+  this.mouseStop = function() {
+    this.pointer = null;
   };
 
   this.checkModes = function() {
@@ -229,6 +235,10 @@ VRLookController = function() {
         break;
     }
   };
+
+  this.isGyro = function() {
+    return this.mode == VRLookMode.GYRO;
+  }
 
   // return yaw, pitch, roll in degrees
   this.getHeading = function() {

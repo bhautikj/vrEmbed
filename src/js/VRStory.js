@@ -15,6 +15,7 @@ VRStory = function() {
   this.vrGui = null;
   this.noGui = false;
   this.vrOptions = new VROptions();
+  this.direction = [0,0,0];
 
   //--
   this.quad = null;
@@ -175,28 +176,48 @@ VRStory = function() {
 
     self.manager.render(timestamp);
 
-    var now = Date.now();
-    var dir = self.quad.controller.getHeading();
-    self.quad.guiToLonLat([0.5,0.5]);
-    // console.log(dir[0] +',' + dir[1]);
-    // document.getElementById("log").innerHTML = Math.floor(dir[0]) + "," +
-    //                                            Math.floor(dir[1]) + "," +
-    //                                            Math.floor(dir[2]);
-    if (self.vrGui != null) {
-      var actionPercent = self.vrGui.update([dir[0], dir[1]],now);
-      self.clearCtx();
-      self.drawReticle(actionPercent);
 
-      if (self.quad.texReady == false) {
-        var pc = Math.min((now-self.quad.textureLoadStartAnim)/(self.quad.textureLoadEndAnim-self.quad.textureLoadStartAnim),1.0);
-        if (pc>=0.01) {
-          self.drawLoader(now, this.animPow(pc));
-        }
-      } else {
-        var pc = Math.min((now-self.quad.textureLoadStartAnim)/(self.quad.textureLoadEndAnim-self.quad.textureLoadStartAnim),1.0);
-        if (pc>=0.01) {
-          self.drawLoader(now, this.animPow(1.0-pc));
-        }
+    if (self.vrGui == null)
+      return;
+
+    var now = Date.now();
+    var dir = [];
+
+    if (self.quad.controller.isGyro()) {
+      var dir = self.quad.controller.getHeading();
+      this.direction[0] = dir[0];
+      this.direction[1] = dir[1];
+      this.direction[2] = 0;
+    }
+
+    // pointer events override gyro events
+    if (self.quad.controller.pointer != null) {
+      var dir = self.quad.guiToLonLat([0.5,0.5]);
+      // var dir = self.quad.guiToLonLat(self.quad.controller.pointer);
+      this.direction[0] = dir[0];
+      this.direction[1] = -1.0*dir[1];
+      this.direction[2] = 0;
+    } else if (!self.quad.controller.isGyro()){
+      this.direction = [null,null,null];
+    }
+
+    var actionPercent = 0;
+
+    if (this.direction[0]!=null)
+      actionPercent = self.vrGui.update([this.direction[0], this.direction[1]],now);
+
+    self.clearCtx();
+    self.drawReticle(actionPercent);
+
+    if (self.quad.texReady == false) {
+      var pc = Math.min((now-self.quad.textureLoadStartAnim)/(self.quad.textureLoadEndAnim-self.quad.textureLoadStartAnim),1.0);
+      if (pc>=0.01) {
+        self.drawLoader(now, this.animPow(pc));
+      }
+    } else {
+      var pc = Math.min((now-self.quad.textureLoadStartAnim)/(self.quad.textureLoadEndAnim-self.quad.textureLoadStartAnim),1.0);
+      if (pc>=0.01) {
+        self.drawLoader(now, this.animPow(1.0-pc));
       }
     }
   };
@@ -246,7 +267,7 @@ VRStory = function() {
     ctx.stroke();
   }
 
-  this.drawReticle = function(actionPercent) {
+  this.getReticlePositions = function() {
     var _ctx = this.quad.vrtwglQuad.get2dContext();
     if (_ctx == null)
       return;
@@ -264,6 +285,17 @@ VRStory = function() {
       recticleList.push([w/4 - ipdAdjust*w/2, h/2]);
       recticleList.push([3*w/4 + ipdAdjust*w/2, h/2]);
     }
+
+    return recticleList;
+  }
+
+  this.drawReticle = function(actionPercent) {
+    var _ctx = this.quad.vrtwglQuad.get2dContext();
+    if (_ctx == null)
+      return;
+    var ctx = _ctx[0];
+
+    var recticleList = this.getReticlePositions();
 
     for (objit = 0;objit<recticleList.length; objit++){
       var reticle = recticleList[objit];
@@ -373,9 +405,11 @@ VRStory = function() {
 
     this.parentElement.addEventListener("mousedown", function (ev) {
         this.parentElement.addEventListener("mousemove", self.mouseMove, false);
+        self.mouseMove(ev);
     }, false);
 
     this.parentElement.addEventListener("mouseup", function (ev) {
+        self.quad.controller.mouseStop();
         this.parentElement.removeEventListener("mousemove", self.mouseMove, false);
     }, false);
 
