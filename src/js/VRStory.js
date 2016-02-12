@@ -177,6 +177,7 @@ VRStory = function() {
 
     var now = Date.now();
     var dir = self.quad.controller.getHeading();
+    self.quad.guiToLonLat([0.5,0.5]);
     // console.log(dir[0] +',' + dir[1]);
     // document.getElementById("log").innerHTML = Math.floor(dir[0]) + "," +
     //                                            Math.floor(dir[1]) + "," +

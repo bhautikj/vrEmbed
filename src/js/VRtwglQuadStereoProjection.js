@@ -325,24 +325,29 @@ VRtwglQuadStereoProjection = function() {
   }
 
   this.guiToLonLat = function(pt) {
+    var uniforms = this.uniforms;
+
     var uv = [pt[0], pt[1]];
     uv[0] = (1. - uv[0]);
     var leftImg = false;
 
-    /*
-    vec2 fov = fovParams;
+    var fov = [uniforms.fovParams[0], uniforms.fovParams[1]];
+    var k = uniforms.k;
+    var renderMode = uniforms.renderMode;
+    var ipdAdjust = uniforms.ipdAdjust;
+
     if (renderMode == 1) {
       fov[1] *= 2.;
       if (uv[0]<0.5) {
         uv[0] *= 2.;
         uv[0] += ipdAdjust;
-        leftImg=true; }
-      else {
+        leftImg=true;
+      } else {
         uv[0] = 2.*(uv[0] - .5);
         uv[0] -= ipdAdjust;
       }
          // lens distorter
-      float r2 = (uv[0]-0.5)*(uv[0]-0.5) + (uv[1]-0.5)*(uv[1]-0.5);
+      var r2 = (uv[0]-0.5)*(uv[0]-0.5) + (uv[1]-0.5)*(uv[1]-0.5);
       uv[0] = 0.5+(uv[0]-0.5)*(1. + k[0]*r2 + k[1]*r2*r2);
       uv[1] = 0.5+(uv[1]-0.5)*(1. + k[0]*r2 + k[1]*r2*r2);
       uv[0] = 0.5+fov[0]*(uv[0]-0.5);
@@ -352,21 +357,23 @@ VRtwglQuadStereoProjection = function() {
       uv[0] = 0.5+fov[0]*(uv[0]-0.5);
       uv[1] = 0.5+fov[1]*(uv[1]-0.5);
     }
-       //map uv[0] 0..1 to -PI..PI and uv[1] 0..1 to -PI/2..PI/2
-       "  lonLat.x = (lonLat.x/(2.0*PI))+0.5;\n"+
-       "  lonLat.y = (lonLat.y/(PI))+0.5;\n"+
-       // map lat/lon to point on unit sphere
-    float r = cos(lat);
-    vec4 sphere_pnt = vec4(r*cos(lon), r*sin(lon), sin(lat), 1.0);
-    sphere_pnt *= transform;
-       // now map point in sphere back to lat/lon coords
-    float sphere_pnt_len = length(sphere_pnt);
-    sphere_pnt /= sphere_pnt_len;
-    vec2 lonLat = vec2(atan(sphere_pnt[1], sphere_pnt[0]), asin(sphere_pnt.z));
-        // map back to 0..1
-    lonLat[0] = (lonLat[0]/(2.0*PI))+0.5;
-    lonLat[1] = (lonLat[1]/(.5*PI))+0.5;
-    */
+
+    //map uv.x 0..1 to -PI..PI and uv.y 0..1 to -PI/2..PI/2
+    var lon = Math.PI*(2.0*uv[0]-1.0);
+    var lat = 0.5*Math.PI*(2.*uv[1]-1.0);
+    // map lat/lon to point on unit sphere
+    var r = Math.cos(lat);
+    var sphere_pnt = [r*Math.cos(lon), r*Math.sin(lon), Math.sin(lat)];
+    // sphere_pnt *= transform;
+    sphere_pnt = twgl.m4.transformDirection(uniforms.transform, sphere_pnt);
+
+    // now map point in sphere back to lat/lon coords
+    var lonLat = [Math.atan2(sphere_pnt[1], sphere_pnt[0]), Math.asin(sphere_pnt[2])];
+    // map back to 0..1
+    // lonLat[0] = (lonLat[0]/(2.0*Math.PI))+0.5;
+    // lonLat[1] = (lonLat[1]/(Math.PI))+0.5;
+
+    return [180.0*lonLat[0]/Math.PI, 180.0*lonLat[1]/Math.PI];
   }
 
   this.render = function() {
