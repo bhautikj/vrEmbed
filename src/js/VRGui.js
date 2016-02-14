@@ -47,8 +47,13 @@ VRGuiTimer = function() {
   }
 
   this.update = function(pt, timestamp) {
-    if (this.callback == null)
+    if (this.callback == null){
+      if (this.isInBoundingBox(pt, this.canvas.vrTextureDescription))
+        this.in = true;
+      else
+        this.in = false;
       return 0.0;
+    }
 
     if (this.isInBoundingBox(pt, this.canvas.vrTextureDescription)) {
       // start timer
@@ -92,12 +97,17 @@ VRGuiTimer = function() {
     console.log("FIRING CALLBACK!");
     this.callback();
   }
-
 }
 
 VRGui = function() {
   this.canvasSet = [];
   this.gl = null;
+  this.guiHover = false;
+
+
+  this.isHovering = function() {
+    return this.guiHover;
+  }
 
   this.init = function(gl) {
     this.gl = gl;
@@ -111,12 +121,21 @@ VRGui = function() {
   }
 
   this.update = function(_pt, timestamp) {
-    var pt = [_pt[0],1.2*_pt[1]];
+    var pt = [_pt[0],_pt[1]];
+    // document.getElementById("log").innerHTML = Math.floor(_pt[0]) + "," + Math.floor(_pt[1]);
+
+    this.guiHover = false;
     var rv = 0.0;
     for(texIt = 0;texIt < this.canvasSet.length; texIt++) {
       var tv = this.canvasSet[texIt][1].update(pt, timestamp);
       if (tv>rv) {
         rv = tv;
+      }
+
+      if (this.canvasSet[texIt]!=undefined) {
+        if (this.canvasSet[texIt][1].in == true) {
+          this.guiHover = true;
+        }
       }
     }
     // if (rv>0.0)
@@ -132,6 +151,16 @@ VRGui = function() {
     var vrGuiTimer = new VRGuiTimer();
     vrGuiTimer.init(vrCanvasTextBox, callback);
     this.canvasSet.push([vrCanvasTextBox, vrGuiTimer]);
+  }
+
+  this.createArrow = function(hfov, x, y, callback, isLeft) {
+    var vrCanvasArrow = VRCanvasFactory.createCanvasArrow();
+    vrCanvasArrow.init(this.gl, hfov, isLeft);
+    vrCanvasArrow.vrTextureDescription.sphereCentre = [x, y];
+    vrCanvasArrow.update(self.tick);
+    var vrGuiTimer = new VRGuiTimer();
+    vrGuiTimer.init(vrCanvasArrow, callback);
+    this.canvasSet.push([vrCanvasArrow, vrGuiTimer]);
   }
 }
 

@@ -31,21 +31,19 @@ function VRLookControlBase() {
 }
 
 VRLookControlBase.prototype.updateBase = function(cameraMatrix) {
-  var rotMat = twgl.m4.identity();
+  this.baseMat = twgl.m4.identity();
 
-  twgl.m4.copy(rotMat, cameraMatrix);
-  // twgl.m4.rotateY(cameraMatrix, Math.PI/2, cameraMatrix);
-  twgl.m4.rotateX(cameraMatrix, Math.PI, cameraMatrix);
-  // twgl.m4.rotateZ(cameraMatrix, Math.PI/2, cameraMatrix);
-  // twgl.m4.rotateX(cameraMatrix, Math.PI, cameraMatrix);
-
+  twgl.m4.rotateX(this.baseMat, Math.PI, this.baseMat);
   //roll
-  twgl.m4.rotateX(cameraMatrix, this.eulerX, cameraMatrix);
+  twgl.m4.rotateX(this.baseMat, this.eulerX, this.baseMat);
   //pitch
-  twgl.m4.rotateY(cameraMatrix, this.eulerY, cameraMatrix);
+  twgl.m4.rotateY(this.baseMat, this.eulerY, this.baseMat);
   //yaw
-  twgl.m4.rotateZ(cameraMatrix, this.eulerZ, cameraMatrix);
+  twgl.m4.rotateZ(this.baseMat, this.eulerZ, this.baseMat);
+
+  twgl.m4.copy(this.baseMat, cameraMatrix);
 };
+
 
 VRLookControlBase.prototype.setEuler = function(x,y,z) {
   this.eulerX = x;
@@ -91,7 +89,7 @@ VRMouseSpinner = function() {
 
 VRMouseSpinner.prototype = new VRLookControlBase();
 
-VRMouseSpinner.prototype.mouseMove = function(dX, dY){
+VRMouseSpinner.prototype.mouseMove = function(dX, dY, pX, pY){
   this.eulerY = this.eulerY + (dY * 0.01);
   this.eulerZ = this.eulerZ - (dX * 0.01);
 }
@@ -196,13 +194,19 @@ VRLookController = function() {
   this.camera = null;
   this.mode = VRLookMode.MOUSE;
   this.euler = [0,0,0];
+  this.pointer = null;
 
   this.setCamera = function(camera){
     self.camera = camera;
   };
 
-  this.mouseMove = function(dx, dy) {
-    self.vrMouseSpinner.mouseMove(dx, dy);
+  this.mouseMove = function(dx, dy, px, py) {
+    self.vrMouseSpinner.mouseMove(dx, dy, px, py);
+    this.pointer = [px,py];
+  };
+
+  this.mouseStop = function() {
+    this.pointer = null;
   };
 
   this.checkModes = function() {
@@ -231,6 +235,10 @@ VRLookController = function() {
         break;
     }
   };
+
+  this.isGyro = function() {
+    return this.mode == VRLookMode.GYRO;
+  }
 
   // return yaw, pitch, roll in degrees
   this.getHeading = function() {

@@ -66,9 +66,90 @@ VRCanvasSpinner.prototype.update = function(time) {
   this.updateBase();
 }
 
+VRCanvasArrow = function() {};
+VRCanvasArrow.prototype = new VRCanvasBase();
+VRCanvasArrow.prototype.init = function(gl, hfov, isLeft) {
+  this.initBase(gl);
+  this.ctx.canvas.width  = 256;
+  this.ctx.canvas.height = 256;
+  this.isLeft = isLeft;
+  this.vrTextureDescription.sphereFOV = [hfov,hfov];
+}
+
+VRCanvasArrow.prototype.update = function(time) {
+  this.ctx.beginPath();
+  this.ctx.lineWidth = 32;
+  this.ctx.strokeStyle = 'rgba(0,0,0,1.0)';
+  this.ctx.fillStyle = 'rgba(255,255,255,1.0)';
+  if (this.isLeft == false) {
+    this.ctx.moveTo(128,32);
+    this.ctx.lineTo(224,128);
+    this.ctx.lineTo(128,224);
+    //haft
+    this.ctx.lineTo(128,168);
+    this.ctx.lineTo(32,168);
+    this.ctx.lineTo(32,88);
+    //arrow top
+    this.ctx.lineTo(128,88);
+    this.ctx.lineTo(128,32);
+  } else {
+    this.ctx.moveTo(128,32);
+    this.ctx.lineTo(32,128);
+    this.ctx.lineTo(128,224);
+    //haft
+    this.ctx.lineTo(128,168);
+    this.ctx.lineTo(224,168);
+    this.ctx.lineTo(224,88);
+    //arow top
+    this.ctx.lineTo(128,88);
+    this.ctx.lineTo(128,32);
+  }
+  this.ctx.closePath();
+  this.ctx.stroke();
+  this.ctx.fill();
+  this.updateBase();
+}
+
+
+//via: http://www.html5canvastutorials.com/tutorials/html5-canvas-wrap-text-tutorial/
+
+function wrapText(context, text, maxWidth) {
+  var words = text.split(' ');
+  var line = '';
+  var lineSet = [];
+  var maxw = 0;
+  var lastWidth = 0;
+
+  var testWidth = 0;
+  for(var n = 0; n < words.length; n++) {
+    var testLine = line + words[n] + ' ';
+    var metrics = context.measureText(testLine);
+    testWidth = metrics.width;
+    lastWidth = testWidth;
+    if (testWidth > maxWidth && n > 0) {
+      if (testWidth > maxw)
+        maxw = lastWidth;
+      lineSet.push(line);
+      line = words[n] + ' ';
+    }
+    else {
+      line = testLine;
+    }
+  }
+
+  if (testWidth > maxw)
+    maxw = testWidth;
+  lineSet.push(line);
+
+  return [lineSet, maxw*0.9];
+}
+
+
 VRCanvasTextBox = function() {};
 VRCanvasTextBox.prototype = new VRCanvasBase();
 VRCanvasTextBox.prototype.init = function(gl, message, hfov, options) {
+
+  // var message = 'All the world \'s a stage, and all the men and women merely players. They have their exits and their entrances; And one man in his time plays many parts.';
   this.initBase(gl);
   var fontface = options.hasOwnProperty("fontface") ?
     options["fontface"] : "Arial";
@@ -83,7 +164,7 @@ VRCanvasTextBox.prototype.init = function(gl, message, hfov, options) {
     options["borderColor"] : { r:255, g:255, b:255, a:1.0 };
 
   var backgroundColor = options.hasOwnProperty("backgroundColor") ?
-    options["backgroundColor"] : { r:0, g:0, b:0, a:0.7};
+    options["backgroundColor"] : { r:0, g:0, b:0, a:1.0};
 
   this.ctx.font = "Bold " + fontsize + "px " + fontface;
   //this.ctx.font="72px Arial";
@@ -92,10 +173,12 @@ VRCanvasTextBox.prototype.init = function(gl, message, hfov, options) {
 
   var heightMult = 1.4;//12->1.4
   // get size data (height depends only on font size)
-  var metrics = this.ctx.measureText( message );
-  var textWidth = metrics.width;
-  this.ctx.canvas.width  = (textWidth + 2*borderThickness);
-  this.ctx.canvas.height = (fontsize *heightMult + 2*borderThickness);
+  var lineSetData = wrapText(this.ctx, message, this.ctx.canvas.width/2);
+  var lineSet = lineSetData[0];
+  var textWidth = lineSetData[1];
+
+  this.ctx.canvas.width  = (textWidth + 4*borderThickness);
+  this.ctx.canvas.height = (lineSet.length*fontsize *heightMult + 2*borderThickness);
 
   // background color
   this.ctx.fillStyle   = "rgba(" + backgroundColor.r + "," + backgroundColor.g + ","
@@ -104,23 +187,21 @@ VRCanvasTextBox.prototype.init = function(gl, message, hfov, options) {
   this.ctx.strokeStyle = "rgba(" + borderColor.r + "," + borderColor.g + ","
                   + borderColor.b + "," + borderColor.a + ")";
 
-  // debug
-  // this.ctx.fillStyle = "blue";
-  // this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.width);
-
   this.ctx.lineWidth = borderThickness;
-  roundRect(this.ctx, borderThickness/2, borderThickness/2, textWidth + borderThickness, fontsize *heightMult + borderThickness, 6);
+  roundRect(this.ctx, borderThickness/2, borderThickness/2, textWidth + borderThickness, lineSet.length*fontsize *heightMult + borderThickness, 6);
   // 1.4 is extra height factor for text below baseline: g,j,p,q.
-
 
   // text color
   this.ctx.fillStyle = "rgba(" + borderColor.r + "," + borderColor.g + ","
                        + borderColor.b + "," + borderColor.a + ")";
-
-  //this.ctx.font = "Bold " + fontsize + "px " + fontface;
   this.ctx.font = fontsize + "px " + fontface;
   this.ctx.textAlign="start";
-  this.ctx.fillText( message, borderThickness, fontsize + borderThickness);
+
+  for(var n = 0; n < lineSet.length; n++) {
+    var line = lineSet[n];
+    this.ctx.fillText( line, borderThickness*4, (n+1)*fontsize*heightMult);
+  }
+  // var th = wrapText(this.ctx, message, borderThickness, borderThickness, 4096, fontsize );
 
   var w = this.ctx.canvas.width;
   var h = this.ctx.canvas.height;
@@ -137,6 +218,9 @@ VRCanvasFactoryCore = function() {
   }
   this.createCanvasTextBox = function() {
     return new VRCanvasTextBox();
+  }
+  this.createCanvasArrow = function() {
+    return new VRCanvasArrow();
   }
 }
 

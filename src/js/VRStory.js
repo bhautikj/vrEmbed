@@ -15,6 +15,7 @@ VRStory = function() {
   this.vrGui = null;
   this.noGui = false;
   this.vrOptions = new VROptions();
+  this.direction = [0,0,0];
 
   //--
   this.quad = null;
@@ -163,6 +164,10 @@ VRStory = function() {
     this.isVisible = this.isInViewport();
   }
 
+  this.animPow = function(val) {
+    return 2.*(Math.pow(2.,val)/2. - 0.5);
+  }
+
   // Request animation frame loop function
   this.animate = function(timestamp) {
     this.checkVisible();
@@ -171,18 +176,68 @@ VRStory = function() {
 
     self.manager.render(timestamp);
 
+
+    if (self.vrGui == null)
+      return;
+
     var now = Date.now();
-    var dir = self.quad.controller.getHeading();
-    // document.getElementById("log").innerHTML = Math.floor(dir[0]) + "," +
-    //                                            Math.floor(dir[1]) + "," +
-    //                                            Math.floor(dir[2]);
-    if (self.vrGui != null) {
-      var actionPercent = self.vrGui.update([dir[0], dir[1]],now);
-      self.drawReticle(actionPercent);
+    var dir = [];
+
+    if (self.quad.controller.isGyro()) {
+      var dir = self.quad.controller.getHeading();
+      this.direction[0] = dir[0];
+      this.direction[1] = dir[1];
+      this.direction[2] = 0;
+    }
+
+    // gui opacity
+
+    if (this.vrGui.isHovering()) {
+      self.quad.setGuiMult(Math.min(1.0, self.quad.getGuiMult()+0.05));
+    } else {
+      self.quad.setGuiMult(Math.max(0.3, self.quad.getGuiMult()-0.05));
+    }
+
+    // pointer events override gyro events
+    if (self.quad.controller.pointer != null) {
+      var xPos = 0.5;
+      var renderMode = this.quad.getRenderMode();
+      if (renderMode == VRRenderModes.STEREOSIDEBYSIDE){
+        var ipdAdjust = this.quad.getIPDAdjust();
+        xPos=0.25 - ipdAdjust*0.5;
+      }
+
+      var dir = self.quad.guiToLonLat([xPos,0.5]);
+      // var dir = self.quad.guiToLonLat(self.quad.controller.pointer);
+      this.direction[0] = dir[0];
+      this.direction[1] = -1.0*dir[1];
+      this.direction[2] = 0;
+    } else if (!self.quad.controller.isGyro()){
+      this.direction = [null,null,null];
+    }
+
+    var actionPercent = 0;
+
+    if (this.direction[0]!=null)
+      actionPercent = self.vrGui.update([this.direction[0], this.direction[1]],now);
+
+    self.clearCtx();
+    self.drawReticle(actionPercent);
+
+    if (self.quad.texReady == false) {
+      var pc = Math.min((now-self.quad.textureLoadStartAnim)/(self.quad.textureLoadEndAnim-self.quad.textureLoadStartAnim),1.0);
+      if (pc>=0.01) {
+        self.drawLoader(now, this.animPow(pc));
+      }
+    } else {
+      var pc = Math.min((now-self.quad.textureLoadStartAnim)/(self.quad.textureLoadEndAnim-self.quad.textureLoadStartAnim),1.0);
+      if (pc>=0.01) {
+        self.drawLoader(now, this.animPow(1.0-pc));
+      }
     }
   };
 
-  this.drawReticle = function(actionPercent) {
+  this.clearCtx = function() {
     var _ctx = this.quad.vrtwglQuad.get2dContext();
     if (_ctx == null)
       return;
@@ -191,6 +246,56 @@ VRStory = function() {
     var h = _ctx[2];
 
     ctx.clearRect(0, 0, w, h);
+  }
+
+  this.drawLoader = function(now, sz) {
+    var _ctx = this.quad.vrtwglQuad.get2dContext();
+    if (_ctx == null)
+      return;
+    var ctx = _ctx[0];
+    var w = _ctx[1];
+    var h = _ctx[2];
+
+    var angTime = (now % 1500)/1500.0;
+    var ang = 2*Math.PI*(angTime);
+
+    var white = "#ffffff";
+    var black = "#000000";
+    var grey = "#666666";
+    var orange = "#ff9900";
+
+    var recticleList = this.getReticlePositions();
+
+    for (objit = 0;objit<recticleList.length; objit++){
+      var reticle = recticleList[objit];
+      ctx.beginPath();
+      ctx.lineWidth = 12;
+      ctx.strokeStyle = black;
+      ctx.fillStyle = white;
+      ctx.arc(reticle[0],reticle[1],sz*100,0,2*Math.PI);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.strokeStyle = grey;
+      ctx.arc(reticle[0],reticle[1],sz*(100-20),ang,ang+0.5*Math.PI);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.strokeStyle = orange;
+      ctx.arc(reticle[0],reticle[1],sz*(100-40),-2.*ang,-2.*ang+0.1*Math.PI);
+      ctx.stroke();
+    }
+  }
+
+  this.getReticlePositions = function() {
+    var _ctx = this.quad.vrtwglQuad.get2dContext();
+    if (_ctx == null)
+      return;
+    var ctx = _ctx[0];
+    var w = _ctx[1];
+    var h = _ctx[2];
+
     var recticleList = [];
 
     var renderMode = this.quad.getRenderMode();
@@ -201,6 +306,17 @@ VRStory = function() {
       recticleList.push([w/4 - ipdAdjust*w/2, h/2]);
       recticleList.push([3*w/4 + ipdAdjust*w/2, h/2]);
     }
+
+    return recticleList;
+  }
+
+  this.drawReticle = function(actionPercent) {
+    var _ctx = this.quad.vrtwglQuad.get2dContext();
+    if (_ctx == null)
+      return;
+    var ctx = _ctx[0];
+
+    var recticleList = this.getReticlePositions();
 
     for (objit = 0;objit<recticleList.length; objit++){
       var reticle = recticleList[objit];
@@ -260,23 +376,29 @@ VRStory = function() {
   }
 
   this.guiGen = function() {
-   var numScenes = self.sceneList.length;
-   if (self.currentSceneIndex>0) {
-     this.vrGui.createTextBox(15,
-                               -30,
-                               -30,
-                               this.prevScene,
-                               " prev ",
-                               {fontsize:72, borderThickness:4});
-   }
+    // iterate over scene gui objects
+    var curScene = this.sceneList[this.currentSceneIndex];
+    var guiObjects = curScene.guiObjects;
+    for (g = 0;g<guiObjects.length; g++){
+      // just assuming text nodes only for now
+      var guiObject = guiObjects[g];
+      this.vrGui.createTextBox(guiObject.textureDescription.sphereFOV[0],
+                               guiObject.textureDescription.sphereCentre[0],
+                               guiObject.textureDescription.sphereCentre[1],
+                               null,
+                               guiObject.message,
+                               {fontsize:72, borderThickness:12});
+    }
 
-   if (self.currentSceneIndex<(numScenes-1)) {
-     this.vrGui.createTextBox(15,
-                              30,
-                              -30,
-                              this.nextScene,
-                              " next ",
-                              {fontsize:72, borderThickness:4});
+    var numScenes = self.sceneList.length;
+    if (self.currentSceneIndex>0) {
+      // prev
+      this.vrGui.createArrow(15, -30, -40, this.prevScene, true);
+    }
+
+    if (self.currentSceneIndex<(numScenes-1)) {
+      //next
+      this.vrGui.createArrow(15, 30, -40, this.nextScene, false);
     }
     this.quad.renderGui();
   }
@@ -297,14 +419,24 @@ VRStory = function() {
       var mx = ev.movementX || ev.mozMovementX || ev.webkitMovementX || 0;
       var my = ev.movementY || ev.mozMovementY || ev.webkitMovementY || 0;
       //console.log(mx + "," + my);
-      self.quad.controller.mouseMove(mx, my);
+
+      ev = ev || window.event;
+
+      var target = ev.target || ev.srcElement,
+          rect = target.getBoundingClientRect(),
+          offsetX = ev.clientX - rect.left,
+          offsetY = ev.clientY - rect.top;
+
+      self.quad.controller.mouseMove(mx, my, offsetX/rect.width, offsetY/rect.height);
     };
 
     this.parentElement.addEventListener("mousedown", function (ev) {
         this.parentElement.addEventListener("mousemove", self.mouseMove, false);
+        self.mouseMove(ev);
     }, false);
 
     this.parentElement.addEventListener("mouseup", function (ev) {
+        self.quad.controller.mouseStop();
         this.parentElement.removeEventListener("mousemove", self.mouseMove, false);
     }, false);
 
