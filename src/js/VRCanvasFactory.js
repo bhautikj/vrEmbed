@@ -100,9 +100,9 @@ function wrapText(context, text, maxWidth) {
 
 VRCanvasTextBox = function() {};
 VRCanvasTextBox.prototype = new VRCanvasBase();
-VRCanvasTextBox.prototype.init = function(gl, _message, hfov, options) {
+VRCanvasTextBox.prototype.init = function(gl, message, hfov, options) {
 
-  var message = 'All the world \'s a stage, and all the men and women merely players. They have their exits and their entrances; And one man in his time plays many parts.';
+  // var message = 'All the world \'s a stage, and all the men and women merely players. They have their exits and their entrances; And one man in his time plays many parts.';
   this.initBase(gl);
   var fontface = options.hasOwnProperty("fontface") ?
     options["fontface"] : "Arial";
