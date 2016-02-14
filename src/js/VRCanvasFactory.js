@@ -82,16 +82,29 @@ VRCanvasArrow.prototype.update = function(time) {
   this.ctx.strokeStyle = 'rgba(0,0,0,1.0)';
   this.ctx.fillStyle = 'rgba(255,255,255,1.0)';
   if (this.isLeft == false) {
-    this.ctx.moveTo(32,32);
+    this.ctx.moveTo(128,32);
     this.ctx.lineTo(224,128);
-    this.ctx.lineTo(32,224);
-    this.ctx.lineTo(32,32);
+    this.ctx.lineTo(128,224);
+    //haft
+    this.ctx.lineTo(128,168);
+    this.ctx.lineTo(32,168);
+    this.ctx.lineTo(32,88);
+    //arrow top
+    this.ctx.lineTo(128,88);
+    this.ctx.lineTo(128,32);
   } else {
-    this.ctx.moveTo(224,32);
+    this.ctx.moveTo(128,32);
     this.ctx.lineTo(32,128);
-    this.ctx.lineTo(224,224);
-    this.ctx.lineTo(224,32);
+    this.ctx.lineTo(128,224);
+    //haft
+    this.ctx.lineTo(128,168);
+    this.ctx.lineTo(224,168);
+    this.ctx.lineTo(224,88);
+    //arow top
+    this.ctx.lineTo(128,88);
+    this.ctx.lineTo(128,32);
   }
+  this.ctx.closePath();
   this.ctx.stroke();
   this.ctx.fill();
   this.updateBase();

@@ -393,12 +393,12 @@ VRStory = function() {
     var numScenes = self.sceneList.length;
     if (self.currentSceneIndex>0) {
       // prev
-      this.vrGui.createArrow(7, -30, -30, this.prevScene, true);
+      this.vrGui.createArrow(15, -30, -40, this.prevScene, true);
     }
 
     if (self.currentSceneIndex<(numScenes-1)) {
       //next
-      this.vrGui.createArrow(7, 30, -30, this.nextScene, false);
+      this.vrGui.createArrow(15, 30, -40, this.nextScene, false);
     }
     this.quad.renderGui();
   }
