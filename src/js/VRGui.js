@@ -108,7 +108,7 @@ VRGui = function() {
   this.isHovering = function() {
     return this.guiHover;
   }
-  
+
   this.init = function(gl) {
     this.gl = gl;
   }
@@ -132,8 +132,10 @@ VRGui = function() {
         rv = tv;
       }
 
-      if (this.canvasSet[texIt][1].in == true) {
-        this.guiHover = true;
+      if (this.canvasSet[texIt]!=undefined) {
+        if (this.canvasSet[texIt][1].in == true) {
+          this.guiHover = true;
+        }
       }
     }
     // if (rv>0.0)
