@@ -76,15 +76,18 @@
       <div class="figure"><img src="src/assets/vrembed_interface.jpg" width=350px/></div>
     </div>
   </div>
+
+  <div class="row"><br/></div>
   <div class="row">
-    <div class="one-half column">
-      Bottom center is the 'fullscreen' button which will take the vrEmbed and make it fullscreen. On mobile you need to turn the device on its side to landscape orientaiton to enger this mode. This is the mode to use if you are using a VR headset such as Google Cardboard or Gear VR.
-    </div>
     <div class="one-half column">
       <div class="figure"><img src="src/assets/vrembed_interface_fullscreen.png"/></div>
     </div>
+    <div class="one-half column">
+      Bottom center is the 'fullscreen' button which will take the vrEmbed and make it fullscreen. On mobile you need to turn the device on its side to landscape orientaiton to enger this mode. This is the mode to use if you are using a VR headset such as Google Cardboard or Gear VR.
+    </div>
   </div>
 
+  <div class="row"><br/></div>
   <div class="row">
     <div class="one-half column">
       <div class="figure"><img src="src/assets/vrembed_interface_reticle.png"/></div>
@@ -94,15 +97,27 @@
     </div>
   </div>
 
+  <div class="row"><br/></div>
   <div class="row">
     <div class="one-half column">
-      On the top right you can hit the settings button to access the device selection menu that allows you to select how you want the vrEmbed displayed when in fullscreen mode:
+      <div class="figure"><img src="src/assets/vrembed_interface_prev_next.png" width=100%/></div>
     </div>
     <div class="one-half column">
-      <div class="figure"><img src="src/assets/vrembed_interface_settings.png"/></div>
+      If there are multiple scenes in the vrEmbed, you can move between them by hovering over the left and right arrows in front and just below you in the scene. The left arrow goes to the previous scene and the right arrow takes you to the next scene.
     </div>
   </div>
 
+  <div class="row"><br/></div>
+  <div class="row">
+    <div class="one-half column">
+      <div class="figure"><img src="src/assets/vrembed_interface_settings.png"/></div>
+    </div>
+    <div class="one-half column">
+      On the top right you can hit the settings button to access the device selection menu that allows you to select how you want the vrEmbed displayed when in fullscreen mode:
+    </div>
+  </div>
+
+  <div class="row"><br/></div>
   <div class="row">
     <div class="one-half column">
       <div class="figure"><img src="src/assets/vrembed_interface_devices.png"/></div>
@@ -111,6 +126,7 @@
       The <b>fullscreen</b> device is just a plain window; <b>red-blue</b> is for when you are using red-blue glasses. The rest of the devices listed are side-by-side stereo modes for when you are using VR headsets.
     </div>
   </div>
+
 </div>
 
 <a name="creating_a_vrEmbed"></a>
@@ -190,6 +206,36 @@
     </story><script async src="vrEmbed.min.js" charset="utf-8"></script>
 </div></div></div>
 
+<h2>Adding captions</h2>
+<a name="adding_captions"></a>
+<div class="container">
+  <div class="row">
+    <div class="one-third column">
+      Adding captions and text to your scene is easy! In the scene tag, add a <i>text</i> tag; specify it's location using sphereParams and encose your text within the tag. At this stage the text box sizes to fit the horizontal field-of-view specified in sphereParams, and we're not supporting text styling (yet).
+    </div>
+    <div class="two-thirds column">
+      <div class="code">
+        &lt;div&gt;
+        <br/>&nbsp;&lt;story&gt;
+        <br/>&nbsp;&nbsp;&lt;scene&gt;
+        <br/>&nbsp;&nbsp;&nbsp;&lt;photo src=&quot;http://vrembed.org/src/assets/byobw_2014_a.jpg&quot; isStereo=&quot;false&quot; sphereParams=&quot;100,66,-20,0&quot;/&gt;
+        <br/>&nbsp;&nbsp;&nbsp;&lt;text sphereParams=&quot;45,30,25,10&quot;/&gt;BRING YOUR OWN BIG WHEEL: every year on Easter Sunday San Francisco locals turn out in droves at the actual, most crooked street in the city for the annual BYOBW races. On a variety of pre-made, home-made and soon-to-be-unmade contraptions they race down in costume. There's no winner but no losers either; you won't find a single face that isn't smiling and having an incredibly good time.&lt;/text&gt;
+        <br/>&nbsp;&nbsp;&lt;/scene&gt;
+        <br/>&nbsp;&lt;/story&gt;&lt;script async src=&quot;//vrEmbed.org/vrEmbed.min.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
+        <br/>&lt;/div&gt;
+      </div>
+    </div>
+  </div>
+</div>
+
+<div align=center><div class="stretchy-wrapper"><div>
+    <story>
+      <scene>
+        <photo src="src/assets/byobw_2014_a.jpg" isStereo="false" sphereParams="100,66,-20,0"/>
+        <text sphereParams="45,30,25,10"/>BRING YOUR OWN BIG WHEEL: every year on Easter Sunday San Francisco locals turn out in droves at the actual, most crooked street in the city for the annual BYOBW races. On a variety of pre-made, home-made and soon-to-be-unmade contraptions they race down in costume. There's no winner but no losers either; you won't find a single face that isn't smiling and having an incredibly good time.</text>
+      </scene>
+    </story><script async src="vrEmbed.min.js" charset="utf-8"></script>
+</div></div></div>
 
 <h2>Multiple scenes</h2>
 

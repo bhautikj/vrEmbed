@@ -436,7 +436,7 @@ VRtwglQuadStereoProjection = function() {
         self.uniformsFb["textureSource"] = self.textures[key];
         self.uniformsFb["sphX"] = [0.5-0.5*(textureDesc.sphereFOV[0]/360.0),0.5-0.5*(textureDesc.sphereFOV[1]/180.0)];
         self.uniformsFb["sphYX"] = [(textureDesc.sphereFOV[0]/360.0),(textureDesc.sphereFOV[1]/180.0)];
-        self.uniformsFb["transform"] = self.createOrientation(Math.PI*textureDesc.sphereCentre[0]/-180.0, Math.PI*textureDesc.sphereCentre[1]/-180.0);
+        self.uniformsFb["transform"] = self.createOrientation(Math.PI*textureDesc.sphereCentre[0]/180.0, Math.PI*textureDesc.sphereCentre[1]/-180.0);
         self.uniformsFb["uvL"] = [textureDesc.U_l[0],
                                   textureDesc.U_l[1],
                                   textureDesc.V_l[0]-textureDesc.U_l[0],
