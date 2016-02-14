@@ -1,8 +1,11 @@
 var VRSceneImg = require('./VRSceneImg.js');
+var VRScenePhoto = require('./VRScenePhoto.js');
+var VRText = require('./VRText.js');
 
 VRScene = function() {
   this.sceneElement = null;
   this.renderObjects = [];
+  this.guiObjects = [];
   this.oldScroll = null;
   this.isStereo = false;
 
@@ -13,6 +16,10 @@ VRScene = function() {
       if (vrScenePhoto.isStereo == true)
         this.isStereo = true;
       this.renderObjects.push(vrScenePhoto);
+    } else if (elm.nodeName == "TEXT") {
+      var vrText = new VRText();
+      vrText.init(elm);
+      this.guiObjects.push(vrText);
     }
 
     var elements = elm.children;

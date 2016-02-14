@@ -368,6 +368,20 @@ VRStory = function() {
   }
 
   this.guiGen = function() {
+    // iterate over scene gui objects
+    var curScene = this.sceneList[this.currentSceneIndex];
+    var guiObjects = curScene.guiObjects;
+    for (g = 0;g<guiObjects.length; g++){
+      // just assuming text nodes only for now
+      var guiObject = guiObjects[g];
+      this.vrGui.createTextBox(guiObject.textureDescription.sphereFOV[0],
+                               guiObject.textureDescription.sphereCentre[0],
+                               guiObject.textureDescription.sphereCentre[1],
+                               null,
+                               guiObject.message,
+                               {fontsize:72, borderThickness:12});
+    }
+
     var numScenes = self.sceneList.length;
     if (self.currentSceneIndex>0) {
       // prev

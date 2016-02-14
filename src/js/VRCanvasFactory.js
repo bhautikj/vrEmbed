@@ -80,7 +80,7 @@ VRCanvasArrow.prototype.update = function(time) {
   this.ctx.beginPath();
   this.ctx.lineWidth = 32;
   this.ctx.strokeStyle = 'rgba(0,0,0,1.0)';
-  this.ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  this.ctx.fillStyle = 'rgba(255,255,255,1.0)';
   if (this.isLeft == false) {
     this.ctx.moveTo(32,32);
     this.ctx.lineTo(224,128);
@@ -105,15 +105,17 @@ function wrapText(context, text, maxWidth) {
   var line = '';
   var lineSet = [];
   var maxw = 0;
+  var lastWidth = 0;
 
   var testWidth = 0;
   for(var n = 0; n < words.length; n++) {
     var testLine = line + words[n] + ' ';
     var metrics = context.measureText(testLine);
     testWidth = metrics.width;
+    lastWidth = testWidth;
     if (testWidth > maxWidth && n > 0) {
       if (testWidth > maxw)
-        maxw = testWidth;
+        maxw = lastWidth;
       lineSet.push(line);
       line = words[n] + ' ';
     }
@@ -126,7 +128,7 @@ function wrapText(context, text, maxWidth) {
     maxw = testWidth;
   lineSet.push(line);
 
-  return [lineSet, maxw];
+  return [lineSet, maxw*0.75];
 }
 
 
@@ -149,7 +151,7 @@ VRCanvasTextBox.prototype.init = function(gl, message, hfov, options) {
     options["borderColor"] : { r:255, g:255, b:255, a:1.0 };
 
   var backgroundColor = options.hasOwnProperty("backgroundColor") ?
-    options["backgroundColor"] : { r:0, g:0, b:0, a:0.7};
+    options["backgroundColor"] : { r:0, g:0, b:0, a:1.0};
 
   this.ctx.font = "Bold " + fontsize + "px " + fontface;
   //this.ctx.font="72px Arial";
@@ -162,7 +164,7 @@ VRCanvasTextBox.prototype.init = function(gl, message, hfov, options) {
   var lineSet = lineSetData[0];
   var textWidth = lineSetData[1];
 
-  this.ctx.canvas.width  = (textWidth + 2*borderThickness);
+  this.ctx.canvas.width  = (textWidth + 4*borderThickness);
   this.ctx.canvas.height = (lineSet.length*fontsize *heightMult + 2*borderThickness);
 
   // background color
@@ -184,7 +186,7 @@ VRCanvasTextBox.prototype.init = function(gl, message, hfov, options) {
 
   for(var n = 0; n < lineSet.length; n++) {
     var line = lineSet[n];
-    this.ctx.fillText( line, borderThickness, (n+1)*fontsize*heightMult);
+    this.ctx.fillText( line, borderThickness*4, (n+1)*fontsize*heightMult);
   }
   // var th = wrapText(this.ctx, message, borderThickness, borderThickness, 4096, fontsize );
 
