@@ -66,9 +66,43 @@ VRCanvasSpinner.prototype.update = function(time) {
   this.updateBase();
 }
 
+//via: http://www.html5canvastutorials.com/tutorials/html5-canvas-wrap-text-tutorial/
+
+function wrapText(context, text, maxWidth) {
+  var words = text.split(' ');
+  var line = '';
+  var lineSet = [];
+  var maxw = 0;
+
+  var testWidth = 0;
+  for(var n = 0; n < words.length; n++) {
+    var testLine = line + words[n] + ' ';
+    var metrics = context.measureText(testLine);
+    testWidth = metrics.width;
+    if (testWidth > maxWidth && n > 0) {
+      if (testWidth > maxw)
+        maxw = testWidth;
+      lineSet.push(line);
+      line = words[n] + ' ';
+    }
+    else {
+      line = testLine;
+    }
+  }
+
+  if (testWidth > maxw)
+    maxw = testWidth;
+  lineSet.push(line);
+
+  return [lineSet, maxw];
+}
+
+
 VRCanvasTextBox = function() {};
 VRCanvasTextBox.prototype = new VRCanvasBase();
-VRCanvasTextBox.prototype.init = function(gl, message, hfov, options) {
+VRCanvasTextBox.prototype.init = function(gl, _message, hfov, options) {
+
+  var message = 'All the world \'s a stage, and all the men and women merely players. They have their exits and their entrances; And one man in his time plays many parts.';
   this.initBase(gl);
   var fontface = options.hasOwnProperty("fontface") ?
     options["fontface"] : "Arial";
@@ -92,10 +126,12 @@ VRCanvasTextBox.prototype.init = function(gl, message, hfov, options) {
 
   var heightMult = 1.4;//12->1.4
   // get size data (height depends only on font size)
-  var metrics = this.ctx.measureText( message );
-  var textWidth = metrics.width;
+  var lineSetData = wrapText(this.ctx, message, this.ctx.canvas.width/2);
+  var lineSet = lineSetData[0];
+  var textWidth = lineSetData[1];
+
   this.ctx.canvas.width  = (textWidth + 2*borderThickness);
-  this.ctx.canvas.height = (fontsize *heightMult + 2*borderThickness);
+  this.ctx.canvas.height = (lineSet.length*fontsize *heightMult + 2*borderThickness);
 
   // background color
   this.ctx.fillStyle   = "rgba(" + backgroundColor.r + "," + backgroundColor.g + ","
@@ -104,23 +140,21 @@ VRCanvasTextBox.prototype.init = function(gl, message, hfov, options) {
   this.ctx.strokeStyle = "rgba(" + borderColor.r + "," + borderColor.g + ","
                   + borderColor.b + "," + borderColor.a + ")";
 
-  // debug
-  // this.ctx.fillStyle = "blue";
-  // this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.width);
-
   this.ctx.lineWidth = borderThickness;
-  roundRect(this.ctx, borderThickness/2, borderThickness/2, textWidth + borderThickness, fontsize *heightMult + borderThickness, 6);
+  roundRect(this.ctx, borderThickness/2, borderThickness/2, textWidth + borderThickness, lineSet.length*fontsize *heightMult + borderThickness, 6);
   // 1.4 is extra height factor for text below baseline: g,j,p,q.
-
 
   // text color
   this.ctx.fillStyle = "rgba(" + borderColor.r + "," + borderColor.g + ","
                        + borderColor.b + "," + borderColor.a + ")";
-
-  //this.ctx.font = "Bold " + fontsize + "px " + fontface;
   this.ctx.font = fontsize + "px " + fontface;
   this.ctx.textAlign="start";
-  this.ctx.fillText( message, borderThickness, fontsize + borderThickness);
+
+  for(var n = 0; n < lineSet.length; n++) {
+    var line = lineSet[n];
+    this.ctx.fillText( line, borderThickness, (n+1)*fontsize*heightMult);
+  }
+  // var th = wrapText(this.ctx, message, borderThickness, borderThickness, 4096, fontsize );
 
   var w = this.ctx.canvas.width;
   var h = this.ctx.canvas.height;
