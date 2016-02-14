@@ -135,6 +135,16 @@ VRGui = function() {
     vrGuiTimer.init(vrCanvasTextBox, callback);
     this.canvasSet.push([vrCanvasTextBox, vrGuiTimer]);
   }
+
+  this.createArrow = function(hfov, x, y, callback, isLeft) {
+    var vrCanvasArrow = VRCanvasFactory.createCanvasArrow();
+    vrCanvasArrow.init(this.gl, hfov, isLeft);
+    vrCanvasArrow.vrTextureDescription.sphereCentre = [x, y];
+    vrCanvasArrow.update(self.tick);
+    var vrGuiTimer = new VRGuiTimer();
+    vrGuiTimer.init(vrCanvasArrow, callback);
+    this.canvasSet.push([vrCanvasArrow, vrGuiTimer]);
+  }
 }
 
 module.exports = VRGui;

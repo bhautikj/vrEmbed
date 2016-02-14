@@ -66,6 +66,38 @@ VRCanvasSpinner.prototype.update = function(time) {
   this.updateBase();
 }
 
+VRCanvasArrow = function() {};
+VRCanvasArrow.prototype = new VRCanvasBase();
+VRCanvasArrow.prototype.init = function(gl, hfov, isLeft) {
+  this.initBase(gl);
+  this.ctx.canvas.width  = 256;
+  this.ctx.canvas.height = 256;
+  this.isLeft = isLeft;
+  this.vrTextureDescription.sphereFOV = [hfov,hfov];
+}
+
+VRCanvasArrow.prototype.update = function(time) {
+  this.ctx.beginPath();
+  this.ctx.lineWidth = 32;
+  this.ctx.strokeStyle = 'rgba(0,0,0,1.0)';
+  this.ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  if (this.isLeft == false) {
+    this.ctx.moveTo(32,32);
+    this.ctx.lineTo(224,128);
+    this.ctx.lineTo(32,224);
+    this.ctx.lineTo(32,32);
+  } else {
+    this.ctx.moveTo(224,32);
+    this.ctx.lineTo(32,128);
+    this.ctx.lineTo(224,224);
+    this.ctx.lineTo(224,32);
+  }
+  this.ctx.stroke();
+  this.ctx.fill();
+  this.updateBase();
+}
+
+
 //via: http://www.html5canvastutorials.com/tutorials/html5-canvas-wrap-text-tutorial/
 
 function wrapText(context, text, maxWidth) {
@@ -171,6 +203,9 @@ VRCanvasFactoryCore = function() {
   }
   this.createCanvasTextBox = function() {
     return new VRCanvasTextBox();
+  }
+  this.createCanvasArrow = function() {
+    return new VRCanvasArrow();
   }
 }
 
