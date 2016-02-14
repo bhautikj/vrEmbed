@@ -141,7 +141,7 @@ function wrapText(context, text, maxWidth) {
     maxw = testWidth;
   lineSet.push(line);
 
-  return [lineSet, maxw*0.75];
+  return [lineSet, maxw*0.9];
 }
 
 
