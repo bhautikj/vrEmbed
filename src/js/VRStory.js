@@ -190,6 +190,14 @@ VRStory = function() {
       this.direction[2] = 0;
     }
 
+    // gui opacity
+
+    if (this.vrGui.isHovering()) {
+      self.quad.setGuiMult(Math.min(1.0, self.quad.getGuiMult()+0.05));
+    } else {
+      self.quad.setGuiMult(Math.max(0.3, self.quad.getGuiMult()-0.05));
+    }
+
     // pointer events override gyro events
     if (self.quad.controller.pointer != null) {
       var xPos = 0.5;

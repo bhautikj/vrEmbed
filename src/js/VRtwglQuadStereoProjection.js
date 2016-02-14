@@ -73,6 +73,7 @@ var fsRenderDisplay = "precision highp float;\n"+
 "uniform vec2 fovParams;\n"+
 "uniform vec2 k;\n"+
 "uniform float ipdAdjust;\n"+
+"uniform float guiMult;\n"+
 "void main(void) {\n"+
    //normalize uv so it is between 0 and 1
 "  vec2 uv = gl_FragCoord.xy / resolution;\n"+
@@ -128,15 +129,18 @@ var fsRenderDisplay = "precision highp float;\n"+
 "    }\n"+
 "    vec4 spherePx = texture2D(textureSource, lonLat);\n"+
 "    vec4 guiPx = texture2D(textureGui, lonLat);\n"+
+"    guiPx.a *= guiMult;\n"+
 "    gl_FragColor = guiPx*guiPx.a + spherePx*(1.-guiPx.a);\n"+
 "  } else if (renderMode == 2) {\n"+
     // anaglyph render
 "    vec4 colorL, colorR, colorLSphere, colorLGui, colorRSphere, colorRGui;\n"+
 "    colorLSphere = texture2D(textureSource, vec2(lonLat.x, lonLat.y*0.5));\n"+
 "    colorLGui = texture2D(textureGui, vec2(lonLat.x, lonLat.y*0.5));\n"+
+"    colorLGui.a *= guiMult;\n"+
 "    colorL = colorLGui*colorLGui.a + colorLSphere*(1.-colorLGui.a);\n"+
 "    colorRSphere = texture2D(textureSource, vec2(lonLat.x, 0.5+lonLat.y*0.5));\n"+
 "    colorRGui = texture2D(textureGui, vec2(lonLat.x, 0.5+lonLat.y*0.5));\n"+
+"    colorRGui.a *= guiMult;\n"+
 "    colorR = colorRGui*colorRGui.a + colorRSphere*(1.-colorRGui.a);\n"+
 "    gl_FragColor = vec4( colorL.g * 0.7 + colorL.b * 0.3, colorR.g, colorR.b, colorL.a + colorR.a ) * 1.1;\n"+
 "  }\n"+
@@ -241,7 +245,8 @@ VRtwglQuadStereoProjection = function() {
     transform:twgl.m4.identity(),
     renderMode:VRRenderModes.STEREOSIDEBYSIDE,
     k:[0,0],
-    ipdAdjust:0
+    ipdAdjust:0,
+    guiMult:0.6
   }
 
   this.uniformsFb = {
@@ -374,6 +379,14 @@ VRtwglQuadStereoProjection = function() {
     // lonLat[1] = (lonLat[1]/(Math.PI))+0.5;
 
     return [180.0*lonLat[0]/Math.PI, 180.0*lonLat[1]/Math.PI];
+  }
+
+  this.getGuiMult = function() {
+    return this.uniforms.guiMult;
+  }
+
+  this.setGuiMult = function(mv) {
+    this.uniforms.guiMult = mv;
   }
 
   this.render = function() {
