@@ -35,9 +35,6 @@ VRText = function() {
     this.sceneText = sceneText;
     this.sceneText.setAttribute("hidden", true);
     this.textureDescription = new VRTextureDescription();
-    this.textureDescription.textureSource = "";
-    this.textureDescription.metaSource = "";
-    this.textureDescription.isStereo = "false";
     this.parseSphereParams(this.sceneText.getAttribute("sphereParams"));
     this.parseMessage(this.sceneText.innerHTML);
   };
