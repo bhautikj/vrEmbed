@@ -145,18 +145,18 @@ VRStory = function() {
   };
 
   this.isInViewport = function() {
-    var canvas = this.quad.getContainer();
+    var canvas = this.quad.getDrawCanvas();
     var rect = canvas.getBoundingClientRect();
     var windowHeight = (window.innerHeight || document.documentElement.clientHeight);
     var windowWidth = (window.innerWidth || document.documentElement.clientWidth);
 
-    // http://stackoverflow.com/questions/325933/determine-whether-two-date-ranges-overlap
-    //var vertInView = (rect.top <= (windowHeight+5)) && ((rect.top + rect.height) >= -5);
-    var vertInView = (rect.top <= (windowHeight+5));
-    var horInView = (rect.left <= (windowWidth+5)) && ((rect.left + rect.width) >= -5);
+    if (rect.right<0 || rect.left>windowWidth)
+      return false;
 
-    var inView = (vertInView && horInView);
-    return inView;
+    if (rect.bottom<0 || rect.top>windowHeight)
+      return false;
+
+    return true;
   }
 
   this.checkVisible = function() {

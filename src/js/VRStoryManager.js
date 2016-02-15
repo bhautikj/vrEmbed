@@ -15,7 +15,7 @@ VRStoryManager = function() {
       for(storyit = 0;storyit < self.storyList.length; storyit++) {
         self.storyList[storyit].stateToggler.setState(VRStates.WINDOWED);
       }
-    } 
+    }
   };
 
   // Whenever we enter fullscreen, we are entering VR or immersive mode.

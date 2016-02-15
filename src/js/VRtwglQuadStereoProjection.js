@@ -229,6 +229,10 @@ VRtwglQuadStereoProjection = function() {
     return this.vrtwglQuad.container;
   }
 
+  this.getDrawCanvas = function() {
+    return this.vrtwglQuad.canvas;
+  }
+
   this.getContext = function() {
     return this.vrtwglQuad.glContext;
   }
