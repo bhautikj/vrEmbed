@@ -16,6 +16,7 @@ VRStory = function() {
   this.noGui = false;
   this.vrOptions = new VROptions();
   this.direction = [0,0,0];
+  this.mousePosLast = [-1,-1];
 
   //--
   this.quad = null;
@@ -154,7 +155,8 @@ VRStory = function() {
     var vertInView = (rect.top <= (windowHeight+5));
     var horInView = (rect.left <= (windowWidth+5)) && ((rect.left + rect.width) >= -5);
 
-    return (vertInView && horInView);
+    var inView = (vertInView && horInView);
+    return inView;
   }
 
   this.checkVisible = function() {
@@ -418,7 +420,6 @@ VRStory = function() {
     this.mouseMove = function(ev) {
       var mx = ev.movementX || ev.mozMovementX || ev.webkitMovementX || 0;
       var my = ev.movementY || ev.mozMovementY || ev.webkitMovementY || 0;
-      //console.log(mx + "," + my);
 
       ev = ev || window.event;
 
@@ -426,6 +427,17 @@ VRStory = function() {
           rect = target.getBoundingClientRect(),
           offsetX = ev.clientX - rect.left,
           offsetY = ev.clientY - rect.top;
+
+
+      if (self.mousePosLast[0]<0) {
+        self.mousePosLast = [ev.clientX, ev.clientY];
+        return;
+      } else if (mx==0 && my==0) {
+        mx = ev.clientX - self.mousePosLast[0];
+        my = ev.clientY - self.mousePosLast[1];
+      }
+
+      self.mousePosLast = [ev.clientX, ev.clientY];
 
       self.quad.controller.mouseMove(mx, my, offsetX/rect.width, offsetY/rect.height);
     };
