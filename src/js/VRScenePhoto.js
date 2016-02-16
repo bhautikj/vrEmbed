@@ -21,7 +21,6 @@ VRScenePhoto = function() {
   this.textureDescription = null;
 
   this.parseStereoString = function(str) {
-    console.log(str);
     if (str==undefined)
       return false;
     if (str.toLowerCase()=="true")
@@ -46,9 +45,6 @@ VRScenePhoto = function() {
 
     if (this.isStereo())
       this.textureDescription.setTexParamsFromString(this.scenePhoto.getAttribute("texParams"));
-
-    this.getSinglePhotoVrEmbedElement();
-    this.getPhotoElement();
   };
 
   this.initFromURL = function(urlDict) {
@@ -90,21 +86,34 @@ VRScenePhoto = function() {
     }
   }
 
+  this.isStereo = function() {
+    return this.textureDescription.isStereo;
+  }
+
   this.getPhotoElement = function() {
     var elm = document.createElement('photo');
     this.populateElementCommon(elm);
-    console.log(elm.outerHTML);
+    return elm;
   }
 
   this.getSinglePhotoVrEmbedElement = function() {
     var elm = document.createElement('a');
     elm.setAttribute('class', 'vrEmbedPhoto');
     this.populateElementCommon(elm);
-    console.log(elm.outerHTML);
+    return elm;
   }
 
-  this.isStereo = function() {
-    return this.textureDescription.isStereo;
+  this.getSinglePhotoURLParams= function() {
+    var outstr = "?";
+    outstr += "src=" + this.textureDescription.getAbsoluteTexturePath();
+    outstr += "&sphereParams=" + this.textureDescription.getSphereParamsString();
+    if (this.isStereo() == false) {
+      outstr += "&isStereo=false";
+    } else {
+      outstr += "&isStereo=true";
+      outstr += "&texParams="+this.textureDescription.getTexParamsString();
+    }
+    return outstr;
   }
 
 };
