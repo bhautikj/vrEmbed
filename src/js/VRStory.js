@@ -576,7 +576,6 @@ VRStory = function() {
       var scene = this.sceneList[i];
       elm.appendChild(scene.getSceneElement());
     }
-    console.log(elm.outerHTML);
     return elm;
   }
 
