@@ -19,7 +19,16 @@ var VRTextureDescription = require('./VRTextureDescription.js');
 VRScenePhoto = function() {
   this.scenePhoto = null;
   this.textureDescription = null;
-  this.isStereo = false;
+
+  this.parseStereoString = function(str) {
+    console.log(str);
+    if (str==undefined)
+      return false;
+    if (str.toLowerCase()=="true")
+      return true;
+    else
+      return false;
+  }
 
   this.init = function(scenePhoto) {
     this.scenePhoto = scenePhoto;
@@ -30,14 +39,16 @@ VRScenePhoto = function() {
       this.textureDescription = null;
       return;
     }
+
     this.textureDescription.metaSource = "";
-    this.textureDescription.isStereo = this.scenePhoto.getAttribute("isStereo");
-    if (this.textureDescription.isStereo.toLowerCase()=="true")
-      this.isStereo = true;
+    this.textureDescription.isStereo = this.parseStereoString(this.scenePhoto.getAttribute("isStereo"));
     this.textureDescription.setSphereParamsFromString(this.scenePhoto.getAttribute("sphereParams"));
 
-    if (this.textureDescription.isStereo.toLowerCase() == "true")
+    if (this.isStereo())
       this.textureDescription.setTexParamsFromString(this.scenePhoto.getAttribute("texParams"));
+
+    this.getSinglePhotoVrEmbedElement();
+    this.getPhotoElement();
   };
 
   this.initFromURL = function(urlDict) {
@@ -54,13 +65,7 @@ VRScenePhoto = function() {
     else
       this.textureDescription.metaSource = "";
 
-    if (urlDict["isStereo"] != undefined)
-      this.textureDescription.isStereo = urlDict["isStereo"];
-    else
-      this.textureDescription.isStereo = "false";
-
-    if (this.textureDescription.isStereo.toLowerCase()=="true")
-      this.isStereo = true;
+    this.textureDescription.isStereo = this.parseStereoString(urlDict["isStereo"]);
 
     if (urlDict["sphereParams"] != undefined)
       this.textureDescription.setSphereParamsFromString(urlDict["sphereParams"]);
@@ -72,6 +77,36 @@ VRScenePhoto = function() {
     else
       this.textureDescription.setTexParamsFromString("0,0,1,1,0,0,1,1");
   };
+
+  this.populateElementCommon = function(elm) {
+    elm.setAttribute('src', this.textureDescription.getAbsoluteTexturePath());
+    elm.setAttribute('sphereParams',this.textureDescription.getSphereParamsString());
+    if (this.isStereo() == false) {
+      elm.setAttribute('isStereo', 'false');
+      return;
+    } else {
+      elm.setAttribute('isStereo', 'true');
+      elm.setAttribute('texParams', this.textureDescription.getTexParamsString());
+    }
+  }
+
+  this.getPhotoElement = function() {
+    var elm = document.createElement('photo');
+    this.populateElementCommon(elm);
+    console.log(elm.outerHTML);
+  }
+
+  this.getSinglePhotoVrEmbedElement = function() {
+    var elm = document.createElement('a');
+    elm.setAttribute('class', 'vrEmbedPhoto');
+    this.populateElementCommon(elm);
+    console.log(elm.outerHTML);
+  }
+
+  this.isStereo = function() {
+    return this.textureDescription.isStereo;
+  }
+
 };
 
 

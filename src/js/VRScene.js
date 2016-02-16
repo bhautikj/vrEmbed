@@ -12,7 +12,7 @@ VRScene = function() {
     if(elm.nodeName=="PHOTO"){
       var vrScenePhoto = new VRScenePhoto();
       vrScenePhoto.init(elm);
-      if (vrScenePhoto.isStereo == true)
+      if (vrScenePhoto.isStereo() == true)
         this.isStereo = true;
       this.renderObjects.push(vrScenePhoto);
     } else if (elm.nodeName == "TEXT") {
@@ -40,13 +40,13 @@ VRScene = function() {
   this.initVrEmbedPhoto = function(vrEmbedPhoto) {
     var vrEmbedPhotoElm = new VRScenePhoto();
     vrEmbedPhotoElm.init(vrEmbedPhoto);
-    if (vrEmbedPhotoElm.isStereo == true)
+    if (vrEmbedPhotoElm.isStereo() == true)
       this.isStereo = true;
     this.renderObjects.push(vrEmbedPhotoElm);
   }
 
   this.initFromURLSource = function(scenePhoto) {
-    if (scenePhoto.isStereo == true)
+    if (scenePhoto.isStereo() == true)
       this.isStereo = true;
     this.renderObjects.push(scenePhoto);
   }

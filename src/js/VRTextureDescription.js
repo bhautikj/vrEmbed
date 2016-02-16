@@ -54,6 +54,12 @@ VRTextureDescription = function () {
            this.V_r[0] + ',' + this.V_r[1];
   }
 
+  this.getAbsoluteTexturePath = function() {
+    var link = document.createElement("a");
+    link.href = this.textureSource;
+    return (link.protocol+"//"+link.host+link.pathname+link.search+link.hash);
+  }
+
 };
 
 module.exports = VRTextureDescription;
