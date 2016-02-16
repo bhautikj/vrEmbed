@@ -21,20 +21,6 @@ VRScenePhoto = function() {
   this.textureDescription = null;
   this.isStereo = false;
 
-  this.parseSphereParams = function(str) {
-    var arr = str.split(",");
-    this.textureDescription.sphereFOV = [arr[0].trim(), arr[1].trim()];
-    this.textureDescription.sphereCentre = [arr[2].trim(), arr[3].trim()];
-  };
-
-  this.parseTexParams = function(str) {
-    var arr = str.split(",");
-    this.textureDescription.U_l = [arr[0].trim(), arr[1].trim()];
-    this.textureDescription.V_l = [arr[2].trim(), arr[3].trim()];
-    this.textureDescription.U_r = [arr[4].trim(), arr[5].trim()];
-    this.textureDescription.V_r = [arr[6].trim(), arr[7].trim()];
-  };
-
   this.init = function(scenePhoto) {
     this.scenePhoto = scenePhoto;
     this.textureDescription = new VRTextureDescription();
@@ -48,10 +34,10 @@ VRScenePhoto = function() {
     this.textureDescription.isStereo = this.scenePhoto.getAttribute("isStereo");
     if (this.textureDescription.isStereo.toLowerCase()=="true")
       this.isStereo = true;
-    this.parseSphereParams(this.scenePhoto.getAttribute("sphereParams"));
+    this.textureDescription.setSphereParamsFromString(this.scenePhoto.getAttribute("sphereParams"));
 
     if (this.textureDescription.isStereo.toLowerCase() == "true")
-      this.parseTexParams(this.scenePhoto.getAttribute("texParams"));
+      this.textureDescription.setTexParamsFromString(this.scenePhoto.getAttribute("texParams"));
   };
 
   this.initFromURL = function(urlDict) {
@@ -77,14 +63,14 @@ VRScenePhoto = function() {
       this.isStereo = true;
 
     if (urlDict["sphereParams"] != undefined)
-      this.parseSphereParams(urlDict["sphereParams"]);
+      this.textureDescription.setSphereParamsFromString(urlDict["sphereParams"]);
     else
-      this.parseSphereParams("360,180,0,0");
+      this.textureDescription.setSphereParamsFromString("360,180,0,0");
 
     if (urlDict["texParams"] != undefined)
-      this.parseTexParams(urlDict["texParams"]);
+      this.textureDescription.setTexParamsFromString(urlDict["texParams"]);
     else
-      this.parseTexParams("0,0,1,1,0,0,1,1");
+      this.textureDescription.setTexParamsFromString("0,0,1,1,0,0,1,1");
   };
 };
 

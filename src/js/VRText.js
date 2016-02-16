@@ -21,12 +21,6 @@ VRText = function() {
   this.textureDescription = null;
   this.message = "";
 
-  this.parseSphereParams = function(str) {
-    var arr = str.split(",");
-    this.textureDescription.sphereFOV = [arr[0].trim(), arr[1].trim()];
-    this.textureDescription.sphereCentre = [arr[2].trim(), arr[3].trim()];
-  };
-
   this.parseMessage = function(str) {
     this.message = str;
   };
@@ -35,7 +29,7 @@ VRText = function() {
     this.sceneText = sceneText;
     this.sceneText.setAttribute("hidden", true);
     this.textureDescription = new VRTextureDescription();
-    this.parseSphereParams(this.sceneText.getAttribute("sphereParams"));
+    this.textureDescription.setSphereParamsFromString(this.sceneText.getAttribute("sphereParams"));
     this.parseMessage(this.sceneText.innerHTML);
   };
 
