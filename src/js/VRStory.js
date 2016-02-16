@@ -479,7 +479,6 @@ VRStory = function() {
       s.width = width;
       return;
     }
-
   };
 
   this.initVrEmbedPhoto = function(vrEmbedPhoto, storyManager) {
@@ -585,7 +584,17 @@ VRStory = function() {
   }
 
   this.getEmbedCodes = function() {
+    var urlCode = "";
+    var embedCode = "";
+    var scriptInc = '<script async src="//vrEmbed.org/vrEmbed.min.js" charset="utf-8"></div></script>';
+    if (this.isSinglePhotoStory()==true){
+      urlCode = "http://vrembed.org/" + this.sceneList[0].renderObjects[0].getSinglePhotoURLParams();
+      embedCode = this.sceneList[0].renderObjects[0].getSinglePhotoVrEmbedElement().outerHTML+scriptInc;
+    } else {
+      embedCode = this.getStoryElement().outerHTML + scriptInc;
+    }
 
+    return [urlCode, embedCode];
   }
 
 };
