@@ -584,6 +584,10 @@ VRStory = function() {
       return true;
   }
 
+  this.getEmbedCodes = function() {
+
+  }
+
 };
 
 module.exports = VRStory;

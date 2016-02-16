@@ -432,6 +432,9 @@ VRtwglQuadStereoProjection = function() {
   }
 
   this.texturesLoaded = function(err, textures, sources) {
+    if (err != undefined) {
+      alert(err);
+    }
     self.vrtwglQuadFb.clearFrameBuffer(0, 0, 0, 0);
     //alert("TEXTURES LOADED");
     for (var key in self.textures) {
