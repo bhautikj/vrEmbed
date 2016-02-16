@@ -462,8 +462,6 @@ VRStory = function() {
     this.animate();
 
     this.stateToggler.setState(VRStates.WINDOWED);
-
-    this.getStoryElement();
   };
 
   this.getSizeStyle = function (vrEmbedPhoto, s) {
@@ -577,6 +575,13 @@ VRStory = function() {
       elm.appendChild(scene.getSceneElement());
     }
     return elm;
+  }
+
+  this.isSinglePhotoStory = function() {
+    if(this.sceneList.length != 1 || this.sceneList[0].renderObjects.length != 1 || this.sceneList[0].guiObjects.length != 0)
+      return false;
+    else
+      return true;
   }
 
 };
