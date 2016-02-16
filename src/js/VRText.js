@@ -33,6 +33,12 @@ VRText = function() {
     this.parseMessage(this.sceneText.innerHTML);
   };
 
+  this.getTextElement = function() {
+    var elm = document.createElement('text');
+    elm.setAttribute('sphereParams',this.textureDescription.getSphereParamsString());
+    elm.innerHTML = this.message;
+    return elm;
+  }
 };
 
 

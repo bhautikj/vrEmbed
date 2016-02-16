@@ -463,7 +463,7 @@ VRStory = function() {
 
     this.stateToggler.setState(VRStates.WINDOWED);
 
-    this.dumpCode();
+    this.getStoryElement();
   };
 
   this.getSizeStyle = function (vrEmbedPhoto, s) {
@@ -570,19 +570,14 @@ VRStory = function() {
     this.storyManager.hideOptions();
   };
 
-  this.dumpCode = function() {
-    // var storyElement = this.storyElement;
-    // if (storyElement.tagName == 'A') {
-    //   console.log(storyElement.outerHTML);
-    //   return;
-    // }
-    // var textln = storyElement.innerHTML.split('\n');
-    // var outstr = "<story>";
-    // for (i=0; i<textln.length; i++) {
-    //   outstr += textln[i].replace(/^\s+|\s+$/g, '');
-    // }
-    // outstr += '</story><script async src="//vrEmbed.org/vrEmbed.min.js" charset="utf-8"></script>';
-    // console.log(outstr);
+  this.getStoryElement = function() {
+    var elm = document.createElement('story');
+    for(i=0; i<this.sceneList.length; i++) {
+      var scene = this.sceneList[i];
+      elm.appendChild(scene.getSceneElement());
+    }
+    console.log(elm.outerHTML);
+    return elm;
   }
 
 };

@@ -35,7 +35,7 @@ VRScene = function() {
       var elm = elements[elementit];
       this.parseChildNode(elm);
     }
-  };
+  }
 
   this.initVrEmbedPhoto = function(vrEmbedPhoto) {
     var vrEmbedPhotoElm = new VRScenePhoto();
@@ -49,6 +49,18 @@ VRScene = function() {
     if (scenePhoto.isStereo() == true)
       this.isStereo = true;
     this.renderObjects.push(scenePhoto);
+  }
+
+  this.getSceneElement = function() {
+    var elm = document.createElement('scene');
+    for(i=0; i<this.renderObjects.length; i++) {
+      elm.appendChild(this.renderObjects[i].getPhotoElement());
+    }
+
+    for(j=0; j<this.guiObjects.length; j++) {
+      elm.appendChild(this.guiObjects[j].getTextElement());
+    }
+    return elm;
   }
 };
 
