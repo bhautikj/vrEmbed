@@ -1,4 +1,3 @@
-var VRSceneImg = require('./VRSceneImg.js');
 var VRScenePhoto = require('./VRScenePhoto.js');
 var VRText = require('./VRText.js');
 
@@ -39,7 +38,7 @@ VRScene = function() {
   };
 
   this.initVrEmbedPhoto = function(vrEmbedPhoto) {
-    var vrEmbedPhotoElm = new VRSceneImg();
+    var vrEmbedPhotoElm = new VRScenePhoto();
     vrEmbedPhotoElm.init(vrEmbedPhoto);
     if (vrEmbedPhotoElm.isStereo == true)
       this.isStereo = true;
