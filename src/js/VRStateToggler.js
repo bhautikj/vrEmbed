@@ -199,7 +199,7 @@ VRStateToggler.prototype.buttonOptionsClick = function() {
 };
 
 VRStateToggler.prototype.buttonShareClick = function() {
-  console.log("SHARE");
+  this.vrStory.showShare();
 };
 
 module.exports = VRStateToggler;

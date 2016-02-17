@@ -57,7 +57,7 @@ VRStoryManager = function() {
   };
 
   this.showOptions = function() {
-    this.vrOptions.options.showDialog();
+    this.vrOptions.options.showDialogOptions();
   }
 
   this.hideOptions = function() {

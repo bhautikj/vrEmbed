@@ -40,7 +40,7 @@ VRStory = function() {
   this.enterFullscreen = function(){
     if (this.vrDeviceManager.firstTime()){
       console.log("FIRST");
-      this.vrOptions.options.showDialogFirstTime(self);
+      this.vrOptions.options.showDialogOptionsFirstTime(self);
       return false;
     }
 
@@ -563,6 +563,10 @@ VRStory = function() {
     this.init(storyElement, storyManager);
   }
 
+  this.showShare = function() {
+    this.vrOptions.options.showDialogShare(this.getShareCodes());
+  };
+
   this.showOptions = function() {
     this.storyManager.showOptions();
   };
@@ -587,15 +591,16 @@ VRStory = function() {
       return true;
   }
 
-  this.getEmbedCodes = function() {
+  this.getShareCodes = function() {
     var urlCode = "";
     var embedCode = "";
-    var scriptInc = '<script async src="//vrEmbed.org/vrEmbed.min.js" charset="utf-8"></div></script>';
+    var scriptInc = '<script async src="//vrEmbed.org/vrEmbed.min.js" charset="utf-8"></script>';
     if (this.isSinglePhotoStory()==true){
-      urlCode = "http://vrembed.org/" + this.sceneList[0].renderObjects[0].getSinglePhotoURLParams();
+      urlCode = encodeURIComponent("http://vrembed.org/" + this.sceneList[0].renderObjects[0].getSinglePhotoURLParams());
       embedCode = this.sceneList[0].renderObjects[0].getSinglePhotoVrEmbedElement().outerHTML+scriptInc;
     } else {
-      embedCode = this.getStoryElement().outerHTML + scriptInc;
+      urlCode = encodeURIComponent(window.location.href);
+      embedCode = "<div>"+this.getStoryElement().outerHTML + scriptInc +"</div>";
     }
 
     return [urlCode, embedCode];
