@@ -110,6 +110,16 @@
   <div class="row"><br/></div>
   <div class="row">
     <div class="one-half column">
+      <div class="figure"><img src="src/assets/vrembed_interface_hyperlink.png" width=100%/></div>
+    </div>
+    <div class="one-half column">
+      Scenes may also have a control to jump directly to another named scene. These are indicated by an orange text box with a right-pointing arrow; hover over these to jump to that named scene.
+    </div>
+  </div>
+
+  <div class="row"><br/></div>
+  <div class="row">
+    <div class="one-half column">
       <div class="figure"><img src="src/assets/vrembed_interface_settings.png"/></div>
     </div>
     <div class="one-half column">
@@ -202,7 +212,7 @@
 <div class="container">
   <div class="row">
     <div class="one-third column">
-      Multiple images can be arranged into a scene, but require a more complex embed code:
+      Multiple images can be arranged into a scene, but require a more complex embed code. A vrEmbed story is made up of a top level, single &lt;story&gt; tag which has one or more &lt;scene&gt; tags within it. Each scene can contain as many &lt;photo&gt; tags as you like; each photo contains a code of where to find the image as well as where it goes in the scene.
     </div>
     <div class="two-thirds column">
       <div class="code">&lt;div&gt;<br/>
@@ -217,7 +227,7 @@
   </div>
 </div>
 
-<div align=center><div class="stretchy-wrapper"><div>
+<div align=center><div class="stretchy-wrapper greybg"><div>
     <story>
       <scene>
         <photo src="src/assets/byobw_2014_a.jpg" isStereo="false" sphereParams="100,66,60,0"/>
@@ -248,7 +258,7 @@
   </div>
 </div>
 
-<div align=center><div class="stretchy-wrapper"><div>
+<div align=center><div class="stretchy-wrapper greybg"><div>
     <story>
       <scene>
         <photo src="src/assets/byobw_2014_a.jpg" isStereo="false" sphereParams="100,66,-20,0"/>
@@ -262,18 +272,20 @@
 <div class="container">
   <div class="row">
     <div class="one-third column">
-      Multiple sets of images can be arranged into multiple scenes to build a story:
+      Multiple sets of images can be arranged into multiple scenes to build a story. You can name these scenes by adding a <b>name="scene name"</b> qualifier to the &lt;scene&gt; tag. You can then create a visual hyperlink to these scenes by using a &lt;jump&gt; tag in the scene.
     </div>
     <div class="two-thirds column">
       <div class="code">&lt;div&gt;<br/>
         &nbsp;&lt;story&gt;<br/>
-        &nbsp;&nbsp;&lt;scene&gt;<br/>
+        &nbsp;&nbsp;&lt;scene name="Corner Crashes"&gt;<br/>
             &nbsp;&nbsp;&nbsp;&lt;photo src=&quot;http://vrembed.org/src/assets/byobw_2013_a.jpg&quot; isStereo=&quot;false&quot; sphereParams=&quot;100,66,60,-10&quot;/&gt;<br/>
             &nbsp;&nbsp;&nbsp;&lt;photo src=&quot;http://vrembed.org/src/assets/byobw_2013_b.jpg&quot; isStereo=&quot;false&quot; sphereParams=&quot;100,66,-60,0&quot;/&gt;<br/>
+            &nbsp;&nbsp;&nbsp;&lt;jump sphereParams=&quot;35,30,30,-30&quot; jumpTo=&quot;Finish line&quot;/&gt;<br/>
           &nbsp;&nbsp;&lt;/scene&gt;<br/>
-        &nbsp;&nbsp;&lt;scene&gt;<br/>
+        &nbsp;&nbsp;&lt;scene name="Finish line"&gt;<br/>
             &nbsp;&nbsp;&nbsp;&lt;photo src=&quot;http://vrembed.org/src/assets/byobw_2014_a.jpg&quot; isStereo=&quot;false&quot; sphereParams=&quot;100,66,60,0&quot;/&gt;<br/>
             &nbsp;&nbsp;&nbsp;&lt;photo src=&quot;http://vrembed.org/src/assets/byobw_2014_b.jpg&quot; isStereo=&quot;false&quot; sphereParams=&quot;100,66,-60,-20&quot;/&gt;<br/>
+            &nbsp;&nbsp;&nbsp;&lt;jump sphereParams=&quot;40,30,-20,-20&quot; jumpTo=&quot;Corner crashes&quot;/&gt;<br/>
           &nbsp;&nbsp;&lt;/scene&gt;<br/>
         &nbsp;&lt;/story&gt;&lt;script async src=&quot;//vrEmbed.org/vrEmbed.min.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;<br/>
       &lt;/div&gt;</div>
@@ -281,15 +293,17 @@
   </div>
 </div>
 
-<div align=center><div class="stretchy-wrapper"><div>
+<div align=center><div class="stretchy-wrapper greybg"><div>
   <story>
-    <scene>
+    <scene name="Corner crashes">
       <photo src="src/assets/byobw_2013_a.jpg" isStereo="false" sphereParams="100,66,60,-10"/>
       <photo src="src/assets/byobw_2013_b.jpg" isStereo="false" sphereParams="100,66,-60,0"/>
+      <jump sphereParams="35,30,30,-30" jumpTo="Finish line"/>
     </scene>
-    <scene>
+    <scene name="Finish line">
       <photo src="src/assets/byobw_2014_a.jpg" isStereo="false" sphereParams="100,66,60,0"/>
       <photo src="src/assets/byobw_2014_b.jpg" isStereo="false" sphereParams="100,66,-60,-20"/>
+      <jump sphereParams="40,30,-20,-20" jumpTo="Corner crashes"/>
     </scene>
   </story><script async src="vrEmbed.min.js" charset="utf-8"></script>
 </div></div></div>
