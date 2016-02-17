@@ -19,11 +19,13 @@ var VRStates = require('./VRStates.js');
 var VRDeviceManager = require('./VRDeviceManager.js');
 
 var createDialogTextStyle = function(t) {
-  t.width = '300px';
+  t.width = '350px';
   t.position = 'relative';
   t.margin = '10px auto';
   t.padding = '10px 10px 10px 10px';
   t.borderRadius = '5px';
+  t.borderStlyle = 'solid';
+  t.borderColor = '#ff0000 #0000ff';
   t.background = '#fff';
   // t.pointerEvents = 'auto';
 }
@@ -48,7 +50,7 @@ function VROptionsCore() {
     //s.pointerEvents = 'none';
     s.pointerEvents = 'auto';
     s.color = '#000';
-    s.fontFamily = '"Lucida Console",Monaco,monospace';
+    s.fontFamily = '"Helvetica Neue", Helvetica, Arial, sans-serif';
 
     this.dialogText = document.createElement('div');
     var t = this.dialogText.style;
@@ -72,9 +74,9 @@ function VROptionsCore() {
 
   this.setupDialogOptions = function() {
     var tex = "";
-    tex += '<img src=' + VRLogos.logoVrEmbed + ' width=60px style="float: right; margin: 0 0 2px 2px;"/>';
+    tex += '<img src=' + VRLogos.logoVrEmbed + ' width=60px style="float: left; margin: 2px 2px 2px 2px;"/>';
     tex += '<a href="http://vrEmbed.org" target="_blank" style="color: inherit; text-decoration: none;">'
-    tex += 'vrEmbed (c) Bhautik Joshi 2015-16</a><div style="clear:left;">';
+    tex += '<br/>vrEmbed.org (c) Bhautik Joshi 2015-16</a><br/><div style="clear:left;">';
     this.dialogText.innerHTML = tex;
   }
 

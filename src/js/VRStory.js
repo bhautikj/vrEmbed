@@ -456,8 +456,9 @@ VRStory = function() {
     }, false);
 
     if (this.noGui == false) {
-      this.quad.getContainer().appendChild(this.stateToggler.buttonMiddle);
+      this.quad.getContainer().appendChild(this.stateToggler.buttonVR);
       this.quad.getContainer().appendChild(this.stateToggler.buttonOptions);
+      this.quad.getContainer().appendChild(this.stateToggler.buttonShare);
     }
 
     this.manager = new VRManager(this.quad);
