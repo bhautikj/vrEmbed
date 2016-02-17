@@ -35,6 +35,7 @@ VRStory = function() {
   this.isFullScreen = false;
 
   this.sceneList = [];
+  this.namedSceneMap = [];
 
 
   this.enterFullscreen = function(){
@@ -377,6 +378,10 @@ VRStory = function() {
     }
   }
 
+  this.gotoNamedScene = function(name) {
+    self.setupScene(self.namedSceneMap[name]);
+  }
+
   this.guiGen = function() {
     // iterate over scene gui objects
     var curScene = this.sceneList[this.currentSceneIndex];
@@ -388,19 +393,38 @@ VRStory = function() {
                                guiObject.textureDescription.sphereCentre[0],
                                guiObject.textureDescription.sphereCentre[1],
                                null,
+                               null,
                                guiObject.message,
                                {fontsize:72, borderThickness:12});
     }
 
+    if (curScene.hasJumpNav() == false) {
     var numScenes = self.sceneList.length;
-    if (self.currentSceneIndex>0) {
-      // prev
-      this.vrGui.createArrow(15, -30, -40, this.prevScene, true);
-    }
+      if (self.currentSceneIndex>0) {
+        // prev
+        this.vrGui.createArrow(15, -30, -40, this.prevScene, null, true);
+      }
 
-    if (self.currentSceneIndex<(numScenes-1)) {
-      //next
-      this.vrGui.createArrow(15, 30, -40, this.nextScene, false);
+      if (self.currentSceneIndex<(numScenes-1)) {
+        //next
+        this.vrGui.createArrow(15, 30, -40, this.nextScene, null, false);
+      }
+    } else {
+      var jumpObjects = curScene.jumpObjects;
+      for (g = 0;g<jumpObjects.length; g++){
+        // just assuming text nodes only for now
+        var jumpObject = jumpObjects[g];
+        this.vrGui.createTextBox(jumpObject.textureDescription.sphereFOV[0],
+                                 jumpObject.textureDescription.sphereCentre[0],
+                                 jumpObject.textureDescription.sphereCentre[1],
+                                 this.gotoNamedScene,
+                                 jumpObject.jumpTo,
+                                 jumpObject.jumpTo + ' \u27A6',
+                                 {fontsize:72,
+                                  borderThickness:24,
+                                  backgroundColor:{ r:102, g:102, b:102, a:1.0},
+                                  borderColor:{ r:255, g:153, b:0, a:1.0}});
+      }
     }
     this.quad.renderGui();
   }
@@ -558,6 +582,9 @@ VRStory = function() {
         if (vrScene.isStereo)
           this.isStereo = true;
         this.sceneList.push(vrScene);
+        if (vrScene.name != "") {
+          this.namedSceneMap[vrScene.name] = this.sceneList.length - 1;
+        }
       }
     }
     this.init(storyElement, storyManager);

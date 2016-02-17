@@ -25,14 +25,16 @@ navigator.vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mo
 VRGuiTimer = function() {
   this.canvas = null;
   this.callback = null;
+  this.callbackArgs = null;
   this.in = false;
   this.startTime = Number.MAX_VALUE;
   this.callbackFired = false;
   this.timeout = 1000; // in ms - for all gui events
 
-  this.init = function(canvas, callback) {
+  this.init = function(canvas, callback, callbackArgs) {
     this.canvas = canvas;
     this.callback = callback;
+    this.callbackArgs = callbackArgs;
   }
 
   // operates in degrees
@@ -95,7 +97,7 @@ VRGuiTimer = function() {
   this.fireCallback = function() {
     this.callbackFired = true;
     console.log("FIRING CALLBACK!");
-    this.callback();
+    this.callback(this.callbackArgs);
   }
 }
 
@@ -143,23 +145,23 @@ VRGui = function() {
     return rv;
   }
 
-  this.createTextBox = function(hfov, x, y, callback, message, options) {
+  this.createTextBox = function(hfov, x, y, callback, callbackArgs, message, options) {
     var vrCanvasTextBox = VRCanvasFactory.createCanvasTextBox();
     vrCanvasTextBox.init(this.gl, message, hfov, options);
     vrCanvasTextBox.vrTextureDescription.sphereCentre = [x, y];
     vrCanvasTextBox.update(self.tick);
     var vrGuiTimer = new VRGuiTimer();
-    vrGuiTimer.init(vrCanvasTextBox, callback);
+    vrGuiTimer.init(vrCanvasTextBox, callback, callbackArgs);
     this.canvasSet.push([vrCanvasTextBox, vrGuiTimer]);
   }
 
-  this.createArrow = function(hfov, x, y, callback, isLeft) {
+  this.createArrow = function(hfov, x, y, callback, callbackArgs, isLeft) {
     var vrCanvasArrow = VRCanvasFactory.createCanvasArrow();
     vrCanvasArrow.init(this.gl, hfov, isLeft);
     vrCanvasArrow.vrTextureDescription.sphereCentre = [x, y];
     vrCanvasArrow.update(self.tick);
     var vrGuiTimer = new VRGuiTimer();
-    vrGuiTimer.init(vrCanvasArrow, callback);
+    vrGuiTimer.init(vrCanvasArrow, callback, callbackArgs);
     this.canvasSet.push([vrCanvasArrow, vrGuiTimer]);
   }
 }
