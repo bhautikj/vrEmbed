@@ -125,31 +125,31 @@ function wrapText(context, text, maxWidth) {
     var testLine = line + words[n] + ' ';
     var metrics = context.measureText(testLine);
     testWidth = metrics.width;
-    lastWidth = testWidth;
     if (testWidth > maxWidth && n > 0) {
-      if (testWidth > maxw)
+      if (testWidth > maxw){
         maxw = lastWidth;
+      }
       lineSet.push(line);
       line = words[n] + ' ';
-    }
-    else {
+    } else {
       line = testLine;
     }
+    lastWidth = testWidth;
   }
 
-  if (testWidth > maxw)
-    maxw = testWidth;
   lineSet.push(line);
 
-  return [lineSet, maxw*0.9];
+  if (lineSet.length == 1) {
+    maxw = testWidth;
+  }
+
+  return [lineSet, maxw*1.1];
 }
 
 
 VRCanvasTextBox = function() {};
 VRCanvasTextBox.prototype = new VRCanvasBase();
 VRCanvasTextBox.prototype.init = function(gl, message, hfov, options) {
-
-  // var message = 'All the world \'s a stage, and all the men and women merely players. They have their exits and their entrances; And one man in his time plays many parts.';
   this.initBase(gl);
   var fontface = options.hasOwnProperty("fontface") ?
     options["fontface"] : "Arial";
@@ -199,7 +199,7 @@ VRCanvasTextBox.prototype.init = function(gl, message, hfov, options) {
 
   for(var n = 0; n < lineSet.length; n++) {
     var line = lineSet[n];
-    this.ctx.fillText( line, borderThickness*4, (n+1)*fontsize*heightMult);
+    this.ctx.fillText( line, borderThickness*2, (n+1)*fontsize*heightMult);
   }
   // var th = wrapText(this.ctx, message, borderThickness, borderThickness, 4096, fontsize );
 

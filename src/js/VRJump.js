@@ -16,30 +16,25 @@
 
 var VRTextureDescription = require('./VRTextureDescription.js');
 
-VRText = function() {
-  this.sceneText = null;
+VRJump = function() {
+  this.jumpElm = null;
   this.textureDescription = null;
-  this.message = "";
+  this.jumpTo = null;
 
-  this.parseMessage = function(str) {
-    this.message = str;
-  };
-
-  this.init = function(sceneText) {
-    this.sceneText = sceneText;
-    this.sceneText.setAttribute("hidden", true);
+  this.init = function(jumpElm) {
+    this.jumpElm = jumpElm;
     this.textureDescription = new VRTextureDescription();
-    this.textureDescription.setSphereParamsFromString(this.sceneText.getAttribute("sphereParams"));
-    this.parseMessage(this.sceneText.innerHTML);
+    this.textureDescription.setSphereParamsFromString(this.jumpElm.getAttribute("sphereParams"));
+    this.jumpTo = this.jumpElm.getAttribute("jumpTo");
   };
 
-  this.getTextElement = function() {
-    var elm = document.createElement('text');
+  this.getJumpElement = function() {
+    var elm = document.createElement('jump');
     elm.setAttribute('sphereParams',this.textureDescription.getSphereParamsString());
-    elm.innerHTML = this.message;
+    elm.setAttribute('jumpTo', this.jumpTo);
     return elm;
   }
 };
 
 
-module.exports = VRText;
+module.exports = VRJump;

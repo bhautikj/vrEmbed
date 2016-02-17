@@ -19,11 +19,13 @@ var VRStates = require('./VRStates.js');
 var VRDeviceManager = require('./VRDeviceManager.js');
 
 var createDialogTextStyle = function(t) {
-  t.width = '300px';
+  t.width = '350px';
   t.position = 'relative';
   t.margin = '10px auto';
-  t.padding = '5px 20px 10px 20px';
+  t.padding = '10px 10px 10px 10px';
   t.borderRadius = '5px';
+  t.borderStlyle = 'solid';
+  t.borderColor = '#ff0000 #0000ff';
   t.background = '#fff';
   // t.pointerEvents = 'auto';
 }
@@ -48,12 +50,13 @@ function VROptionsCore() {
     //s.pointerEvents = 'none';
     s.pointerEvents = 'auto';
     s.color = '#000';
-    s.fontFamily = '"Lucida Console",Monaco,monospace';
+    s.fontFamily = '"Helvetica Neue", Helvetica, Arial, sans-serif';
+    s.fontWeight = 'bold';
 
     this.dialogText = document.createElement('div');
     var t = this.dialogText.style;
     createDialogTextStyle(t);
-    t.minHeight = '100px';
+    t.minHeight = '60px';
 
     this.dialogDevices = document.createElement('div');
     var u = this.dialogDevices.style;
@@ -61,28 +64,36 @@ function VROptionsCore() {
     u.maxHeight = '100px';
     u.overflow = 'scroll';
 
+    this.dialogShare = document.createElement('div');
+    var w = this.dialogShare.style;
+    createDialogTextStyle(w);
+    w.maxHeight = '100px';
+    w.overflow = 'scroll';
+
     this.dialog.appendChild(this.dialogText);
     this.dialog.appendChild(this.dialogDevices);
+    this.dialog.appendChild(this.dialogShare);
+
     this.dialog.addEventListener('click', this.onClickLeft_.bind(this));
     this.dialog.addEventListener('touchstart', this.onClickLeft_.bind(this));
 
     this.setupDialogOptions();
     this.setupDialogDevices();
+    this.setupDialogShare(null);
   }
 
   this.setupDialogOptions = function() {
     var tex = "";
+    tex += '<img src=' + VRLogos.logoVrEmbed + ' width=60px style="float: left; margin: 2px 2px 2px 2px;"/>';
     tex += '<a href="http://vrEmbed.org" target="_blank" style="color: inherit; text-decoration: none;">'
-    tex += '<img src=' + VRLogos.logoVrEmbed + ' width=100px style="float: right; margin: 0 0 2px 2px;"/>';
-    tex += '<br/>vrEmbed<br/> (c) Bhautik Joshi 2015-16</a><div style="clear:left;">';
+    tex += '<br/>vrEmbed.org</a><br/><span style="font-size:70%">(c) Bhautik Joshi 2015-16</span><div style="clear:left;">';
     this.dialogText.innerHTML = tex;
   }
 
   this.setupDialogSetup = function() {
     var tex = "";
-    tex += '<a href="http://vrEmbed.org" target="_blank" style="color: inherit; text-decoration: none;">'
-    tex += '<img src=' + VRLogos.logoVrEmbed + ' width=100px style="float: right; margin: 0 0 2px 2px;"/>';
-    tex += '</a><b>Please select device:</b><br/><div style="clear:left;">';
+    tex += '<img src=' + VRLogos.logoVrEmbed + ' width=60px style="float: right; margin: 0 0 2px 2px;"/>';
+    tex += '<b>Please select device:</b><br/><div style="clear:left;">';
     this.dialogText.innerHTML = tex;
   }
 
@@ -152,20 +163,95 @@ function VROptionsCore() {
 
   this.setupDialogDevices = function() {
     var tex = "";
-    tex += 'Choose device:<br/>';
+    tex += '<span style="font-size:120%">Choose Device:<br/>';
     this.dialogDevices.innerHTML = tex;
     this.createRadio(this.dialogDevices);
     this.syncDeviceButtonsToManager();
   }
 
-  this.showDialog = function() {
+  this.setupShareButton = function(elm, col, tex) {
+    elm.style.borderRadius = "10px";
+    elm.style.padding = "5px";
+    elm.style.margin = "5px";
+    elm.style.backgroundColor = col;
+    elm.style.fontSize = "80%";
+    elm.style.color = '#fff';
+    elm.innerHTML = tex;
+  }
+
+  this.setupDialogShare = function(shareCodes) {
+    this.dialogShare.innerHTML = '<span style="font-size:120%">Share:<br/>';
+    if (shareCodes == null)
+      return;
+
+    var url = shareCodes[0];
+    var embed = shareCodes[1];
+
+    var twitterURL = "https://twitter.com/intent/tweet?text=" + encodeURIComponent("Check out my #vrEmbed ") + url;
+    var facebookURL = "https://www.facebook.com/sharer/sharer.php?u=" + url;
+    var gplusURL = "https://plus.google.com/share?url=" + url;
+    var redditURL = "http://www.reddit.com/submit?url=" + url;
+
+    var shareDiv = document.createElement("div");
+    shareDiv.style.textAlign = 'center';
+
+    var twitterButton = document.createElement("span");
+    var twitterLink = '<a href="' + twitterURL + '" target="_blank" style="color: inherit; text-decoration: none;">Twitter</a>';
+    this.setupShareButton(twitterButton, '#00aced', twitterLink);
+    shareDiv.appendChild(twitterButton);
+
+    var facebookButton = document.createElement("span");
+    var facebookLink = '<a href="' + facebookURL + '" target="_blank" style="color: inherit; text-decoration: none;">Facebook</a>';
+    this.setupShareButton(facebookButton, '#3b5998', facebookLink);
+    shareDiv.appendChild(facebookButton);
+
+    var gplusButton = document.createElement("span");
+    var gplusLink = '<a href="' + gplusURL + '" target="_blank" style="color: inherit; text-decoration: none;">G+</a>';
+    this.setupShareButton(gplusButton, '#dd4b39', gplusLink);
+    shareDiv.appendChild(gplusButton);
+
+    var redditButton = document.createElement("span");
+    var redditLink = '<a href="' + redditURL + '" target="_blank" style="color: inherit; text-decoration: none;">Reddit</a>';
+    this.setupShareButton(redditButton, '#ff5700', redditLink);
+    shareDiv.appendChild(redditButton);
+
+    this.dialogShare.appendChild(shareDiv);
+
+    var codeDiv = document.createElement("div");
+    var embedTex = document.createElement("span");
+    embedTex.style.fontSize="120%";
+    embedTex.innerHTML = "Embed:";
+    codeDiv.appendChild(embedTex);
+
+    var embedCodeBox = document.createElement("input");
+    embedCodeBox.setAttribute('value',embed);
+    embedCodeBox.style.width = "100%";
+    embedCodeBox.style.fontWeight = 'normal';
+    embedCodeBox.style.fontFamily = '"Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace';
+    codeDiv.appendChild(embedCodeBox);
+
+    this.dialogShare.appendChild(codeDiv);
+  }
+
+  this.showDialogOptions = function() {
     this.setupDialogOptions();
+    this.dialogDevices.style.display = "block";
+    this.dialogShare.style.display = "none";
     document.body.appendChild(this.dialog);
     this.syncDeviceButtonsToManager();
   }
 
-  this.showDialogFirstTime = function(story) {
+  this.showDialogShare = function(shareCodes) {
+    this.setupDialogShare(shareCodes);
+    this.dialogDevices.style.display = "none";
+    this.dialogShare.style.display = "block";
+    document.body.appendChild(this.dialog);
+  }
+
+  this.showDialogOptionsFirstTime = function(story) {
     this.setupDialogSetup();
+    this.dialogDevices.style.display = "block";
+    this.dialogShare.style.display = "none";
     document.body.appendChild(this.dialog);
     this.syncDeviceButtonsToManager();
     this.story = story;

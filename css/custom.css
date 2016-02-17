@@ -20,6 +20,10 @@ div.header-wrap > div {
   text-align: center;
 }
 
+.greybg {
+  background-color: #666;
+}
+
 div.stretchy-wrapper {
   width: 100%;
   max-width: 800px;

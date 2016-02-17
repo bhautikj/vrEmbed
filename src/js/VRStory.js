@@ -35,12 +35,13 @@ VRStory = function() {
   this.isFullScreen = false;
 
   this.sceneList = [];
+  this.namedSceneMap = [];
 
 
   this.enterFullscreen = function(){
     if (this.vrDeviceManager.firstTime()){
       console.log("FIRST");
-      this.vrOptions.options.showDialogFirstTime(self);
+      this.vrOptions.options.showDialogOptionsFirstTime(self);
       return false;
     }
 
@@ -377,6 +378,10 @@ VRStory = function() {
     }
   }
 
+  this.gotoNamedScene = function(name) {
+    self.setupScene(self.namedSceneMap[name]);
+  }
+
   this.guiGen = function() {
     // iterate over scene gui objects
     var curScene = this.sceneList[this.currentSceneIndex];
@@ -388,19 +393,38 @@ VRStory = function() {
                                guiObject.textureDescription.sphereCentre[0],
                                guiObject.textureDescription.sphereCentre[1],
                                null,
+                               null,
                                guiObject.message,
-                               {fontsize:72, borderThickness:12});
+                               {fontsize:48, borderThickness:9});
     }
 
+    if (curScene.hasJumpNav() == false) {
     var numScenes = self.sceneList.length;
-    if (self.currentSceneIndex>0) {
-      // prev
-      this.vrGui.createArrow(15, -30, -40, this.prevScene, true);
-    }
+      if (self.currentSceneIndex>0) {
+        // prev
+        this.vrGui.createArrow(15, -30, -40, this.prevScene, null, true);
+      }
 
-    if (self.currentSceneIndex<(numScenes-1)) {
-      //next
-      this.vrGui.createArrow(15, 30, -40, this.nextScene, false);
+      if (self.currentSceneIndex<(numScenes-1)) {
+        //next
+        this.vrGui.createArrow(15, 30, -40, this.nextScene, null, false);
+      }
+    } else {
+      var jumpObjects = curScene.jumpObjects;
+      for (g = 0;g<jumpObjects.length; g++){
+        // just assuming text nodes only for now
+        var jumpObject = jumpObjects[g];
+        this.vrGui.createTextBox(jumpObject.textureDescription.sphereFOV[0],
+                                 jumpObject.textureDescription.sphereCentre[0],
+                                 jumpObject.textureDescription.sphereCentre[1],
+                                 this.gotoNamedScene,
+                                 jumpObject.jumpTo,
+                                 jumpObject.jumpTo + ' \u27A6',
+                                 {fontsize:48,
+                                  borderThickness:12,
+                                  backgroundColor:{ r:102, g:102, b:102, a:1.0},
+                                  borderColor:{ r:255, g:153, b:0, a:1.0}});
+      }
     }
     this.quad.renderGui();
   }
@@ -439,6 +463,9 @@ VRStory = function() {
 
       self.mousePosLast = [ev.clientX, ev.clientY];
 
+      mx = Math.min(mx, 5);
+      my = Math.min(my, 5);
+
       self.quad.controller.mouseMove(mx, my, offsetX/rect.width, offsetY/rect.height);
     };
 
@@ -453,8 +480,9 @@ VRStory = function() {
     }, false);
 
     if (this.noGui == false) {
-      this.quad.getContainer().appendChild(this.stateToggler.buttonMiddle);
+      this.quad.getContainer().appendChild(this.stateToggler.buttonVR);
       this.quad.getContainer().appendChild(this.stateToggler.buttonOptions);
+      this.quad.getContainer().appendChild(this.stateToggler.buttonShare);
     }
 
     this.manager = new VRManager(this.quad);
@@ -462,7 +490,6 @@ VRStory = function() {
     this.animate();
 
     this.stateToggler.setState(VRStates.WINDOWED);
-
   };
 
   this.getSizeStyle = function (vrEmbedPhoto, s) {
@@ -480,7 +507,6 @@ VRStory = function() {
       s.width = width;
       return;
     }
-
   };
 
   this.initVrEmbedPhoto = function(vrEmbedPhoto, storyManager) {
@@ -556,10 +582,17 @@ VRStory = function() {
         if (vrScene.isStereo)
           this.isStereo = true;
         this.sceneList.push(vrScene);
+        if (vrScene.name != "") {
+          this.namedSceneMap[vrScene.name] = this.sceneList.length - 1;
+        }
       }
     }
     this.init(storyElement, storyManager);
   }
+
+  this.showShare = function() {
+    this.vrOptions.options.showDialogShare(this.getShareCodes());
+  };
 
   this.showOptions = function() {
     this.storyManager.showOptions();
@@ -568,6 +601,37 @@ VRStory = function() {
   this.hideOptions = function() {
     this.storyManager.hideOptions();
   };
+
+  this.getStoryElement = function() {
+    var elm = document.createElement('story');
+    for(i=0; i<this.sceneList.length; i++) {
+      var scene = this.sceneList[i];
+      elm.appendChild(scene.getSceneElement());
+    }
+    return elm;
+  }
+
+  this.isSinglePhotoStory = function() {
+    if(this.sceneList.length != 1 || this.sceneList[0].renderObjects.length != 1 || this.sceneList[0].guiObjects.length != 0)
+      return false;
+    else
+      return true;
+  }
+
+  this.getShareCodes = function() {
+    var urlCode = "";
+    var embedCode = "";
+    var scriptInc = '<script async src="//vrEmbed.org/vrEmbed.min.js" charset="utf-8"></script>';
+    if (this.isSinglePhotoStory()==true){
+      urlCode = encodeURIComponent("http://vrembed.org/" + this.sceneList[0].renderObjects[0].getSinglePhotoURLParams());
+      embedCode = this.sceneList[0].renderObjects[0].getSinglePhotoVrEmbedElement().outerHTML+scriptInc;
+    } else {
+      urlCode = encodeURIComponent(window.location.href);
+      embedCode = "<div>"+this.getStoryElement().outerHTML + scriptInc +"</div>";
+    }
+
+    return [urlCode, embedCode];
+  }
 
 };
 
