@@ -126,22 +126,24 @@ function wrapText(context, text, maxWidth) {
     var metrics = context.measureText(testLine);
     testWidth = metrics.width;
     if (testWidth > maxWidth && n > 0) {
-      if (testWidth > maxw)
+      if (testWidth > maxw){
         maxw = lastWidth;
+      }
       lineSet.push(line);
       line = words[n] + ' ';
-    }
-    else {
+    } else {
       line = testLine;
     }
     lastWidth = testWidth;
   }
 
-  if (testWidth > maxw)
-    maxw = testWidth;
   lineSet.push(line);
 
-  return [lineSet, maxw*1.2];
+  if (lineSet.length == 1) {
+    maxw = testWidth;
+  }
+
+  return [lineSet, maxw*1.1];
 }
 
 

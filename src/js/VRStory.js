@@ -395,7 +395,7 @@ VRStory = function() {
                                null,
                                null,
                                guiObject.message,
-                               {fontsize:72, borderThickness:12});
+                               {fontsize:48, borderThickness:9});
     }
 
     if (curScene.hasJumpNav() == false) {
@@ -420,8 +420,8 @@ VRStory = function() {
                                  this.gotoNamedScene,
                                  jumpObject.jumpTo,
                                  jumpObject.jumpTo + ' \u27A6',
-                                 {fontsize:72,
-                                  borderThickness:24,
+                                 {fontsize:48,
+                                  borderThickness:12,
                                   backgroundColor:{ r:102, g:102, b:102, a:1.0},
                                   borderColor:{ r:255, g:153, b:0, a:1.0}});
       }
