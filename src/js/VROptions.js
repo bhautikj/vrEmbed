@@ -163,7 +163,7 @@ function VROptionsCore() {
 
   this.setupDialogDevices = function() {
     var tex = "";
-    tex += 'Choose device:<br/>';
+    tex += '<span style="font-size:120%">Choose Device:<br/>';
     this.dialogDevices.innerHTML = tex;
     this.createRadio(this.dialogDevices);
     this.syncDeviceButtonsToManager();

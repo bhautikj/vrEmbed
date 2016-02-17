@@ -113,17 +113,37 @@
       <div class="figure"><img src="src/assets/vrembed_interface_settings.png"/></div>
     </div>
     <div class="one-half column">
-      On the top right you can hit the settings button to access the device selection menu that allows you to select how you want the vrEmbed displayed when in fullscreen mode:
+      On the bottom left you can hit the settings button to access the device selection menu that allows you to select how you want the vrEmbed displayed when in fullscreen mode:
     </div>
   </div>
 
   <div class="row"><br/></div>
   <div class="row">
     <div class="one-half column">
-      <div class="figure"><img src="src/assets/vrembed_interface_devices.png"/></div>
+      <div class="figure"><img src="src/assets/vrembed_interface_devices.jpg"/></div>
     </div>
     <div class="one-half column">
       The <b>fullscreen</b> device is just a plain window; <b>red-blue</b> is for when you are using red-blue glasses. The rest of the devices listed are side-by-side stereo modes for when you are using VR headsets.
+    </div>
+  </div>
+
+  <div class="row"><br/></div>
+  <div class="row">
+    <div class="one-half column">
+      <div class="figure"><img src="src/assets/vrembed_interface_share_icon.png"/></div>
+    </div>
+    <div class="one-half column">
+      On the bottom right you can hit the share button to access a dialog to share this vrEmbed. You can get direct links to share it on various social sites or an embed code if you want to embed it on your own site.
+    </div>
+  </div>
+
+  <div class="row"><br/></div>
+  <div class="row">
+    <div class="one-half column">
+      <div class="figure"><img src="src/assets/vrembed_interface_share_dialog.png"/></div>
+    </div>
+    <div class="one-half column">
+      Hit any of the social website buttons to start sharing your vrEmbed with various sites. If you want an embed code to use yourself, just cut and paste the code after 'embed'.
     </div>
   </div>
 
@@ -136,8 +156,8 @@
 <div class="container">
   <div class="row">
     <div class="twelve columns">
-      If you have a single image, there are two quick methods for creating a vrEmbed. Lets just work with this image - http://vrembed.org/src/assets/rheingauer_dom.jpg - as an example:
-      <div class="figure"><img src="src/assets/rheingauer_dom.jpg" width=300px/><br/><a href="https://commons.wikimedia.org/wiki/File:Rheingauer_Dom,_Geisenheim,_360_Panorama_(Equirectangular_projection).jpg" target="_blank">(source)</a></div>
+      If you have a single image, there are two quick methods for creating a vrEmbed. Lets just work with this image - http://vrembed.org/src/assets/ferry_building.jpg - as an example:
+      <div class="figure"><img src="src/assets/ferry_building.jpg" width=300px/><br/></div>
     </div>
   </div>
 </div>
@@ -150,12 +170,12 @@
       You can take your image URL and pass it directly to vrEmbed like so:
     </div>
     <div class="one-half column">
-      <div class="code">https://vrEmbed.org/?src=//vrembed.org/src/assets/rheingauer_dom.jpg&amp;isStereo=false&amp;sphereParams=360,180,0,0</div>
+      <div class="code">https://vrEmbed.org/?src=//vrembed.org/src/assets/ferry_building.jpg&amp;isStereo=false&amp;sphereParams=360,180,0,0</div>
     </div>
   </div>
   <div class="row">
     <div class="twelve columns">
-      Visit the link: <a href="http://vrembed.org/?src=//vrembed.org/src/assets/rheingauer_dom.jpg&isStereo=false&sphereParams=360,180,0,0" target="_blank">http://vrembed.org/?src=//vrembed.org/src/assets/rheingauer_dom.jpg&isStereo=false&sphereParams=360,180,0,0</a>
+      Visit the link: <a href="http://vrembed.org/?src=//vrembed.org/src/assets/ferry_building.jpg&isStereo=false&sphereParams=360,180,0,0" target="_blank">http://vrembed.org/?src=//vrembed.org/src/assets/ferry_building.jpg&isStereo=false&sphereParams=360,180,0,0</a>
     </div>
   </div>
 </div>
@@ -168,13 +188,13 @@
       You can also create an embed code to do the same, and use this fragment of HTML code wherever you like to embed the html (barring pages that don't support HTML snippets, such as facebook or twitter). So, for example, this:
     </div>
     <div class="one-half column">
-      <div class="code">&lt;a class=&quot;vrEmbedPhoto&quot; src=&quot;http://vrembed.org/src/assets/rheingauer_dom.jpg&quot; isStereo=&quot;false&quot; sphereParams=&quot;360,180,0,0&quot;&gt;&lt;/a&gt;&lt;script async src=&quot;//vrEmbed.org/vrEmbed.min.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;</div>
+      <div class="code">&lt;a class=&quot;vrEmbedPhoto&quot; src=&quot;http://vrembed.org/src/assets/ferry_building.jpg&quot; isStereo=&quot;false&quot; sphereParams=&quot;360,180,0,0&quot;&gt;&lt;/a&gt;&lt;script async src=&quot;//vrEmbed.org/vrEmbed.min.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;</div>
     </div>
   </div>
 </div>
 
 <div align=center><div class="stretchy-wrapper"><div>
-      <a class="vrEmbedPhoto" src="src/assets/rheingauer_dom.jpg" isStereo="false" sphereParams="360,180,0,0"></a><script async src="vrEmbed.min.js" charset="utf-8"></script>
+      <a class="vrEmbedPhoto" src="src/assets/ferry_building.jpg" isStereo="false" sphereParams="360,180,0,0"></a><script async src="vrEmbed.min.js" charset="utf-8"></script>
 </div></div></div>
 
 <h2>Multiple images</h2>
