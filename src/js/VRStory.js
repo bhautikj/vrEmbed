@@ -439,6 +439,9 @@ VRStory = function() {
 
       self.mousePosLast = [ev.clientX, ev.clientY];
 
+      mx = Math.min(mx, 5);
+      my = Math.min(my, 5);
+
       self.quad.controller.mouseMove(mx, my, offsetX/rect.width, offsetY/rect.height);
     };
 

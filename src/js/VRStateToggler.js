@@ -125,7 +125,6 @@ VRStateToggler.prototype.configureStereo = function(isStereo) {
 };
 
 VRStateToggler.prototype.setButtonState = function(state) {
-
   switch (state) {
     case VRStates.FULLSCREEN:
       this.setupButton(this.buttonOptions, "", "", false);

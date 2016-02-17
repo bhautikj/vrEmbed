@@ -22,7 +22,7 @@ var createDialogTextStyle = function(t) {
   t.width = '300px';
   t.position = 'relative';
   t.margin = '10px auto';
-  t.padding = '5px 20px 10px 20px';
+  t.padding = '10px 10px 10px 10px';
   t.borderRadius = '5px';
   t.background = '#fff';
   // t.pointerEvents = 'auto';
@@ -53,7 +53,7 @@ function VROptionsCore() {
     this.dialogText = document.createElement('div');
     var t = this.dialogText.style;
     createDialogTextStyle(t);
-    t.minHeight = '100px';
+    t.minHeight = '60px';
 
     this.dialogDevices = document.createElement('div');
     var u = this.dialogDevices.style;
@@ -72,17 +72,16 @@ function VROptionsCore() {
 
   this.setupDialogOptions = function() {
     var tex = "";
+    tex += '<img src=' + VRLogos.logoVrEmbed + ' width=60px style="float: right; margin: 0 0 2px 2px;"/>';
     tex += '<a href="http://vrEmbed.org" target="_blank" style="color: inherit; text-decoration: none;">'
-    tex += '<img src=' + VRLogos.logoVrEmbed + ' width=100px style="float: right; margin: 0 0 2px 2px;"/>';
-    tex += '<br/>vrEmbed<br/> (c) Bhautik Joshi 2015-16</a><div style="clear:left;">';
+    tex += 'vrEmbed (c) Bhautik Joshi 2015-16</a><div style="clear:left;">';
     this.dialogText.innerHTML = tex;
   }
 
   this.setupDialogSetup = function() {
     var tex = "";
-    tex += '<a href="http://vrEmbed.org" target="_blank" style="color: inherit; text-decoration: none;">'
-    tex += '<img src=' + VRLogos.logoVrEmbed + ' width=100px style="float: right; margin: 0 0 2px 2px;"/>';
-    tex += '</a><b>Please select device:</b><br/><div style="clear:left;">';
+    tex += '<img src=' + VRLogos.logoVrEmbed + ' width=60px style="float: right; margin: 0 0 2px 2px;"/>';
+    tex += '<b>Please select device:</b><br/><div style="clear:left;">';
     this.dialogText.innerHTML = tex;
   }
 
@@ -224,3 +223,14 @@ VROptions = function() {
 }
 
 module.exports = VROptions;
+
+
+// share sheet:
+// twitter: urlencode text, good to go
+// https://twitter.com/intent/tweet?text=%23vrEmbed%20http%3A%2F%2Fvrembed.org%2F%3Fsrc%3D%2F%2Fvrembed.org%2Fsrc%2Fassets%2Frheingauer_dom.jpg%26isStereo%3Dfalse%26sphereParams%3D360%2C180%2C0%2C0
+// facebook: urlencode URL, good to go
+// https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fvrembed.org%2F%3Fsrc%3D%2F%2Fvrembed.org%2Fsrc%2Fassets%2Frheingauer_dom.jpg%26isStereo%3Dfalse%26sphereParams%3D360%2C180%2C0%2C0
+// google plus: urlencode URL, good to go
+// https://plus.google.com/share?url=http%3A%2F%2Fvrembed.org%2F%3Fsrc%3D%2F%2Fvrembed.org%2Fsrc%2Fassets%2Frheingauer_dom.jpg%26isStereo%3Dfalse%26sphereParams%3D360%2C180%2C0%2C0
+// reddit?
+// http://www.reddit.com/submit?url=http%3A%2F%2Fvrembed.org%2F%3Fsrc%3D%2F%2Fvrembed.org%2Fsrc%2Fassets%2Frheingauer_dom.jpg%26isStereo%3Dfalse%26sphereParams%3D360%2C180%2C0%2C0&title=vrEmbed
