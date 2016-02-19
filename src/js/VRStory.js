@@ -456,15 +456,16 @@ VRStory = function() {
       if (self.mousePosLast[0]<0) {
         self.mousePosLast = [ev.clientX, ev.clientY];
         return;
-      } else if (mx==0 && my==0) {
-        mx = ev.clientX - self.mousePosLast[0];
-        my = ev.clientY - self.mousePosLast[1];
+      }
+
+      if (mx==0 && my==0) {
+        var cmx = ev.clientX - self.mousePosLast[0];
+        var cmy = ev.clientY - self.mousePosLast[1];
+        mx = Math.min(cmx, 5);
+        my = Math.min(cmy, 5);
       }
 
       self.mousePosLast = [ev.clientX, ev.clientY];
-
-      mx = Math.min(mx, 5);
-      my = Math.min(my, 5);
 
       self.quad.controller.mouseMove(mx, my, offsetX/rect.width, offsetY/rect.height);
     };
@@ -477,6 +478,7 @@ VRStory = function() {
     this.parentElement.addEventListener("mouseup", function (ev) {
         self.quad.controller.mouseStop();
         this.parentElement.removeEventListener("mousemove", self.mouseMove, false);
+        self.mousePosLast=[-1,-1];
     }, false);
 
     if (this.noGui == false) {
