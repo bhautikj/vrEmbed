@@ -573,20 +573,23 @@ VRStory = function() {
     if (noGui != null && noGui == "true")
       this.noGui = true;
 
-    var scenes=storyElement.children;
-    for(sceneit = 0;sceneit < scenes.length; sceneit++) {
-      var scene = scenes[sceneit];
-      if(scene.nodeName=="SCENE"){
-        var vrScene = new VRScene();
-        vrScene.init(scene);
-        if (vrScene.isStereo)
-          this.isStereo = true;
-        this.sceneList.push(vrScene);
-        if (vrScene.name != "") {
-          this.namedSceneMap[vrScene.name] = this.sceneList.length - 1;
+    var children = storyElement.childNodes;
+    for(var i = 0, l=children.length; i<l; ++i) {
+      var scene = children[i];
+      if(scene.nodeType === 1) {
+        if(scene.nodeName=="SCENE"){
+          var vrScene = new VRScene();
+          vrScene.init(scene);
+          if (vrScene.isStereo)
+            this.isStereo = true;
+          this.sceneList.push(vrScene);
+          if (vrScene.name != "") {
+            this.namedSceneMap[vrScene.name] = this.sceneList.length - 1;
+          }
         }
       }
     }
+
     this.init(storyElement, storyManager);
   }
 

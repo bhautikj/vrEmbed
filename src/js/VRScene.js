@@ -28,10 +28,12 @@ VRScene = function() {
       this.jumpObjects.push(vrJump);
     }
 
-    var elements = elm.children;
-    for(elementit = 0;elementit < elements.length; elementit++) {
-      var elm = elements[elementit];
-      this.parseChildNode(elm);
+    var children = elm.childNodes;
+    for(var i = 0, l=children.length; i<l; ++i) {
+        var child = children[i];
+        if(child.nodeType === 1) {
+          this.parseChildNode(child);
+        }
     }
   }
 
@@ -42,11 +44,13 @@ VRScene = function() {
     if (name != null) {
       this.name = name;
     }
-
-    var elements=sceneElement.children;
-    for(elementit = 0;elementit < elements.length; elementit++) {
-      var elm = elements[elementit];
-      this.parseChildNode(elm);
+    
+    var children = sceneElement.childNodes;
+    for(var i = 0, l=children.length; i<l; ++i) {
+        var child = children[i];
+        if(child.nodeType === 1) {
+          this.parseChildNode(child);
+        }
     }
   }
 
