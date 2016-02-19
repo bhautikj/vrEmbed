@@ -192,6 +192,7 @@ VRStateToggler.prototype.stateChange = function(buttonSrc) {
 
 VRStateToggler.prototype.buttonVRClick = function() {
   this.stateChange(this.buttonVR.src);
+  // this.vrStory.quad.getContainer().webkitRequestFullscreen();
 };
 
 VRStateToggler.prototype.buttonOptionsClick = function() {

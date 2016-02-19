@@ -62,6 +62,27 @@ div.stretchy-wrapper > div {
   border-radius: 100px;
 }
 
+a:link {
+    text-decoration: none;
+    color: inherit;
+}
+
+a:visited {
+    text-decoration: none;
+    color: inherit;
+}
+
+a:hover {
+    text-decoration: underline;
+    color: inherit;
+}
+
+a:active {
+    text-decoration: underline;
+    color: inherit;
+}
+</style>
+
 /* Sections
 */
 .section {
