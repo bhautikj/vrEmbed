@@ -261,7 +261,7 @@ VRLookController = function() {
     if(this.mode==VRLookMode.GYRO)
       return [this.euler[0], this.euler[1], this.euler[2]];
     else
-      return [-180.0*this.euler[2]/Math.PI,
+      return [(-180.0*this.euler[2]/Math.PI),
               -180.0*this.euler[1]/Math.PI,
               180.0*this.euler[0]/Math.PI];
   }

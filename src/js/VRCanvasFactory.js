@@ -166,6 +166,9 @@ VRCanvasTextBox.prototype.init = function(gl, message, hfov, options) {
   var backgroundColor = options.hasOwnProperty("backgroundColor") ?
     options["backgroundColor"] : { r:0, g:0, b:0, a:1.0};
 
+  var align = options.hasOwnProperty("align") ?
+    options["align"] : "start";
+
   this.ctx.font = "Bold " + fontsize + "px " + fontface;
   //this.ctx.font="72px Arial";
   //this.ctx.font = fontsize + "px " + fontface;
@@ -195,11 +198,17 @@ VRCanvasTextBox.prototype.init = function(gl, message, hfov, options) {
   this.ctx.fillStyle = "rgba(" + borderColor.r + "," + borderColor.g + ","
                        + borderColor.b + "," + borderColor.a + ")";
   this.ctx.font = fontsize + "px " + fontface;
-  this.ctx.textAlign="start";
+  this.ctx.textAlign = align;
 
   for(var n = 0; n < lineSet.length; n++) {
     var line = lineSet[n];
-    this.ctx.fillText( line, borderThickness*2, (n+1)*fontsize*heightMult);
+    if (align == "right" || align == "end")  {
+      this.ctx.fillText( line, textWidth + borderThickness, (n+1)*fontsize*heightMult);
+    } else if (align == "center") {
+        this.ctx.fillText( line, textWidth/2 + borderThickness, (n+1)*fontsize*heightMult);
+    } else if (align == "start" || align == "left") {
+      this.ctx.fillText( line, borderThickness*2, (n+1)*fontsize*heightMult);
+    }
   }
   // var th = wrapText(this.ctx, message, borderThickness, borderThickness, 4096, fontsize );
 

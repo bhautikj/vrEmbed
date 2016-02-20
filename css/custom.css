@@ -63,6 +63,7 @@ div.stretchy-wrapper > div {
 }
 
 a:link {
+    font-weight: 900;
     text-decoration: none;
     color: inherit;
 }
@@ -81,7 +82,10 @@ a:active {
     text-decoration: underline;
     color: inherit;
 }
-</style>
+
+.tenPxPad {
+  padding: 10px;
+}
 
 /* Sections
 */
