@@ -377,7 +377,7 @@ VRStory = function() {
                                null,
                                null,
                                guiObject.message,
-                               {align:'center', fontsize:48, borderThickness:9});
+                               guiObject.textOptions);
     }
 
     if (curScene.hasJumpNav() == false) {
@@ -401,12 +401,8 @@ VRStory = function() {
                                  jumpObject.textureDescription.sphereCentre[1],
                                  this.gotoNamedScene,
                                  jumpObject.jumpTo,
-                                 jumpObject.jumpTo + ' \u27A6',
-                                 {align:'center',
-                                  fontsize:48,
-                                  borderThickness:12,
-                                  backgroundColor:{ r:102, g:102, b:102, a:1.0},
-                                  borderColor:{ r:255, g:153, b:0, a:1.0}});
+                                 jumpObject.jumpText + ' \u27A6',
+                                 jumpObject.textOptions);
       }
     }
     this.quad.renderGui();

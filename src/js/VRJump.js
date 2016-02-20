@@ -15,23 +15,37 @@
 **/
 
 var VRTextureDescription = require('./VRTextureDescription.js');
+var VRTextOptions = require('./VRTextOptions.js');
+
 
 VRJump = function() {
   this.jumpElm = null;
   this.textureDescription = null;
+  this.textOptions = null;
   this.jumpTo = null;
+  this.jumpText = null;
 
   this.init = function(jumpElm) {
     this.jumpElm = jumpElm;
+    this.jumpElm.setAttribute("hidden", true);
     this.textureDescription = new VRTextureDescription();
     this.textureDescription.setSphereParamsFromString(this.jumpElm.getAttribute("sphereParams"));
     this.jumpTo = this.jumpElm.getAttribute("jumpTo");
+    if (this.jumpElm.innerHTML=="")
+      this.jumpText = this.jumpTo;
+    else
+      this.jumpText = this.jumpElm.innerHTML;
+
+    this.textOptions = new VRTextOptions();
+    this.textOptions.init(this.jumpElm);
   };
 
   this.getJumpElement = function() {
     var elm = document.createElement('jump');
     elm.setAttribute('sphereParams',this.textureDescription.getSphereParamsString());
     elm.setAttribute('jumpTo', this.jumpTo);
+    elm.innerHTML = this.jumpText;
+    this.textOptions.setElement(elm);
     return elm;
   }
 };
