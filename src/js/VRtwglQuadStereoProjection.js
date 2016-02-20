@@ -298,7 +298,7 @@ VRtwglQuadStereoProjection = function() {
 
     this.vrtwglQuadFb = new VRtwglQuad();
     this.vrtwglQuadFb.initFramebuffer(this.fbRes, this.vrtwglQuad.glContext, vs, fsWindowed);
-    self.vrtwglQuadFb.clearFrameBuffer(0, 0, 0, 0);
+    self.vrtwglQuadFb.clearFrameBuffer(0, 0, 0, 1.0);
 
     this.vrtwglQuadFbGui = new VRtwglQuad();
     this.vrtwglQuadFbGui.initFramebuffer(this.fbRes, this.vrtwglQuad.glContext, vs, fsWindowed);
@@ -443,7 +443,7 @@ VRtwglQuadStereoProjection = function() {
     if (err != undefined) {
       alert(err);
     }
-    self.vrtwglQuadFb.clearFrameBuffer(0, 0, 0, 0);
+    self.vrtwglQuadFb.clearFrameBuffer(1.0, 1.0, 1.0, 1.0);
     //alert("TEXTURES LOADED");
     for (var key in self.textures) {
       if (self.textures.hasOwnProperty(key)) {

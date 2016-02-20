@@ -62,7 +62,7 @@ VRManager = function(quad) {
       // mobile safari fallback to manual mode
       this.fallbackParent = canvas.parentNode;
       this.fallbackTmpCanvas = document.createElement('div');
-      this.fallbackTmpCanvas.style.backgroundColor="#000000";
+      this.fallbackTmpCanvas.style.background="background: rgba(0, 0, 0, 1.0);";
       this.fallbackTmpCanvas.appendChild(this.quad.getContainer());
       document.body.appendChild(this.fallbackTmpCanvas);
 
