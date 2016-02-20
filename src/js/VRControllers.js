@@ -102,8 +102,8 @@ VRGyroSpinner = function() {
   this.deviceOrientation = null;
   this.screenOrientation = window.orientation;
 
-  window.addEventListener('deviceorientation', this.onDeviceOrientationChange_.bind(this));
-  window.addEventListener('orientationchange', this.onScreenOrientationChange_.bind(this));
+  window.addEventListener('deviceorientation', this.onDeviceOrientationChange_.bind(this), true);
+  window.addEventListener('orientationchange', this.onScreenOrientationChange_.bind(this), true);
 
   this.baseRotation = twgl.m4.identity();
   this.screenTransform = twgl.m4.identity();
@@ -122,6 +122,22 @@ VRGyroSpinner.prototype.onDeviceOrientationChange_ = function(deviceOrientation)
 VRGyroSpinner.prototype.onScreenOrientationChange_ = function(screenOrientation) {
   this.screenOrientation = window.orientation;
 };
+
+// VRGyroSpinner.prototype.hasGyro = function() {
+//   if(window.DeviceOrientationEvent) {
+//     if (this.deviceorientation == null) {
+//       return false;
+//     }
+//
+//     if (this.deviceOrientation.alpha == null ||
+//         this.deviceOrientation.beta == null ||
+//         this.deviceOrientation.gamma ==null) {
+//           return false;
+//         }
+//   }
+//   return true;
+// };
+
 
 VRGyroSpinner.prototype.setYawOffset = function(yawOffset){
   this.yawOffset = yawOffset;
