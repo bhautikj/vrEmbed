@@ -195,7 +195,7 @@ VRCanvasTextBox.prototype.init = function(gl, message, hfov, options) {
   var lineSet = lineSetData[0];
   var textWidth = lineSetData[1];
 
-  this.ctx.canvas.width  = (textWidth + 4*borderThickness);
+  this.ctx.canvas.width  = (textWidth + 2*borderThickness);
   this.ctx.canvas.height = (lineSet.length*fontsize *heightMult + 2*borderThickness);
 
   // background color
@@ -204,7 +204,7 @@ VRCanvasTextBox.prototype.init = function(gl, message, hfov, options) {
   this.ctx.strokeStyle = borderColor;
 
   this.ctx.lineWidth = borderThickness;
-  roundRect(this.ctx, borderThickness/2, borderThickness/2, textWidth + borderThickness, lineSet.length*fontsize*heightMult + borderThickness, 6);
+  roundRect(this.ctx, borderThickness/2, borderThickness/2, textWidth , lineSet.length*fontsize*heightMult + borderThickness/2, 6);
   // 1.4 is extra height factor for text below baseline: g,j,p,q.
 
   // text color

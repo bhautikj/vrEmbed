@@ -42,7 +42,7 @@
   </div>{block:Description}
 
   <div class="container">
-    <div class="row headerBar">
+    <div class="row headerbar">
       <div class="twelve columns">
         <p id="description">{Description}</p>
       </div>
@@ -55,7 +55,7 @@
     <div class="container">
 
     {block:Text}
-    <div class="row text headerBar">
+    <div class="row text headerbar">
       <div class="twelve columns"
         {block:Title}
         <h3><a href="{Permalink}">{Title}</a></h3>
@@ -70,8 +70,13 @@
     {/block:Text}
 
     {block:Photo}
+    <div class="row text headerbar">
+      <div class="twelve columns"
+        <h3><a href="{Permalink}">Permalink</a></h3>
+      </div>
+    </div>
     <div class="row photo">
-      <div class="twelve columns">
+      <div class="twelve columns" style="text-align: center;">
         <img src="{PhotoURL-500}" alt="{PhotoAlt}">
       </div>
     </div>
@@ -213,7 +218,7 @@
   {/block:Posts}
 
   <div class="container">
-    <div class="row headerBar">
+    <div class="row headerbar">
       <div class="twelve columns">
         {block:PreviousPage} <a href="{PreviousPage}">&#171; Previous</a>{/block:PreviousPage}
         {block:NextPage} <a href="{NextPage}">Next &#187;</a>{/block:NextPage}
