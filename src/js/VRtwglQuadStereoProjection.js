@@ -443,7 +443,10 @@ VRtwglQuadStereoProjection = function() {
     if (err != undefined) {
       alert(err);
     }
-    self.vrtwglQuadFb.clearFrameBuffer(1.0, 1.0, 1.0, 1.0);
+    var gl = self.vrtwglQuad.glContext;
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    self.vrtwglQuadFb.clearFrameBuffer(0.0, 0.0, 0.0, 1.0);
     //alert("TEXTURES LOADED");
     for (var key in self.textures) {
       if (self.textures.hasOwnProperty(key)) {
@@ -460,8 +463,8 @@ VRtwglQuadStereoProjection = function() {
                                   textureDesc.U_r[1],
                                   textureDesc.V_r[0]-textureDesc.U_r[0],
                                   textureDesc.V_r[1]-textureDesc.U_r[1]];
+
         self.renderFb();
-        var gl = self.vrtwglQuad.glContext;
         gl.deleteTexture(self.textures[key]);
       }
     }
