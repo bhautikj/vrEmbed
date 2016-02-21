@@ -470,6 +470,7 @@ VRtwglQuadStereoProjection = function() {
     }
 
     self.vrtwglQuad.resetViewport();
+    self.resize();
 
     self.texReady = true;
     self.textureLoadStartAnim = Date.now();
