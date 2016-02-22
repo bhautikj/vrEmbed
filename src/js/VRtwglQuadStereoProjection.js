@@ -217,12 +217,20 @@ VRtwglQuadStereoProjection = function() {
   this.texReady = false;
 
   this.pickResolution = function() {
-    var util = new Util();
-    if (util.isMobile())
+    var tmpCanvas = document.createElement('canvas');
+    var gl = twgl.getWebGLContext(tmpCanvas);
+    var maxTex = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+    tmpCanvas.remove();
+
+    if (maxTex<=1024) {
+      return 1024;
+    } else if (maxTex<=2048) {
       return 2048;
-    else
+    } else {
       return 4096;
+    }
   }
+
   this.fbRes = this.pickResolution();
 
   this.getContainer = function() {
@@ -290,7 +298,7 @@ VRtwglQuadStereoProjection = function() {
 
     this.vrtwglQuadFb = new VRtwglQuad();
     this.vrtwglQuadFb.initFramebuffer(this.fbRes, this.vrtwglQuad.glContext, vs, fsWindowed);
-    self.vrtwglQuadFb.clearFrameBuffer(0, 0, 0, 0);
+    self.vrtwglQuadFb.clearFrameBuffer(0, 0, 0, 1.0);
 
     this.vrtwglQuadFbGui = new VRtwglQuad();
     this.vrtwglQuadFbGui.initFramebuffer(this.fbRes, this.vrtwglQuad.glContext, vs, fsWindowed);
@@ -435,7 +443,10 @@ VRtwglQuadStereoProjection = function() {
     if (err != undefined) {
       alert(err);
     }
-    self.vrtwglQuadFb.clearFrameBuffer(0, 0, 0, 0);
+    var gl = self.vrtwglQuad.glContext;
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    self.vrtwglQuadFb.clearFrameBuffer(0.0, 0.0, 0.0, 1.0);
     //alert("TEXTURES LOADED");
     for (var key in self.textures) {
       if (self.textures.hasOwnProperty(key)) {
@@ -443,7 +454,7 @@ VRtwglQuadStereoProjection = function() {
         self.uniformsFb["textureSource"] = self.textures[key];
         self.uniformsFb["sphX"] = [0.5-0.5*(textureDesc.sphereFOV[0]/360.0),0.5-0.5*(textureDesc.sphereFOV[1]/180.0)];
         self.uniformsFb["sphYX"] = [(textureDesc.sphereFOV[0]/360.0),(textureDesc.sphereFOV[1]/180.0)];
-        self.uniformsFb["transform"] = self.createOrientation(Math.PI*textureDesc.sphereCentre[0]/180.0, Math.PI*textureDesc.sphereCentre[1]/-180.0);
+        self.uniformsFb["transform"] = self.createOrientation(Math.PI*textureDesc.sphereCentre[0]/180.0, Math.PI*textureDesc.sphereCentre[1]/180.0);
         self.uniformsFb["uvL"] = [textureDesc.U_l[0],
                                   textureDesc.U_l[1],
                                   textureDesc.V_l[0]-textureDesc.U_l[0],
@@ -452,16 +463,16 @@ VRtwglQuadStereoProjection = function() {
                                   textureDesc.U_r[1],
                                   textureDesc.V_r[0]-textureDesc.U_r[0],
                                   textureDesc.V_r[1]-textureDesc.U_r[1]];
+
         self.renderFb();
-        var gl = self.vrtwglQuad.glContext;
         gl.deleteTexture(self.textures[key]);
       }
     }
 
     self.vrtwglQuad.resetViewport();
+    self.resize();
 
     self.texReady = true;
-    console.log(self.texReady);
     self.textureLoadStartAnim = Date.now();
     self.textureLoadEndAnim = self.textureLoadStartAnim + 250;
   }

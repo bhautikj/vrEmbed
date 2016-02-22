@@ -53,22 +53,6 @@ VRDevices = {
     // lens distortion params: [k1, k2] in k1*r^2 + k2+r^4
     k: [0,0]
   },
-  CARDBOARDV1 : {
-    // display name
-    name: "Google Cardboard v1 (2014)",
-    // renderer mode
-    renderMode: VRRenderModes.STEREOSIDEBYSIDE,
-    // icon
-    icon: VRIcons.logoCardboard,
-    // horizontal field-of-view
-    hfov: 40,
-    // % of screen width parallax to introduce in stereo
-    // 0: no adjstment
-    // 0.5: rotation centre moved to far left/right screen edges
-    ipdAdjust: calculateIPDAdjust(VRScreenWidths.iPhone5,64),
-    // lens distortion params: [k1, k2] in k1*r^2 + k2+r^4
-    k: [0.441,0.156]
-  },
   CARDBOARDV2 : {
     // display name
     name: "Google Cardboard v2 (2015)",
@@ -78,6 +62,22 @@ VRDevices = {
     icon: VRIcons.logoCardboard,
     // horizontal field-of-view
     hfov: 60,
+    // % of screen width parallax to introduce in stereo
+    // 0: no adjstment
+    // 0.5: rotation centre moved to far left/right screen edges
+    ipdAdjust: calculateIPDAdjust(VRScreenWidths.iPhone6p,64),
+    // lens distortion params: [k1, k2] in k1*r^2 + k2+r^4
+    k: [0.34,0.55]
+  },
+  VIEWMASTER : {
+    // display name
+    name: "View-Master VR (2016)",
+    // renderer mode
+    renderMode: VRRenderModes.STEREOSIDEBYSIDE,
+    // icon
+    icon: VRIcons.logoCardboard,
+    // horizontal field-of-view
+    hfov: 50,
     // % of screen width parallax to introduce in stereo
     // 0: no adjstment
     // 0.5: rotation centre moved to far left/right screen edges
@@ -116,6 +116,22 @@ VRDevices = {
     ipdAdjust: calculateIPDAdjust(VRScreenWidths.iPhone6,60),
     // lens distortion params: [k1, k2] in k1*r^2 + k2+r^4
     k: [0.093,0.018]
+  },
+  CARDBOARDV1 : {
+    // display name
+    name: "Google Cardboard v1 (2014)",
+    // renderer mode
+    renderMode: VRRenderModes.STEREOSIDEBYSIDE,
+    // icon
+    icon: VRIcons.logoCardboard,
+    // horizontal field-of-view
+    hfov: 40,
+    // % of screen width parallax to introduce in stereo
+    // 0: no adjstment
+    // 0.5: rotation centre moved to far left/right screen edges
+    ipdAdjust: calculateIPDAdjust(VRScreenWidths.iPhone5,64),
+    // lens distortion params: [k1, k2] in k1*r^2 + k2+r^4
+    k: [0.441,0.156]
   },
 };
 

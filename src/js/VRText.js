@@ -15,10 +15,12 @@
 **/
 
 var VRTextureDescription = require('./VRTextureDescription.js');
+var VRTextOptions = require('./VRTextOptions.js');
 
 VRText = function() {
   this.sceneText = null;
   this.textureDescription = null;
+  this.textOptions = null;
   this.message = "";
 
   this.parseMessage = function(str) {
@@ -31,12 +33,17 @@ VRText = function() {
     this.textureDescription = new VRTextureDescription();
     this.textureDescription.setSphereParamsFromString(this.sceneText.getAttribute("sphereParams"));
     this.parseMessage(this.sceneText.innerHTML);
+
+    this.textOptions = new VRTextOptions();
+    this.textOptions.init(this.sceneText);
   };
 
   this.getTextElement = function() {
     var elm = document.createElement('text');
     elm.setAttribute('sphereParams',this.textureDescription.getSphereParamsString());
     elm.innerHTML = this.message;
+
+    this.textOptions.setElement(elm);
     return elm;
   }
 };

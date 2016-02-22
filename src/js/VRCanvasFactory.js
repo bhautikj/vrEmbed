@@ -151,25 +151,43 @@ VRCanvasTextBox = function() {};
 VRCanvasTextBox.prototype = new VRCanvasBase();
 VRCanvasTextBox.prototype.init = function(gl, message, hfov, options) {
   this.initBase(gl);
-  var fontface = options.hasOwnProperty("fontface") ?
-    options["fontface"] : "Arial";
 
-  var fontsize = options.hasOwnProperty("fontsize") ?
-    options["fontsize"] : 12;
 
-  var borderThickness = options.hasOwnProperty("borderThickness") ?
-    options["borderThickness"] : 1;
+  // {align:'center',
+  //  fontsize:48,
+  //  borderThickness:12,
+  //  backgroundColor:{ r:102, g:102, b:102, a:1.0},
+  //  borderColor:{ r:255, g:153, b:0, a:1.0}}
 
-  var borderColor = options.hasOwnProperty("borderColor") ?
-    options["borderColor"] : { r:255, g:255, b:255, a:1.0 };
+  var fontface = "Arial";
+  if (options.fontface != null)
+    fontface = options.fontface;
 
-  var backgroundColor = options.hasOwnProperty("backgroundColor") ?
-    options["backgroundColor"] : { r:0, g:0, b:0, a:1.0};
+  var fontsize = 48;
+  if (options.fontsize != null)
+    fontsize = options.fontsize;
+
+  var align = "center";
+  if (options.align != null)
+    align = options.align;
+
+  var borderThickness = 12;
+  if (options.borderThickness != null)
+    borderThickness = options.borderThickness;
+
+  var borderColor = "#FFFFFF";
+  if (options.borderColor != null)
+    borderColor = options.borderColor;
+
+  var backgroundColor = "#000000";
+  if (options.backgroundColor != null)
+    backgroundColor = options.backgroundColor;
+
+  var textColor = "#FFFFFF";
+  if (options.textColor != null)
+    textColor = options.textColor;
 
   this.ctx.font = "Bold " + fontsize + "px " + fontface;
-  //this.ctx.font="72px Arial";
-  //this.ctx.font = fontsize + "px " + fontface;
-  //console.log(this.ctx.font);
 
   var heightMult = 1.4;//12->1.4
   // get size data (height depends only on font size)
@@ -177,29 +195,33 @@ VRCanvasTextBox.prototype.init = function(gl, message, hfov, options) {
   var lineSet = lineSetData[0];
   var textWidth = lineSetData[1];
 
-  this.ctx.canvas.width  = (textWidth + 4*borderThickness);
+  this.ctx.canvas.width  = (textWidth + 2*borderThickness);
   this.ctx.canvas.height = (lineSet.length*fontsize *heightMult + 2*borderThickness);
 
   // background color
-  this.ctx.fillStyle   = "rgba(" + backgroundColor.r + "," + backgroundColor.g + ","
-                  + backgroundColor.b + "," + backgroundColor.a + ")";
+  this.ctx.fillStyle   = backgroundColor;
   // border color
-  this.ctx.strokeStyle = "rgba(" + borderColor.r + "," + borderColor.g + ","
-                  + borderColor.b + "," + borderColor.a + ")";
+  this.ctx.strokeStyle = borderColor;
 
   this.ctx.lineWidth = borderThickness;
-  roundRect(this.ctx, borderThickness/2, borderThickness/2, textWidth + borderThickness, lineSet.length*fontsize *heightMult + borderThickness, 6);
+  roundRect(this.ctx, borderThickness/2, borderThickness/2, textWidth , lineSet.length*fontsize*heightMult + borderThickness/2, 6);
   // 1.4 is extra height factor for text below baseline: g,j,p,q.
 
   // text color
-  this.ctx.fillStyle = "rgba(" + borderColor.r + "," + borderColor.g + ","
-                       + borderColor.b + "," + borderColor.a + ")";
+  this.ctx.fillStyle = textColor;
+
   this.ctx.font = fontsize + "px " + fontface;
-  this.ctx.textAlign="start";
+  this.ctx.textAlign = align;
 
   for(var n = 0; n < lineSet.length; n++) {
     var line = lineSet[n];
-    this.ctx.fillText( line, borderThickness*2, (n+1)*fontsize*heightMult);
+    if (align == "right" || align == "end")  {
+      this.ctx.fillText( line, textWidth + borderThickness, (n+1)*fontsize*heightMult);
+    } else if (align == "center") {
+        this.ctx.fillText( line, textWidth/2 + borderThickness, (n+1)*fontsize*heightMult );
+    } else if (align == "start" || align == "left") {
+      this.ctx.fillText( line, borderThickness*2, (n+1)*fontsize*heightMult );
+    }
   }
   // var th = wrapText(this.ctx, message, borderThickness, borderThickness, 4096, fontsize );
 

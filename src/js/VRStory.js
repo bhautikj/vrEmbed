@@ -186,43 +186,25 @@ VRStory = function() {
     var now = Date.now();
     var dir = [];
 
-    if (self.quad.controller.isGyro()) {
-      var dir = self.quad.controller.getHeading();
-      this.direction[0] = dir[0];
-      this.direction[1] = dir[1];
-      this.direction[2] = 0;
-    }
+    var dir = self.quad.controller.getHeading();
+    this.direction[0] = dir[0];
+    this.direction[1] = dir[1];
+    this.direction[2] = 0;
+
 
     // gui opacity
 
     if (this.vrGui.isHovering()) {
       self.quad.setGuiMult(Math.min(1.0, self.quad.getGuiMult()+0.05));
     } else {
-      self.quad.setGuiMult(Math.max(0.3, self.quad.getGuiMult()-0.05));
-    }
-
-    // pointer events override gyro events
-    if (self.quad.controller.pointer != null) {
-      var xPos = 0.5;
-      var renderMode = this.quad.getRenderMode();
-      if (renderMode == VRRenderModes.STEREOSIDEBYSIDE){
-        var ipdAdjust = this.quad.getIPDAdjust();
-        xPos=0.25 - ipdAdjust*0.5;
-      }
-
-      var dir = self.quad.guiToLonLat([xPos,0.5]);
-      // var dir = self.quad.guiToLonLat(self.quad.controller.pointer);
-      this.direction[0] = dir[0];
-      this.direction[1] = -1.0*dir[1];
-      this.direction[2] = 0;
-    } else if (!self.quad.controller.isGyro()){
-      this.direction = [null,null,null];
+      self.quad.setGuiMult(Math.max(0.7, self.quad.getGuiMult()-0.05));
     }
 
     var actionPercent = 0;
 
-    if (this.direction[0]!=null)
+    if (this.direction[0]!=null) {
       actionPercent = self.vrGui.update([this.direction[0], this.direction[1]],now);
+    }
 
     self.clearCtx();
     self.drawReticle(actionPercent);
@@ -395,7 +377,7 @@ VRStory = function() {
                                null,
                                null,
                                guiObject.message,
-                               {fontsize:48, borderThickness:9});
+                               guiObject.textOptions);
     }
 
     if (curScene.hasJumpNav() == false) {
@@ -419,11 +401,8 @@ VRStory = function() {
                                  jumpObject.textureDescription.sphereCentre[1],
                                  this.gotoNamedScene,
                                  jumpObject.jumpTo,
-                                 jumpObject.jumpTo + ' \u27A6',
-                                 {fontsize:48,
-                                  borderThickness:12,
-                                  backgroundColor:{ r:102, g:102, b:102, a:1.0},
-                                  borderColor:{ r:255, g:153, b:0, a:1.0}});
+                                 jumpObject.jumpText + ' \u27A6',
+                                 jumpObject.textOptions);
       }
     }
     this.quad.renderGui();
@@ -456,15 +435,16 @@ VRStory = function() {
       if (self.mousePosLast[0]<0) {
         self.mousePosLast = [ev.clientX, ev.clientY];
         return;
-      } else if (mx==0 && my==0) {
-        mx = ev.clientX - self.mousePosLast[0];
-        my = ev.clientY - self.mousePosLast[1];
+      }
+
+      if (mx==0 && my==0) {
+        var cmx = ev.clientX - self.mousePosLast[0];
+        var cmy = ev.clientY - self.mousePosLast[1];
+        mx = Math.min(cmx, 5);
+        my = Math.min(cmy, 5);
       }
 
       self.mousePosLast = [ev.clientX, ev.clientY];
-
-      mx = Math.min(mx, 5);
-      my = Math.min(my, 5);
 
       self.quad.controller.mouseMove(mx, my, offsetX/rect.width, offsetY/rect.height);
     };
@@ -477,6 +457,7 @@ VRStory = function() {
     this.parentElement.addEventListener("mouseup", function (ev) {
         self.quad.controller.mouseStop();
         this.parentElement.removeEventListener("mousemove", self.mouseMove, false);
+        self.mousePosLast=[-1,-1];
     }, false);
 
     if (this.noGui == false) {
@@ -573,20 +554,23 @@ VRStory = function() {
     if (noGui != null && noGui == "true")
       this.noGui = true;
 
-    var scenes=storyElement.children;
-    for(sceneit = 0;sceneit < scenes.length; sceneit++) {
-      var scene = scenes[sceneit];
-      if(scene.nodeName=="SCENE"){
-        var vrScene = new VRScene();
-        vrScene.init(scene);
-        if (vrScene.isStereo)
-          this.isStereo = true;
-        this.sceneList.push(vrScene);
-        if (vrScene.name != "") {
-          this.namedSceneMap[vrScene.name] = this.sceneList.length - 1;
+    var children = storyElement.childNodes;
+    for(var i = 0, l=children.length; i<l; ++i) {
+      var scene = children[i];
+      if(scene.nodeType === 1) {
+        if(scene.nodeName=="SCENE"){
+          var vrScene = new VRScene();
+          vrScene.init(scene);
+          if (vrScene.isStereo)
+            this.isStereo = true;
+          this.sceneList.push(vrScene);
+          if (vrScene.name != "") {
+            this.namedSceneMap[vrScene.name] = this.sceneList.length - 1;
+          }
         }
       }
     }
+
     this.init(storyElement, storyManager);
   }
 

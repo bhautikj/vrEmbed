@@ -1,0 +1,85 @@
+
+<!--
+  Copyright 2015 Bhautik J Joshi
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ -->
+
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+
+   <!-- Basic Page Needs
+   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+   <meta charset="utf-8">
+   <title>3D stereo images</title>
+   <meta name="description" content="vrEmbed.org">
+   <meta name="author" content="Bhautik Joshi">
+   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, shrink-to-fit=no">
+   <meta name="mobile-web-app-capable" content="yes">
+   <meta name="apple-mobile-web-app-capable" content="yes" />
+   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+   <!-- FONT
+   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+   <link href='//fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
+
+   <!-- CSS
+   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+   <link rel="stylesheet" href="../css/normalize.css">
+   <link rel="stylesheet" href="../css/skeleton.css">
+   <link rel="stylesheet" href="../css/custom.css">
+
+   <!-- Favicon
+   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+   <link rel="icon" type="image/png" href="../src/assets/vrEmbedLogo_32.png">
+
+ </head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="two columns">
+        <img src="../src/assets/vrEmbedLogo.png" width=50px/><br/>
+      </div>
+      <div class="ten columns">
+        <h4>3D stereo example</h4>
+      </div>
+    </div>
+    <div class="row">
+      <div class="twelve columns">
+        <div class="stretchy-wrapper"><div>
+          <story>
+            <scene name="intro">
+              <photo src="../src/assets/anchor_stereo.jpg" isStereo="true" sphereParams="100,66,0,0" texParams="0,0,0.5,1.0,0.5,0,1,1"/>
+              <photo src="../src/assets/18th_stereo.jpg" isStereo="true" sphereParams="80,53,100,0" texParams="0,0,0.5,1.0,0.5,0,1,1"/>
+              <photo src="../src/assets/rhode_island_stereo.jpg" isStereo="true" sphereParams="53,53,-90,0" texParams="0,0,0.5,1.0,0.5,0,1,1"/>
+              <photo src="../src/assets/headset_stereo_b.jpg" isStereo="true" sphereParams="80,53,-170,0" texParams="0,0,0.5,1.0,0.5,0,1,1"/>
+              <text sphereParams="24,30,0,-30" align="center" fontsize="64" bordercolor="#000000" borderthickness="24">Hit fullscreen for 3D.</text>
+            </scene>
+          </story>
+        </div></div><script async src="../vrEmbed.min.js" charset="utf-8"></script>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="twelve columns">
+        <script>function viewSource(){window.location="view-source:"+window.location}</script>
+        <a href="javascript:viewSource()"><h5>Click to view source!</h5></a>
+      </div>
+    </div>
+
+  </div>
+</body>
+
+</html>

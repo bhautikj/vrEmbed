@@ -30,23 +30,19 @@
    <meta name="apple-mobile-web-app-capable" content="yes" />
    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
-   <!-- Stop page loading and launch editor first if URL params are specified
-   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-   <vrEditor></vrEditor>
-
    <!-- FONT
    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
    <link href='//fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
 
    <!-- CSS
    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-   <link rel="stylesheet" href="css/normalize.css">
-   <link rel="stylesheet" href="css/skeleton.css">
-   <link rel="stylesheet" href="css/custom.css">
+   <link rel="stylesheet" href="../css/normalize.css">
+   <link rel="stylesheet" href="../css/skeleton.css">
+   <link rel="stylesheet" href="../css/custom.css">
 
    <!-- Favicon
    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-   <link rel="icon" type="image/png" href="src/assets/vrEmbedLogo_32.png">
+   <link rel="icon" type="image/png" href="../src/assets/vrEmbedLogo_32.png">
 
  </head>
 
@@ -56,7 +52,7 @@
   <div class="container">
     <div class="row">
       <div class="twelve columns">
-        <img src="src/assets/vrEmbedLogo.png" width=200px/><br/>
+        <img src="../src/assets/vrEmbedLogo.png" width=200px/><br/>
         <h5><i>(c) Bhautik Joshi, 2015-16</i></h5>
       </div>
       </div>
@@ -64,23 +60,25 @@
   </div>
 </div>
 
-<h1>Using vrEmbed</h1>
-<a name="using_vrEmbed"></a>
 
 <div class="container">
+  <div class="row"><div class="twelve columns">
+  <a name="using_vrEmbed"></a>
+  <h1>Using vrEmbed</h1>
+  </div></div>
   <div class="row">
     <div class="one-half column">
       A vrEmbed looks like this and only has a few basic controls:
     </div>
     <div class="one-half column">
-      <div class="figure"><img src="src/assets/vrembed_interface.jpg" width=350px/></div>
+      <div class="figure"><img src="../src/assets/vrembed_interface.jpg" width=350px/></div>
     </div>
   </div>
 
   <div class="row"><br/></div>
   <div class="row">
     <div class="one-half column">
-      <div class="figure"><img src="src/assets/vrembed_interface_fullscreen.png"/></div>
+      <div class="figure"><img src="../src/assets/vrembed_interface_fullscreen.png"/></div>
     </div>
     <div class="one-half column">
       Bottom center is the 'fullscreen' button which will take the vrEmbed and make it fullscreen. On mobile you need to turn the device on its side to landscape orientaiton to enger this mode. This is the mode to use if you are using a VR headset such as Google Cardboard or Gear VR.
@@ -90,7 +88,7 @@
   <div class="row"><br/></div>
   <div class="row">
     <div class="one-half column">
-      <div class="figure"><img src="src/assets/vrembed_interface_reticle.png"/></div>
+      <div class="figure"><img src="../src/assets/vrembed_interface_reticle.png"/></div>
     </div>
     <div class="one-half column">
       In the centre of the screen is a target; this indicates the current view direction. When wearing a headset, hover the target over interactive elements on the display and it will 'count down' (the circle will fill) until the action is taken. An example is the 'prev' and 'next' buttons in the scene that take you to the previous or next scene.
@@ -100,7 +98,7 @@
   <div class="row"><br/></div>
   <div class="row">
     <div class="one-half column">
-      <div class="figure"><img src="src/assets/vrembed_interface_prev_next.png" width=100%/></div>
+      <div class="figure"><img src="../src/assets/vrembed_interface_prev_next.png" width=100%/></div>
     </div>
     <div class="one-half column">
       If there are multiple scenes in the vrEmbed, you can move between them by hovering over the left and right arrows in front and just below you in the scene. The left arrow goes to the previous scene and the right arrow takes you to the next scene.
@@ -110,17 +108,17 @@
   <div class="row"><br/></div>
   <div class="row">
     <div class="one-half column">
-      <div class="figure"><img src="src/assets/vrembed_interface_hyperlink.png" width=100%/></div>
+      <div class="figure"><img src="../src/assets/vrembed_interface_hyperlink.png" width=100%/></div>
     </div>
     <div class="one-half column">
-      Scenes may also have a control to jump directly to another named scene. These are indicated by an orange text box with a right-pointing arrow; hover over these to jump to that named scene.
+      Scenes may also have a control to jump directly to another named scene. These are indicated by a text box with a right-pointing arrow; hover over these to jump to that named scene.
     </div>
   </div>
 
   <div class="row"><br/></div>
   <div class="row">
     <div class="one-half column">
-      <div class="figure"><img src="src/assets/vrembed_interface_settings.png"/></div>
+      <div class="figure"><img src="../src/assets/vrembed_interface_settings.png"/></div>
     </div>
     <div class="one-half column">
       On the bottom left you can hit the settings button to access the device selection menu that allows you to select how you want the vrEmbed displayed when in fullscreen mode:
@@ -130,7 +128,7 @@
   <div class="row"><br/></div>
   <div class="row">
     <div class="one-half column">
-      <div class="figure"><img src="src/assets/vrembed_interface_devices.jpg"/></div>
+      <div class="figure"><img src="../src/assets/vrembed_interface_devices.jpg"/></div>
     </div>
     <div class="one-half column">
       The <b>fullscreen</b> device is just a plain window; <b>red-blue</b> is for when you are using red-blue glasses. The rest of the devices listed are side-by-side stereo modes for when you are using VR headsets.
@@ -140,7 +138,7 @@
   <div class="row"><br/></div>
   <div class="row">
     <div class="one-half column">
-      <div class="figure"><img src="src/assets/vrembed_interface_share_icon.png"/></div>
+      <div class="figure"><img src="../src/assets/vrembed_interface_share_icon.png"/></div>
     </div>
     <div class="one-half column">
       On the bottom right you can hit the share button to access a dialog to share this vrEmbed. You can get direct links to share it on various social sites or an embed code if you want to embed it on your own site.
@@ -150,7 +148,7 @@
   <div class="row"><br/></div>
   <div class="row">
     <div class="one-half column">
-      <div class="figure"><img src="src/assets/vrembed_interface_share_dialog.png"/></div>
+      <div class="figure"><img src="../src/assets/vrembed_interface_share_dialog.png"/></div>
     </div>
     <div class="one-half column">
       Hit any of the social website buttons to start sharing your vrEmbed with various sites. If you want an embed code to use yourself, just cut and paste the code after 'embed'.
@@ -159,25 +157,34 @@
 
 </div>
 
-<a name="creating_a_vrEmbed"></a>
-<h1>Creating a vrEmbed</h1>
-<h2>Single image</h2>
-<a name="creating_single_image"></a>
 <div class="container">
+  <a name="creating_a_vrEmbed"></a>
+  <div class="row"><div class="twelve columns">
+  <h1>Quickstart: creating a vrEmbed</h1>
+  </div></div>
+  <a name="creating_a_vrEmbed"></a>
+  <div class="row"><div class="twelve columns">
+  <h2>Single image</h2>
+  <a name="creating_single_image"></a>
+  </div></div>
   <div class="row">
-    <div class="twelve columns">
+    <div class="one-half column">
       If you have a single image, there are two quick methods for creating a vrEmbed. Lets just work with this image - http://vrembed.org/src/assets/ferry_building.jpg - as an example:
-      <div class="figure"><img src="src/assets/ferry_building.jpg" width=300px/><br/></div>
+    </div>
+    <div class="one-half column">
+      <div class="figure"><img src="../src/assets/ferry_building.jpg" width=100%/><br/></div>
     </div>
   </div>
 </div>
 
-<a name="creating_single_image_url"></a>
-<h3>Passing it directly to vrEmbed.org</h3>
 <div class="container">
+  <div class="row"><div class="twelve columns">
+  <a name="creating_single_image_url"></a>
+  <h3>Passing it directly to vrEmbed.org</h3>
+  </div></div>
   <div class="row">
     <div class="one-half column">
-      You can take your image URL and pass it directly to vrEmbed like so:
+      You can take your image URL and pass it directly to vrEmbed (the specific meanings for the parameters used can be found in the <a href="#vrembed_parameters">vrEmbed parameters</a> section below):
     </div>
     <div class="one-half column">
       <div class="code">https://vrEmbed.org/?src=//vrembed.org/src/assets/ferry_building.jpg&amp;isStereo=false&amp;sphereParams=360,180,0,0</div>
@@ -190,12 +197,14 @@
   </div>
 </div>
 
-<a name="creating_single_image_embed"></a>
-<h3>Creating an embed code</h3>
 <div class="container">
+  <div class="row"><div class="twelve columns">
+  <a name="creating_single_image_embed"></a>
+  <h3>Creating an embed code</h3>
+  </div></div>
   <div class="row">
     <div class="one-half column">
-      You can also create an embed code to do the same, and use this fragment of HTML code wherever you like to embed the html (barring pages that don't support HTML snippets, such as facebook or twitter). So, for example, this:
+      You can also create an embed code to do the same, and use this fragment of HTML code wherever you like to embed the html (barring pages that don't support HTML snippets, such as facebook or twitter). <a href="single_image_embed.html" target="_blank">See the result here</a>.
     </div>
     <div class="one-half column">
       <div class="code">&lt;a class=&quot;vrEmbedPhoto&quot; src=&quot;http://vrembed.org/src/assets/ferry_building.jpg&quot; isStereo=&quot;false&quot; sphereParams=&quot;360,180,0,0&quot;&gt;&lt;/a&gt;&lt;script async src=&quot;//vrEmbed.org/vrEmbed.min.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;</div>
@@ -203,16 +212,32 @@
   </div>
 </div>
 
-<div align=center><div class="stretchy-wrapper"><div>
-      <a class="vrEmbedPhoto" src="src/assets/ferry_building.jpg" isStereo="false" sphereParams="360,180,0,0"></a><script async src="vrEmbed.min.js" charset="utf-8"></script>
-</div></div></div>
-
-<h2>Multiple images</h2>
-<a name="creating_multiple_image_embed"></a>
 <div class="container">
+  <div class="row"><div class="twelve columns">
+  <a name="creating_stereo_image"></a>
+  <h2>Working with 3D images</h2>
+  </div></div>
+  <div class="row">
+    <div class="one-half column">
+      If you have a left and right image combined into a single image, you can easily turn it into a vrEmbed:
+      <div class="code">&lt;a class=&quot;vrEmbedPhoto&quot; src=&quot;http://vrembed.org/src/assets/anchor_stereo.jpg&quot; isStereo=&quot;true&quot; sphereParams=&quot;100,66,0,0&quot; texParams=&quot;0,0,0.5,1.0,0.5,0,1,1&quot;&gt;&lt;/a&gt;&lt;script async src=&quot;//vrEmbed.org/vrEmbed.min.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;</div>
+      <a href="stereo_image_embed.html" target="_blank">See the result here</a> - hit the 'fullscreen' button and use a 3D image mode (e.g. with a headset or with red-blue glasses) to see the effect. Go <a href="#optional_parameters">here</a> for a detailed look at the parameters you need to set.
+    </div>
+    <div class="one-half column">
+      <div class="figure"><img src="../src/assets/anchor_stereo.jpg" width=100%/><br/></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="container">
+  <div class="row"><div class="twelve columns">
+  <a name="creating_multiple_image_embed"></a>
+  <h2>Multiple images</h2>
+  </div></div>
   <div class="row">
     <div class="one-third column">
-      Multiple images can be arranged into a scene, but require a more complex embed code. A vrEmbed story is made up of a top level, single &lt;story&gt; tag which has one or more &lt;scene&gt; tags within it. Each scene can contain as many &lt;photo&gt; tags as you like; each photo contains a code of where to find the image as well as where it goes in the scene.
+      Multiple images can be arranged into a scene, but require a more complex embed code. A vrEmbed story is made up of a top level, single &lt;story&gt; tag which has one or more &lt;scene&gt; tags within it. Each scene can contain as many &lt;photo&gt; tags as you like; each photo contains a code of where to find the image as well as where it goes in the scene. <a href="multiple_image_embed.html" target="_blank">See the result here</a>.
     </div>
     <div class="two-thirds column">
       <div class="code">&lt;div&gt;<br/>
@@ -227,21 +252,14 @@
   </div>
 </div>
 
-<div align=center><div class="stretchy-wrapper greybg"><div>
-    <story>
-      <scene>
-        <photo src="src/assets/byobw_2014_a.jpg" isStereo="false" sphereParams="100,66,60,0"/>
-        <photo src="src/assets/byobw_2014_b.jpg" isStereo="false" sphereParams="100,66,-60,-20"/>
-      </scene>
-    </story><script async src="vrEmbed.min.js" charset="utf-8"></script>
-</div></div></div>
-
-<h2>Adding captions</h2>
-<a name="adding_captions"></a>
 <div class="container">
+  <div class="row"><div class="twelve columns">
+  <a name="adding_captions"></a>
+  <h2>Adding captions</h2>
+  </div></div>
   <div class="row">
     <div class="one-third column">
-      Adding captions and text to your scene is easy! In the scene tag, add a <i>text</i> tag; specify it's location using sphereParams and encose your text within the tag. At this stage the text box sizes to fit the horizontal field-of-view specified in sphereParams, and we're not supporting text styling (yet).
+      Adding captions and text to your scene is easy! In the scene tag, add a <i>text</i> tag; specify it's location using sphereParams and encose your text within the tag. At this stage the text box sizes to fit the horizontal field-of-view specified in sphereParams. You can see more options to style your text boxes <a href="#styling_text">here</a>. Take a look at <a href="captions_embed.html" target="_blank">the result here</a>.
     </div>
     <div class="two-thirds column">
       <div class="code">
@@ -258,21 +276,14 @@
   </div>
 </div>
 
-<div align=center><div class="stretchy-wrapper greybg"><div>
-    <story>
-      <scene>
-        <photo src="src/assets/byobw_2014_a.jpg" isStereo="false" sphereParams="100,66,-20,0"/>
-        <text sphereParams="45,30,25,10"/>BRING YOUR OWN BIG WHEEL: every year on Easter Sunday San Francisco locals turn out in droves at the actual, most crooked street in the city for the annual BYOBW races. On a variety of pre-made, home-made and soon-to-be-unmade contraptions they race down in costume. There's no winner but no losers either; you won't find a single face that isn't smiling and having an incredibly good time.</text>
-      </scene>
-    </story><script async src="vrEmbed.min.js" charset="utf-8"></script>
-</div></div></div>
-
-<h2>Multiple scenes</h2>
-
 <div class="container">
+  <div class="row"><div class="twelve columns">
+  <a name="multiple_scenes"></a>
+  <h2>Multiple scenes</h2>
+  </div></div>
   <div class="row">
     <div class="one-third column">
-      Multiple sets of images can be arranged into multiple scenes to build a story. You can name these scenes by adding a <b>name="scene name"</b> qualifier to the &lt;scene&gt; tag. You can then create a visual hyperlink to these scenes by using a &lt;jump&gt; tag in the scene.
+      Multiple sets of images can be arranged into multiple scenes to build a story. You can name these scenes by adding a <b>name="scene name"</b> qualifier to the &lt;scene&gt; tag. You can then create a visual hyperlink to these scenes by using a &lt;jump&gt; tag in the scene. Put the description for the jump bentwee the &lt;jump&gt; and &lt;/jump&gt; tags. <a href="multiple_scenes_embed.html" target="_blank">See the result here</a>.
     </div>
     <div class="two-thirds column">
       <div class="code">&lt;div&gt;<br/>
@@ -280,12 +291,12 @@
         &nbsp;&nbsp;&lt;scene name="Corner Crashes"&gt;<br/>
             &nbsp;&nbsp;&nbsp;&lt;photo src=&quot;http://vrembed.org/src/assets/byobw_2013_a.jpg&quot; isStereo=&quot;false&quot; sphereParams=&quot;100,66,60,-10&quot;/&gt;<br/>
             &nbsp;&nbsp;&nbsp;&lt;photo src=&quot;http://vrembed.org/src/assets/byobw_2013_b.jpg&quot; isStereo=&quot;false&quot; sphereParams=&quot;100,66,-60,0&quot;/&gt;<br/>
-            &nbsp;&nbsp;&nbsp;&lt;jump sphereParams=&quot;35,30,30,-30&quot; jumpTo=&quot;Finish line&quot;/&gt;<br/>
+            &nbsp;&nbsp;&nbsp;&lt;jump sphereParams=&quot;35,30,30,-30&quot; jumpTo=&quot;Finish line&quot;&gt;Finish line&lt;/jump&gt;<br/>
           &nbsp;&nbsp;&lt;/scene&gt;<br/>
         &nbsp;&nbsp;&lt;scene name="Finish line"&gt;<br/>
             &nbsp;&nbsp;&nbsp;&lt;photo src=&quot;http://vrembed.org/src/assets/byobw_2014_a.jpg&quot; isStereo=&quot;false&quot; sphereParams=&quot;100,66,60,0&quot;/&gt;<br/>
             &nbsp;&nbsp;&nbsp;&lt;photo src=&quot;http://vrembed.org/src/assets/byobw_2014_b.jpg&quot; isStereo=&quot;false&quot; sphereParams=&quot;100,66,-60,-20&quot;/&gt;<br/>
-            &nbsp;&nbsp;&nbsp;&lt;jump sphereParams=&quot;40,30,-20,-20&quot; jumpTo=&quot;Corner crashes&quot;/&gt;<br/>
+            &nbsp;&nbsp;&nbsp;&lt;jump sphereParams=&quot;40,30,-20,-20&quot; jumpTo=&quot;Corner crashes&quot;&gt;Corner crashes&lt;/jump&gt;<br/>
           &nbsp;&nbsp;&lt;/scene&gt;<br/>
         &nbsp;&lt;/story&gt;&lt;script async src=&quot;//vrEmbed.org/vrEmbed.min.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;<br/>
       &lt;/div&gt;</div>
@@ -293,24 +304,11 @@
   </div>
 </div>
 
-<div align=center><div class="stretchy-wrapper greybg"><div>
-  <story>
-    <scene name="Corner crashes">
-      <photo src="src/assets/byobw_2013_a.jpg" isStereo="false" sphereParams="100,66,60,-10"/>
-      <photo src="src/assets/byobw_2013_b.jpg" isStereo="false" sphereParams="100,66,-60,0"/>
-      <jump sphereParams="35,30,30,-30" jumpTo="Finish line"/>
-    </scene>
-    <scene name="Finish line">
-      <photo src="src/assets/byobw_2014_a.jpg" isStereo="false" sphereParams="100,66,60,0"/>
-      <photo src="src/assets/byobw_2014_b.jpg" isStereo="false" sphereParams="100,66,-60,-20"/>
-      <jump sphereParams="40,30,-20,-20" jumpTo="Corner crashes"/>
-    </scene>
-  </story><script async src="vrEmbed.min.js" charset="utf-8"></script>
-</div></div></div>
-
-
-<h1>vrEmbed parameters</h1>
 <div class="container">
+  <div class="row"><div class="twelve columns">
+  <a name="vrembed_parameters"></a>
+  <h1>vrEmbed parameters</h1>
+  </div></div>
   <div class="row">
     <div class="twelve columns">
       The above examples used special parameters to set up the images inside the scenes.
@@ -324,32 +322,34 @@
   </div>
 
   <div class="row">
+    <div class="one-third column">
+      <h3>sphereParams</h3>
+      <div class="code">sphereParams=&quot;w,h,x,y&quot;</div>
+      This parameters are used in most tags that are in a scene, and specify where in space the object will appear and how large it will be.
+    </div>
+    <div class="one-third column">
+      <div class="figure"><img src="../src/assets/image_size.png" width=100%/></div>
+      <b>h</b> and <b>w</b> refer to the vertical height and horizontal width of your image on the sphere, in degrees. If you have a full, 360 by 180 panorama then <b>w=360</b> and <b>h=180</b>.
+    </div>
+    <div class="one-third column">
+      <div class="figure"><img src="../src/assets/image_location.png" width=100%/></div>
+      <b>x</b> and <b>y</b> refer to where on the sphere the <i>centre</i> of your image is. <b>x</b> goes from left to right from -180 to 180; 0 is stright ahead of the viewer, -90 is directly to the left and 90 is directly to the right. <b>y</b> goes from top to bottom -90 to 90; 0 is straight ahead of the viewer, -90 is directly above and 90 is directly below.
+    </div>
+  </div>
+  <div class="row">
     <div class="one-half column">
       <h3>src</h3>
       <div class="code">src=&quot;foo.jpg&quot;</div>
-      Simply point the code at where your image lives online.
+      Specific to the photo tag or if using vrEmbed URL mode - simply point the code at where your image lives online.
     </div>
     <div class="one-half column">
       <h3>isStereo</h3>
       <div class="code">isStereo=&quot;false&quot;</div>
-      If your image is a composite of left and right images, set this to <b>true</b> otherwise just leave it as <b>false</b>.
-    </div>
-  </div>
-  <div class="row">
-    <div class="one-third column">
-      <h3>sphereParams</h3>
-      <div class="code">sphereParams=&quot;w,h,x,y&quot;</div>
-    </div>
-    <div class="one-third column">
-      <div class="figure"><img src="src/assets/image_size.png" width=100%/></div>
-      <b>h</b> and <b>w</b> refer to the vertical height and horizontal width of your image on the sphere, in degrees. If you have a full, 360 by 180 panorama then <b>w=360</b> and <b>h=180</b>.
-    </div>
-    <div class="one-third column">
-      <div class="figure"><img src="src/assets/image_location.png" width=100%/></div>
-      <b>x</b> and <b>y</b> refer to where on the sphere the <i>centre</i> of your image is. <b>x</b> goes from left to right from -180 to 180; 0 is stright ahead of the viewer, -90 is directly to the left and 90 is directly to the right. <b>y</b> goes from top to bottom -90 to 90; 0 is straight ahead of the viewer, -90 is directly above and 90 is directly below.
+      Also specific to the photo tag or if using vrEmbed URL mode - if your image is a composite of left and right images, set this to <b>true</b> otherwise just leave it as <b>false</b>.
     </div>
   </div>
 
+  <a name="optional_parameters"></a>
   <div class="row">
     <div class="twelve columns">
       <h2>Optional parameters</h2>
@@ -363,7 +363,7 @@
       We define <b>(LTx,LTy)</b> as the top-left coordinate of the left image, <b>(LBx,LBy)</b> as the bottom-right coordinate of the left image.  <b>(RTx,RTy)</b> and <b>(RBx,RBy)</b> correspondingly match the right image.
     </div>
     <div class="one-half column">
-      <div class="figure"><img src="src/assets/stereo_image_coords.png" width=100%/></div>
+      <div class="figure"><img src="../src/assets/stereo_image_coords.png" width=100%/></div>
     </div>
   </div>
   <div class="row">
@@ -375,6 +375,27 @@
       You can set the width and height of the embed using width and height parameters, which both need to be set (e.g. width=640px height=480px); otherwise the embed defaults to creating a 16:9 ratio embed that takes up the width of the container.
     </div>
   </div>
+  <a name="styling_text"></a>
+  <div class="row">
+    <div class="twelve columns">
+      <h2>Styling text and jump boxes</h2>
+    </div>
+  </div>
+  <div class="row">
+    <div class="one-third column">
+      The text and jump tags can be easily styled. The options are:
+    </div>
+    <div class="two-thirds column">
+      <b>align:</b> <i>left, center or right</i> - specifies how the text will be aligned in the text box.<br/>
+      <b>fontface:</b> defaults to <i>Arial</i> - specify the font used<br/>
+      <b>fontsize:</b> defaults to <i>72</i> - specifies the size of the font used<br/>
+      <b>borderthickness:</b> defaults to <i>12</i> - specifies the width of the border around the text<br/>
+      <b>bordercolor:</b> defaults to <i>#FFFFFF</i> (white) - specifies the color of the border<br/>
+      <b>backgroundcolor:</b> defaults to <i>#000000</i> (black) - specifies the color of the background<br/>
+      <b>textcolor:</b> defaults to <i>#FFFFFF</i> (white) - specifies the color of the text<br/>
+    </div>
+  </div>
+
 </div>
 
 

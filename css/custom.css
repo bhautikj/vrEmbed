@@ -1,6 +1,6 @@
 /* VR junk
 */
-.headerBar {
+.headerbar {
   background-color: #f90;
   color: #fff;
   text-align: right;
@@ -60,6 +60,31 @@ div.stretchy-wrapper > div {
 */
 .button {
   border-radius: 100px;
+}
+
+a:link {
+    font-weight: 900;
+    text-decoration: none;
+    color: inherit;
+}
+
+a:visited {
+    text-decoration: none;
+    color: inherit;
+}
+
+a:hover {
+    text-decoration: underline;
+    color: inherit;
+}
+
+a:active {
+    text-decoration: underline;
+    color: inherit;
+}
+
+.tenPxPad {
+  padding: 10px;
 }
 
 /* Sections

@@ -3,9 +3,9 @@ Wakelock = require('../js-ext/wakelock.js');
 VRManager = function(quad) {
   this.quad = quad;
   this.fallbackFullscreen = false;
-  this.oldScroll = null;
-  this.fallbackWidth = null;
-  this.fallbackHeight = null;
+  this.fallbackScroll = null;
+  this.fallbackParent = null;
+  this.fallbackTmpCanvas = null;
   this.wakelock = new Wakelock();
 
   this.isLandscape = function() {
@@ -19,16 +19,18 @@ VRManager = function(quad) {
     this.quad.render();
   };
 
+
   this.exitVR = function() {
     if (this.fallbackFullscreen == true) {
       var canvas = this.quad.getContainer();
-      window.onscroll = this.oldScroll;
+      window.onscroll = this.fallbackScroll;
       this.fallbackFullscreen = false;
-      canvas.style.width  = this.fallbackWidth;
-      canvas.style.height = this.fallbackHeight;
-    }
-
-    if(document.exitFullscreen) {
+      this.fallbackParent.appendChild(this.quad.getContainer());
+      document.body.removeChild(this.fallbackTmpCanvas);
+      this.fallbackScroll = null;
+      this.fallbackParent = null;
+      this.fallbackTmpCanvas = null;
+    } else if(document.exitFullscreen) {
       document.exitFullscreen();
     } else if(document.mozCancelFullScreen) {
       document.mozCancelFullScreen();
@@ -56,22 +58,30 @@ VRManager = function(quad) {
         alert("Please rotate device to landscape mode before activating");
         return false;
       }
-      this.fallbackFullscreen = true;
+
       // mobile safari fallback to manual mode
-      canvas.style.zDepth = 900;
-      this.fallbackHeight = canvas.style.height;
-      this.fallbackWidth = canvas.style.width;
-      canvas.style.width  = window.innerWidth+"px";
-      canvas.style.height = window.innerHeight+"px";
-      canvas.scrollIntoView(true);
-      this.oldScroll = window.onscroll;
-      window.onscroll = function () { canvas.scrollIntoView(true); };
+      this.fallbackParent = canvas.parentNode;
+      this.fallbackTmpCanvas = document.createElement('div');
+      this.fallbackTmpCanvas.style.background="#000000";
+      this.fallbackTmpCanvas.appendChild(this.quad.getContainer());
+      document.body.appendChild(this.fallbackTmpCanvas);
+
+      this.fallbackFullscreen = true;
+      this.fallbackTmpCanvas.style.zDepth = 1000;
+      this.fallbackTmpCanvas.style.top = 0;
+      this.fallbackTmpCanvas.style.right = 0;
+      this.fallbackTmpCanvas.style.bottom = 0;
+      this.fallbackTmpCanvas.style.left = 0;
+      this.fallbackTmpCanvas.style.position = 'absolute';
+
+      this.fallbackTmpCanvas.scrollIntoView(true);
+      this.fallbackScroll = window.onscroll;
+      window.onscroll = function () { this.fallbackTmpCanvas.scrollIntoView(true); };
     }
 
     this.quad.vrtwglQuad.setCanvasFullscreen();
+    this.quad.resize();
     this.wakelock.request();
-
-
 
     return true;
   }

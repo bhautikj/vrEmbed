@@ -1,0 +1,89 @@
+
+<!--
+  Copyright 2015 Bhautik J Joshi
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ -->
+
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+
+   <!-- Basic Page Needs
+   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+   <meta charset="utf-8">
+   <title>Multiple Scenes Embed</title>
+   <meta name="description" content="vrEmbed.org">
+   <meta name="author" content="Bhautik Joshi">
+   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, shrink-to-fit=no">
+   <meta name="mobile-web-app-capable" content="yes">
+   <meta name="apple-mobile-web-app-capable" content="yes" />
+   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+   <!-- FONT
+   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+   <link href='//fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
+
+   <!-- CSS
+   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+   <link rel="stylesheet" href="../css/normalize.css">
+   <link rel="stylesheet" href="../css/skeleton.css">
+   <link rel="stylesheet" href="../css/custom.css">
+
+   <!-- Favicon
+   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+   <link rel="icon" type="image/png" href="../src/assets/vrEmbedLogo_32.png">
+
+ </head>
+
+<body>
+
+  <div class="container">
+    <div class="row">
+      <div class="one-half column">
+        <div class="stretchy-wrapper greybg"><div>
+          <story>
+            <scene name="Corner crashes">
+              <photo src="../src/assets/byobw_2013_a.jpg" isStereo="false" sphereParams="100,66,60,-10"/>
+              <photo src="../src/assets/byobw_2013_b.jpg" isStereo="false" sphereParams="100,66,-60,0"/>
+              <jump sphereParams="35,30,30,-30" jumpTo="Finish line">Finish line</jump>
+            </scene>
+            <scene name="Finish line">
+              <photo src="../src/assets/byobw_2014_a.jpg" isStereo="false" sphereParams="100,66,60,0"/>
+              <photo src="../src/assets/byobw_2014_b.jpg" isStereo="false" sphereParams="100,66,-60,-20"/>
+              <jump sphereParams="40,30,-20,-20" jumpTo="Corner crashes">Corner crashes</jump>
+            </scene>
+          </story><script async src="../vrEmbed.min.js" charset="utf-8"></script>
+        </div></div>
+      </div>
+      <div class="one-half column">
+        <div class="code">&lt;div&gt;<br/>
+          &nbsp;&lt;story&gt;<br/>
+          &nbsp;&nbsp;&lt;scene name="Corner Crashes"&gt;<br/>
+              &nbsp;&nbsp;&nbsp;&lt;photo src=&quot;http://vrembed.org/../src/assets/byobw_2013_a.jpg&quot; isStereo=&quot;false&quot; sphereParams=&quot;100,66,60,-10&quot;/&gt;<br/>
+              &nbsp;&nbsp;&nbsp;&lt;photo src=&quot;http://vrembed.org/../src/assets/byobw_2013_b.jpg&quot; isStereo=&quot;false&quot; sphereParams=&quot;100,66,-60,0&quot;/&gt;<br/>
+              &nbsp;&nbsp;&nbsp;&lt;jump sphereParams=&quot;35,30,30,-30&quot; jumpTo=&quot;Finish line&quot;&gt;Finish line&lt;/jump&gt;<br/>
+            &nbsp;&nbsp;&lt;/scene&gt;<br/>
+          &nbsp;&nbsp;&lt;scene name="Finish line"&gt;<br/>
+              &nbsp;&nbsp;&nbsp;&lt;photo src=&quot;http://vrembed.org/../src/assets/byobw_2014_a.jpg&quot; isStereo=&quot;false&quot; sphereParams=&quot;100,66,60,0&quot;/&gt;<br/>
+              &nbsp;&nbsp;&nbsp;&lt;photo src=&quot;http://vrembed.org/../src/assets/byobw_2014_b.jpg&quot; isStereo=&quot;false&quot; sphereParams=&quot;100,66,-60,-20&quot;/&gt;<br/>
+              &nbsp;&nbsp;&nbsp;&lt;jump sphereParams=&quot;40,30,-20,-20&quot; jumpTo=&quot;Corner crashes&quot;&gt;Corner crashes&lt;/jump&gt;<br/>
+            &nbsp;&nbsp;&lt;/scene&gt;<br/>
+          &nbsp;&lt;/story&gt;&lt;script async src=&quot;//vrEmbed.org/vrEmbed.min.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;<br/>
+        &lt;/div&gt;</div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
