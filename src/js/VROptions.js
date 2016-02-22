@@ -61,8 +61,9 @@ function VROptionsCore() {
     this.dialogDevices = document.createElement('div');
     var u = this.dialogDevices.style;
     createDialogTextStyle(u);
-    u.maxHeight = '100px';
+    u.maxHeight = '200px';
     u.overflow = 'scroll';
+    u.overflowy = 'scroll';
 
     this.dialogShare = document.createElement('div');
     var w = this.dialogShare.style;
@@ -93,7 +94,7 @@ function VROptionsCore() {
   this.setupDialogSetup = function() {
     var tex = "";
     tex += '<img src=' + VRLogos.logoVrEmbed + ' width=60px style="float: right; margin: 0 0 2px 2px;"/>';
-    tex += '<b>Please select device:</b><br/><div style="clear:left;">';
+    tex += '<b>Scroll to browse & select device:</b><br/><div style="clear:left;">';
     this.dialogText.innerHTML = tex;
   }
 
@@ -113,15 +114,17 @@ function VROptionsCore() {
       //var deviceLabelText = '<img src=' + device.icon + ' width=100px"/>' + ;
       var radioImgNode = document.createElement("img");
       radioImgNode.setAttribute('src', device.icon);
-      radioImgNode.setAttribute('height', '25px');
+      radioImgNode.setAttribute('height', '10px');
       var radioTextNode = document.createTextNode(device.name);
 
       var radioLabel = document.createElement("label");
+      radioLabel.style.margin = 0;
+      radioLabel.style.padding = "0px";
       radioLabel.htmlFor = radioButton.id;
-      radioLabel.appendChild(radioButton);
       radioLabel.appendChild(radioImgNode);
+      radioLabel.appendChild(radioButton);
       radioLabel.appendChild(radioTextNode);
-      radioLabel.appendChild(document.createElement("br"));
+      // radioLabel.appendChild(document.createElement("br"));
 
       this.deviceButtons[deviceName] = [radioButton, radioLabel];
 
@@ -163,7 +166,7 @@ function VROptionsCore() {
 
   this.setupDialogDevices = function() {
     var tex = "";
-    tex += '<span style="font-size:120%">Choose Device:<br/>';
+    tex += '<span style="font-size:120%">Scroll to browse & select Device:<br/>';
     this.dialogDevices.innerHTML = tex;
     this.createRadio(this.dialogDevices);
     this.syncDeviceButtonsToManager();
@@ -273,6 +276,12 @@ function VROptionsCore() {
       go = true;
 
     if (e.target == this.dialogText)
+      go = true;
+
+    if (e.target == this.dialogDevices)
+      go = true;
+
+    if (e.target == this.dialogShare)
       go = true;
 
     if (go == false)

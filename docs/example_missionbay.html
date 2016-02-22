@@ -1,0 +1,94 @@
+
+<!--
+  Copyright 2015 Bhautik J Joshi
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ -->
+
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+
+   <!-- Basic Page Needs
+   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+   <meta charset="utf-8">
+   <title>Mission Bay, San Francisco</title>
+   <meta name="description" content="vrEmbed.org">
+   <meta name="author" content="Bhautik Joshi">
+   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, shrink-to-fit=no">
+   <meta name="mobile-web-app-capable" content="yes">
+   <meta name="apple-mobile-web-app-capable" content="yes" />
+   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+   <!-- FONT
+   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+   <link href='//fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
+
+   <!-- CSS
+   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+   <link rel="stylesheet" href="../css/normalize.css">
+   <link rel="stylesheet" href="../css/skeleton.css">
+   <link rel="stylesheet" href="../css/custom.css">
+
+   <!-- Favicon
+   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+   <link rel="icon" type="image/png" href="../src/assets/vrEmbedLogo_32.png">
+
+ </head>
+
+<body bgColor="#000000">
+  <div class="container">
+    <div class="row">
+      <div class="twelve columns">
+        <div class="stretchy-wrapper"><div>
+          <story>
+            <scene name="1">
+              <photo src="../src/assets/mission_creek_1.jpg" isStereo="false" sphereParams="360,180,0,0">
+              <text sphereParams="30,30,50,0" align="left" bordercolor="#000000" borderthickness="24" fontsize="72">Originally a salt marsh and lagoon, Mission Bay was approved for redevelopment in 1998. Following on the heels of a major development by UCSF nearby the area has a huge area of publicly available parkland and waterways. On the North-East end is the ATT ballpark; the waterway makes its way South-East along a corridor of busy development, past a unique collection of houseboats to Mission Creek Park underneath the overpass of the 280 freeway.</text>
+              <text sphereParams="30,30,50,30" align="left" bordercolor="#000000" borderthickness="24" fontsize="72">Explore Mission Bay</text>
+              <text sphereParams="10,30,84,0" align="left" bordercolor="#000000" borderthickness="24" fontsize="72">ATT ballpark</text>
+              <text sphereParams="15,30,126,1" align="left" bordercolor="#000000" borderthickness="24" fontsize="72">Mission Creek Park Pavilion</text>
+              <text sphereParams="10,30,-49,-9" align="left" bordercolor="#000000" borderthickness="24" fontsize="72">Houseboats</text>
+              <text sphereParams="15,30,-2,-8" align="left" bordercolor="#000000" borderthickness="24" fontsize="72">Eric Staller’s Bubbleboat</text>
+              <jump jumpTo="0" sphereParams="15,33,100,0" borderthickness=24>Go North East</jump>
+              <jump jumpTo="2" sphereParams="15,33,-100,0" borderthickness=24>Go South East</jump>
+            </scene>
+            <scene name="0">
+              <photo src="../src/assets/mission_creek_0.jpg" isStereo="false" sphereParams="360,180,0,0">
+              <text sphereParams="30,30,100,-11" align="left" bordercolor="#000000" borderthickness="24" fontsize="72">Mission Creek Park</text>
+              <text sphereParams="20,30,-109,1" align="left" bordercolor="#000000" borderthickness="24" fontsize="72">Mission Creek Park Pavilion</text>
+              <jump jumpTo="1" sphereParams="15,33,-83,0" borderthickness=24>Go South East</jump>
+            </scene>
+            <scene name="2">
+              <photo src="../src/assets/mission_creek_2.jpg" isStereo="false" sphereParams="360,180,0,0">
+              <text sphereParams="30,30,-113,-14" align="left" bordercolor="#000000" borderthickness="24" fontsize="72">Mission Creek Garden</text>
+              <text sphereParams="20,30,2,-19" align="left" bordercolor="#000000" borderthickness="24" fontsize="72">Houseboats</text>
+              <jump jumpTo="1" sphereParams="15,33,95,0" borderthickness=24>Go North East</jump>
+              <jump jumpTo="3" sphereParams="15,33,-87,0" borderthickness=24>Go South East</jump>
+            </scene>
+            <scene name="3">
+              <photo src="../src/assets/mission_creek_3.jpg" isStereo="false" sphereParams="360,180,0,0">
+              <text sphereParams="20,30,-54,-16" align="left" bordercolor="#000000" borderthickness="24" fontsize="72">Sewage treatment plant</text>
+              <text sphereParams="20,30,55,11" align="left" bordercolor="#000000" borderthickness="24" fontsize="72">280 freeway</text>
+              <text sphereParams="20,30,119,-4" align="left" bordercolor="#000000" borderthickness="24" fontsize="72">Caltrain crossing</text>
+              <text sphereParams="10,30,152,1" align="left" bordercolor="#000000" borderthickness="24" fontsize="72">Potrero Hill</text>
+              <jump jumpTo="2" sphereParams="15,33,17,0" borderthickness=24>Go North East</jump>
+            </scene>
+          </story>
+        </div></div><script async src="../vrEmbed.min.js" charset="utf-8"></script>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
