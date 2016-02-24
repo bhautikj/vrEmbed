@@ -48,12 +48,8 @@
 
 <body>
 
-<script>
-var loadImage = function() {
-  var imageName = document.getElementById('imageURL').value;
-  console.log(imageName);
-}
-</script>
+<script src="sphere.js"></script>
+<script src="create.js"></script>
 
 <div class="container">
   <div class="row">
@@ -63,6 +59,15 @@ var loadImage = function() {
       <input class="button-primary" type="submit" value="Load Image" onclick="loadImage()">
     </div>
   </div>
+  <div class="row">
+    <div class="twelve columns">
+      <h5>Render</h5>
+      <canvas id="sphere" width="300" height="300">
+  			Sorry, your browser does not support the canvas element
+			</canvas>
+    </div>
+  </div>
+
   <div class="row">
     <div class="twelve columns">
       <h5>Options:</h5>
