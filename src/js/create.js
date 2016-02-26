@@ -1,6 +1,8 @@
 
+VRCreateSphere = require('./VRCreateSphere.js');
+
 // via: http://stackoverflow.com/questions/22575636/how-to-check-if-a-canvas-element-has-been-tainted/22580129#22580129
-function newImage(src,callWhenTainted,callWhenNotTainted){
+var newImage = function(src,callWhenTainted,callWhenNotTainted){
   // tmpCanvas to test CORS
   var tmpCanvas=document.createElement("canvas");
   var tmpCtx=tmpCanvas.getContext("2d");
@@ -44,7 +46,7 @@ function newImage(src,callWhenTainted,callWhenNotTainted){
 
 // called from image.onload
 // at this point the img.tainted flag is correct
-function afterOnLoad(img,callWhenTainted,callWhenOK){
+var afterOnLoad = function(img,callWhenTainted,callWhenOK){
   if(img.tainted){
     // it's tainted
     callWhenTainted(img);
@@ -61,7 +63,10 @@ var imageNotOK = function(img) {
 
 var proceed = function(img) {
   console.log("PROCEEDING");
-  createSphere(document.getElementById("sphere"),img);
+  var vrCreateSphere = new VRCreateSphere();
+  var sp = vrCreateSphere.createSphere(document.getElementById("sphere"),img);
+  vrCreateSphere.tiltTurn(20,90);
+  sp.renderFrame(0);
 }
 
 
@@ -72,3 +77,10 @@ var loadImage = function() {
   var imageURL = "http://localhost:8000/src/assets/rheingauer_dom.jpg";
   var img = newImage(imageURL, imageNotOK, proceed);
 }
+
+var init = function() {
+   var loadButton = document.getElementById("loadImage");
+   loadButton.onclick = loadImage;
+}
+
+init();
