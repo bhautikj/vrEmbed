@@ -63,8 +63,8 @@ var imageNotOK = function(img) {
 
 var proceed = function(img) {
   console.log("PROCEEDING");
-  var vrCreateSphere = new VRCreateSphere();
-  var sp = vrCreateSphere.createSphere(document.getElementById("sphere"),img);
+  vrCreateSphere = new VRCreateSphere();
+  sp = vrCreateSphere.createSphere(document.getElementById("sphere"),img);
   vrCreateSphere.tiltTurn(20,90);
   sp.renderFrame(0);
 }
@@ -78,9 +78,37 @@ var loadImage = function() {
   var img = newImage(imageURL, imageNotOK, proceed);
 }
 
+var paramChange = function() {
+  var hfovButton = document.getElementById("hfov");
+  var vfovButton = document.getElementById("vfov");
+  var xposButton = document.getElementById("xpos");
+  var yposButton = document.getElementById("ypos");
+  var xpos = parseFloat(xposButton.value) + 360;
+  var ypos = parseFloat(yposButton.value) + 360;
+
+  vrCreateSphere.tiltTurn(ypos, xpos);
+  sp.renderFrame(0);
+}
+
 var init = function() {
    var loadButton = document.getElementById("loadImage");
    loadButton.onclick = loadImage;
+
+   var hfovButton = document.getElementById("hfov");
+   var vfovButton = document.getElementById("vfov");
+   var xposButton = document.getElementById("xpos");
+   var yposButton = document.getElementById("ypos");
+
+   hfovButton.oninput = paramChange;
+   hfovButton.onchange = paramChange;
+   vfovButton.oninput = paramChange;
+   vfovButton.onchange = paramChange;
+   xposButton.oninput = paramChange;
+   xposButton.onchange = paramChange;
+   yposButton.oninput = paramChange;
+   yposButton.onchange = paramChange;
+
+  //  paramChange();
 }
 
 init();
