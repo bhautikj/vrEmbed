@@ -228,22 +228,21 @@ var calculateVector = function(h, v) {
 
     // Do a couple of rotations on L
 
-    var lx = L[X];
-    var srz = Math.sin(rz);
-    var crz = Math.cos(rz);
-    L[X] = lx * crz - L[Y] * srz;
-    L[Y] = lx * srz + L[Y] * crz;
-
-    //      calcL(lx, L[Y], rz);
-
     var lz;
     lz = L[Z];
+    var lx = L[X];
+
     var sry = Math.sin(ry);
     var cry = Math.cos(ry);
     L[Z] = lz * cry - L[Y] * sry;
     L[Y] = lz * sry + L[Y] * cry;
 
-    //     calcL(lz, L[Y], ry);
+    var srz = Math.sin(rz);
+    var crz = Math.cos(rz);
+    L[X] = lx * crz - L[Y] * srz;
+    L[Y] = lx * srz + L[Y] * crz;
+
+
 
     // Calculate the position that this location on the sphere
     // coresponds to on the texture
@@ -395,16 +394,22 @@ var sphere = function() {
   };
 };
 
-function copyImageToBuffer(aImg) {
+function copyImageToBuffer(aImg, u, vu) {
   gImage = document.createElement('canvas');
   textureWidth = aImg.naturalWidth;
   textureHeight = aImg.naturalHeight;
   gImage.width = textureWidth;
   gImage.height = textureHeight;
 
+  var x = u[0]*textureWidth;
+  var y = u[1]*textureHeight;
+  var w = vu[0]*textureWidth;
+  var h = vu[1]*textureHeight;
+
   gCtxImg = gImage.getContext("2d");
-  gCtxImg.clearRect(0, 0, textureHeight, textureWidth);
-  gCtxImg.drawImage(aImg, 0, 0);
+  gCtxImg.clearRect(0, 0, textureWidth, textureHeight);
+  gCtxImg.drawImage(aImg, x, y, w, h);
+  //gCtxImg.drawImage(aImg, 0, 0);
   textureImageData = gCtxImg.getImageData(0, 0, textureHeight, textureWidth);
 
   hs_ch = (hs / size);
@@ -436,11 +441,7 @@ var VRCreateSphere = function() {
     gCtx = gCanvas.getContext("2d");
     canvasImageData = gCtx.createImageData(size, size);
 
-    ry = 90 + opts.tilt;
-    rz = 180 + opts.turn;
-
-    RY = (90 - ry);
-    RZ = (180 - rz);
+    this.tiltTurn(opts.tilt, opts.turn);
 
     hs_ch = (hs / size);
     vs_cv = (vs / size);
@@ -451,7 +452,7 @@ var VRCreateSphere = function() {
     b2 = Math.pow(b, 2);
 
 
-    copyImageToBuffer(img);
+    copyImageToBuffer(img, [0.25,0.25], [0.5,0.5]);
     var sp = sphere();
     return sp;
     // var earth = sphere();

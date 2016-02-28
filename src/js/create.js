@@ -1,4 +1,3 @@
-
 VRCreateSphere = require('./VRCreateSphere.js');
 
 // via: http://stackoverflow.com/questions/22575636/how-to-check-if-a-canvas-element-has-been-tainted/22580129#22580129
@@ -61,54 +60,55 @@ var imageNotOK = function(img) {
   console.log(msg);
 }
 
-var proceed = function(img) {
-  console.log("PROCEEDING");
-  vrCreateSphere = new VRCreateSphere();
-  sp = vrCreateSphere.createSphere(document.getElementById("sphere"),img);
-  vrCreateSphere.tiltTurn(20,90);
-  sp.renderFrame(0);
+var UI = function() {
+  var self=this;
+  this.hfovButton = document.getElementById("hfov");
+  this.vfovButton = document.getElementById("vfov");
+  this.xposButton = document.getElementById("xpos");
+  this.yposButton = document.getElementById("ypos");
+  this.vrCreateSphere = null;
+  this.sphereElem = null;
+
+  this.paramChange = function() {
+    var xpos = parseFloat(self.xposButton.value) + 360;
+    var ypos = parseFloat(self.yposButton.value) + 360;
+
+    self.vrCreateSphere.tiltTurn(ypos, xpos);
+    self.sphereElem.renderFrame(0);
+  }
+
+  this.proceed = function(img) {
+    console.log("PROCEEDING");
+    self.vrCreateSphere = new VRCreateSphere();
+    self.sphereElem = self.vrCreateSphere.createSphere(document.getElementById("sphere"),img);
+    self.vrCreateSphere.tiltTurn(0,0);
+    self.sphereElem.renderFrame(0);
+  }
+
+  this.loadImage = function() {
+    console.log("LOADIMAGE");
+
+    //var imageURL = document.getElementById('imageURL').value;
+    var imageURL = "../src/assets/rheingauer_dom.jpg";
+    var img = newImage(imageURL, imageNotOK, self.proceed);
+  }
+
+  this.init = function() {
+     var loadButton = document.getElementById("loadImage");
+     loadButton.onclick = this.loadImage;
+
+     this.hfovButton.oninput = this.paramChange;
+     this.hfovButton.onchange = this.paramChange;
+     this.vfovButton.oninput = this.paramChange;
+     this.vfovButton.onchange = this.paramChange;
+     this.xposButton.oninput = this.paramChange;
+     this.xposButton.onchange = this.paramChange;
+     this.yposButton.oninput = this.paramChange;
+     this.yposButton.onchange = this.paramChange;
+
+    //  paramChange();
+   }
 }
 
-
-var loadImage = function() {
-  console.log("LOADIMAGE");
-
-  //var imageURL = document.getElementById('imageURL').value;
-  var imageURL = "http://localhost:8000/src/assets/rheingauer_dom.jpg";
-  var img = newImage(imageURL, imageNotOK, proceed);
-}
-
-var paramChange = function() {
-  var hfovButton = document.getElementById("hfov");
-  var vfovButton = document.getElementById("vfov");
-  var xposButton = document.getElementById("xpos");
-  var yposButton = document.getElementById("ypos");
-  var xpos = parseFloat(xposButton.value) + 360;
-  var ypos = parseFloat(yposButton.value) + 360;
-
-  vrCreateSphere.tiltTurn(ypos, xpos);
-  sp.renderFrame(0);
-}
-
-var init = function() {
-   var loadButton = document.getElementById("loadImage");
-   loadButton.onclick = loadImage;
-
-   var hfovButton = document.getElementById("hfov");
-   var vfovButton = document.getElementById("vfov");
-   var xposButton = document.getElementById("xpos");
-   var yposButton = document.getElementById("ypos");
-
-   hfovButton.oninput = paramChange;
-   hfovButton.onchange = paramChange;
-   vfovButton.oninput = paramChange;
-   vfovButton.onchange = paramChange;
-   xposButton.oninput = paramChange;
-   xposButton.onchange = paramChange;
-   yposButton.oninput = paramChange;
-   yposButton.onchange = paramChange;
-
-  //  paramChange();
-}
-
-init();
+var ui = new UI();
+ui.init();

@@ -1,5 +1,33 @@
 twgl = require('../js-ext/twgl-full.js');
 
+function rotateZX (pitch, yaw) {
+  var mat = twgl.m4.identity();
+  var axisPitch = twgl.v3.create(0,0,1);
+  twgl.m4.axisRotate(mat, axisPitch, pitch, mat);
+  var axisYaw = twgl.v3.create(0,1,0);
+  twgl.m4.axisRotate(mat, axisYaw, yaw, mat);
+  return mat;
+}
+
+
+function rotateZXPrime(pitch, yaw) {
+  var cP = Math.cos(pitch);
+  var sP = Math.sin(pitch);
+  var zrot = [cP, sP,0,0,
+            -sP, cP,0,0,
+            0,0,1,0,
+            0,0,0,1];
+  var cY = Math.cos(yaw);
+  var sY = Math.sin(yaw);
+
+  var yrot = [cY, 0, -sY, 0,
+              0, 1, 0, 0,
+              sY, 0, cY, 0,
+              0, 0, 0, 1];
+
+  return twgl.m4.multiply(zrot, yrot);
+}
+
 //
 // via: https://github.com/fieldOfView/krpano_fovplugins/blob/master/gyro/source/gyro.source.js
 //
@@ -87,6 +115,10 @@ VRRotMath = function() {
 
   this.matToEuler = function(mat) {
     return _matToEuler(mat);
+  }
+
+  this.rotateZX = function(pitch, yaw) {
+    return rotateZX(pitch, yaw);
   }
 }
 

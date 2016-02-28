@@ -3,6 +3,7 @@ VRRenderModes = require('./VRRenderModes.js');
 VRLookController = require('./VRControllers.js');
 VRDeviceManager = require('./VRDeviceManager.js');
 VRCanvasFactory = require('./VRCanvasFactory.js');
+VRRotMath = require('./VRRotMath.js');
 Util = require('./VRUtil.js');
 
 twgl = require('../js-ext/twgl-full.js');
@@ -215,6 +216,7 @@ VRtwglQuadStereoProjection = function() {
   this.textureLoadStartAnim = Date.now();
   this.textureLoadEndAnim = this.textureLoadStartAnim + 1000;
   this.texReady = false;
+  this.rotMath = new VRRotMath();
 
   this.pickResolution = function() {
     var tmpCanvas = document.createElement('canvas');
@@ -431,12 +433,7 @@ VRtwglQuadStereoProjection = function() {
   }
 
   this.createOrientation = function(pitch, yaw) {
-    var mat = twgl.m4.identity();
-    var axisPitch = twgl.v3.create(0,0,1);
-    twgl.m4.axisRotate(mat, axisPitch, pitch, mat);
-    var axisYaw = twgl.v3.create(0,1,0);
-    twgl.m4.axisRotate(mat, axisYaw, yaw, mat);
-    return mat;
+    return this.rotMath.rotateZX(pitch, yaw);
   }
 
   this.texturesLoaded = function(err, textures, sources) {
