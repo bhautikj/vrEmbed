@@ -1,5 +1,3 @@
-VRCreateSphere = require('./VRCreateSphere.js');
-
 // via: http://stackoverflow.com/questions/22575636/how-to-check-if-a-canvas-element-has-been-tainted/22580129#22580129
 var newImage = function(src,callWhenTainted,callWhenNotTainted){
   // tmpCanvas to test CORS
@@ -66,23 +64,14 @@ var UI = function() {
   this.vfovButton = document.getElementById("vfov");
   this.xposButton = document.getElementById("xpos");
   this.yposButton = document.getElementById("ypos");
-  this.vrCreateSphere = null;
-  this.sphereElem = null;
 
   this.paramChange = function() {
     var xpos = parseFloat(self.xposButton.value) + 360;
     var ypos = parseFloat(self.yposButton.value) + 360;
-
-    self.vrCreateSphere.tiltTurn(ypos, xpos);
-    self.sphereElem.renderFrame(0);
   }
 
   this.proceed = function(img) {
     console.log("PROCEEDING");
-    self.vrCreateSphere = new VRCreateSphere();
-    self.sphereElem = self.vrCreateSphere.createSphere(document.getElementById("sphere"),img);
-    self.vrCreateSphere.tiltTurn(0,0);
-    self.sphereElem.renderFrame(0);
   }
 
   this.loadImage = function() {
