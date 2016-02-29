@@ -156,6 +156,7 @@ var fsWindowed = "precision highp float;\n"+
 "uniform vec2 sphYX;\n"+
 "uniform vec4 uvL;\n"+
 "uniform vec4 uvR;\n"+
+"uniform float planar;\n"+
 "void uvToSphere(in vec2 uv, out vec4 sphere_pnt) {\n"+
 "  float lon = PI*(2.0*uv.x-1.0);\n"+
 "  float lat = 0.5*PI*(2.*uv.y-1.0);\n"+
@@ -178,13 +179,15 @@ var fsWindowed = "precision highp float;\n"+
 "  sphere_pnt *= transform;\n"+
    // now map point in sphere back to lat/lon coords
 "  float sphere_pnt_len = length(sphere_pnt);\n"+
-  // disabling this seems to fix the scaling wonkiness??
-  // "  sphere_pnt /= sphere_pnt_len;\n"+
 // vanilla sphere projection
-"  vec2 lonLat = vec2(atan(sphere_pnt.y, sphere_pnt.x), asin(sphere_pnt.z));\n"+
+"  vec2 lonLat;\n"+
+"  if (planar<0.5) {\n"+
+"    lonLat = vec2(atan(sphere_pnt.y, sphere_pnt.x), asin(sphere_pnt.z));\n"+
+"  } else {\n"+
 // cube projection
-// "  vec2 lonLat = vec2(0.25*PI*sphere_pnt.y/sphere_pnt.x, 0.25*PI*sphere_pnt.z/sphere_pnt.x);\n"+
-// "  if (sphere_pnt.x<0. || abs(lonLat.x)>PI || abs(lonLat.y)>0.5*PI){ discard; return;}\n"+
+"    lonLat = vec2(0.25*PI*sphere_pnt.y/sphere_pnt.x, 0.25*PI*sphere_pnt.z/sphere_pnt.x);\n"+
+"    if (sphere_pnt.x<0. || abs(lonLat.x)>PI || abs(lonLat.y)>0.5*PI){ discard; return;}\n"+
+"  }\n"+
   // map back to 0..1
 "  lonLat.x = (lonLat.x/(2.0*PI))+0.5;\n"+
 "  lonLat.y = (lonLat.y/(PI))+0.5;\n"+
@@ -274,13 +277,15 @@ VRtwglQuadStereoProjection = function() {
   this.uniformsFb = {
     resolution:[this.fbRes,this.fbRes],
     textureSource:null,
-    transform:twgl.m4.identity()
+    transform:twgl.m4.identity(),
+    planar:0
   }
 
   this.uniformsFbGui = {
     resolution:[this.fbRes,this.fbRes],
     textureSource:null,
-    transform:twgl.m4.identity()
+    transform:twgl.m4.identity(),
+    planar:1
   }
 
   this.setupFromDevice = function(device) {
@@ -341,6 +346,10 @@ VRtwglQuadStereoProjection = function() {
                                 textureDesc.U_r[1],
                                 textureDesc.V_r[0]-textureDesc.U_r[0],
                                 textureDesc.V_r[1]-textureDesc.U_r[1]];
+      if (textureDesc.plane)
+        self.uniformsFbGui["planar"] = 1;
+      else
+        self.uniformsFbGui["planar"] = 0;
       self.renderFbGui();
     }
 
@@ -456,6 +465,7 @@ VRtwglQuadStereoProjection = function() {
     for (var key in self.textures) {
       if (self.textures.hasOwnProperty(key)) {
         var textureDesc = self.textureDescriptions[key];
+        console.log(textureDesc.plane);
         self.uniformsFb["textureSource"] = self.textures[key];
         self.uniformsFb["sphX"] = [0.5-0.5*(textureDesc.sphereFOV[0]/360.0),0.5-0.5*(textureDesc.sphereFOV[1]/180.0)];
         self.uniformsFb["sphYX"] = [(textureDesc.sphereFOV[0]/360.0),(textureDesc.sphereFOV[1]/180.0)];
@@ -468,7 +478,10 @@ VRtwglQuadStereoProjection = function() {
                                   textureDesc.U_r[1],
                                   textureDesc.V_r[0]-textureDesc.U_r[0],
                                   textureDesc.V_r[1]-textureDesc.U_r[1]];
-
+        if (textureDesc.plane)
+          self.uniformsFb["planar"] = 1;
+        else
+          self.uniformsFb["planar"] = 0;
         self.renderFb();
         gl.deleteTexture(self.textures[key]);
       }

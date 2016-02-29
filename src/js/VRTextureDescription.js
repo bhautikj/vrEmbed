@@ -27,6 +27,7 @@ VRTextureDescription = function () {
   this.V_l = [1,1];
   this.U_r = [0,0];
   this.V_r = [1,1];
+  this.plane = false;
 
   this.setSphereParamsFromString  = function(str) {
     var arr = str.split(",");
