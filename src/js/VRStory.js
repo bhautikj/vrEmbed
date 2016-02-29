@@ -187,6 +187,7 @@ VRStory = function() {
     var dir = [];
 
     var dir = self.quad.controller.getHeading();
+    // console.log(dir[0], dir[1]);
     this.direction[0] = dir[0];
     this.direction[1] = dir[1];
     this.direction[2] = 0;

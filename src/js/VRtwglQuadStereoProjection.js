@@ -156,6 +156,12 @@ var fsWindowed = "precision highp float;\n"+
 "uniform vec2 sphYX;\n"+
 "uniform vec4 uvL;\n"+
 "uniform vec4 uvR;\n"+
+"void uvToSphere(in vec2 uv, out vec4 sphere_pnt) {\n"+
+"  float lon = PI*(2.0*uv.x-1.0);\n"+
+"  float lat = 0.5*PI*(2.*uv.y-1.0);\n"+
+"  float r = cos(lat);\n"+
+"  sphere_pnt = vec4(r*cos(lon), r*sin(lon), sin(lat), 1.0);\n"+
+"}\n"+
 "void main(void) {\n"+
 "  //normalize uv so it is between 0 and 1\n"+
 "  vec2 uv = gl_FragCoord.xy / resolution;\n"+
@@ -167,16 +173,18 @@ var fsWindowed = "precision highp float;\n"+
 "    uv.y = 2.*(uv.y - .5);\n"+
 "  }\n"+
   // map uv.x 0..1 to -PI..PI and uv.y 0..1 to -PI/2..PI/2
-"  float lon = PI*(2.0*uv.x-1.0);\n"+
-"  float lat = 0.5*PI*(2.*uv.y-1.0);\n"+
-"  float r = cos(lat);\n"+
-"  vec4 sphere_pnt = vec4(r*cos(lon), r*sin(lon), sin(lat), 1.0);\n"+
+"  vec4 sphere_pnt;\n"+
+"  uvToSphere(uv, sphere_pnt);\n"+
 "  sphere_pnt *= transform;\n"+
    // now map point in sphere back to lat/lon coords
 "  float sphere_pnt_len = length(sphere_pnt);\n"+
   // disabling this seems to fix the scaling wonkiness??
   // "  sphere_pnt /= sphere_pnt_len;\n"+
+// vanilla sphere projection
 "  vec2 lonLat = vec2(atan(sphere_pnt.y, sphere_pnt.x), asin(sphere_pnt.z));\n"+
+// cube projection
+// "  vec2 lonLat = vec2(0.25*PI*sphere_pnt.y/sphere_pnt.x, 0.25*PI*sphere_pnt.z/sphere_pnt.x);\n"+
+// "  if (sphere_pnt.x<0. || abs(lonLat.x)>PI || abs(lonLat.y)>0.5*PI){ discard; return;}\n"+
   // map back to 0..1
 "  lonLat.x = (lonLat.x/(2.0*PI))+0.5;\n"+
 "  lonLat.y = (lonLat.y/(PI))+0.5;\n"+

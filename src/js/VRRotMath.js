@@ -9,25 +9,6 @@ function rotateZX (pitch, yaw) {
   return mat;
 }
 
-
-function rotateZXPrime(pitch, yaw) {
-  var cP = Math.cos(pitch);
-  var sP = Math.sin(pitch);
-  var zrot = [cP, sP,0,0,
-            -sP, cP,0,0,
-            0,0,1,0,
-            0,0,0,1];
-  var cY = Math.cos(yaw);
-  var sY = Math.sin(yaw);
-
-  var yrot = [cY, 0, -sY, 0,
-              0, 1, 0, 0,
-              sY, 0, cY, 0,
-              0, 0, 0, 1];
-
-  return twgl.m4.multiply(zrot, yrot);
-}
-
 //
 // via: https://github.com/fieldOfView/krpano_fovplugins/blob/master/gyro/source/gyro.source.js
 //
