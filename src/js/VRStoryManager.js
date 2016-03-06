@@ -68,4 +68,24 @@ VRStoryManager = function() {
 
 };
 
-module.exports = VRStoryManager;
+
+var VRStoryManagerFactory = (function () {
+  var instance;
+
+  function createInstance() {
+      var vrStoryManager = new VRStoryManager();
+      vrStoryManager.init();
+      return vrStoryManager;
+  }
+
+  return {
+      getInstance: function () {
+          if (!instance) {
+              instance = createInstance();
+          }
+          return instance;
+      }
+  };
+})();
+
+module.exports = VRStoryManagerFactory.getInstance();

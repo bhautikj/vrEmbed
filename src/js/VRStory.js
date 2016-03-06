@@ -324,22 +324,35 @@ VRStory = function() {
 
   this.setupScene = function(sceneIdx) {
     // console.log("SETTING UP SCENE INDEX:" + sceneIdx);
+    // clear out exising sphere tex
     this.vrGui.teardown();
     this.quad.teardown();
 
+    // set up scene images
     var scene = this.sceneList[sceneIdx];
-    var textureDescriptions = []
-    for (objit = 0;objit<scene.renderObjects.length; objit++){
-      var scenePhoto = scene.renderObjects[objit];
-      if (scenePhoto.textureDescription!=null){
-        textureDescriptions.push(scenePhoto.textureDescription);
+    var textureDescriptions = [];
+
+    if (scene != undefined) {
+      for (objit = 0;objit<scene.photoObjects.length; objit++){
+        var scenePhoto = scene.photoObjects[objit];
+        if (scenePhoto.textureDescription!=null){
+          textureDescriptions.push(scenePhoto.textureDescription);
+        }
       }
     }
+
     this.quad.loadTextures(textureDescriptions);
+
+    if (scene != undefined) {
+      // set up scene gui
+      this.guiGen();
+    }
+
+    // set up stereo mode
     this.stateToggler.configureStereo(this.isStereo);
 
+    // update index
     this.currentSceneIndex = sceneIdx;
-    this.guiGen();
   }
 
   this.nextScene = function() {
@@ -368,17 +381,17 @@ VRStory = function() {
   this.guiGen = function() {
     // iterate over scene gui objects
     var curScene = this.sceneList[this.currentSceneIndex];
-    var guiObjects = curScene.guiObjects;
-    for (g = 0;g<guiObjects.length; g++){
+    var textObjects = curScene.textObjects;
+    for (g = 0;g<textObjects.length; g++){
       // just assuming text nodes only for now
-      var guiObject = guiObjects[g];
-      this.vrGui.createTextBox(guiObject.textureDescription.sphereFOV[0],
-                               guiObject.textureDescription.sphereCentre[0],
-                               guiObject.textureDescription.sphereCentre[1],
+      var textObject = textObjects[g];
+      this.vrGui.createTextBox(textObject.textureDescription.sphereFOV[0],
+                               textObject.textureDescription.sphereCentre[0],
+                               textObject.textureDescription.sphereCentre[1],
                                null,
                                null,
-                               guiObject.message,
-                               guiObject.textOptions);
+                               textObject.message,
+                               textObject.textOptions);
     }
 
     if (curScene.hasJumpNav() == false) {
@@ -597,7 +610,7 @@ VRStory = function() {
   }
 
   this.isSinglePhotoStory = function() {
-    if(this.sceneList.length != 1 || this.sceneList[0].renderObjects.length != 1 || this.sceneList[0].guiObjects.length != 0)
+    if(this.sceneList.length != 1 || this.sceneList[0].photoObjects.length != 1 || this.sceneList[0].textObjects.length != 0)
       return false;
     else
       return true;
@@ -608,8 +621,8 @@ VRStory = function() {
     var embedCode = "";
     var scriptInc = '<script async src="//vrEmbed.org/vrEmbed.min.js" charset="utf-8"></script>';
     if (this.isSinglePhotoStory()==true){
-      urlCode = encodeURIComponent("http://vrembed.org/" + this.sceneList[0].renderObjects[0].getSinglePhotoURLParams());
-      embedCode = this.sceneList[0].renderObjects[0].getSinglePhotoVrEmbedElement().outerHTML+scriptInc;
+      urlCode = encodeURIComponent("http://vrembed.org/" + this.sceneList[0].photoObjects[0].getSinglePhotoURLParams());
+      embedCode = this.sceneList[0].photoObjects[0].getSinglePhotoVrEmbedElement().outerHTML+scriptInc;
     } else {
       urlCode = encodeURIComponent(window.location.href);
       embedCode = "<div>"+this.getStoryElement().outerHTML + scriptInc +"</div>";

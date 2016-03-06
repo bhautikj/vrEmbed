@@ -4,8 +4,8 @@ var VRJump = require('./VRJump.js');
 
 VRScene = function() {
   this.sceneElement = null;
-  this.renderObjects = [];
-  this.guiObjects = [];
+  this.photoObjects = [];
+  this.textObjects = [];
   this.jumpObjects = [];
   this.oldScroll = null;
   this.isStereo = false;
@@ -17,11 +17,11 @@ VRScene = function() {
       vrScenePhoto.init(elm);
       if (vrScenePhoto.isStereo() == true)
         this.isStereo = true;
-      this.renderObjects.push(vrScenePhoto);
+      this.photoObjects.push(vrScenePhoto);
     } else if (elm.nodeName == "TEXT") {
       var vrText = new VRText();
       vrText.init(elm);
-      this.guiObjects.push(vrText);
+      this.textObjects.push(vrText);
     } else if (elm.nodeName == "JUMP") {
       var vrJump = new VRJump();
       vrJump.init(elm);
@@ -44,7 +44,7 @@ VRScene = function() {
     if (name != null) {
       this.name = name;
     }
-    
+
     var children = sceneElement.childNodes;
     for(var i = 0, l=children.length; i<l; ++i) {
         var child = children[i];
@@ -54,18 +54,43 @@ VRScene = function() {
     }
   }
 
+  this.initDict = function(dict) {
+    this.photoObjects = [];
+    this.textObjects = [];
+    this.jumpObjects = [];
+
+    for (var i = 0, l=dict.photoObjects.length; i<l; ++i) {
+      var photoObject = new VRScenePhoto();
+      photoObject.initDict(dict.photoObjects[i]);
+      this.photoObjects.push(photoObject);
+    }
+
+    for (var i = 0, l=dict.textObjects.length; i<l; ++i) {
+      var textObject = new VRText();
+      textObject.initDict(dict.textObjects[i]);
+      this.textObjects.push(textObject);
+    }
+
+    for (var i = 0, l=dict.jumpObjects.length; i<l; ++i) {
+      var jumpObject = new VRJump();
+      jumpObject.initDict(dict.jumpObjects[i]);
+      this.jumpObjects.push(jumpObject);
+    }
+  }
+
+
   this.initVrEmbedPhoto = function(vrEmbedPhoto) {
     var vrEmbedPhotoElm = new VRScenePhoto();
     vrEmbedPhotoElm.init(vrEmbedPhoto);
     if (vrEmbedPhotoElm.isStereo() == true)
       this.isStereo = true;
-    this.renderObjects.push(vrEmbedPhotoElm);
+    this.photoObjects.push(vrEmbedPhotoElm);
   }
 
   this.initFromURLSource = function(scenePhoto) {
     if (scenePhoto.isStereo() == true)
       this.isStereo = true;
-    this.renderObjects.push(scenePhoto);
+    this.photoObjects.push(scenePhoto);
   }
 
   this.getSceneElement = function() {
@@ -74,12 +99,12 @@ VRScene = function() {
       elm.setAttribute('name', this.name);
     }
 
-    for(i=0; i<this.renderObjects.length; i++) {
-      elm.appendChild(this.renderObjects[i].getPhotoElement());
+    for(i=0; i<this.photoObjects.length; i++) {
+      elm.appendChild(this.photoObjects[i].getPhotoElement());
     }
 
-    for(j=0; j<this.guiObjects.length; j++) {
-      elm.appendChild(this.guiObjects[j].getTextElement());
+    for(j=0; j<this.textObjects.length; j++) {
+      elm.appendChild(this.textObjects[j].getTextElement());
     }
 
     for(k=0; k<this.jumpObjects.length; k++) {

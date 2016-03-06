@@ -61,6 +61,26 @@ VRTextureDescription = function () {
     return (link.protocol+"//"+link.host+link.pathname+link.search+link.hash);
   }
 
+  this.initDict = function(dict) {
+    this.textureSource = dict.src;
+    if (this.textureSource  == null) {
+      //TODO: throw exception
+      this.textureSource = null;
+      return;
+    }
+    this.metaSource = "";
+    this.isStereo = dict.isStereo;
+    this.plane = dict.plane;
+    this.sphereFOV = dict.sphereFOV;
+    this.sphereCentre = dict.sphereCentre;
+    if (this.isStereo) {
+      this.U_l = dict.U_l;
+      this.V_l = dict.V_l;
+      this.U_r = dict.U_r;
+      this.V_r = dict.V_r;
+    }
+  }
+
 };
 
 module.exports = VRTextureDescription;

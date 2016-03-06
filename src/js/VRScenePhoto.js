@@ -48,6 +48,11 @@ VRScenePhoto = function() {
       this.textureDescription.setTexParamsFromString(this.scenePhoto.getAttribute("texParams"));
   };
 
+  this.initDict = function(dict) {
+    this.textureDescription = new VRTextureDescription();
+    this.textureDescription.initDict(dict.textureDescription);
+  }
+
   this.initFromURL = function(urlDict) {
     this.textureDescription = new VRTextureDescription();
     this.textureDescription.textureSource = urlDict["src"];
@@ -91,8 +96,6 @@ VRScenePhoto = function() {
       elm.setAttribute('isStereo', 'true');
       elm.setAttribute('texParams', this.textureDescription.getTexParamsString());
     }
-
-
   }
 
   this.isStereo = function() {

@@ -78,9 +78,23 @@
       up-down: <input type="range" name="hFov" min="-90" max="90" id="ypos"> <span name="hfov">0</span>
     </div>
   </div>
+  <div class="row"><br/></div>
+  <div class="row">
+    <div class="twelve columns">
+      <div class="stretchy-wrapper greybg"><div>
+          <story>
+          </story>
+      </div></div>
+    </div>
+  </div>
 </div>
 
+<script src="../bin/vrEmbed.js"></script>
 <script src="../bin/vrCreate.js"></script>
+<script>
+var vrCreateUI = new VRCreateUI();
+vrCreateUI.init(vrEmbed);
+</script>
 
 </body>
 </html>

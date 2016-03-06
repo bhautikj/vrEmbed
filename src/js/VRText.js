@@ -38,6 +38,14 @@ VRText = function() {
     this.textOptions.init(this.sceneText);
   };
 
+  this.initDict = function(dict) {
+    this.textureDescription = new VRTextureDescription();
+    this.textureDescription.initDict(dict.textureDescription);
+    this.parseMessage(dict.message);
+    this.textOptions = new VRTextOptions();
+    this.textOptions.initDict(dict.textOptions);
+  }
+
   this.getTextElement = function() {
     var elm = document.createElement('text');
     elm.setAttribute('sphereParams',this.textureDescription.getSphereParamsString());
