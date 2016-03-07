@@ -47,11 +47,36 @@
  </head>
 
 <body>
-
+<div class="container">
+  <div class="row">
+    <div class="three columns">
+      <h3>Scenes:</h3>
+    </div>
+    <div class="three columns">
+      <select></select>
+    </div>
+    <div class="three columns">
+      <input class="button-primary" type="submit" value="Add scene" id="addScene">
+    </div>
+  </div>
+</div>
+<div class="container">
+  <div class="row">
+    <div class="three columns">
+      <h5>Image List:</h5>
+    </div>
+    <div class="three columns">
+      <h5>Text List:</h5>
+    </div>
+    <div class="three columns">
+      <h5>Jump List:</h5>
+    </div>
+  </div>
+</div>
 <div class="container">
   <div class="row">
     <div class="twelve columns">
-      <h2>Image options:</h2>
+      <h3>Image options:</h3>
     </div>
   </div>
   <div class="row">
@@ -60,7 +85,7 @@
     </div>
     <div class="ten columns">
       <input class="textBox" id="imageURL" type="text" required/>
-      <input class="button-primary" type="submit" value="Load Image" id="loadImage">
+      <input class="button-primary" type="submit" value="Reload" id="loadImage">
     </div>
   </div>
   <div id="imageSettingsDiv" hidden=false>
@@ -110,7 +135,7 @@
 <div class="container">
   <div class="row">
     <div class="twelve columns">
-      <h2>Preview</h2>
+      <h3>Preview</h3>
     </div>
   </div>
   <div class="row">
