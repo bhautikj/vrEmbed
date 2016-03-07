@@ -51,34 +51,68 @@
 <div class="container">
   <div class="row">
     <div class="twelve columns">
-      <h5>Select image to load:</h5>
+      <h2>Image options:</h2>
+    </div>
+  </div>
+  <div class="row">
+    <div class="two columns alignright">
+      Image:
+    </div>
+    <div class="ten columns">
       <input class="textBox" id="imageURL" type="text" required/>
       <input class="button-primary" type="submit" value="Load Image" id="loadImage">
     </div>
   </div>
+  <div id="imageSettingsDiv" hidden=false>
+    <div class="row">
+      <div class="two columns alignright">
+        Width:
+      </div>
+      <div class="two columns">
+        <input type="range" name="hFov" min="0" max="360" id="hfov" class="numberInput">
+      </div>
+      <div class="two columns">
+        <input type="number" class="numberInput" id="hfov_t">
+      </div>
+      <div class="two columns alignright">
+        Height:
+      </div>
+      <div class="two columns">
+        <input type="range" name="vFov" min="0" max="180" id="vfov" class="numberInput">
+      </div>
+      <div class="two columns">
+        <input type="number" class="numberInput" id="vfov_t">
+      </div>
+    </div>
+    <div class="row">
+      <div class="two columns alignright">
+        left-right:
+      </div>
+      <div class="two columns">
+        <input type="range" name="xPos" min="-180" max="180" id="xpos" class="numberInput">
+      </div>
+      <div class="two columns">
+        <input type="number" class="numberInput" id="xpos_t">
+      </div>
+      <div class="two columns alignright">
+        up-down:
+      </div>
+      <div class="two columns">
+        <input type="range" name="yPos" min="-90" max="90" id="ypos" class="numberInput">
+      </div>
+      <div class="two columns">
+        <input type="number" class="numberInput" id="ypos_t">
+      </div>
+    </div>
+  </div>
+</div>
 
+<div class="container">
   <div class="row">
     <div class="twelve columns">
-      <h5>Options:</h5>
+      <h2>Preview</h2>
     </div>
   </div>
-  <div class="row">
-    <div class="six columns">
-      Width: <input type="range" name="hFov" min="0" max="360" id="hfov"><span name="hfov">0</span>
-    </div>
-    <div class="six columns">
-      Height: <input type="range" name="hFov" min="0" max="180" id="vfov"> <span name="hfov">0</span>
-    </div>
-  </div>
-  <div class="row">
-    <div class="six columns">
-      left-right: <input type="range" name="hFov" min="-180" max="180" id="xpos"> <span name="hfov">0</span>
-    </div>
-    <div class="six columns">
-      up-down: <input type="range" name="hFov" min="-90" max="90" id="ypos"> <span name="hfov">0</span>
-    </div>
-  </div>
-  <div class="row"><br/></div>
   <div class="row">
     <div class="twelve columns">
       <div class="stretchy-wrapper greybg"><div>

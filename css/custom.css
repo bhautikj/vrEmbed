@@ -62,6 +62,14 @@ div.stretchy-wrapper > div {
   border-radius: 100px;
 }
 
+.numberInput {
+  width: 100px;
+}
+
+.alignright {
+  text-align: right;
+}
+
 a:link {
     font-weight: 900;
     text-decoration: none;
