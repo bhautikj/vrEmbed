@@ -10,7 +10,7 @@ var NumberSlider = function() {
     self.textElement.value = self.sliderElement.value;
   }
 
-  this.sliderChange = function() {
+  this.photoStateChange = function() {
     self.textElement.value = self.sliderElement.value;
     self.callback();
   }
@@ -42,8 +42,59 @@ var NumberSlider = function() {
     this.callback = callback;
 
     this.sliderElement.oninput = this.sliderMove;
-    this.sliderElement.onchange = this.sliderChange;
+    this.sliderElement.onchange = this.photoStateChange;
     this.textElement.onchange = this.textChange;
+  }
+}
+
+VRSceneDict = function() {
+  this.dict = null;
+  this.vrScene = null;
+
+  this.init = function() {
+    this.vrScene = new VRScene();
+    this.dict = {};
+    this.dict.photoObjects=[];
+    this.dict.textObjects=[];
+    this.dict.jumpObjects=[];
+  }
+
+  this.initPhoto = function() {
+    var photo ={};
+    photo.textureDescription = {};
+    photo.textureDescription.src="";
+    photo.textureDescription.isStereo = false;
+    photo.textureDescription.plane = false;
+    photo.textureDescription.sphereFOV = [360,180];
+    photo.textureDescription.sphereCentre = [0,0];
+    photo.textureDescription.U_l = [0,0];
+    photo.textureDescription.V_l = [1,1];
+    photo.textureDescription.U_r = [0,0];
+    photo.textureDescription.V_r = [1,1];
+    return photo;
+  }
+
+  this.addPhoto = function() {
+    var photo = this.initPhoto();
+    this.dict.photoObjects.push(photo);
+  }
+
+  this.removePhoto = function(idx) {
+    this.dict.photoObjects.splice(idx,1);
+  }
+}
+
+VRSceneList = function() {
+  this.scenes = [];
+  this.addScene = function() {
+    var sceneDict = new VRSceneDict();
+    this.scenes.push(sceneDict);
+  }
+  this.getScene = function(idx) {
+    return this.scenes[idx];
+  }
+  this.removeScene = function(idx) {
+    this.scenes.splice(idx,1);
   }
 }
 
@@ -68,7 +119,7 @@ VRCreateUI = function() {
       return null;
   }
 
-  this.sliderChange = function() {
+  this.photoStateChange = function() {
     var hfov = parseFloat(self.hfovNumberSlider.get());
     var vfov = parseFloat(self.vfovNumberSlider.get());
     var xpos = parseFloat(self.xposNumberSlider.get());
@@ -129,25 +180,25 @@ VRCreateUI = function() {
     this.hfovNumberSlider.init(document.getElementById("hfov"),
                                document.getElementById("hfov_t"),
                                360,
-                               this.sliderChange);
+                               this.photoStateChange);
 
     this.vfovNumberSlider = new NumberSlider();
     this.vfovNumberSlider.init(document.getElementById("vfov"),
                               document.getElementById("vfov_t"),
                               180,
-                              this.sliderChange);
+                              this.photoStateChange);
 
     this.xposNumberSlider = new NumberSlider();
     this.xposNumberSlider.init(document.getElementById("xpos"),
                               document.getElementById("xpos_t"),
                               0,
-                              this.sliderChange);
+                              this.photoStateChange);
 
     this.yposNumberSlider = new NumberSlider();
     this.yposNumberSlider.init(document.getElementById("ypos"),
                               document.getElementById("ypos_t"),
                               0,
-                              this.sliderChange);
+                              this.photoStateChange);
 
     document.getElementById('imageURL').onchange = this.loadImage;
    }
