@@ -168,10 +168,8 @@ VRCreateUI = function() {
     self.getStory().setupScene(self.sceneIdx);
   }
 
-
-  this.init = function(vrStoryManager) {
+  this.initPhotoPanel = function() {
     document.getElementById('imageURL').value = "../src/assets/rheingauer_dom.jpg";
-    this.storyManager = vrStoryManager;
 
     var loadButton = document.getElementById("loadImage");
     loadButton.onclick = this.loadImage;
@@ -201,6 +199,10 @@ VRCreateUI = function() {
                               this.photoStateChange);
 
     document.getElementById('imageURL').onchange = this.loadImage;
+  }
+
+  this.init = function(vrStoryManager) {
+    this.storyManager = vrStoryManager;
    }
 }
 
