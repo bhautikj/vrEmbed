@@ -104,56 +104,89 @@
 <div class="container" id="imageOptions">
   <div class="row">
     <div class="twelve columns">
-      <h5>Image options:</h5>
+      <h5>Settings:</h5>
     </div>
   </div>
-  <div class="row">
-    <div class="two columns alignright">
-      Image:
-    </div>
-    <div class="ten columns">
-      <input class="textBox" id="imageURL" type="text" required/>
-      <input class="button-primary" type="submit" value="Reload" id="loadImage">
-    </div>
-  </div>
-  <div class="row">
-    <div class="two columns alignright">
-      Width:
-    </div>
-    <div class="two columns">
-      <input type="range" name="hFov" min="0" max="360" id="hfov" class="numberinput">
-    </div>
-    <div class="two columns">
-      <input type="number" class="numberinput" id="hfov_t">
-    </div>
-    <div class="two columns alignright">
-      Height:
-    </div>
-    <div class="two columns">
-      <input type="range" name="vFov" min="0" max="180" id="vfov" class="numberinput">
-    </div>
-    <div class="two columns">
-      <input type="number" class="numberinput" id="vfov_t">
+  <div id="block_image">
+    <div class="row">
+      <div class="two columns alignright">
+        Image:
+      </div>
+      <div class="six columns">
+        <input class="textBox inputnumberwide" id="imageURL" type="text" required/>
+        <input class="button-primary" type="submit" value="Reload" id="loadImage">
+      </div>
+      <div class="four columns">
+        <img src="" width=100% id="imagePreview">
+      </div>
     </div>
   </div>
-  <div class="row">
-    <div class="two columns alignright">
-      left-right:
+  <div id="block_texture_options">
+    <div class="row">
+      <div class="two columns alignright">
+        Width:
+      </div>
+      <div class="two columns">
+        <input type="range" name="hFov" min="0" max="360" id="hfov" class="numberinput">
+      </div>
+      <div class="two columns">
+        <input type="number" class="numberinput" id="hfov_t">
+      </div>
+      <div class="two columns alignright">
+        Height:
+      </div>
+      <div class="two columns">
+        <input type="range" name="vFov" min="0" max="180" id="vfov" class="numberinput">
+      </div>
+      <div class="two columns">
+        <input type="number" class="numberinput" id="vfov_t">
+      </div>
     </div>
-    <div class="two columns">
-      <input type="range" name="xPos" min="-180" max="180" id="xpos" class="numberinput">
+    <div class="row">
+      <div class="two columns alignright">
+        left-right:
+      </div>
+      <div class="two columns">
+        <input type="range" name="xPos" min="-180" max="180" id="xpos" class="numberinput">
+      </div>
+      <div class="two columns">
+        <input type="number" class="numberinput" id="xpos_t">
+      </div>
+      <div class="two columns alignright">
+        up-down:
+      </div>
+      <div class="two columns">
+        <input type="range" name="yPos" min="-90" max="90" id="ypos" class="numberinput">
+      </div>
+      <div class="two columns">
+        <input type="number" class="numberinput" id="ypos_t">
+      </div>
     </div>
-    <div class="two columns">
-      <input type="number" class="numberinput" id="xpos_t">
-    </div>
-    <div class="two columns alignright">
-      up-down:
-    </div>
-    <div class="two columns">
-      <input type="range" name="yPos" min="-90" max="90" id="ypos" class="numberinput">
-    </div>
-    <div class="two columns">
-      <input type="number" class="numberinput" id="ypos_t">
+    <div class="row">
+      <div class="one column alignright">
+        Planar projection?
+      </div>
+      <div class="one column">
+        <input type="checkbox" id="isPlane">
+      </div>
+      <div class="one column alignright">
+        Is 3D?
+      </div>
+      <div class="one column">
+        <input type="checkbox" id="isStereo">
+      </div>
+      <div class="one column alignright">
+        3D left:
+      </div>
+      <div class="three columns">
+        <input type="text" class="numberinputwide" id="leftStereoParams">
+      </div>
+      <div class="one column alignright">
+        3D right:
+      </div>
+      <div class="three columns">
+        <input type="text" class="numberinputwide" id="rightStereoParams">
+      </div>
     </div>
   </div>
 </div>

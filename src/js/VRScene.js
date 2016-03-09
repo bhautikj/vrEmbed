@@ -76,6 +76,8 @@ VRScene = function() {
       jumpObject.initDict(dict.jumpObjects[i]);
       this.jumpObjects.push(jumpObject);
     }
+
+    this.name = dict.name;
   }
 
 
