@@ -49,27 +49,54 @@
 <body>
 <div class="container">
   <div class="row">
-    <div class="three columns">
+    <div class="twelve columns">
       <h3>Scenes:</h3>
     </div>
-    <div class="three columns">
-      <select></select>
+  </div>
+  <div class="row">
+    <div class="four columns alignright">
+      <select id="sceneSelect" class="numberinputwide"></select>
     </div>
-    <div class="three columns">
-      <input class="button-primary" type="submit" value="Add scene" id="addScene">
+    <div class="two columns">
+      <input class="button-primary" type="submit" value="Add" id="addScene">
+    </div>
+    <div class="two columns">
+      <input class="button-primary" type="submit" value="Remove" id="removeScene">
     </div>
   </div>
 </div>
+
 <div class="container">
   <div class="row">
-    <div class="three columns">
-      <h5>Image List:</h5>
+    <div class="twelve columns">
+      <h4>Scene setup:</h4>
     </div>
-    <div class="three columns">
-      <h5>Text List:</h5>
+  </div>
+  <div class="row">
+    <div class="four columns">
+      <h5>Scene name:</h5>
     </div>
-    <div class="three columns">
-      <h5>Jump List:</h5>
+    <div class="four columns">
+      <input class="textBox" id="sceneName" type="text" required/>
+    </div>
+  </div>
+  <div class="row">
+    <div class="four columns">
+      <input class="button-primary" type="submit" value="Add Image" id="addImage">
+    </div>
+    <div class="four columns">
+      <input class="button-primary" type="submit" value="Add Text" id="addText">
+    </div>
+    <div class="four columns">
+      <input class="button-primary" type="submit" value="Add Jump" id="addJump">
+    </div>
+  </div>
+  <div class="row">
+    <div class="six columns">
+      <select id="elementSelect" class="numberinputwide"></select>
+    </div>
+    <div class="six columns">
+      <input class="button-primary" type="submit" value="Remove" id="removeElement">
     </div>
   </div>
 </div>

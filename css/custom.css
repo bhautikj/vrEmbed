@@ -62,8 +62,12 @@ div.stretchy-wrapper > div {
   border-radius: 100px;
 }
 
-.numberInput {
+.numberinput {
   width: 100px;
+}
+
+.numberinputwide {
+  width: 100%;
 }
 
 .alignright {
