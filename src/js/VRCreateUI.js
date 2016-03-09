@@ -173,10 +173,6 @@ VRCreateUI = function() {
   var self=this;
   this.firstRun = true;
   this.storyManager = null;
-  this.hfovNumberSlider = null;
-  this.vfovNumberSlider = null;
-  this.xposNumberSlider = null;
-  this.yposNumberSlider = null;
 
   this.photoIdx = 0;
   this.sceneIdx = 0;
@@ -185,94 +181,48 @@ VRCreateUI = function() {
   this.sceneName = null;
   this.elementSelect = null;
 
-  // this.getStory = function() {
-  //   if (self.storyManager.storyList != [])
-  //     return this.storyManager.storyList[0];
-  //   else
-  //     return null;
-  // }
+  this.imageURL= null;
+  this.hfovNumberSlider = null;
+  this.vfovNumberSlider = null;
+  this.xposNumberSlider = null;
+  this.yposNumberSlider = null;
 
-  // this.photoStateChange = function() {
-  //   var hfov = parseFloat(self.hfovNumberSlider.get());
-  //   var vfov = parseFloat(self.vfovNumberSlider.get());
-  //   var xpos = parseFloat(self.xposNumberSlider.get());
-  //   var ypos = parseFloat(self.yposNumberSlider.get());
-  //
-  //   self.dict.photoObjects[self.photoIdx].textureDescription.sphereFOV = [hfov,vfov];
-  //   self.dict.photoObjects[self.photoIdx].textureDescription.sphereCentre = [xpos,ypos];
-  //
-  //   self.getStory().sceneList[self.sceneIdx].initDict(self.dict);
-  //   self.getStory().setupScene(self.sceneIdx);
-  // }
+  this.getStory = function() {
+    if (self.storyManager.storyList != [])
+      return this.storyManager.storyList[0];
+    else
+      return null;
+  }
 
-  // this.firstTime = function() {
-  //   if (self.firstRun==false)
-  //     return;
-  //
-  //   var vrScene = new VRScene();
-  //   self.getStory().sceneList.push(vrScene);
-  //
-  //   self.firstRun = false;
-  // }
+  this.photoStateChange = function() {
+    if (self.elementSelect.value == "")
+      return;
+    var selectorVals = self.elementSelect.value.split("_");
+    var type = selectorVals[0];
+    var idx = selectorVals[1];
 
-  // this.loadImage = function() {
-  //   self.firstTime();
-  //
-  //   var imageURL = document.getElementById('imageURL').value;
-  //   document.getElementById('imageSettingsDiv').hidden=false;
-  //
-  //   self.dict = {};
-  //   self.dict.photoObjects=[];
-  //   self.dict.textObjects=[];
-  //   self.dict.jumpObjects=[];
-  //
-  //   var photo ={};
-  //   photo.textureDescription = {};
-  //   photo.textureDescription.src=document.getElementById('imageURL').value;
-  //   photo.textureDescription.isStereo = false;
-  //   photo.textureDescription.plane = false;
-  //   photo.textureDescription.sphereFOV = [360,180];
-  //   photo.textureDescription.sphereCentre = [0,0];
-  //   self.dict.photoObjects.push(photo);
-  //
-  //   // console.log(dict);
-  //   self.getStory().sceneList[self.sceneIdx].initDict(self.dict);
-  //   self.getStory().currentSceneIndex = self.sceneIdx;
-  //   self.getStory().setupScene(self.sceneIdx);
-  // }
+    // push from dict to gui
+    if (type == "photo") {
+      var scene = self.sceneList.scenes[self.sceneSelect.value];
+      var photo = scene.dict.photoObjects[idx];
 
-  // this.initPhotoPanel = function() {
-  //   document.getElementById('imageURL').value = "../src/assets/rheingauer_dom.jpg";
-  //
-  //   var loadButton = document.getElementById("loadImage");
-  //   loadButton.onclick = this.loadImage;
-  //
-  //   this.hfovNumberSlider = new NumberSlider();
-  //   this.hfovNumberSlider.init(document.getElementById("hfov"),
-  //                              document.getElementById("hfov_t"),
-  //                              360,
-  //                              this.photoStateChange);
-  //
-  //   this.vfovNumberSlider = new NumberSlider();
-  //   this.vfovNumberSlider.init(document.getElementById("vfov"),
-  //                             document.getElementById("vfov_t"),
-  //                             180,
-  //                             this.photoStateChange);
-  //
-  //   this.xposNumberSlider = new NumberSlider();
-  //   this.xposNumberSlider.init(document.getElementById("xpos"),
-  //                             document.getElementById("xpos_t"),
-  //                             0,
-  //                             this.photoStateChange);
-  //
-  //   this.yposNumberSlider = new NumberSlider();
-  //   this.yposNumberSlider.init(document.getElementById("ypos"),
-  //                             document.getElementById("ypos_t"),
-  //                             0,
-  //                             this.photoStateChange);
-  //
-  //   document.getElementById('imageURL').onchange = this.loadImage;
-  // }
+      var hfov = parseFloat(self.hfovNumberSlider.get());
+      var vfov = parseFloat(self.vfovNumberSlider.get());
+      var xpos = parseFloat(self.xposNumberSlider.get());
+      var ypos = parseFloat(self.yposNumberSlider.get());
+
+      photo.textureDescription.sphereFOV[0] = hfov;
+      photo.textureDescription.sphereFOV[1] = vfov;
+      photo.textureDescription.sphereCentre[0] = xpos;
+      photo.textureDescription.sphereCentre[1] = ypos;
+      photo.textureDescription.src = self.imageURL.value;
+    }
+    self.pushFromDictToRender();
+  }
+
+  this.loadImage = function() {
+    self.photoStateChange();
+  }
 
   this.updateSceneListDropdown = function() {
     self.sceneSelect.innerHTML = "";
@@ -318,7 +268,6 @@ VRCreateUI = function() {
   this.pushFromGUIToDict = function() {
     self.sceneList.scenes[self.sceneSelect.value].dict.name = self.sceneName.value;
     self.updateSceneListDropdown();
-
     self.pushFromDictToRender();
   }
 
@@ -360,7 +309,16 @@ VRCreateUI = function() {
   }
 
   this.pushFromDictToRender = function() {
-    console.log("PUSHING DICT TO RENDER");
+    if (self.getStory()==null)
+      return;
+    self.getStory().sceneList = [];
+    for (i = 0; i < self.sceneList.scenes.length; i++) {
+      self.getStory().sceneList.push(self.sceneList.scenes[i].vrScene);
+    }
+
+    var scene = self.sceneList.scenes[self.sceneSelect.value];
+    self.getStory().sceneList[self.sceneSelect.value].initDict(scene.dict);
+    self.getStory().setupScene(self.sceneSelect.value);
   }
 
   this.selectElement = function() {
@@ -370,10 +328,21 @@ VRCreateUI = function() {
     var type = selectorVals[0];
     var idx = selectorVals[1];
 
+    // push from dict to gui
+    if (type == "photo") {
+      var scene = self.sceneList.scenes[self.sceneSelect.value];
+      var photo = scene.dict.photoObjects[idx];
+      self.hfovNumberSlider.set(photo.textureDescription.sphereFOV[0]);
+      self.vfovNumberSlider.set(photo.textureDescription.sphereFOV[1]);
+      self.xposNumberSlider.set(photo.textureDescription.sphereCentre[0]);
+      self.yposNumberSlider.set(photo.textureDescription.sphereCentre[1]);
+      self.imageURL.value = photo.textureDescription.src;
+    }
   }
 
   this.sceneSelectChange = function() {
     self.populateGUIFromSceneDict(self.sceneSelect.value);
+    self.selectElement();
   }
 
   this.addScene = function() {
@@ -385,6 +354,39 @@ VRCreateUI = function() {
   this.removeScene = function() {
     self.sceneList.removeScene();
     self.updateSceneListDropdown();
+  }
+
+  this.initPhotoPanel = function() {
+    this.imageURL = document.getElementById('imageURL');
+    this.imageURL.onchange = this.loadImage;
+    this.imageURL.value = "../src/assets/rheingauer_dom.jpg";
+
+    var loadButton = document.getElementById("loadImage");
+    loadButton.onclick = this.loadImage;
+
+    this.hfovNumberSlider = new NumberSlider();
+    this.hfovNumberSlider.init(document.getElementById("hfov"),
+                               document.getElementById("hfov_t"),
+                               360,
+                               this.photoStateChange);
+
+    this.vfovNumberSlider = new NumberSlider();
+    this.vfovNumberSlider.init(document.getElementById("vfov"),
+                              document.getElementById("vfov_t"),
+                              180,
+                              this.photoStateChange);
+
+    this.xposNumberSlider = new NumberSlider();
+    this.xposNumberSlider.init(document.getElementById("xpos"),
+                              document.getElementById("xpos_t"),
+                              0,
+                              this.photoStateChange);
+
+    this.yposNumberSlider = new NumberSlider();
+    this.yposNumberSlider.init(document.getElementById("ypos"),
+                              document.getElementById("ypos_t"),
+                              0,
+                              this.photoStateChange);
   }
 
   this.init = function(vrStoryManager) {
@@ -410,6 +412,8 @@ VRCreateUI = function() {
     addTextButton.onclick = this.addText;
     addJumpButton.onclick = this.addJump;
     removeElementButton.onclick = this.removeElement;
+
+    this.initPhotoPanel();
 
     this.sceneList.init();
     this.updateSceneListDropdown();

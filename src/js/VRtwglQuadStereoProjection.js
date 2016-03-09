@@ -465,7 +465,6 @@ VRtwglQuadStereoProjection = function() {
     for (var key in self.textures) {
       if (self.textures.hasOwnProperty(key)) {
         var textureDesc = self.textureDescriptions[key];
-        console.log(textureDesc.plane);
         self.uniformsFb["textureSource"] = self.textures[key];
         self.uniformsFb["sphX"] = [0.5-0.5*(textureDesc.sphereFOV[0]/360.0),0.5-0.5*(textureDesc.sphereFOV[1]/180.0)];
         self.uniformsFb["sphYX"] = [(textureDesc.sphereFOV[0]/360.0),(textureDesc.sphereFOV[1]/180.0)];
