@@ -63,10 +63,10 @@ VRSceneDict = function() {
   this.initPhoto = function() {
     var photo ={};
     photo.textureDescription = {};
-    photo.textureDescription.src="";
+    photo.textureDescription.src="http://vrembed.org/src/assets/vrEmbedLogo.png";
     photo.textureDescription.isStereo = false;
     photo.textureDescription.plane = false;
-    photo.textureDescription.sphereFOV = [360,180];
+    photo.textureDescription.sphereFOV = [60,60];
     photo.textureDescription.sphereCentre = [0,0];
     photo.textureDescription.U_l = [0,0];
     photo.textureDescription.V_l = [1,1];
@@ -275,18 +275,24 @@ VRCreateUI = function() {
     var scene = self.sceneList.scenes[self.sceneSelect.value];
     scene.addPhoto();
     self.populateGUIFromSceneDict(self.sceneSelect.value);
+    self.elementSelect.value = "photo_" + (scene.dict.photoObjects.length - 1);
+    self.selectElement();
   }
 
   this.addText = function() {
     var scene = self.sceneList.scenes[self.sceneSelect.value];
     scene.addText();
     self.populateGUIFromSceneDict(self.sceneSelect.value);
+    self.elementSelect.value = "text_" + (scene.dict.textObjects.length - 1);
+    self.selectElement();
   }
 
   this.addJump = function() {
     var scene = self.sceneList.scenes[self.sceneSelect.value];
     scene.addJump();
     self.populateGUIFromSceneDict(self.sceneSelect.value);
+    self.elementSelect.value = "jump_" + (scene.dict.jumpObjects.length - 1);
+    self.selectElement();
   }
 
   this.removeElement = function() {
@@ -359,7 +365,7 @@ VRCreateUI = function() {
   this.initPhotoPanel = function() {
     this.imageURL = document.getElementById('imageURL');
     this.imageURL.onchange = this.loadImage;
-    this.imageURL.value = "../src/assets/rheingauer_dom.jpg";
+    this.imageURL.value = "";
 
     var loadButton = document.getElementById("loadImage");
     loadButton.onclick = this.loadImage;
