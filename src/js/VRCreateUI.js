@@ -182,7 +182,7 @@ VRCreateUI = function() {
   this.elementSelect = null;
 
   this.imageURL = null;
-  this.imagePreview = null;
+  this.imagePreviewCanvas = null;
   this.hfovNumberSlider = null;
   this.vfovNumberSlider = null;
   this.xposNumberSlider = null;
@@ -231,12 +231,89 @@ VRCreateUI = function() {
       var rightStereo = self.rightStereoParams.value.split(',');
       photo.textureDescription.U_r = [rightStereo[0], rightStereo[1]];
       photo.textureDescription.V_r = [rightStereo[2], rightStereo[3]];
+
+      self.drawToCanvas();
     }
     self.pushFromDictToRender();
   }
 
+  this.drawToCanvas = function() {
+    var txSize = 1024;
+
+    var ctx = self.imagePreviewCanvas.getContext('2d');
+    ctx.clearRect(0, 0, txSize, txSize);
+
+    var ctxWidth = ctx.canvas.clientWidth;
+    var ctxHeight = ctx.canvas.clientHeight;
+    var imWidth = self.imagePreview.width;
+    var imHeight = self.imagePreview.height;
+    var ctxAspect = ctxWidth/ctxHeight;
+    var imAspect = imWidth/imHeight;
+
+    var x,y,w,h;
+    if (imAspect>ctxAspect) {
+      w = txSize;
+      h = w*ctxAspect;
+    } else if (ctxAspect>1. && imAspect>1.) {
+      h = txSize;
+      w = h/ctxAspect;
+    } else if (imAspect<ctxAspect) {
+      h = txSize;
+      w = h/ctxAspect;
+    } else {
+      w = txSize;
+      h = w*ctxAspect;
+    }
+
+    x=txSize*0.5 - 0.5*w;
+    y=txSize*0.5 - 0.5*h;
+
+    if (!self.isStereo.checked) {
+      //draw background image
+      ctx.drawImage(self.imagePreview, x,y,w,h);
+    } else {
+      ctx.globalAlpha = 0.5;
+      ctx.drawImage(self.imagePreview, x,y,w,h);
+      ctx.globalAlpha = 1.0;
+      var leftStereo = self.leftStereoParams.value.split(',');
+      var rightStereo = self.rightStereoParams.value.split(',');
+      ctx.strokeStyle = 'rgba(0,0,0,1.0)';
+      ctx.fillStyle = ctx.strokeStyle;
+      ctx.lineWidth = 4;
+      ctx.moveTo(x,y);
+      ctx.lineTo(x+w,y);
+      ctx.moveTo(x,y+0.5*h);
+      ctx.lineTo(x+w,y+0.5*h);
+      ctx.moveTo(x,y+h);
+      ctx.lineTo(x+w,y+h);
+      ctx.moveTo(x,y);
+      ctx.lineTo(x,y+h);
+      ctx.moveTo(x+0.5*w,y);
+      ctx.lineTo(x+0.5*w,y+h);
+      ctx.moveTo(x+w,y);
+      ctx.lineTo(x+w,y+h);
+      ctx.stroke();
+
+      ctx.font = "32px Arial";
+      ctx.fillText("(0,0)",x,y+32);
+      ctx.fillText("(0,0.5)",x,y+0.5*h-32);
+      ctx.fillText("(0,1)",x,y+h-32);
+      ctx.fillText("(0.5,0)",x+0.5*w-96,y+32);
+      ctx.fillText("(0.5,0.5)",x+0.5*w-116,y+0.5*h-32);
+      ctx.fillText("(0.5,1)",x+0.5*w-96,y+h-32);
+      ctx.fillText("(1,0)",x+w-72,y+32);
+      ctx.fillText("(1,0.5)",x+w-96,y+0.5*h-32);
+      ctx.fillText("(1,1)",x+w-72,y+h-32);
+
+      console.log(leftStereo, rightStereo);
+    }
+  }
+
   this.loadImage = function() {
+    self.imagePreview.onload = self.drawToCanvas;
     self.photoStateChange();
+    var imgURL = self.imageURL.value;
+    self.imagePreview.src = imgURL;
   }
 
   this.updateSceneListDropdown = function() {
@@ -358,7 +435,6 @@ VRCreateUI = function() {
       self.xposNumberSlider.set(photo.textureDescription.sphereCentre[0]);
       self.yposNumberSlider.set(photo.textureDescription.sphereCentre[1]);
       self.imageURL.value = photo.textureDescription.src;
-      self.imagePreview.src = self.imageURL.value;
       self.isPlane.checked = photo.textureDescription.plane;
       self.isStereo.checked = photo.textureDescription.isStereo;
       self.leftStereoParams.value = photo.textureDescription.U_l[0] + "," +
@@ -369,6 +445,8 @@ VRCreateUI = function() {
                                     photo.textureDescription.U_r[1] + "," +
                                     photo.textureDescription.V_r[0] + "," +
                                     photo.textureDescription.V_r[1];
+
+      self.loadImage();
     }
   }
 
@@ -390,7 +468,11 @@ VRCreateUI = function() {
 
   this.initPhotoPanel = function() {
     this.imageURL = document.getElementById('imageURL');
-    this.imagePreview = document.getElementById('imagePreview');
+    this.imagePreviewCanvas = document.getElementById('imagePreviewCanvas');
+    var ctx = self.imagePreviewCanvas.getContext('2d');
+    ctx.canvas.width  = 1024;
+    ctx.canvas.height = 1024;
+    this.imagePreview = new Image();
     this.imageURL.onchange = this.loadImage;
     this.imageURL.value = "";
 
@@ -401,7 +483,7 @@ VRCreateUI = function() {
     this.leftStereoParams = document.getElementById('leftStereoParams');
     this.rightStereoParams = document.getElementById('rightStereoParams');
     this.leftStereoParams.onchange = this.photoStateChange;
-    this.leftStereoParams.onchange = this.photoStateChange;
+    this.rightStereoParams.onchange = this.photoStateChange;
 
     var loadButton = document.getElementById("loadImage");
     loadButton.onclick = this.loadImage;
