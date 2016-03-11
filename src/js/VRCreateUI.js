@@ -194,6 +194,10 @@ VRCreateUI = function() {
   this.leftStereoParamV = null;
   this.rightStereoParamV = null;
 
+  this.textMessage = null;
+  this.jumpTo = null;
+  this.jumpText = null;
+
   this.getStory = function() {
     if (self.storyManager.storyList != [])
       return this.storyManager.storyList[0];
@@ -238,8 +242,8 @@ VRCreateUI = function() {
       self.showOptionsPosition(true);
       self.showOptionsPosition3D(false);
       self.showOptionsPlanar(true);
-      self.showOptionsText(true);
-      self.showOptionsJump(false);
+      self.showOptionsText(false);
+      self.showOptionsJump(true);
       self.showOptionsTextCommon(true);
     }
   }
@@ -330,6 +334,7 @@ VRCreateUI = function() {
       text.textureDescription.sphereCentre[0] = xpos;
       text.textureDescription.sphereCentre[1] = ypos;
       text.textureDescription.plane = self.isPlane.checked;
+      text.message = self.textMessage.value;
     } else if (type == "jump") {
       var jump = scene.dict.jumpObjects[idx];
       var hfov = parseFloat(self.hfovNumberSlider.get());
@@ -342,6 +347,8 @@ VRCreateUI = function() {
       jump.textureDescription.sphereCentre[0] = xpos;
       jump.textureDescription.sphereCentre[1] = ypos;
       jump.textureDescription.plane = self.isPlane.checked;
+      jump.jumpTo = self.jumpTo.value;
+      jump.jumpText = self.jumpText.value;
     }
     self.setPanelVisibility();
     self.pushFromDictToRender();
@@ -587,6 +594,7 @@ VRCreateUI = function() {
       self.xposNumberSlider.set(text.textureDescription.sphereCentre[0]);
       self.yposNumberSlider.set(text.textureDescription.sphereCentre[1]);
       self.isPlane.checked = text.textureDescription.plane;
+      self.textMessage.value = text.message;
     } else if (type=="jump"){
       var jump = scene.dict.jumpObjects[idx];
       self.hfovNumberSlider.set(jump.textureDescription.sphereFOV[0]);
@@ -594,6 +602,8 @@ VRCreateUI = function() {
       self.xposNumberSlider.set(jump.textureDescription.sphereCentre[0]);
       self.yposNumberSlider.set(jump.textureDescription.sphereCentre[1]);
       self.isPlane.checked = jump.textureDescription.plane;
+      self.jumpTo.value = jump.jumpTo;
+      self.jumpText.value = jump.jumpText;
     }
   }
 
@@ -662,6 +672,14 @@ VRCreateUI = function() {
                               document.getElementById("ypos_t"),
                               0,
                               this.inputStateChange);
+
+    this.textMessage = document.getElementById('textMessage');
+    this.textMessage.onchange = this.inputStateChange;
+
+    this.jumpTo = document.getElementById('jumpTo');
+    this.jumpTo.onchange = this.inputStateChange;
+    this.jumpText = document.getElementById('jumpText');
+    this.jumpText.onchange = this.inputStateChange;
   }
 
   this.init = function(vrStoryManager) {
