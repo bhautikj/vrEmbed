@@ -69,8 +69,8 @@ VRSceneDict = function() {
     photo.textureDescription.sphereFOV = [60,60];
     photo.textureDescription.sphereCentre = [0,0];
     photo.textureDescription.U_l = [0,0];
-    photo.textureDescription.V_l = [1,1];
-    photo.textureDescription.U_r = [0,0];
+    photo.textureDescription.V_l = [1,0.5];
+    photo.textureDescription.U_r = [0,0.5];
     photo.textureDescription.V_r = [1,1];
     return photo;
   }
@@ -189,8 +189,10 @@ VRCreateUI = function() {
   this.yposNumberSlider = null;
   this.isPlane = null;
   this.isStereo = null;
-  this.leftStereoParams = null;
-  this.rightStereoParams = null;
+  this.leftStereoParamU = null;
+  this.rightStereoParamU = null;
+  this.leftStereoParamV = null;
+  this.rightStereoParamV = null;
 
   this.getStory = function() {
     if (self.storyManager.storyList != [])
@@ -224,13 +226,15 @@ VRCreateUI = function() {
       photo.textureDescription.plane = self.isPlane.checked;
       photo.textureDescription.isStereo = self.isStereo.checked;
 
-      var leftStereo = self.leftStereoParams.value.split(',');
-      photo.textureDescription.U_l = [leftStereo[0], leftStereo[1]];
-      photo.textureDescription.V_l = [leftStereo[2], leftStereo[3]];
+      var leftStereoU = self.leftStereoParamU.value.split(',');
+      photo.textureDescription.U_l = [leftStereoU[0], leftStereoU[1]];
+      var leftStereoV = self.leftStereoParamV.value.split(',');
+      photo.textureDescription.V_l = [leftStereoV[0], leftStereoV[1]];
 
-      var rightStereo = self.rightStereoParams.value.split(',');
-      photo.textureDescription.U_r = [rightStereo[0], rightStereo[1]];
-      photo.textureDescription.V_r = [rightStereo[2], rightStereo[3]];
+      var rightStereoU = self.rightStereoParamU.value.split(',');
+      photo.textureDescription.U_l = [rightStereoU[0], rightStereoU[1]];
+      var rightStereoV = self.rightStereoParamV.value.split(',');
+      photo.textureDescription.V_l = [rightStereoV[0], rightStereoV[1]];
 
       self.drawToCanvas();
     }
@@ -275,8 +279,6 @@ VRCreateUI = function() {
       ctx.globalAlpha = 0.5;
       ctx.drawImage(self.imagePreview, x,y,w,h);
       ctx.globalAlpha = 1.0;
-      var leftStereo = self.leftStereoParams.value.split(',');
-      var rightStereo = self.rightStereoParams.value.split(',');
       ctx.strokeStyle = 'rgba(0,0,0,1.0)';
       ctx.fillStyle = ctx.strokeStyle;
       ctx.lineWidth = 4;
@@ -305,7 +307,31 @@ VRCreateUI = function() {
       ctx.fillText("(1,0.5)",x+w-96,y+0.5*h-32);
       ctx.fillText("(1,1)",x+w-72,y+h-32);
 
-      console.log(leftStereo, rightStereo);
+      ctx.lineWidth = 1;
+      ctx.font = "Bold 64px Arial";
+      var leftStereoU = self.leftStereoParamU.value.split(',');
+      var leftStereoV = self.leftStereoParamV.value.split(',');
+      U = [x+(leftStereoU[0]*w), y+(leftStereoU[1]*h)];
+      V = [x+(leftStereoV[0]*w), y+(leftStereoV[1]*h)];
+      ctx.fillStyle   = 'rgba(255,0,0,0.5)';
+      ctx.strokeStyle = 'rgba(255,0,0,0.5)';
+      ctx.fillRect(U[0],U[1],V[0]-U[0],V[1]-U[1]);
+      ctx.stroke();
+      ctx.fillStyle   = 'rgba(255,0,0,1.0)';
+      ctx.strokeStyle = 'rgba(255,0,0,1.0)';
+      ctx.fillText("Left",U[0],U[1]+64);
+
+      var rightStereoU = self.rightStereoParamU.value.split(',');
+      var rightStereoV = self.rightStereoParamV.value.split(',');
+      U = [x+(rightStereoU[0]*w), y+(rightStereoU[1]*h)];
+      V = [x+(rightStereoV[0]*w), y+(rightStereoV[1]*h)];
+      ctx.fillStyle   = 'rgba(0,0,255,0.5)';
+      ctx.strokeStyle = 'rgba(0,0,255,0.5)';
+      ctx.fillRect(U[0],U[1],V[0]-U[0],V[1]-U[1]);
+      ctx.stroke();
+      ctx.fillStyle   = 'rgba(0,0,255,1.0)';
+      ctx.strokeStyle = 'rgba(0,0,255,1.0)';
+      ctx.fillText("Right",U[0],U[1]+64);
     }
   }
 
@@ -437,13 +463,13 @@ VRCreateUI = function() {
       self.imageURL.value = photo.textureDescription.src;
       self.isPlane.checked = photo.textureDescription.plane;
       self.isStereo.checked = photo.textureDescription.isStereo;
-      self.leftStereoParams.value = photo.textureDescription.U_l[0] + "," +
-                                    photo.textureDescription.U_l[1] + "," +
-                                    photo.textureDescription.V_l[0] + "," +
+      self.leftStereoParamU.value = photo.textureDescription.U_l[0] + "," +
+                                    photo.textureDescription.U_l[1];
+      self.leftStereoParamV.value = photo.textureDescription.V_l[0] + "," +
                                     photo.textureDescription.V_l[1];
-      self.rightStereoParams.value= photo.textureDescription.U_r[0] + "," +
-                                    photo.textureDescription.U_r[1] + "," +
-                                    photo.textureDescription.V_r[0] + "," +
+      self.rightStereoParamU.value = photo.textureDescription.U_r[0] + "," +
+                                    photo.textureDescription.U_r[1];
+      self.rightStereoParamV.value = photo.textureDescription.V_r[0] + "," +
                                     photo.textureDescription.V_r[1];
 
       self.loadImage();
@@ -480,10 +506,14 @@ VRCreateUI = function() {
     this.isStereo = document.getElementById('isStereo');
     this.isPlane.onchange = this.photoStateChange;
     this.isStereo.onchange = this.photoStateChange;
-    this.leftStereoParams = document.getElementById('leftStereoParams');
-    this.rightStereoParams = document.getElementById('rightStereoParams');
-    this.leftStereoParams.onchange = this.photoStateChange;
-    this.rightStereoParams.onchange = this.photoStateChange;
+    this.leftStereoParamU = document.getElementById('leftStereoParamU');
+    this.leftStereoParamV = document.getElementById('leftStereoParamV');
+    this.rightStereoParamU = document.getElementById('rightStereoParamU');
+    this.rightStereoParamV = document.getElementById('rightStereoParamV');
+    this.leftStereoParamU.onchange = this.photoStateChange;
+    this.leftStereoParamV.onchange = this.photoStateChange;
+    this.rightStereoParamU.onchange = this.photoStateChange;
+    this.rightStereoParamV.onchange = this.photoStateChange;
 
     var loadButton = document.getElementById("loadImage");
     loadButton.onclick = this.loadImage;
