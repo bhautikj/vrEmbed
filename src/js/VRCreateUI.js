@@ -10,7 +10,7 @@ var NumberSlider = function() {
     self.textElement.value = self.sliderElement.value;
   }
 
-  this.photoStateChange = function() {
+  this.inputStateChange = function() {
     self.textElement.value = self.sliderElement.value;
     self.callback();
   }
@@ -42,7 +42,7 @@ var NumberSlider = function() {
     this.callback = callback;
 
     this.sliderElement.oninput = this.sliderMove;
-    this.sliderElement.onchange = this.photoStateChange;
+    this.sliderElement.onchange = this.inputStateChange;
     this.textElement.onchange = this.textChange;
   }
 }
@@ -206,7 +206,11 @@ VRCreateUI = function() {
     if (self.elementSelect.value == "") {
       self.showImageOptions(false);
       self.showOptionsPosition(false);
-      self.showOptionsPositionAdvanced(false);
+      self.showOptionsPosition3D(false);
+      self.showOptionsPlanar(false);
+      self.showOptionsText(false);
+      self.showOptionsJump(false);
+      self.showOptionsTextCommon(false);
       return;
     }
 
@@ -215,16 +219,28 @@ VRCreateUI = function() {
     if (type == "photo") {
       self.showImageOptions(true);
       self.showOptionsPosition(true);
-      self.showOptionsPositionAdvanced(true);
+      self.showOptionsPosition3D(true);
+      self.showOptionsPlanar(true);
       self.showStereoOptions(self.isStereo.checked);
+      self.showOptionsText(false);
+      self.showOptionsJump(false);
+      self.showOptionsTextCommon(false);
     } else if (type == "text") {
       self.showImageOptions(false);
       self.showOptionsPosition(true);
-      self.showOptionsPositionAdvanced(false);
+      self.showOptionsPosition3D(false);
+      self.showOptionsPlanar(true);
+      self.showOptionsText(true);
+      self.showOptionsJump(false);
+      self.showOptionsTextCommon(true);
     } else if (type == "jump") {
       self.showImageOptions(false);
       self.showOptionsPosition(true);
-      self.showOptionsPositionAdvanced(false);      
+      self.showOptionsPosition3D(false);
+      self.showOptionsPlanar(true);
+      self.showOptionsText(true);
+      self.showOptionsJump(false);
+      self.showOptionsTextCommon(true);
     }
   }
 
@@ -237,8 +253,24 @@ VRCreateUI = function() {
     document.getElementById("options_position").hidden = !doit;
   }
 
-  this.showOptionsPositionAdvanced = function(doit) {
-    document.getElementById("options_position_advanced").hidden = !doit;
+  this.showOptionsPosition3D = function(doit) {
+    document.getElementById("options_position_3d").hidden = !doit;
+  }
+
+  this.showOptionsPlanar = function(doit) {
+    document.getElementById("options_planar").hidden = !doit;
+  }
+
+  this.showOptionsText = function(doit) {
+    document.getElementById("options_text").hidden = !doit;
+  }
+
+  this.showOptionsTextCommon = function(doit) {
+    document.getElementById("options_text_common").hidden = !doit;
+  }
+
+  this.showOptionsJump = function(doit) {
+    document.getElementById("options_jump").hidden = !doit;
   }
 
   this.showStereoOptions = function(doit) {
@@ -250,18 +282,18 @@ VRCreateUI = function() {
     }
   }
 
-  this.photoStateChange = function() {
+  this.inputStateChange = function() {
     if (self.elementSelect.value == "")
       return;
     var selectorVals = self.elementSelect.value.split("_");
     var type = selectorVals[0];
     var idx = selectorVals[1];
 
+    var scene = self.sceneList.scenes[self.sceneSelect.value];
+
     // push from gui to dict
     if (type == "photo") {
-      var scene = self.sceneList.scenes[self.sceneSelect.value];
       var photo = scene.dict.photoObjects[idx];
-
       var hfov = parseFloat(self.hfovNumberSlider.get());
       var vfov = parseFloat(self.vfovNumberSlider.get());
       var xpos = parseFloat(self.xposNumberSlider.get());
@@ -285,13 +317,37 @@ VRCreateUI = function() {
       var rightStereoV = self.rightStereoParamV.value.split(',');
       photo.textureDescription.V_l = [rightStereoV[0], rightStereoV[1]];
 
-      self.drawToCanvas();
+      self.updateImagePreview();
+    } else if (type == "text") {
+      var text = scene.dict.textObjects[idx];
+      var hfov = parseFloat(self.hfovNumberSlider.get());
+      var vfov = parseFloat(self.vfovNumberSlider.get());
+      var xpos = parseFloat(self.xposNumberSlider.get());
+      var ypos = parseFloat(self.yposNumberSlider.get());
+
+      text.textureDescription.sphereFOV[0] = hfov;
+      text.textureDescription.sphereFOV[1] = vfov;
+      text.textureDescription.sphereCentre[0] = xpos;
+      text.textureDescription.sphereCentre[1] = ypos;
+      text.textureDescription.plane = self.isPlane.checked;
+    } else if (type == "jump") {
+      var jump = scene.dict.jumpObjects[idx];
+      var hfov = parseFloat(self.hfovNumberSlider.get());
+      var vfov = parseFloat(self.vfovNumberSlider.get());
+      var xpos = parseFloat(self.xposNumberSlider.get());
+      var ypos = parseFloat(self.yposNumberSlider.get());
+
+      jump.textureDescription.sphereFOV[0] = hfov;
+      jump.textureDescription.sphereFOV[1] = vfov;
+      jump.textureDescription.sphereCentre[0] = xpos;
+      jump.textureDescription.sphereCentre[1] = ypos;
+      jump.textureDescription.plane = self.isPlane.checked;
     }
     self.setPanelVisibility();
     self.pushFromDictToRender();
   }
 
-  this.drawToCanvas = function() {
+  this.updateImagePreview = function() {
     var txSize = 1024;
 
     var ctx = self.imagePreviewCanvas.getContext('2d');
@@ -386,8 +442,8 @@ VRCreateUI = function() {
   }
 
   this.loadImage = function() {
-    self.imagePreview.onload = self.drawToCanvas;
-    self.photoStateChange();
+    self.imagePreview.onload = self.updateImagePreview;
+    self.inputStateChange();
     var imgURL = self.imageURL.value;
     self.imagePreview.src = imgURL;
   }
@@ -503,9 +559,9 @@ VRCreateUI = function() {
     var type = selectorVals[0];
     var idx = selectorVals[1];
 
+    var scene = self.sceneList.scenes[self.sceneSelect.value];
     // push from dict to gui
     if (type == "photo") {
-      var scene = self.sceneList.scenes[self.sceneSelect.value];
       var photo = scene.dict.photoObjects[idx];
       self.hfovNumberSlider.set(photo.textureDescription.sphereFOV[0]);
       self.vfovNumberSlider.set(photo.textureDescription.sphereFOV[1]);
@@ -524,6 +580,20 @@ VRCreateUI = function() {
                                     photo.textureDescription.V_r[1];
 
       self.loadImage();
+    } else if (type =="text"){
+      var text = scene.dict.textObjects[idx];
+      self.hfovNumberSlider.set(text.textureDescription.sphereFOV[0]);
+      self.vfovNumberSlider.set(text.textureDescription.sphereFOV[1]);
+      self.xposNumberSlider.set(text.textureDescription.sphereCentre[0]);
+      self.yposNumberSlider.set(text.textureDescription.sphereCentre[1]);
+      self.isPlane.checked = text.textureDescription.plane;
+    } else if (type=="jump"){
+      var jump = scene.dict.jumpObjects[idx];
+      self.hfovNumberSlider.set(jump.textureDescription.sphereFOV[0]);
+      self.vfovNumberSlider.set(jump.textureDescription.sphereFOV[1]);
+      self.xposNumberSlider.set(jump.textureDescription.sphereCentre[0]);
+      self.yposNumberSlider.set(jump.textureDescription.sphereCentre[1]);
+      self.isPlane.checked = jump.textureDescription.plane;
     }
   }
 
@@ -555,16 +625,16 @@ VRCreateUI = function() {
 
     this.isPlane = document.getElementById('isPlane');
     this.isStereo = document.getElementById('isStereo');
-    this.isPlane.onchange = this.photoStateChange;
-    this.isStereo.onchange = this.photoStateChange;
+    this.isPlane.onchange = this.inputStateChange;
+    this.isStereo.onchange = this.inputStateChange;
     this.leftStereoParamU = document.getElementById('leftStereoParamU');
     this.leftStereoParamV = document.getElementById('leftStereoParamV');
     this.rightStereoParamU = document.getElementById('rightStereoParamU');
     this.rightStereoParamV = document.getElementById('rightStereoParamV');
-    this.leftStereoParamU.onchange = this.photoStateChange;
-    this.leftStereoParamV.onchange = this.photoStateChange;
-    this.rightStereoParamU.onchange = this.photoStateChange;
-    this.rightStereoParamV.onchange = this.photoStateChange;
+    this.leftStereoParamU.onchange = this.inputStateChange;
+    this.leftStereoParamV.onchange = this.inputStateChange;
+    this.rightStereoParamU.onchange = this.inputStateChange;
+    this.rightStereoParamV.onchange = this.inputStateChange;
 
     var loadButton = document.getElementById("loadImage");
     loadButton.onclick = this.loadImage;
@@ -573,25 +643,25 @@ VRCreateUI = function() {
     this.hfovNumberSlider.init(document.getElementById("hfov"),
                                document.getElementById("hfov_t"),
                                360,
-                               this.photoStateChange);
+                               this.inputStateChange);
 
     this.vfovNumberSlider = new NumberSlider();
     this.vfovNumberSlider.init(document.getElementById("vfov"),
                               document.getElementById("vfov_t"),
                               180,
-                              this.photoStateChange);
+                              this.inputStateChange);
 
     this.xposNumberSlider = new NumberSlider();
     this.xposNumberSlider.init(document.getElementById("xpos"),
                               document.getElementById("xpos_t"),
                               0,
-                              this.photoStateChange);
+                              this.inputStateChange);
 
     this.yposNumberSlider = new NumberSlider();
     this.yposNumberSlider.init(document.getElementById("ypos"),
                               document.getElementById("ypos_t"),
                               0,
-                              this.photoStateChange);
+                              this.inputStateChange);
   }
 
   this.init = function(vrStoryManager) {
