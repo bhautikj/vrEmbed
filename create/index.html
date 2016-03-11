@@ -47,7 +47,8 @@
  </head>
 
 <body>
-<div class="container">
+
+<div class="container" id="options_scene_picker">
   <div class="row">
     <div class="twelve columns">
       <h3>Scenes:</h3>
@@ -66,7 +67,23 @@
   </div>
 </div>
 
-<div class="container">
+<div class="container" id="previewEmbed">
+  <div class="row">
+    <div class="twelve columns">
+      <h3>Preview</h3>
+    </div>
+  </div>
+  <div class="row">
+    <div class="twelve columns">
+      <div class="stretchy-wrapper greybg"><div>
+          <story>
+          </story>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<div class="container" id="options_scene_setup">
   <div class="row">
     <div class="twelve columns">
       <h4>Scene setup:</h4>
@@ -80,6 +97,8 @@
       <input class="textBox" id="sceneName" type="text" required/>
     </div>
   </div>
+</div>
+<div class="container" id="options_scene_objects_add">
   <div class="row">
     <div class="four columns">
       <input class="button-primary" type="submit" value="Add Image" id="addImage">
@@ -101,13 +120,13 @@
   </div>
 </div>
 
-<div class="container" id="imageOptions">
+<div class="container">
   <div class="row">
     <div class="twelve columns">
-      <h5>Settings:</h5>
+      <h5>Scene object settings:</h5>
     </div>
   </div>
-  <div id="block_image">
+  <span id="options_image_load">
     <div class="row">
       <div class="two columns alignright">
         Image:
@@ -120,8 +139,8 @@
         <canvas id="imagePreviewCanvas" style="display:block; position: relative; min-width:400px; width:100%; height:400px"></canvas>
       </div>
     </div>
-  </div>
-  <div id="block_texture_options">
+  </span>
+  <span id="options_position">
     <div class="row">
       <div class="two columns alignright">
         Width:
@@ -162,13 +181,9 @@
         <input type="number" class="numberinput" id="ypos_t">
       </div>
     </div>
+  </span>
+  <span id="options_position_advanced">
     <div class="row">
-      <div class="one column alignright">
-        Planar projection?
-      </div>
-      <div class="one column">
-        <input type="checkbox" id="isPlane">
-      </div>
       <div class="one column alignright">
         Is 3D?
       </div>
@@ -176,49 +191,48 @@
         <input type="checkbox" id="isStereo">
       </div>
     </div>
+    <span id="options_stereo">
+      <div class="row">
+        <div class="three columns alignright">
+          Left image top-left:
+        </div>
+        <div class="two columns">
+          <input type="text" class="numberinputwide" id="leftStereoParamU">
+        </div>
+        <div class="three columns alignright">
+          Left image bottom-right:
+        </div>
+        <div class="two columns">
+          <input type="text" class="numberinputwide" id="leftStereoParamV">
+        </div>
+      </div>
+      <div class="row">
+        <div class="three columns alignright">
+          Right image top-left:
+        </div>
+        <div class="two columns">
+          <input type="text" class="numberinputwide" id="rightStereoParamU">
+        </div>
+        <div class="three columns alignright">
+          Right image bottom-right
+        </div>
+        <div class="two columns">
+          <input type="text" class="numberinputwide" id="rightStereoParamV">
+        </div>
+      </div>
+    </span>
+
     <div class="row">
       <div class="one column alignright">
-        Left image top-left:
+        Planar projection?
       </div>
-      <div class="two columns">
-        <input type="text" class="numberinputwide" id="leftStereoParamU">
-      </div>
-      <div class="one column alignright">
-        Left image bottom-right:
-      </div>
-      <div class="two columns">
-        <input type="text" class="numberinputwide" id="leftStereoParamV">
-      </div>
-      <div class="one column alignright">
-        Right image top-left:
-      </div>
-      <div class="two columns">
-        <input type="text" class="numberinputwide" id="rightStereoParamU">
-      </div>
-      <div class="one column alignright">
-        Right image bottom-right
-      </div>
-      <div class="two columns">
-        <input type="text" class="numberinputwide" id="rightStereoParamV">
+      <div class="one column">
+        <input type="checkbox" id="isPlane">
       </div>
     </div>
+  </span>
 </div>
 
-<div class="container" id="previewEmbed">
-  <div class="row">
-    <div class="twelve columns">
-      <h3>Preview</h3>
-    </div>
-  </div>
-  <div class="row">
-    <div class="twelve columns">
-      <div class="stretchy-wrapper greybg"><div>
-          <story>
-          </story>
-      </div></div>
-    </div>
-  </div>
-</div>
 
 <script src="../bin/vrEmbed.js"></script>
 <script src="../bin/vrCreate.js"></script>

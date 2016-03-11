@@ -328,6 +328,9 @@ VRStory = function() {
     this.vrGui.teardown();
     this.quad.teardown();
 
+    // update index
+    this.currentSceneIndex = sceneIdx;
+
     // set up scene images
     var scene = this.sceneList[sceneIdx];
     var textureDescriptions = [];
@@ -351,8 +354,6 @@ VRStory = function() {
     // set up stereo mode
     this.stateToggler.configureStereo(this.isStereo);
 
-    // update index
-    this.currentSceneIndex = sceneIdx;
   }
 
   this.nextScene = function() {

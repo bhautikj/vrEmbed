@@ -201,6 +201,55 @@ VRCreateUI = function() {
       return null;
   }
 
+  this.setPanelVisibility = function() {
+    // hide everything
+    if (self.elementSelect.value == "") {
+      self.showImageOptions(false);
+      self.showOptionsPosition(false);
+      self.showOptionsPositionAdvanced(false);
+      return;
+    }
+
+    var selectorVals = self.elementSelect.value.split("_");
+    var type = selectorVals[0];
+    if (type == "photo") {
+      self.showImageOptions(true);
+      self.showOptionsPosition(true);
+      self.showOptionsPositionAdvanced(true);
+      self.showStereoOptions(self.isStereo.checked);
+    } else if (type == "text") {
+      self.showImageOptions(false);
+      self.showOptionsPosition(true);
+      self.showOptionsPositionAdvanced(false);
+    } else if (type == "jump") {
+      self.showImageOptions(false);
+      self.showOptionsPosition(true);
+      self.showOptionsPositionAdvanced(false);      
+    }
+  }
+
+
+  this.showImageOptions = function(doit) {
+    document.getElementById("options_image_load").hidden = !doit;
+  }
+
+  this.showOptionsPosition = function(doit) {
+    document.getElementById("options_position").hidden = !doit;
+  }
+
+  this.showOptionsPositionAdvanced = function(doit) {
+    document.getElementById("options_position_advanced").hidden = !doit;
+  }
+
+  this.showStereoOptions = function(doit) {
+    var ele = document.getElementById("options_stereo");
+    if (doit) {
+      ele.hidden = false;
+    } else {
+      ele.hidden = true;
+    }
+  }
+
   this.photoStateChange = function() {
     if (self.elementSelect.value == "")
       return;
@@ -238,6 +287,7 @@ VRCreateUI = function() {
 
       self.drawToCanvas();
     }
+    self.setPanelVisibility();
     self.pushFromDictToRender();
   }
 
@@ -446,6 +496,7 @@ VRCreateUI = function() {
   }
 
   this.selectElement = function() {
+    self.setPanelVisibility();
     if (self.elementSelect.value == "")
       return;
     var selectorVals = self.elementSelect.value.split("_");
@@ -573,6 +624,7 @@ VRCreateUI = function() {
     this.updateSceneListDropdown();
     this.sceneSelect.value = 0;
     this.sceneSelectChange();
+    this.setPanelVisibility();
   }
 }
 
