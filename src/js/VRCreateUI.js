@@ -197,6 +197,13 @@ VRCreateUI = function() {
   this.textMessage = null;
   this.jumpTo = null;
   this.jumpText = null;
+  this.fontAlign = null;
+  this.fontFace = null;
+  this.fontSize = null;
+  this.borderThickness = null;
+  this.borderColor = null;
+  this.backgroundColor = null;
+  this.textColor = null;
 
   this.getStory = function() {
     if (self.storyManager.storyList != [])
@@ -334,7 +341,16 @@ VRCreateUI = function() {
       text.textureDescription.sphereCentre[0] = xpos;
       text.textureDescription.sphereCentre[1] = ypos;
       text.textureDescription.plane = self.isPlane.checked;
+
       text.message = self.textMessage.value;
+
+      text.textOptions.align = self.fontAlign.value;
+      text.textOptions.fontface = self.fontFace.value;
+      text.textOptions.fontsize = self.fontSize.value;
+      text.textOptions.borderthickness = self.borderThickness.value;
+      text.textOptions.bordercolor = self.borderColor.value;
+      text.textOptions.backgroundcolor = self.backgroundColor.value;
+      text.textOptions.textcolor = self.textColor.value;
     } else if (type == "jump") {
       var jump = scene.dict.jumpObjects[idx];
       var hfov = parseFloat(self.hfovNumberSlider.get());
@@ -349,6 +365,14 @@ VRCreateUI = function() {
       jump.textureDescription.plane = self.isPlane.checked;
       jump.jumpTo = self.jumpTo.value;
       jump.jumpText = self.jumpText.value;
+
+      jump.textOptions.align = self.fontAlign.value;
+      jump.textOptions.fontface = self.fontFace.value;
+      jump.textOptions.fontsize = self.fontSize.value;
+      jump.textOptions.borderthickness = self.borderThickness.value;
+      jump.textOptions.bordercolor = self.borderColor.value;
+      jump.textOptions.backgroundcolor = self.backgroundColor.value;
+      jump.textOptions.textcolor = self.textColor.value;
     }
     self.setPanelVisibility();
     self.pushFromDictToRender();
@@ -595,6 +619,15 @@ VRCreateUI = function() {
       self.yposNumberSlider.set(text.textureDescription.sphereCentre[1]);
       self.isPlane.checked = text.textureDescription.plane;
       self.textMessage.value = text.message;
+
+      self.fontAlign.value = text.textOptions.align;
+      self.fontFace.value = text.textOptions.fontface;
+      self.fontSize.value = text.textOptions.fontsize;
+      self.borderThickness.value = text.textOptions.borderthickness;
+      self.borderColor.value = text.textOptions.bordercolor;
+      self.backgroundColor.value = text.textOptions.backgroundcolor;
+      self.textColor.value = text.textOptions.textcolor;
+
     } else if (type=="jump"){
       var jump = scene.dict.jumpObjects[idx];
       self.hfovNumberSlider.set(jump.textureDescription.sphereFOV[0]);
@@ -604,6 +637,14 @@ VRCreateUI = function() {
       self.isPlane.checked = jump.textureDescription.plane;
       self.jumpTo.value = jump.jumpTo;
       self.jumpText.value = jump.jumpText;
+
+      self.fontAlign.value = jump.textOptions.align;
+      self.fontFace.value = jump.textOptions.fontface;
+      self.fontSize.value = jump.textOptions.fontsize;
+      self.borderThickness.value = jump.textOptions.borderthickness;
+      self.borderColor.value = jump.textOptions.bordercolor;
+      self.backgroundColor.value = jump.textOptions.backgroundcolor;
+      self.textColor.value = jump.textOptions.textcolor;      
     }
   }
 
@@ -623,7 +664,7 @@ VRCreateUI = function() {
     self.updateSceneListDropdown();
   }
 
-  this.initPhotoPanel = function() {
+  this.initObjectPanel = function() {
     this.imageURL = document.getElementById('imageURL');
     this.imagePreviewCanvas = document.getElementById('imagePreviewCanvas');
     var ctx = self.imagePreviewCanvas.getContext('2d');
@@ -680,6 +721,21 @@ VRCreateUI = function() {
     this.jumpTo.onchange = this.inputStateChange;
     this.jumpText = document.getElementById('jumpText');
     this.jumpText.onchange = this.inputStateChange;
+
+    this.fontAlign = document.getElementById('fontAlign');
+    this.fontAlign.onchange = this.inputStateChange;
+    this.fontFace = document.getElementById('fontFace');
+    this.fontFace.onchange = this.inputStateChange;
+    this.fontSize = document.getElementById('fontSize');
+    this.fontSize.onchange = this.inputStateChange;
+    this.borderThickness = document.getElementById('borderThickness');
+    this.borderThickness.onchange = this.inputStateChange;
+    this.borderColor = document.getElementById('borderColor');
+    this.borderColor.onchange = this.inputStateChange;
+    this.backgroundColor = document.getElementById('backgroundColor');
+    this.backgroundColor.onchange = this.inputStateChange;
+    this.textColor = document.getElementById('textColor');
+    this.textColor.onchange = this.inputStateChange;
   }
 
   this.init = function(vrStoryManager) {
@@ -706,7 +762,7 @@ VRCreateUI = function() {
     addJumpButton.onclick = this.addJump;
     removeElementButton.onclick = this.removeElement;
 
-    this.initPhotoPanel();
+    this.initObjectPanel();
 
     this.sceneList.init();
     this.updateSceneListDropdown();
