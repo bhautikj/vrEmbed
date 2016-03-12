@@ -412,9 +412,9 @@ VRCreateUI = function() {
       photo.textureDescription.V_l = [leftStereoV[0], leftStereoV[1]];
 
       var rightStereoU = self.rightStereoParamU.value.split(',');
-      photo.textureDescription.U_l = [rightStereoU[0], rightStereoU[1]];
+      photo.textureDescription.U_r = [rightStereoU[0], rightStereoU[1]];
       var rightStereoV = self.rightStereoParamV.value.split(',');
-      photo.textureDescription.V_l = [rightStereoV[0], rightStereoV[1]];
+      photo.textureDescription.V_r = [rightStereoV[0], rightStereoV[1]];
 
       self.updateImagePreview();
     } else if (type == "text") {
@@ -704,7 +704,6 @@ VRCreateUI = function() {
                                     photo.textureDescription.U_r[1];
       self.rightStereoParamV.value = photo.textureDescription.V_r[0] + "," +
                                     photo.textureDescription.V_r[1];
-
       self.loadImage();
     } else if (type =="text"){
       var text = scene.dict.textObjects[idx];
@@ -811,7 +810,9 @@ VRCreateUI = function() {
     if (self.existingStory.value == "") {
       return;
     }
-    elf.stackerEditFull();
+
+
+    self.stackerEditFull();
   }
 
   this.updateShare = function() {
