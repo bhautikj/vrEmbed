@@ -1,10 +1,52 @@
 /* VR junk
 */
+
+
+.button,
+input[type="submit"] {
+  height: 38px;
+  padding: 0 30px;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 38px;
+  letter-spacing: .1rem;
+}
+.button.button-primary:focus,
+.button.button-primary:hover,
+input[type="submit"].button-primary:focus,
+input[type="submit"].button-primary:hover {
+  color: #FFF;
+  background-color: #F90;
+  border-color: #FFF;
+}
+
+.button.button-primary, input[type="submit"].button-primary {
+  color: #F90;
+  background-color: #FFF;
+  border-color: #666;
+}
+
 .headerbar {
   background-color: #f90;
   color: #fff;
   text-align: right;
   padding: 5px;
+}
+
+.centervertical {
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.accordionbar {
+  background-color: #f90;
+  color: #fff;
+  padding: 10px;
+  margin: 0px;
+  border-radius: 10px;
+  font-size: 24px;
+  height: 38px;
 }
 
 div.header-wrap {

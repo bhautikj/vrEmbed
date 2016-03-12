@@ -47,6 +47,72 @@ var NumberSlider = function() {
   }
 }
 
+VRAccordionUI = function() {
+  var self = this;
+  this.button = null;
+  this.container = null;
+  this.shown = false;
+  this.accordionManager = false;
+  this.name = null;
+
+  this.show = function(show) {
+    self.shown = show;
+    if (show == false) {
+      self.container.hidden = true;
+      self.button.innerHTML = "+";
+    } else {
+      self.container.hidden = false;
+      self.button.innerHTML = "-";
+    }
+  }
+
+  this.toggle = function() {
+    self.accordionManager.toggle(self.name);
+  }
+
+  this.init = function(manager, name) {
+    this.name = name;
+    this.accordionManager = manager;
+    this.container = document.getElementById(name);
+    this.button = document.getElementById(name+"_button");
+    this.button.onclick = this.toggle;
+    this.show(false);
+  }
+}
+
+VRAccordionStacker = function() {
+  var self = this;
+  this.accordions = [];
+  this.active = null;
+
+  this.add = function(name) {
+    var accordion = new VRAccordionUI();
+    accordion.init(self, name);
+    self.accordions.push([name,accordion]);
+  }
+
+  this.showNamed = function(name) {
+    // hide everything except named
+    for (i = 0; i < self.accordions.length; i++) {
+      if (name == self.accordions[i][0]) {
+        self.active = name;
+        self.accordions[i][1].show(true);
+      } else {
+        self.accordions[i][1].show(false);
+      }
+    }
+  }
+
+  this.toggle = function(name) {
+    // cant turn self off - quit!
+    if (self.active == name)
+      return;
+
+    self.showNamed(name);
+  }
+}
+
+
 VRSceneDict = function() {
   this.dict = null;
   this.vrScene = null;
@@ -104,7 +170,7 @@ VRSceneDict = function() {
     jump.textureDescription.isStereo = false;
     jump.textureDescription.plane = false;
     jump.textureDescription.sphereFOV = [60,40];
-    jump.textureDescription.sphereCentre = [0,0];
+    jump.textureDescription.sphereCentre = [30,-30];
     jump.textOptions = {};
     jump.textOptions.align = 'center';
     jump.textOptions.fontface = 'Arial';
@@ -644,7 +710,7 @@ VRCreateUI = function() {
       self.borderThickness.value = jump.textOptions.borderthickness;
       self.borderColor.value = jump.textOptions.bordercolor;
       self.backgroundColor.value = jump.textOptions.backgroundcolor;
-      self.textColor.value = jump.textOptions.textcolor;      
+      self.textColor.value = jump.textOptions.textcolor;
     }
   }
 
@@ -769,6 +835,15 @@ VRCreateUI = function() {
     this.sceneSelect.value = 0;
     this.sceneSelectChange();
     this.setPanelVisibility();
+
+    this.accordionStacker = new VRAccordionStacker();
+    this.accordionStacker.add("mode_pick");
+    this.accordionStacker.add("manage_scenes");
+    this.accordionStacker.add("manage_scene_objects");
+    this.accordionStacker.add("setup_scene_object");
+    this.accordionStacker.add("preview_dummy");
+    this.accordionStacker.add("export");
+    this.accordionStacker.showNamed("mode_pick");
   }
 }
 

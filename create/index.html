@@ -48,7 +48,27 @@
 
 <body>
 
-<div class="container" id="options_scene_picker">
+<div class="container">
+  <div class="row accordionbar">
+    <div class="ten columns">
+      <a class="button button-primary" id="mode_pick_button">-</a>&nbsp;Choose mode
+    </div>
+  </div>
+</div>
+<div class="container" id="mode_pick">
+  <div class="row">
+    <h3>MODE PICKER</h3>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row accordionbar">
+    <div class="ten columns">
+      <a class="button button-primary" id="manage_scenes_button">-</a>&nbsp;Add/remove scenes
+    </div>
+  </div>
+</div>
+<div class="container" id="manage_scenes">
   <div class="row">
     <div class="twelve columns">
       <h3>Scenes:</h3>
@@ -58,16 +78,13 @@
     <div class="four columns alignright">
       <select id="sceneSelect" class="numberinputwide"></select>
     </div>
-    <div class="two columns">
+    <div class="three columns">
       <input class="button-primary" type="submit" value="Add" id="addScene">
     </div>
-    <div class="two columns">
+    <div class="three columns">
       <input class="button-primary" type="submit" value="Remove" id="removeScene">
     </div>
   </div>
-</div>
-
-<div class="container" id="options_scene_setup">
   <div class="row">
     <div class="twelve columns">
       <h4>Scene setup:</h4>
@@ -82,8 +99,21 @@
     </div>
   </div>
 </div>
-<div class="container" id="options_scene_objects_add">
-  <div class="row">
+
+<div class="container">
+  <div class="row accordionbar">
+    <div class="ten columns">
+      <a class="button button-primary" id="manage_scene_objects_button">-</a>&nbsp;Add scene objects
+    </div>
+  </div>
+</div>
+<div class="container" id="manage_scene_objects">
+    <div class="row">
+      <div class="twelve columns">
+        <h3>Scene objects:</h3>
+      </div>
+    </div>
+    <div class="row">
     <div class="four columns">
       <input class="button-primary" type="submit" value="Add Image" id="addImage">
     </div>
@@ -94,20 +124,27 @@
       <input class="button-primary" type="submit" value="Add Jump" id="addJump">
     </div>
   </div>
+</div>
+
+<div class="container">
+  <div class="row accordionbar">
+    <div class="ten columns">
+      <a class="button button-primary" id="setup_scene_object_button">-</a>&nbsp;Setup scene objects
+    </div>
+  </div>
+</div>
+<div class="container" id="setup_scene_object">
+  <div class="row">
+    <div class="twelve columns">
+      <h5>Scene object settings:</h5>
+    </div>
+  </div>
   <div class="row">
     <div class="six columns">
       <select id="elementSelect" class="numberinputwide"></select>
     </div>
     <div class="six columns">
       <input class="button-primary" type="submit" value="Remove" id="removeElement">
-    </div>
-  </div>
-</div>
-
-<div class="container">
-  <div class="row">
-    <div class="twelve columns">
-      <h5>Scene object settings:</h5>
     </div>
   </div>
   <span id="options_text">
@@ -320,12 +357,15 @@
   </span>
 </div>
 
-<div class="container" id="previewEmbed">
-  <div class="row">
-    <div class="twelve columns">
-      <h3>Preview</h3>
+<div class="container">
+  <div class="row accordionbar">
+    <div class="ten columns">
+      <a class="button button-primary" id="preview_dummy_button">-</a>&nbsp;Preview
     </div>
   </div>
+</div>
+<div class="container" id="preview_dummy"></div>
+<div class="container" id="previewEmbed">
   <div class="row">
     <div class="twelve columns">
       <div class="stretchy-wrapper greybg"><div>
@@ -336,8 +376,22 @@
   </div>
 </div>
 
+<div class="container">
+  <div class="row accordionbar">
+    <div class="ten columns">
+      <a class="button button-primary" id="export_button">-</a>&nbsp;Export/share
+    </div>
+  </div>
+</div>
+<div class="container" id="export">
+  <div class="row">
+    <div class="twelve columns">
+      <h3>Export:</h3>
+  </div>
+</div>
 
-<script src="../bin/vrEmbed.js"></script>
+
+<script src="../vrEmbed.min.js"></script>
 <script src="../bin/vrCreate.js"></script>
 <script>
 var vrCreateUI = new VRCreateUI();
