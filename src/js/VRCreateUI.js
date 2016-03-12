@@ -620,6 +620,7 @@ VRCreateUI = function() {
     self.populateGUIFromSceneDict(self.sceneSelect.value);
     self.elementSelect.value = "photo_" + (scene.dict.photoObjects.length - 1);
     self.selectElement();
+    self.accordionStacker.showNamed("setup_scene_object");
   }
 
   this.addText = function() {
@@ -628,6 +629,7 @@ VRCreateUI = function() {
     self.populateGUIFromSceneDict(self.sceneSelect.value);
     self.elementSelect.value = "text_" + (scene.dict.textObjects.length - 1);
     self.selectElement();
+    self.accordionStacker.showNamed("setup_scene_object");
   }
 
   this.addJump = function() {
@@ -636,6 +638,7 @@ VRCreateUI = function() {
     self.populateGUIFromSceneDict(self.sceneSelect.value);
     self.elementSelect.value = "jump_" + (scene.dict.jumpObjects.length - 1);
     self.selectElement();
+    self.accordionStacker.showNamed("setup_scene_object");
   }
 
   this.removeElement = function() {
@@ -670,6 +673,8 @@ VRCreateUI = function() {
     var scene = self.sceneList.scenes[self.sceneSelect.value];
     self.getStory().sceneList[self.sceneSelect.value].initDict(scene.dict);
     self.getStory().setupScene(self.sceneSelect.value);
+
+    self.updateShare();
   }
 
   this.selectElement = function() {
@@ -808,6 +813,34 @@ VRCreateUI = function() {
     }
     elf.stackerEditFull();
   }
+
+  this.updateShare = function() {
+    var shareCodes = self.getStory().getShareCodes();
+    var url = shareCodes[0];
+    var embedCode = shareCodes[1];
+    if (self.getStory().isSinglePhotoStory()) {
+      document.getElementById('singleShare').hidden = false;
+      var twitterURL = "https://twitter.com/intent/tweet?text=" + encodeURIComponent("Check out my #vrEmbed ") + url;
+      var facebookURL = "https://www.facebook.com/sharer/sharer.php?u=" + url;
+      var gplusURL = "https://plus.google.com/share?url=" + url;
+      var redditURL = "http://www.reddit.com/submit?url=" + url;
+
+      document.getElementById('shareURL').href = decodeURIComponent(url);
+      document.getElementById('shareTwitter').href = twitterURL;
+      document.getElementById('shareFacebook').href = facebookURL;
+      document.getElementById('shareGplus').href = gplusURL;
+      document.getElementById('shareReddit').href = redditURL;
+    } else {
+      document.getElementById('singleShare').hidden = true;
+    }
+
+    document.getElementById('shareEmbedCode').value = embedCode;
+  }
+
+  this.showShare = function() {
+    // self.getStory().vrOptions.options.showDialogShare(this.getShareCodes());
+  };
+
 
   this.initObjectPanel = function() {
     this.imageURL = document.getElementById('imageURL');

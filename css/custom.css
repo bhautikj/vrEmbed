@@ -118,6 +118,10 @@ div.stretchy-wrapper > div {
   text-align: right;
 }
 
+.aligncenter {
+  text-align: center;
+}
+
 a:link {
     font-weight: 900;
     text-decoration: none;
