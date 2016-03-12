@@ -48,7 +48,7 @@
 
 <body>
 
-<div class="container">
+<div class="container" id="mode_pick_bar">
   <div class="row accordionbar">
     <div class="ten columns">
       <a class="button button-primary" id="mode_pick_button">-</a>&nbsp;Choose mode
@@ -57,11 +57,38 @@
 </div>
 <div class="container" id="mode_pick">
   <div class="row">
-    <h3>MODE PICKER</h3>
+    <div class="three columns">
+      <h5>One image quick:</h5>
+    </div>
+    <div class="five columns">
+      <input class="textBox numberinputwide" id="oneImage" type="text"/>
+    </div>
+    <div class="four columns">
+      <input class="button-primary" type="submit" value="Go" id="modeOneImage">
+    </div>
+  </div>
+  <div class="row">
+    <div class="eight columns">
+      <h5>New Story:</h5>
+    </div>
+    <div class="four columns">
+      <input class="button-primary" type="submit" value="Go" id="modeNewStory">
+    </div>
+  </div>
+  <div class="row" hidden=true>
+    <div class="three columns">
+      <h5>Edit existing story:</h5>
+    </div>
+    <div class="five columns">
+      <input class="textBox numberinputwide" id="existingStory" type="text"/>
+    </div>
+    <div class="four columns">
+      <input class="button-primary" type="submit" value="Go" id="modeExistingStory">
+    </div>
   </div>
 </div>
 
-<div class="container">
+<div class="container" id="manage_scenes_bar">
   <div class="row accordionbar">
     <div class="ten columns">
       <a class="button button-primary" id="manage_scenes_button">-</a>&nbsp;Add/remove scenes
@@ -100,10 +127,10 @@
   </div>
 </div>
 
-<div class="container">
+<div class="container" id="manage_scene_objects_bar">
   <div class="row accordionbar">
     <div class="ten columns">
-      <a class="button button-primary" id="manage_scene_objects_button">-</a>&nbsp;Add scene objects
+      <a class="button button-primary" id="manage_scene_objects_button">-</a>&nbsp;Add/select scene objects
     </div>
   </div>
 </div>
@@ -124,21 +151,6 @@
       <input class="button-primary" type="submit" value="Add Jump" id="addJump">
     </div>
   </div>
-</div>
-
-<div class="container">
-  <div class="row accordionbar">
-    <div class="ten columns">
-      <a class="button button-primary" id="setup_scene_object_button">-</a>&nbsp;Setup scene objects
-    </div>
-  </div>
-</div>
-<div class="container" id="setup_scene_object">
-  <div class="row">
-    <div class="twelve columns">
-      <h5>Scene object settings:</h5>
-    </div>
-  </div>
   <div class="row">
     <div class="six columns">
       <select id="elementSelect" class="numberinputwide"></select>
@@ -147,6 +159,16 @@
       <input class="button-primary" type="submit" value="Remove" id="removeElement">
     </div>
   </div>
+</div>
+
+<div class="container" id="setup_scene_object_bar">
+  <div class="row accordionbar">
+    <div class="ten columns">
+      <a class="button button-primary" id="setup_scene_object_button">-</a>&nbsp;Setup scene objects
+    </div>
+  </div>
+</div>
+<div class="container" id="setup_scene_object">
   <span id="options_text">
     <div class="row">
       <div class="two columns alignright">
@@ -255,10 +277,10 @@
       </div>
       <div class="twelve columns">
         <input class="textBox inputnumberwide" id="imageURL" type="text" required/>
-        <input class="button-primary" type="submit" value="Reload" id="loadImage">
+        <input class="button-primary" type="submit" value="Load" id="loadImage">
       </div>
       <div class="twelve columns">
-        <canvas id="imagePreviewCanvas" style="display:block; position: relative; min-width:400px; width:100%; height:400px"></canvas>
+        <canvas id="imagePreviewCanvas" style="display:block; position: relative; min-width:200px; width:100%; height:200px"></canvas>
       </div>
     </div>
   </span>
@@ -357,7 +379,7 @@
   </span>
 </div>
 
-<div class="container">
+<div class="container" id="preview_dummy_bar">
   <div class="row accordionbar">
     <div class="ten columns">
       <a class="button button-primary" id="preview_dummy_button">-</a>&nbsp;Preview
@@ -376,7 +398,7 @@
   </div>
 </div>
 
-<div class="container">
+<div class="container" id="export_bar">
   <div class="row accordionbar">
     <div class="ten columns">
       <a class="button button-primary" id="export_button">-</a>&nbsp;Export/share

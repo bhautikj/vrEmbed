@@ -49,11 +49,17 @@ var NumberSlider = function() {
 
 VRAccordionUI = function() {
   var self = this;
+  this.bar=null;
   this.button = null;
   this.container = null;
   this.shown = false;
   this.accordionManager = false;
   this.name = null;
+
+  this.totalHide = function(doit) {
+    self.container.hidden = doit;
+    self.bar.hidden = doit;
+  }
 
   this.show = function(show) {
     self.shown = show;
@@ -75,6 +81,7 @@ VRAccordionUI = function() {
     this.accordionManager = manager;
     this.container = document.getElementById(name);
     this.button = document.getElementById(name+"_button");
+    this.bar = document.getElementById(name+"_bar");
     this.button.onclick = this.toggle;
     this.show(false);
   }
@@ -107,8 +114,16 @@ VRAccordionStacker = function() {
     // cant turn self off - quit!
     if (self.active == name)
       return;
-
     self.showNamed(name);
+  }
+
+  this.totalHide = function(name, doit) {
+    for (i = 0; i < self.accordions.length; i++) {
+      if (name == self.accordions[i][0]) {
+        self.accordions[i][1].totalHide(doit);
+        return;
+      }
+    }
   }
 }
 
@@ -270,6 +285,13 @@ VRCreateUI = function() {
   this.borderColor = null;
   this.backgroundColor = null;
   this.textColor = null;
+
+  this.accordionStacker = null;
+  this.oneImage = null;
+  this.modeOneImage = null;
+  this.modeNewStory = null;
+  this.existingStory = null;
+  this.modeExistingStory = null;
 
   this.getStory = function() {
     if (self.storyManager.storyList != [])
@@ -643,6 +665,8 @@ VRCreateUI = function() {
       self.getStory().sceneList.push(self.sceneList.scenes[i].vrScene);
     }
 
+    console.log("pushFromDictToRender");
+
     var scene = self.sceneList.scenes[self.sceneSelect.value];
     self.getStory().sceneList[self.sceneSelect.value].initDict(scene.dict);
     self.getStory().setupScene(self.sceneSelect.value);
@@ -728,6 +752,61 @@ VRCreateUI = function() {
   this.removeScene = function() {
     self.sceneList.removeScene();
     self.updateSceneListDropdown();
+  }
+
+  this.stackerEditQuick = function() {
+    self.accordionStacker.totalHide("mode_pick", true);
+    self.accordionStacker.totalHide("manage_scenes", true);
+    self.accordionStacker.totalHide("manage_scene_objects", true);
+    self.accordionStacker.totalHide("setup_scene_object", false);
+    self.accordionStacker.totalHide("preview_dummy", false);
+    self.accordionStacker.totalHide("export", false);
+    self.accordionStacker.showNamed("setup_scene_object");
+  }
+
+  this.stackerEditFull = function() {
+    self.accordionStacker.totalHide("mode_pick", true);
+    self.accordionStacker.totalHide("manage_scenes", false);
+    self.accordionStacker.totalHide("manage_scene_objects", false);
+    self.accordionStacker.totalHide("setup_scene_object", false);
+    self.accordionStacker.totalHide("preview_dummy", false);
+    self.accordionStacker.totalHide("export", false);
+    self.accordionStacker.showNamed("manage_scenes");
+  }
+
+  this.stackerInit = function() {
+    self.accordionStacker.totalHide("manage_scenes", true);
+    self.accordionStacker.totalHide("manage_scene_objects", true);
+    self.accordionStacker.totalHide("setup_scene_object", true);
+    self.accordionStacker.totalHide("preview_dummy", true);
+    self.accordionStacker.totalHide("export", true);
+  }
+
+  this.tryModeOneImage = function() {
+    if (self.oneImage.value == "") {
+      return;
+    }
+
+    // setup scene with one image
+    var scene = self.sceneList.scenes[self.sceneSelect.value];
+    scene.addPhoto();
+    scene.dict.photoObjects[0].textureDescription.src = self.oneImage.value;
+    self.populateGUIFromSceneDict(self.sceneSelect.value);
+    self.elementSelect.value = "photo_" + (scene.dict.photoObjects.length - 1);
+    self.selectElement();
+
+    self.stackerEditQuick();
+  }
+
+  this.tryModeNewStory = function() {
+    self.stackerEditFull();
+  }
+
+  this.tryModeExistingStory = function() {
+    if (self.existingStory.value == "") {
+      return;
+    }
+    elf.stackerEditFull();
   }
 
   this.initObjectPanel = function() {
@@ -828,6 +907,16 @@ VRCreateUI = function() {
     addJumpButton.onclick = this.addJump;
     removeElementButton.onclick = this.removeElement;
 
+    this.oneImage = document.getElementById("oneImage");
+    this.modeOneImage = document.getElementById("modeOneImage");
+    this.modeNewStory = document.getElementById("modeNewStory");
+    this.existingStory = document.getElementById("existingStory");
+    this.modeExistingStory = document.getElementById("modeExistingStory");
+    modeOneImage.onclick = this.tryModeOneImage;
+    modeNewStory.onclick = this.tryModeNewStory;
+    modeExistingStory.onclick = this.tryModeExistingStory;
+    this.oneImage.value = "http://vrembed.org/src/assets/vrEmbedLogo.png";
+
     this.initObjectPanel();
 
     this.sceneList.init();
@@ -844,6 +933,8 @@ VRCreateUI = function() {
     this.accordionStacker.add("preview_dummy");
     this.accordionStacker.add("export");
     this.accordionStacker.showNamed("mode_pick");
+
+    this.stackerInit();
   }
 }
 
