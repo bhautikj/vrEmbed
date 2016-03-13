@@ -1,254 +1,9 @@
 var VRScene = require('./VRScene.js');
-
-var NumberSlider = function() {
-  var self=this;
-  this.sliderElement = null;
-  this.textElement = null;
-  this.callback = null;
-
-  this.sliderMove = function() {
-    self.textElement.value = self.sliderElement.value;
-  }
-
-  this.inputStateChange = function() {
-    self.textElement.value = self.sliderElement.value;
-    self.callback();
-  }
-
-  this.textChange = function() {
-    if (parseFloat(self.textElement.value) < parseFloat(self.sliderElement.min) ||
-        parseFloat(self.textElement.value) > parseFloat(self.sliderElement.max)) {
-      self.textElement.value = self.sliderElement.value;
-      return;
-    }
-
-    self.sliderElement.value = self.textElement.value;
-    self.callback();
-  }
-
-  this.set = function(value) {
-    self.sliderElement.value = value;
-    self.textElement.value = value;
-  }
-
-  this.get = function() {
-    return self.sliderElement.value;
-  }
-
-  this.init = function(slider, text, defaultValue, callback) {
-    this.sliderElement = slider;
-    this.textElement = text;
-    this.set(defaultValue);
-    this.callback = callback;
-
-    this.sliderElement.oninput = this.sliderMove;
-    this.sliderElement.onchange = this.inputStateChange;
-    this.textElement.onchange = this.textChange;
-  }
-}
-
-VRAccordionUI = function() {
-  var self = this;
-  this.bar=null;
-  this.button = null;
-  this.container = null;
-  this.shown = false;
-  this.accordionManager = false;
-  this.name = null;
-
-  this.totalHide = function(doit) {
-    self.container.hidden = doit;
-    self.bar.hidden = doit;
-  }
-
-  this.show = function(show) {
-    self.shown = show;
-    if (show == false) {
-      self.container.hidden = true;
-      self.button.innerHTML = "+";
-    } else {
-      self.container.hidden = false;
-      self.button.innerHTML = "-";
-    }
-  }
-
-  this.toggle = function() {
-    self.accordionManager.toggle(self.name);
-  }
-
-  this.init = function(manager, name) {
-    this.name = name;
-    this.accordionManager = manager;
-    this.container = document.getElementById(name);
-    this.button = document.getElementById(name+"_button");
-    this.bar = document.getElementById(name+"_bar");
-    this.button.onclick = this.toggle;
-    this.show(false);
-  }
-}
-
-VRAccordionStacker = function() {
-  var self = this;
-  this.accordions = [];
-  this.active = null;
-
-  this.add = function(name) {
-    var accordion = new VRAccordionUI();
-    accordion.init(self, name);
-    self.accordions.push([name,accordion]);
-  }
-
-  this.showNamed = function(name) {
-    // hide everything except named
-    for (i = 0; i < self.accordions.length; i++) {
-      if (name == self.accordions[i][0]) {
-        self.active = name;
-        self.accordions[i][1].show(true);
-      } else {
-        self.accordions[i][1].show(false);
-      }
-    }
-  }
-
-  this.toggle = function(name) {
-    // cant turn self off - quit!
-    if (self.active == name)
-      return;
-    self.showNamed(name);
-  }
-
-  this.totalHide = function(name, doit) {
-    for (i = 0; i < self.accordions.length; i++) {
-      if (name == self.accordions[i][0]) {
-        self.accordions[i][1].totalHide(doit);
-        return;
-      }
-    }
-  }
-}
-
-
-VRSceneDict = function() {
-  this.dict = null;
-  this.vrScene = null;
-
-  this.init = function() {
-    this.vrScene = new VRScene();
-    this.dict = {};
-    this.dict.photoObjects=[];
-    this.dict.textObjects=[];
-    this.dict.jumpObjects=[];
-    this.dict.name = "";
-  }
-
-  this.initPhoto = function() {
-    var photo ={};
-    photo.textureDescription = {};
-    photo.textureDescription.src="http://vrembed.org/src/assets/vrEmbedLogo.png";
-    photo.textureDescription.isStereo = false;
-    photo.textureDescription.plane = false;
-    photo.textureDescription.sphereFOV = [60,60];
-    photo.textureDescription.sphereCentre = [0,0];
-    photo.textureDescription.U_l = [0,0];
-    photo.textureDescription.V_l = [1,0.5];
-    photo.textureDescription.U_r = [0,0.5];
-    photo.textureDescription.V_r = [1,1];
-    return photo;
-  }
-
-  this.initText = function() {
-    var text ={};
-    text.message = "Placeholder text";
-    text.textureDescription = {};
-    text.textureDescription.src="";
-    text.textureDescription.isStereo = false;
-    text.textureDescription.plane = false;
-    text.textureDescription.sphereFOV = [60,40];
-    text.textureDescription.sphereCentre = [0,0];
-    text.textOptions = {};
-    text.textOptions.align = 'center';
-    text.textOptions.fontface = 'Arial';
-    text.textOptions.fontsize = '72';
-    text.textOptions.borderthickness = '12';
-    text.textOptions.bordercolor = '#FFFFFF';
-    text.textOptions.backgroundcolor = '#000000';
-    text.textOptions.textcolor = '#FFFFFF';
-    return text;
-  }
-
-  this.initJump = function() {
-    var jump ={};
-    jump.jumpTo = "";
-    jump.jumpText = "Jump text";
-    jump.textureDescription = {};
-    jump.textureDescription.src="";
-    jump.textureDescription.isStereo = false;
-    jump.textureDescription.plane = false;
-    jump.textureDescription.sphereFOV = [60,40];
-    jump.textureDescription.sphereCentre = [30,-30];
-    jump.textOptions = {};
-    jump.textOptions.align = 'center';
-    jump.textOptions.fontface = 'Arial';
-    jump.textOptions.fontsize = '72';
-    jump.textOptions.borderthickness = '12';
-    jump.textOptions.bordercolor = '#FFFFFF';
-    jump.textOptions.backgroundcolor = '#000000';
-    jump.textOptions.textcolor = '#FFFFFF';
-    return jump;
-  }
-
-  this.addPhoto = function() {
-    var photo = this.initPhoto();
-    this.dict.photoObjects.push(photo);
-  }
-
-  this.removePhoto = function(idx) {
-    this.dict.photoObjects.splice(idx,1);
-  }
-
-  this.addText = function() {
-    var text = this.initText();
-    this.dict.textObjects.push(text);
-  }
-
-  this.removeText = function(idx) {
-    this.dict.textObjects.splice(idx,1);
-  }
-
-  this.addJump = function() {
-    var jump = this.initJump();
-    this.dict.jumpObjects.push(jump);
-  }
-
-  this.removeJump = function(idx) {
-    this.dict.jumpObjects.splice(idx,1);
-  }
-}
-
-VRSceneList = function() {
-  this.scenes = [];
-  this.sceneIdx = -1;
-
-  this.init = function() {
-    this.addScene();
-    this.sceneIdx = 0;
-  }
-
-  this.addScene = function() {
-    var sceneDict = new VRSceneDict();
-    sceneDict.init();
-    this.scenes.push(sceneDict);
-  }
-
-  this.getScene = function(idx) {
-    return this.scenes[idx];
-  }
-
-  this.removeScene = function(idx) {
-    if (this.scenes.length>1)
-      this.scenes.splice(idx,1);
-  }
-}
+var VRUINumberSlider = require('./VRUINumberSlider.js');
+var VRUIAccordionStacker = require('./VRUIAccordionStacker.js');
+var VRSceneDict = require('./VRSceneDict.js');
+var VRStoryDict = require('./VRStoryDict.js');
+var VRUISceneList = require('./VRUISceneList.js');
 
 VRCreateUI = function() {
   var self=this;
@@ -257,17 +12,17 @@ VRCreateUI = function() {
 
   this.photoIdx = 0;
   this.sceneIdx = 0;
-  this.sceneList = new VRSceneList();
+  this.sceneList = new VRUISceneList();
   this.sceneSelect = null;
   this.sceneName = null;
   this.elementSelect = null;
 
   this.imageURL = null;
   this.imagePreviewCanvas = null;
-  this.hfovNumberSlider = null;
-  this.vfovNumberSlider = null;
-  this.xposNumberSlider = null;
-  this.yposNumberSlider = null;
+  this.hfovVRUINumberSlider = null;
+  this.vfovVRUINumberSlider = null;
+  this.xposVRUINumberSlider = null;
+  this.yposVRUINumberSlider = null;
   this.isPlane = null;
   this.isStereo = null;
   this.leftStereoParamU = null;
@@ -393,10 +148,10 @@ VRCreateUI = function() {
     // push from gui to dict
     if (type == "photo") {
       var photo = scene.dict.photoObjects[idx];
-      var hfov = parseFloat(self.hfovNumberSlider.get());
-      var vfov = parseFloat(self.vfovNumberSlider.get());
-      var xpos = parseFloat(self.xposNumberSlider.get());
-      var ypos = parseFloat(self.yposNumberSlider.get());
+      var hfov = parseFloat(self.hfovVRUINumberSlider.get());
+      var vfov = parseFloat(self.vfovVRUINumberSlider.get());
+      var xpos = parseFloat(self.xposVRUINumberSlider.get());
+      var ypos = parseFloat(self.yposVRUINumberSlider.get());
 
       photo.textureDescription.sphereFOV[0] = hfov;
       photo.textureDescription.sphereFOV[1] = vfov;
@@ -419,10 +174,10 @@ VRCreateUI = function() {
       self.updateImagePreview();
     } else if (type == "text") {
       var text = scene.dict.textObjects[idx];
-      var hfov = parseFloat(self.hfovNumberSlider.get());
-      var vfov = parseFloat(self.vfovNumberSlider.get());
-      var xpos = parseFloat(self.xposNumberSlider.get());
-      var ypos = parseFloat(self.yposNumberSlider.get());
+      var hfov = parseFloat(self.hfovVRUINumberSlider.get());
+      var vfov = parseFloat(self.vfovVRUINumberSlider.get());
+      var xpos = parseFloat(self.xposVRUINumberSlider.get());
+      var ypos = parseFloat(self.yposVRUINumberSlider.get());
 
       text.textureDescription.sphereFOV[0] = hfov;
       text.textureDescription.sphereFOV[1] = vfov;
@@ -441,10 +196,10 @@ VRCreateUI = function() {
       text.textOptions.textcolor = self.textColor.value;
     } else if (type == "jump") {
       var jump = scene.dict.jumpObjects[idx];
-      var hfov = parseFloat(self.hfovNumberSlider.get());
-      var vfov = parseFloat(self.vfovNumberSlider.get());
-      var xpos = parseFloat(self.xposNumberSlider.get());
-      var ypos = parseFloat(self.yposNumberSlider.get());
+      var hfov = parseFloat(self.hfovVRUINumberSlider.get());
+      var vfov = parseFloat(self.vfovVRUINumberSlider.get());
+      var xpos = parseFloat(self.xposVRUINumberSlider.get());
+      var ypos = parseFloat(self.yposVRUINumberSlider.get());
 
       jump.textureDescription.sphereFOV[0] = hfov;
       jump.textureDescription.sphereFOV[1] = vfov;
@@ -689,10 +444,10 @@ VRCreateUI = function() {
     // push from dict to gui
     if (type == "photo") {
       var photo = scene.dict.photoObjects[idx];
-      self.hfovNumberSlider.set(photo.textureDescription.sphereFOV[0]);
-      self.vfovNumberSlider.set(photo.textureDescription.sphereFOV[1]);
-      self.xposNumberSlider.set(photo.textureDescription.sphereCentre[0]);
-      self.yposNumberSlider.set(photo.textureDescription.sphereCentre[1]);
+      self.hfovVRUINumberSlider.set(photo.textureDescription.sphereFOV[0]);
+      self.vfovVRUINumberSlider.set(photo.textureDescription.sphereFOV[1]);
+      self.xposVRUINumberSlider.set(photo.textureDescription.sphereCentre[0]);
+      self.yposVRUINumberSlider.set(photo.textureDescription.sphereCentre[1]);
       self.imageURL.value = photo.textureDescription.src;
       self.isPlane.checked = photo.textureDescription.plane;
       self.isStereo.checked = photo.textureDescription.isStereo;
@@ -707,10 +462,10 @@ VRCreateUI = function() {
       self.loadImage();
     } else if (type =="text"){
       var text = scene.dict.textObjects[idx];
-      self.hfovNumberSlider.set(text.textureDescription.sphereFOV[0]);
-      self.vfovNumberSlider.set(text.textureDescription.sphereFOV[1]);
-      self.xposNumberSlider.set(text.textureDescription.sphereCentre[0]);
-      self.yposNumberSlider.set(text.textureDescription.sphereCentre[1]);
+      self.hfovVRUINumberSlider.set(text.textureDescription.sphereFOV[0]);
+      self.vfovVRUINumberSlider.set(text.textureDescription.sphereFOV[1]);
+      self.xposVRUINumberSlider.set(text.textureDescription.sphereCentre[0]);
+      self.yposVRUINumberSlider.set(text.textureDescription.sphereCentre[1]);
       self.isPlane.checked = text.textureDescription.plane;
       self.textMessage.value = text.message;
 
@@ -724,10 +479,10 @@ VRCreateUI = function() {
 
     } else if (type=="jump"){
       var jump = scene.dict.jumpObjects[idx];
-      self.hfovNumberSlider.set(jump.textureDescription.sphereFOV[0]);
-      self.vfovNumberSlider.set(jump.textureDescription.sphereFOV[1]);
-      self.xposNumberSlider.set(jump.textureDescription.sphereCentre[0]);
-      self.yposNumberSlider.set(jump.textureDescription.sphereCentre[1]);
+      self.hfovVRUINumberSlider.set(jump.textureDescription.sphereFOV[0]);
+      self.vfovVRUINumberSlider.set(jump.textureDescription.sphereFOV[1]);
+      self.xposVRUINumberSlider.set(jump.textureDescription.sphereCentre[0]);
+      self.yposVRUINumberSlider.set(jump.textureDescription.sphereCentre[1]);
       self.isPlane.checked = jump.textureDescription.plane;
       self.jumpTo.value = jump.jumpTo;
       self.jumpText.value = jump.jumpText;
@@ -869,26 +624,26 @@ VRCreateUI = function() {
     var loadButton = document.getElementById("loadImage");
     loadButton.onclick = this.loadImage;
 
-    this.hfovNumberSlider = new NumberSlider();
-    this.hfovNumberSlider.init(document.getElementById("hfov"),
+    this.hfovVRUINumberSlider = new VRUINumberSlider();
+    this.hfovVRUINumberSlider.init(document.getElementById("hfov"),
                                document.getElementById("hfov_t"),
                                360,
                                this.inputStateChange);
 
-    this.vfovNumberSlider = new NumberSlider();
-    this.vfovNumberSlider.init(document.getElementById("vfov"),
+    this.vfovVRUINumberSlider = new VRUINumberSlider();
+    this.vfovVRUINumberSlider.init(document.getElementById("vfov"),
                               document.getElementById("vfov_t"),
                               180,
                               this.inputStateChange);
 
-    this.xposNumberSlider = new NumberSlider();
-    this.xposNumberSlider.init(document.getElementById("xpos"),
+    this.xposVRUINumberSlider = new VRUINumberSlider();
+    this.xposVRUINumberSlider.init(document.getElementById("xpos"),
                               document.getElementById("xpos_t"),
                               0,
                               this.inputStateChange);
 
-    this.yposNumberSlider = new NumberSlider();
-    this.yposNumberSlider.init(document.getElementById("ypos"),
+    this.yposVRUINumberSlider = new VRUINumberSlider();
+    this.yposVRUINumberSlider.init(document.getElementById("ypos"),
                               document.getElementById("ypos_t"),
                               0,
                               this.inputStateChange);
@@ -959,7 +714,7 @@ VRCreateUI = function() {
     this.sceneSelectChange();
     this.setPanelVisibility();
 
-    this.accordionStacker = new VRAccordionStacker();
+    this.accordionStacker = new VRUIAccordionStacker();
     this.accordionStacker.add("mode_pick");
     this.accordionStacker.add("manage_scenes");
     this.accordionStacker.add("manage_scene_objects");
