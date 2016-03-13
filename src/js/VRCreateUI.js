@@ -5,6 +5,9 @@ var VRSceneDict = require('./VRSceneDict.js');
 var VRUISceneList = require('./VRUISceneList.js');
 var VRStoryDict = require('./VRStoryDict.js');
 
+
+var flickrImageCache = {};
+
 var getFlickrImage = function(urlf, callbackFunc) {
   var photo_id=null;
 
@@ -20,6 +23,10 @@ var getFlickrImage = function(urlf, callbackFunc) {
 
   if (photo_id==null) {
     return false;
+  }
+
+  if (photo_id in flickrImageCache) {
+    callbackFunc(flickrImageCache[photo_id]);
   }
 
   var flickrAPI = "";
@@ -45,7 +52,8 @@ var getFlickrImage = function(urlf, callbackFunc) {
           useMe = i;
         }
       }
-      callbackFunc(sizes[useMe].source);
+      flickrImageCache[photo_id] = sizes[useMe].source;
+      callbackFunc(flickrImageCache[photo_id]);
     }
   };
 };
@@ -218,7 +226,6 @@ VRCreateUI = function() {
       photo.textureDescription.U_r = [parseFloat(self.U_r_x_slider.get()), parseFloat(self.U_r_y_slider.get())];
       photo.textureDescription.V_r = [parseFloat(self.V_r_x_slider.get()), parseFloat(self.V_r_y_slider.get())];
 
-      self.updateImagePreview();
     } else if (type == "text") {
       var text = scene.dict.textObjects[idx];
       var hfov = parseFloat(self.hfovVRUINumberSlider.get());
@@ -264,9 +271,33 @@ VRCreateUI = function() {
       jump.textOptions.backgroundcolor = self.backgroundColor.value;
       jump.textOptions.textcolor = self.textColor.value;
     }
+
     self.setPanelVisibility();
+    if(type == "photo") {
+      var imgURL = self.imageURL.value;
+      if (imgURL.indexOf('flickr.com/photos')!=-1) {
+        getFlickrImage(imgURL, self.deferredImageUpdate);
+        return;
+      } else {
+        self.updateImagePreview();
+      }
+    }
     self.pushFromDictToRender();
   }
+
+  this.deferredImageUpdate = function(imgURL) {
+    var selectorVals = self.elementSelect.value.split("_");
+    var type = selectorVals[0];
+    var idx = selectorVals[1];
+
+    var scene = self.sceneList.scenes[self.sceneSelect.value];
+    var photo = scene.dict.photoObjects[idx];
+    photo.textureDescription.src = imgURL;
+    self.imagePreview.src = imgURL;
+    self.updateImagePreview();
+    self.pushFromDictToRender();
+  }
+
 
   this.updateImagePreview = function() {
     var txSize = 1024;
