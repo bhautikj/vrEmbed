@@ -27,6 +27,8 @@ var getFlickrImage = function(urlf, callbackFunc) {
 
   if (photo_id in flickrImageCache) {
     callbackFunc(flickrImageCache[photo_id]);
+    console.log("HIT CACHE");
+    return;
   }
 
   var flickrAPI = "";
