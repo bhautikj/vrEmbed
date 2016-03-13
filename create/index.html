@@ -290,19 +290,19 @@
         Width:
       </div>
       <div class="two columns">
-        <input type="range" name="hFov" min="0" max="360" id="hfov" class="numberinput">
+        <input type="range" name="hFov" min="0" max="360" id="hfov" class="numberinputwide">
       </div>
       <div class="two columns">
-        <input type="number" class="numberinput" id="hfov_t">
+        <input type="number" class="numberinputwide" id="hfov_t">
       </div>
       <div class="two columns alignright">
         Height:
       </div>
       <div class="two columns">
-        <input type="range" name="vFov" min="0" max="180" id="vfov" class="numberinput">
+        <input type="range" name="vFov" min="0" max="180" id="vfov" class="numberinputwide">
       </div>
       <div class="two columns">
-        <input type="number" class="numberinput" id="vfov_t">
+        <input type="number" class="numberinputwide" id="vfov_t">
       </div>
     </div>
     <div class="row">
@@ -310,19 +310,19 @@
         left-right:
       </div>
       <div class="two columns">
-        <input type="range" name="xPos" min="-180" max="180" id="xpos" class="numberinput">
+        <input type="range" name="xPos" min="-180" max="180" id="xpos" class="numberinputwide">
       </div>
       <div class="two columns">
-        <input type="number" class="numberinput" id="xpos_t">
+        <input type="number" class="numberinputwide" id="xpos_t">
       </div>
       <div class="two columns alignright">
         up-down:
       </div>
       <div class="two columns">
-        <input type="range" name="yPos" min="-90" max="90" id="ypos" class="numberinput">
+        <input type="range" name="yPos" min="-90" max="90" id="ypos" class="numberinputwide">
       </div>
       <div class="two columns">
-        <input type="number" class="numberinput" id="ypos_t">
+        <input type="number" class="numberinputwide" id="ypos_t">
       </div>
     </div>
   </span>
@@ -336,34 +336,77 @@
       </div>
     </div>
     <span id="options_stereo">
+
       <div class="row">
         <div class="three columns alignright">
-          Left image top-left:
+          Left image top-left (x,y):
         </div>
         <div class="two columns">
-          <input type="text" class="numberinputwide" id="leftStereoParamU">
-        </div>
-        <div class="three columns alignright">
-          Left image bottom-right:
+          <input type="range" name="U_l_x" min="0.0" max="1.0" step="0.01" id="U_l_x" class="numberinputwide">
         </div>
         <div class="two columns">
-          <input type="text" class="numberinputwide" id="leftStereoParamV">
+          <input type="number" class="numberinputwide" step="any" id="U_l_x_t">
+        </div>
+        <div class="two columns">
+          <input type="range" name="U_l_y" min="0.0" max="1.0" step="0.01" id="U_l_y" class="numberinputwide">
+        </div>
+        <div class="two columns">
+          <input type="number" class="numberinputwide" step="any" id="U_l_y_t">
         </div>
       </div>
       <div class="row">
         <div class="three columns alignright">
-          Right image top-left:
+          Left image bottom-right (x,y):
         </div>
         <div class="two columns">
-          <input type="text" class="numberinputwide" id="rightStereoParamU">
-        </div>
-        <div class="three columns alignright">
-          Right image bottom-right
+          <input type="range" name="V_l_x" min="0.0" max="1.0" step="0.01" id="V_l_x" class="numberinputwide">
         </div>
         <div class="two columns">
-          <input type="text" class="numberinputwide" id="rightStereoParamV">
+          <input type="number" class="numberinputwide" step="any" id="V_l_x_t">
+        </div>
+        <div class="two columns">
+          <input type="range" name="V_l_y" min="0.0" max="1.0" step="0.01" id="V_l_y" class="numberinputwide">
+        </div>
+        <div class="two columns">
+          <input type="number" class="numberinputwide" step="any" id="V_l_y_t">
         </div>
       </div>
+
+      <div class="row">
+        <div class="three columns alignright">
+          Right image top-left (x,y):
+        </div>
+        <div class="two columns">
+          <input type="range" name="U_r_x" min="0.0" max="1.0" step="0.01" id="U_r_x" class="numberinputwide">
+        </div>
+        <div class="two columns">
+          <input type="number" class="numberinputwide" id="U_r_x_t">
+        </div>
+        <div class="two columns">
+          <input type="range" name="U_r_y" min="0.0" max="1.0" step="0.01" id="U_r_y" class="numberinputwide">
+        </div>
+        <div class="two columns">
+          <input type="number" class="numberinputwide" id="U_r_y_t">
+        </div>
+      </div>
+      <div class="row">
+        <div class="three columns alignright">
+          Right image bottom-right (x,y):
+        </div>
+        <div class="two columns">
+          <input type="range" name="V_r_x" min="0.0" max="1.0" step="0.01" id="V_r_x" class="numberinputwide">
+        </div>
+        <div class="two columns">
+          <input type="number" class="numberinputwide" id="V_r_x_t">
+        </div>
+        <div class="two columns">
+          <input type="range" name="V_r_y" min="0.0" max="1.0" step="0.01" id="V_r_y" class="numberinputwide">
+        </div>
+        <div class="two columns">
+          <input type="number" class="numberinputwide" id="V_r_y_t">
+        </div>
+      </div>
+
     </span>
   </span>
 
