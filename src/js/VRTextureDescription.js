@@ -27,6 +27,7 @@ VRTextureDescription = function () {
   this.V_l = [1,1];
   this.U_r = [0,0];
   this.V_r = [1,1];
+  this.plane = false;
 
   this.setSphereParamsFromString  = function(str) {
     var arr = str.split(",");
@@ -58,6 +59,26 @@ VRTextureDescription = function () {
     var link = document.createElement("a");
     link.href = this.textureSource;
     return (link.protocol+"//"+link.host+link.pathname+link.search+link.hash);
+  }
+
+  this.initDict = function(dict) {
+    this.textureSource = dict.src;
+    if (this.textureSource  == null) {
+      //TODO: throw exception
+      this.textureSource = null;
+      return;
+    }
+    this.metaSource = "";
+    this.isStereo = dict.isStereo;
+    this.plane = dict.plane;
+    this.sphereFOV = dict.sphereFOV;
+    this.sphereCentre = dict.sphereCentre;
+    if (this.isStereo) {
+      this.U_l = dict.U_l;
+      this.V_l = dict.V_l;
+      this.U_r = dict.U_r;
+      this.V_r = dict.V_r;
+    }
   }
 
 };

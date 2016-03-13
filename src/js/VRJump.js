@@ -40,6 +40,16 @@ VRJump = function() {
     this.textOptions.init(this.jumpElm);
   };
 
+
+  this.initDict = function(dict) {
+    this.textureDescription = new VRTextureDescription();
+    this.textureDescription.initDict(dict.textureDescription);
+    this.jumpTo = dict.jumpTo;
+    this.jumpText = dict.jumpText;
+    this.textOptions = new VRTextOptions();
+    this.textOptions.initDict(dict.textOptions);
+  }
+
   this.getJumpElement = function() {
     var elm = document.createElement('jump');
     elm.setAttribute('sphereParams',this.textureDescription.getSphereParamsString());

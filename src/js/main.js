@@ -16,6 +16,7 @@
 
 var StoryParser = require('./VRStoryParser.js');
 var VRURLParser = require('./VRURLParser.js');
+var VRStoryManager = require('./VRStoryManager.js');
 
 var domReady = require('../js-ext/domready.js')
 
@@ -108,3 +109,5 @@ ga('create', 'UA-73312245-1', 'auto');
 ga('send', 'pageview');
 
 var storyParser = StoryParserFactory.getInstance();
+
+module.exports = VRStoryManager;

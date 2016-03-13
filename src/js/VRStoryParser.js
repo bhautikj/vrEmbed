@@ -18,7 +18,7 @@ var VRStoryManager = require('./VRStoryManager.js');
 var VRStory = require('./VRStory.js');
 
 StoryParser = function () {
-  this.storyManager = new VRStoryManager();
+  this.storyManager = VRStoryManager;
   this.storyManager.init();
 
   this.parseDocXML = function(topElement) {

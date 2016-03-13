@@ -33,6 +33,16 @@ VRTextOptions = function () {
     this.textColor = elm.getAttribute("textcolor");
   }
 
+  this.initDict = function(dict) {
+    this.align = dict.align;
+    this.fontface = dict.fontface;
+    this.fontsize = dict.fontsize;
+    this.borderThickness = dict.borderthickness;
+    this.borderColor = dict.bordercolor;
+    this.backgroundColor = dict.backgroundcolor;
+    this.textColor = dict.textcolor;
+  }
+
   this.setElement = function(elm) {
     if (this.align!=null)
       elm.setAttribute("align", this.align);

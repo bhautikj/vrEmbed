@@ -20,7 +20,7 @@ VRScenePhoto = function() {
   this.scenePhoto = null;
   this.textureDescription = null;
 
-  this.parseStereoString = function(str) {
+  this.parseBoolString = function(str) {
     if (str==undefined)
       return false;
     if (str.toLowerCase()=="true")
@@ -40,12 +40,18 @@ VRScenePhoto = function() {
     }
 
     this.textureDescription.metaSource = "";
-    this.textureDescription.isStereo = this.parseStereoString(this.scenePhoto.getAttribute("isStereo"));
+    this.textureDescription.isStereo = this.parseBoolString(this.scenePhoto.getAttribute("isStereo"));
+    this.textureDescription.plane = this.parseBoolString(this.scenePhoto.getAttribute("plane"));
     this.textureDescription.setSphereParamsFromString(this.scenePhoto.getAttribute("sphereParams"));
 
     if (this.isStereo())
       this.textureDescription.setTexParamsFromString(this.scenePhoto.getAttribute("texParams"));
   };
+
+  this.initDict = function(dict) {
+    this.textureDescription = new VRTextureDescription();
+    this.textureDescription.initDict(dict.textureDescription);
+  }
 
   this.initFromURL = function(urlDict) {
     this.textureDescription = new VRTextureDescription();
@@ -61,7 +67,8 @@ VRScenePhoto = function() {
     else
       this.textureDescription.metaSource = "";
 
-    this.textureDescription.isStereo = this.parseStereoString(urlDict["isStereo"]);
+    this.textureDescription.isStereo = this.parseBoolString(urlDict["isStereo"]);
+    this.textureDescription.plane = this.parseBoolString(urlDict["plane"]);
 
     if (urlDict["sphereParams"] != undefined)
       this.textureDescription.setSphereParamsFromString(urlDict["sphereParams"]);
@@ -77,6 +84,11 @@ VRScenePhoto = function() {
   this.populateElementCommon = function(elm) {
     elm.setAttribute('src', this.textureDescription.getAbsoluteTexturePath());
     elm.setAttribute('sphereParams',this.textureDescription.getSphereParamsString());
+    if (this.isPlane() == false)
+      elm.setAttribute('plane', 'false')
+    else
+      elm.setAttribute('plane', 'true')
+
     if (this.isStereo() == false) {
       elm.setAttribute('isStereo', 'false');
       return;
@@ -88,6 +100,10 @@ VRScenePhoto = function() {
 
   this.isStereo = function() {
     return this.textureDescription.isStereo;
+  }
+
+  this.isPlane = function() {
+    return this.textureDescription.plane;
   }
 
   this.getPhotoElement = function() {
@@ -112,6 +128,12 @@ VRScenePhoto = function() {
     } else {
       outstr += "&isStereo=true";
       outstr += "&texParams="+this.textureDescription.getTexParamsString();
+    }
+
+    if(this.isPlane() == false) {
+      outstr += "&plane=false";
+    } else {
+      outstr += "&plane=true";
     }
     return outstr;
   }

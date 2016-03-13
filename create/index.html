@@ -1,0 +1,486 @@
+
+<!--
+  Copyright 2015 Bhautik J Joshi
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ -->
+
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+
+   <!-- Basic Page Needs
+   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+   <meta charset="utf-8">
+   <title>vrEmbed by Bhautik Joshi</title>
+   <meta name="description" content="vrEmbed.org">
+   <meta name="author" content="Bhautik Joshi">
+   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, shrink-to-fit=no">
+   <meta name="mobile-web-app-capable" content="yes">
+   <meta name="apple-mobile-web-app-capable" content="yes" />
+   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+   <!-- FONT
+   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+   <link href='//fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
+
+   <!-- CSS
+   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+   <link rel="stylesheet" href="../css/normalize.css">
+   <link rel="stylesheet" href="../css/skeleton.css">
+   <link rel="stylesheet" href="../css/custom.css">
+
+   <!-- Favicon
+   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+   <link rel="icon" type="image/png" href="../src/assets/vrEmbedLogo_32.png">
+
+ </head>
+
+<body>
+
+<div class="container" id="mode_pick_bar">
+  <div class="row accordionbar">
+    <div class="ten columns">
+      <a class="button button-primary" id="mode_pick_button">-</a>&nbsp;Choose mode
+    </div>
+  </div>
+</div>
+<div class="container" id="mode_pick">
+  <div class="row">
+    <div class="three columns">
+      <h5>One image quick:</h5>
+    </div>
+    <div class="five columns">
+      <input class="textBox numberinputwide" id="oneImage" type="text"/>
+    </div>
+    <div class="four columns">
+      <input class="button-primary" type="submit" value="Go" id="modeOneImage">
+    </div>
+  </div>
+  <div class="row">
+    <div class="eight columns">
+      <h5>New Story:</h5>
+    </div>
+    <div class="four columns">
+      <input class="button-primary" type="submit" value="Go" id="modeNewStory">
+    </div>
+  </div>
+  <div class="row">
+    <div class="three columns">
+      <h5>Edit existing story:</h5>
+    </div>
+    <div class="five columns">
+      <input class="textBox numberinputwide" id="existingStory" type="text"/>
+    </div>
+    <div class="four columns">
+      <input class="button-primary" type="submit" value="Go" id="modeExistingStory">
+    </div>
+  </div>
+</div>
+
+<div class="container" id="manage_scenes_bar">
+  <div class="row accordionbar">
+    <div class="ten columns">
+      <a class="button button-primary" id="manage_scenes_button">-</a>&nbsp;Add/remove scenes
+    </div>
+  </div>
+</div>
+<div class="container" id="manage_scenes">
+  <div class="row">
+    <div class="twelve columns">
+      <h3>Scenes:</h3>
+    </div>
+  </div>
+  <div class="row">
+    <div class="four columns alignright">
+      <select id="sceneSelect" class="numberinputwide"></select>
+    </div>
+    <div class="three columns">
+      <input class="button-primary" type="submit" value="Add" id="addScene">
+    </div>
+    <div class="three columns">
+      <input class="button-primary" type="submit" value="Remove" id="removeScene">
+    </div>
+  </div>
+  <div class="row">
+    <div class="twelve columns">
+      <h4>Scene setup:</h4>
+    </div>
+  </div>
+  <div class="row">
+    <div class="four columns">
+      <h5>Scene name:</h5>
+    </div>
+    <div class="four columns">
+      <input class="textBox" id="sceneName" type="text"/>
+    </div>
+  </div>
+</div>
+
+<div class="container" id="manage_scene_objects_bar">
+  <div class="row accordionbar">
+    <div class="ten columns">
+      <a class="button button-primary" id="manage_scene_objects_button">-</a>&nbsp;Add/select scene objects
+    </div>
+  </div>
+</div>
+<div class="container" id="manage_scene_objects">
+    <div class="row">
+      <div class="twelve columns">
+        <h3>Scene objects:</h3>
+      </div>
+    </div>
+    <div class="row">
+    <div class="four columns">
+      <input class="button-primary" type="submit" value="Add Image" id="addImage">
+    </div>
+    <div class="four columns">
+      <input class="button-primary" type="submit" value="Add Text" id="addText">
+    </div>
+    <div class="four columns">
+      <input class="button-primary" type="submit" value="Add Jump" id="addJump">
+    </div>
+  </div>
+  <div class="row">
+    <div class="six columns">
+      <select id="elementSelect" class="numberinputwide"></select>
+    </div>
+    <div class="six columns">
+      <input class="button-primary" type="submit" value="Remove" id="removeElement">
+    </div>
+  </div>
+</div>
+
+<div class="container" id="setup_scene_object_bar">
+  <div class="row accordionbar">
+    <div class="ten columns">
+      <a class="button button-primary" id="setup_scene_object_button">-</a>&nbsp;Setup scene objects
+    </div>
+  </div>
+</div>
+<div class="container" id="setup_scene_object">
+  <span id="options_text">
+    <div class="row">
+      <div class="two columns alignright">
+        Text:
+      </div>
+      <div class="ten columns">
+        <input class="textBox inputnumberwide" id="textMessage" type="text"/>
+      </div>
+    </div>
+  </span>
+  <span id="options_jump">
+    <div class="row">
+      <div class="two columns alignright">
+        Jump to:
+      </div>
+      <div class="four columns">
+        <input class="textBox inputnumberwide" id="jumpTo" type="text"/>
+      </div>
+      <div class="two columns alignright">
+        Jump text:
+      </div>
+      <div class="four columns">
+        <input class="textBox inputnumberwide" id="jumpText" type="text"/>
+      </div>
+    </div>
+  </span>
+  <span id="options_text_common">
+    <div class="row">
+      <div class="one column alignright">
+        Font align:
+      </div>
+      <div class="two columns">
+        <select id="fontAlign">
+          <option value="left">left</option>
+          <option value="left">center</option>
+          <option value="right">right</option>
+        </select>
+      </div>
+      <div class="one column alignright">
+        Font face:
+      </div>
+      <div class="two columns">
+        <select id="fontFace">
+          <option value="Arial">Arial</option>
+          <option value="Times">Times</option>
+          <option value="Courier">Courier</option>
+        </select>
+      </div>
+      <div class="one column alignright">
+        Font size:
+      </div>
+      <div class="two columns">
+        <select id="fontSize">
+          <option value="8">8</option>
+          <option value="10">10</option>
+          <option value="12">12</option>
+          <option value="18">18</option>
+          <option value="24">24</option>
+          <option value="32">32</option>
+          <option value="72">72</option>
+          <option value="96">96</option>
+          <option value="128">128</option>
+        </select>
+      </div>
+      <div class="one column alignright">
+        Border thickness:
+      </div>
+      <div class="two columns">
+        <select id="borderThickness">
+          <option value="0">0</option>
+          <option value="2">2</option>
+          <option value="4">4</option>
+          <option value="8">8</option>
+          <option value="12">12</option>
+          <option value="16">16</option>
+          <option value="20">20</option>
+          <option value="24">24</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="two columns alignright">
+        Border color:
+      </div>
+      <div class="two columns">
+        <input class="textBox" id="borderColor" type="text"/>
+      </div>
+      <div class="two columns alignright">
+        Background color:
+      </div>
+      <div class="two columns">
+        <input class="textBox" id="backgroundColor" type="text"/>
+      </div>
+      <div class="two columns alignright">
+        Text color:
+      </div>
+      <div class="two columns">
+        <input class="textBox" id="textColor" type="text"/>
+      </div>
+    </div>
+  </span>
+  <span id="options_image_load">
+    <div class="row">
+      <div class="two columns alignright">
+        Image:
+      </div>
+      <div class="twelve columns">
+        <input class="textBox inputnumberwide" id="imageURL" type="text" required/>
+        <input class="button-primary" type="submit" value="Load" id="loadImage">
+      </div>
+      <div class="twelve columns">
+        <canvas id="imagePreviewCanvas" style="display:block; position: relative; min-width:200px; width:100%; height:200px"></canvas>
+      </div>
+    </div>
+  </span>
+  <span id="options_position">
+    <div class="row">
+      <div class="two columns alignright">
+        Width:
+      </div>
+      <div class="two columns">
+        <input type="range" name="hFov" min="0" max="360" id="hfov" class="numberinputwide">
+      </div>
+      <div class="two columns">
+        <input type="number" class="numberinputwide" id="hfov_t">
+      </div>
+      <div class="two columns alignright">
+        Height:
+      </div>
+      <div class="two columns">
+        <input type="range" name="vFov" min="0" max="180" id="vfov" class="numberinputwide">
+      </div>
+      <div class="two columns">
+        <input type="number" class="numberinputwide" id="vfov_t">
+      </div>
+    </div>
+    <div class="row">
+      <div class="two columns alignright">
+        left-right:
+      </div>
+      <div class="two columns">
+        <input type="range" name="xPos" min="-180" max="180" id="xpos" class="numberinputwide">
+      </div>
+      <div class="two columns">
+        <input type="number" class="numberinputwide" id="xpos_t">
+      </div>
+      <div class="two columns alignright">
+        up-down:
+      </div>
+      <div class="two columns">
+        <input type="range" name="yPos" min="-90" max="90" id="ypos" class="numberinputwide">
+      </div>
+      <div class="two columns">
+        <input type="number" class="numberinputwide" id="ypos_t">
+      </div>
+    </div>
+  </span>
+  <span id="options_position_3d">
+    <div class="row">
+      <div class="one column alignright">
+        Is 3D?
+      </div>
+      <div class="one column">
+        <input type="checkbox" id="isStereo">
+      </div>
+    </div>
+    <span id="options_stereo">
+
+      <div class="row">
+        <div class="three columns alignright">
+          Left image top-left (x,y):
+        </div>
+        <div class="two columns">
+          <input type="range" name="U_l_x" min="0.0" max="1.0" step="0.01" id="U_l_x" class="numberinputwide">
+        </div>
+        <div class="two columns">
+          <input type="number" class="numberinputwide" step="any" id="U_l_x_t">
+        </div>
+        <div class="two columns">
+          <input type="range" name="U_l_y" min="0.0" max="1.0" step="0.01" id="U_l_y" class="numberinputwide">
+        </div>
+        <div class="two columns">
+          <input type="number" class="numberinputwide" step="any" id="U_l_y_t">
+        </div>
+      </div>
+      <div class="row">
+        <div class="three columns alignright">
+          Left image bottom-right (x,y):
+        </div>
+        <div class="two columns">
+          <input type="range" name="V_l_x" min="0.0" max="1.0" step="0.01" id="V_l_x" class="numberinputwide">
+        </div>
+        <div class="two columns">
+          <input type="number" class="numberinputwide" step="any" id="V_l_x_t">
+        </div>
+        <div class="two columns">
+          <input type="range" name="V_l_y" min="0.0" max="1.0" step="0.01" id="V_l_y" class="numberinputwide">
+        </div>
+        <div class="two columns">
+          <input type="number" class="numberinputwide" step="any" id="V_l_y_t">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="three columns alignright">
+          Right image top-left (x,y):
+        </div>
+        <div class="two columns">
+          <input type="range" name="U_r_x" min="0.0" max="1.0" step="0.01" id="U_r_x" class="numberinputwide">
+        </div>
+        <div class="two columns">
+          <input type="number" class="numberinputwide" id="U_r_x_t">
+        </div>
+        <div class="two columns">
+          <input type="range" name="U_r_y" min="0.0" max="1.0" step="0.01" id="U_r_y" class="numberinputwide">
+        </div>
+        <div class="two columns">
+          <input type="number" class="numberinputwide" id="U_r_y_t">
+        </div>
+      </div>
+      <div class="row">
+        <div class="three columns alignright">
+          Right image bottom-right (x,y):
+        </div>
+        <div class="two columns">
+          <input type="range" name="V_r_x" min="0.0" max="1.0" step="0.01" id="V_r_x" class="numberinputwide">
+        </div>
+        <div class="two columns">
+          <input type="number" class="numberinputwide" id="V_r_x_t">
+        </div>
+        <div class="two columns">
+          <input type="range" name="V_r_y" min="0.0" max="1.0" step="0.01" id="V_r_y" class="numberinputwide">
+        </div>
+        <div class="two columns">
+          <input type="number" class="numberinputwide" id="V_r_y_t">
+        </div>
+      </div>
+
+    </span>
+  </span>
+
+  <span id="options_planar">
+    <div class="row">
+      <div class="one column alignright">
+        Planar projection?
+      </div>
+      <div class="one column">
+        <input type="checkbox" id="isPlane">
+      </div>
+    </div>
+  </span>
+</div>
+
+<div class="container" id="preview_dummy_bar">
+  <div class="row accordionbar">
+    <div class="ten columns">
+      <a class="button button-primary" id="preview_dummy_button">-</a>&nbsp;Preview
+    </div>
+  </div>
+</div>
+<div class="container" id="preview_dummy"></div>
+<div class="container" id="previewEmbed">
+  <div class="row">
+    <div class="twelve columns">
+      <div class="stretchy-wrapper greybg"><div>
+          <story>
+          </story>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<div class="container" id="export_bar">
+  <div class="row accordionbar">
+    <div class="ten columns">
+      <a class="button button-primary" id="export_button">-</a>&nbsp;Export/share
+    </div>
+  </div>
+</div>
+<div class="container" id="export">
+  <div class="row">
+    <div class="twelve columns aligncenter" id="singleShare">
+      <a href="" class="button button-primary" target="_blank" id="shareURL">Shareable URL</a><br/>
+      <a href="" class="button button-primary" target="_blank" id="shareReddit">Share to reddit</a><br/>
+      <a href="" class="button button-primary" target="_blank" id="shareFacebook">Share to facebook</a><br/>
+      <a href="" class="button button-primary" target="_blank" id="shareTwitter">Share to twitter</a><br/>
+      <a href="" class="button button-primary" target="_blank" id="shareGplus">Share to Google plus</a><br/>
+    </div>
+  </div>
+  <div class="row">
+    <div class="four columns alignright">
+      <h5>Embed code:</h5>
+    </div>
+    <div class="eight columns">
+      <input type="text" class="numberinputwide" id="shareEmbedCode">
+    </div>
+  </div>
+  <div class="row">
+    <div class="twelve columns aligncenter">
+      <input class="button-primary" type="submit" value="Download Equirectangular Scene" id="exportEquirectangularButton">
+    </div>
+  </div>
+
+</div>
+
+
+<script src="../vrEmbed.min.js"></script>
+<script src="../bin/vrCreate.js"></script>
+<script>
+var vrCreateUI = new VRCreateUI();
+vrCreateUI.init(vrEmbed);
+</script>
+
+</body>
+</html>
