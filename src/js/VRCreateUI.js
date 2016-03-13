@@ -2,8 +2,8 @@ var VRScene = require('./VRScene.js');
 var VRUINumberSlider = require('./VRUINumberSlider.js');
 var VRUIAccordionStacker = require('./VRUIAccordionStacker.js');
 var VRSceneDict = require('./VRSceneDict.js');
-var VRStoryDict = require('./VRStoryDict.js');
 var VRUISceneList = require('./VRUISceneList.js');
+var VRStoryDict = require('./VRStoryDict.js');
 
 VRCreateUI = function() {
   var self=this;
@@ -422,9 +422,6 @@ VRCreateUI = function() {
     for (i = 0; i < self.sceneList.scenes.length; i++) {
       self.getStory().sceneList.push(self.sceneList.scenes[i].vrScene);
     }
-
-    console.log("pushFromDictToRender");
-
     var scene = self.sceneList.scenes[self.sceneSelect.value];
     self.getStory().sceneList[self.sceneSelect.value].initDict(scene.dict);
     self.getStory().setupScene(self.sceneSelect.value);
@@ -566,6 +563,17 @@ VRCreateUI = function() {
       return;
     }
 
+    var storyString = self.existingStory.value;
+    var vrStoryDict = new VRStoryDict();
+    var sceneDicts = vrStoryDict.init(storyString);
+
+    if (sceneDicts==null)
+      return;
+
+    self.sceneList.scenes = sceneDicts;
+    self.sceneList.sceneIdx = 0;
+    self.updateSceneListDropdown();
+    self.populateGUIFromSceneDict(0);
 
     self.stackerEditFull();
   }
