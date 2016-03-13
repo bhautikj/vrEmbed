@@ -5,6 +5,51 @@ var VRSceneDict = require('./VRSceneDict.js');
 var VRUISceneList = require('./VRUISceneList.js');
 var VRStoryDict = require('./VRStoryDict.js');
 
+var getFlickrImage = function(urlf, callbackFunc) {
+  var photo_id=null;
+
+  var spl = urlf.split('/');
+  for (i=0;i<spl.length;i++) {
+    if (spl[i]=="photos") {
+      if ((i+2)<spl.length) {
+        photo_id = spl[i+2];
+        break;
+      }
+    }
+  }
+
+  if (photo_id==null) {
+    return false;
+  }
+
+  var flickrAPI = "";
+  flickrAPI += "https://api.flickr.com/services/rest/?";
+  flickrAPI += "&method=flickr.photos.getSizes";
+  flickrAPI += "&api_key=c074e17f92ea52a8d9422928352b0053";
+  flickrAPI += "&photo_id=" + photo_id;
+  flickrAPI += "&format=json";
+  flickrAPI += "&nojsoncallback=1";
+
+  var xhr= new XMLHttpRequest();
+  xhr.open("GET",flickrAPI,true);   //
+  xhr.send();
+  xhr.onreadystatechange=function(){
+    if(xhr.readyState==4 && xhr.status==200) {
+      var myArray = JSON.parse(xhr.responseText);
+      var sizes = myArray.sizes.size;
+      var useMe = 0;
+      var maxWidth = 0;
+      for (i=0; i<sizes.length; i++) {
+        if(sizes[i].width <= 2048 && sizes[i].width>maxWidth){
+          maxWidth = sizes[i].width;
+          useMe = i;
+        }
+      }
+      callbackFunc(sizes[useMe].source);
+    }
+  };
+};
+
 VRCreateUI = function() {
   var self=this;
   this.firstRun = true;
@@ -547,10 +592,20 @@ VRCreateUI = function() {
       return;
     }
 
+    var imgURL = self.oneImage.value;
+    // oh no, its a flickr photo id
+    if (imgURL.indexOf('flickr.com/photos')!=-1) {
+      getFlickrImage(imgURL, self.loadModeOneImage)
+    } else {
+      self.loadModeOneImage(imgURL);
+    }
+  }
+
+  this.loadModeOneImage = function(imgURL) {
     // setup scene with one image
     var scene = self.sceneList.scenes[self.sceneSelect.value];
     scene.addPhoto();
-    scene.dict.photoObjects[0].textureDescription.src = self.oneImage.value;
+    scene.dict.photoObjects[0].textureDescription.src = imgURL;
     self.populateGUIFromSceneDict(self.sceneSelect.value);
     self.elementSelect.value = "photo_" + (scene.dict.photoObjects.length - 1);
     self.selectElement();
