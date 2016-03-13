@@ -33,8 +33,8 @@ var createDialogTextStyle = function(t) {
 function VROptionsCore() {
   var self = this;
   this.vrDeviceManager = VRDeviceManager;
-  this.deviceButtons = [];
   this.story = null;
+  this.headsetSelector = null;
 
   this.init = function() {
     this.dialog = document.createElement('div');
@@ -98,77 +98,42 @@ function VROptionsCore() {
     this.dialogText.innerHTML = tex;
   }
 
-  this.createRadio = function(objDiv){
+  this.createHeadsetSelector = function(objDiv) {
     var devices = this.vrDeviceManager.getDeviceList();
+    var selector = document.createElement("select");
     for(deviceit = 0;deviceit<devices.length; deviceit++) {
       var deviceName = devices[deviceit];
       var device = this.vrDeviceManager.getDevice(deviceName);
-
-      var radioButton = document.createElement("input");
-      radioButton.type = "radio";
-      radioButton.name = "deviceSelector";
-      radioButton.id = "device" + deviceit;
-      radioButton.value = deviceName;
-      radioButton.addEventListener("click", this.radioClick);
-
-      //var deviceLabelText = '<img src=' + device.icon + ' width=100px"/>' + ;
-      var radioImgNode = document.createElement("img");
-      radioImgNode.setAttribute('src', device.icon);
-      radioImgNode.setAttribute('height', '10px');
+      var opt = document.createElement("option");
+      opt.value = deviceName;
+      // var radioImgNode = document.createElement("img");
+      // radioImgNode.setAttribute('src', device.icon);
+      // radioImgNode.setAttribute('height', '10px');
+      // opt.appendChild(radioImgNode);
       var radioTextNode = document.createTextNode(device.name);
-
-      var radioLabel = document.createElement("label");
-      radioLabel.style.margin = 0;
-      radioLabel.style.padding = "0px";
-      radioLabel.htmlFor = radioButton.id;
-      radioLabel.appendChild(radioImgNode);
-      radioLabel.appendChild(radioButton);
-      radioLabel.appendChild(radioTextNode);
-      // radioLabel.appendChild(document.createElement("br"));
-
-      this.deviceButtons[deviceName] = [radioButton, radioLabel];
-
-      objDiv.appendChild(radioLabel);
+      opt.appendChild(radioTextNode);
+      selector.appendChild(opt);
     }
-  }
+    objDiv.appendChild(selector);
 
-  this.radioClick = function() {
-    // console.log("BLERGH");
-    self.syncManagerToDeviceButtons();
+    selector.onchange = this.syncManagerToDeviceButtons;
+    this.headsetSelector = selector;
   }
 
   this.syncDeviceButtonsToManager = function() {
-    var currentDevice = this.vrDeviceManager.currentDeviceName;
-    //console.log(currentDevice.name);
-    for (var key in this.deviceButtons) {
-      if (key === 'length' || !this.deviceButtons.hasOwnProperty(key)) continue;
-
-      //console.log(this.vrDeviceManager.getDevice(key).name, currentDevice.name);
-      if (key == currentDevice){
-        this.deviceButtons[key][0].checked = true;
-        //this.deviceButtons[key][1].style.border = "2px solid #F00";
-      }
-      else
-        this.deviceButtons[key][0].checked = false;
-        //this.deviceButtons[key][1].style.border = "2px solid transparent";
-    }
+    var currentDevice = self.vrDeviceManager.currentDeviceName;
+    self.headsetSelector.value = currentDevice;
   }
 
   this.syncManagerToDeviceButtons = function() {
-    for (var key in this.deviceButtons) {
-      if (key === 'length' || !this.deviceButtons.hasOwnProperty(key)) continue;
-        if (this.deviceButtons[key][0].checked == true) {
-          this.vrDeviceManager.setCurrentDevice(key);
-          break;
-        }
-    }
+    self.vrDeviceManager.setCurrentDevice(self.headsetSelector.value);
   }
 
   this.setupDialogDevices = function() {
     var tex = "";
     tex += '<span style="font-size:120%">Scroll to browse & select Device:<br/>';
     this.dialogDevices.innerHTML = tex;
-    this.createRadio(this.dialogDevices);
+    this.createHeadsetSelector(this.dialogDevices);
     this.syncDeviceButtonsToManager();
   }
 
