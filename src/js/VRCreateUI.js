@@ -53,6 +53,8 @@ VRCreateUI = function() {
   this.existingStory = null;
   this.modeExistingStory = null;
 
+  this.exportEquirectangularButton = null;
+
   this.getStory = function() {
     if (self.storyManager.storyList != [])
       return this.storyManager.storyList[0];
@@ -603,8 +605,20 @@ VRCreateUI = function() {
     document.getElementById('shareEmbedCode').value = embedCode;
   }
 
-  this.showShare = function() {
-    // self.getStory().vrOptions.options.showDialogShare(this.getShareCodes());
+  this.downloadURI = function(uri, name) {
+    var link = document.createElement("a");
+    link.download = name;
+    link.href = uri;
+    link.click();
+  }
+
+  this.exportEquirectangular = function() {
+    var imgData = self.getStory().createImageFromSphereTexture();
+    self.downloadURI(imgData, "exportEquirectangularTex.png");
+
+    // var img = new Image();
+    // img.src = canvas.toDataURL();
+    // return img;
   };
 
 
@@ -748,6 +762,11 @@ VRCreateUI = function() {
     modeNewStory.onclick = this.tryModeNewStory;
     modeExistingStory.onclick = this.tryModeExistingStory;
     this.oneImage.value = "http://vrembed.org/src/assets/vrEmbedLogo.png";
+
+
+    this.exportEquirectangularButton = document.getElementById("exportEquirectangularButton");
+    this.exportEquirectangularButton.onclick = this.exportEquirectangular;
+
 
     this.initObjectPanel();
 

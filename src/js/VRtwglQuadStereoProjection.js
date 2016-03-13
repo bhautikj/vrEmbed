@@ -322,6 +322,10 @@ VRtwglQuadStereoProjection = function() {
     self.vrtwglQuad.resetViewport();
   }
 
+  this.createImageFromSphereTexture = function() {
+    return this.vrtwglQuadFb.createImageFromTexture();
+  }
+
   this.renderGui = function() {
     if (this.vrGui == null) {
       console.log("ERROR: trying to render before gui is ready");

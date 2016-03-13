@@ -145,6 +145,10 @@ VRStory = function() {
     this.quad.resize();
   };
 
+  this.createImageFromSphereTexture = function() {
+    return this.quad.createImageFromSphereTexture();
+  }
+
   this.isInViewport = function() {
     var canvas = this.quad.getDrawCanvas();
     var rect = canvas.getBoundingClientRect();
