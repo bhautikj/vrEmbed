@@ -310,10 +310,11 @@ VRStory = function() {
 
     for (objit = 0;objit<recticleList.length; objit++){
       var reticle = recticleList[objit];
+      var actionTransparency = actionPercent*0.6 + 0.4;
       // draw aiming reiticle
       ctx.beginPath();
       ctx.lineWidth = 6;
-      ctx.strokeStyle = "rgba(255,255,255,0.8)";
+      ctx.strokeStyle = "rgba(255,255,255," + actionTransparency +")";
       ctx.arc(reticle[0],reticle[1],15,0,2*Math.PI);
       ctx.stroke();
 
