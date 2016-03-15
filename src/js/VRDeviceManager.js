@@ -169,13 +169,14 @@ VRDevices = {
   },
 };
 
-var calculateIPDAdjust = function(device, handset) {
+var calculateIPDAdjust = function(device, handset, useradj) {
   var lensIPD = device.ipd;
   var screenWidth = handset.width;
   if (lensIPD<0 || screenWidth<0)
     return 0;
-  var ipdAdjust = (lensIPD*0.5-screenWidth*0.25)/(screenWidth*0.5);
-  console.log(ipdAdjust);
+
+  var userOffset = useradj/(screenWidth*0.5);
+  var ipdAdjust = (lensIPD*0.5-screenWidth*0.25)/(screenWidth*0.5) + userOffset;
   return ipdAdjust;
 }
 
@@ -199,6 +200,8 @@ VRDeviceManager = function() {
   this.currentHandsetName = "Desktop";
   this.currentHandset = VRHandsets[this.currentHandsetName];
   this.windowedHandset = VRDevices["Desktop"];
+  this.userIPDOffset = 0;
+
 
   this.useLocalStorage = true;
   this.localDict = null;
@@ -210,11 +213,11 @@ VRDeviceManager = function() {
 
     var setCookie = this.getCookie();
     if (setCookie!=null) {
-      console.log(setCookie.keys);
       this.currentDeviceName = setCookie.device;
       this.currentDevice = VRDevices[this.currentDeviceName];
       this.currentHandsetName = setCookie.handset;
       this.currentHandset = VRHandsets[this.currentHandsetName];
+      this.userIPDOffset = setCookie.userIPDOffset;
     }
   }
 
@@ -225,7 +228,8 @@ VRDeviceManager = function() {
 
   this.flushToCookie = function() {
     var displayDict = { device: this.currentDeviceName,
-                        handset: this.currentHandsetName };
+                        handset: this.currentHandsetName,
+                        userIPDOffset: this.userIPDOffset };
     this.setCookie(displayDict);
   }
 
@@ -238,6 +242,7 @@ VRDeviceManager = function() {
     var storage = window.localStorage;
     storage.vrEmbedDict_device = displayDict.device;
     storage.vrEmbedDict_handset = displayDict.handset;
+    storage.vrEmbedDict_userIPDOffset = displayDict.userIPDOffset;
   }
 
   this.getCookie = function() {
@@ -246,11 +251,14 @@ VRDeviceManager = function() {
     }
 
     var storage = window.localStorage;
-    if (storage.vrEmbedDict_device == undefined || storage.vrEmbedDict_handset == undefined){
+    if (storage.vrEmbedDict_device == undefined ||
+        storage.vrEmbedDict_handset == undefined ||
+        storage.vrEmbedDict_userIPDOffset == undefined ){
       return null;
     } else {
       var displayDict = { device: storage.vrEmbedDict_device,
-                          handset: storage.vrEmbedDict_handset };
+                          handset: storage.vrEmbedDict_handset,
+                          userIPDOffset: storage.vrEmbedDict_userIPDOffset };
       return displayDict;
     }
   }
@@ -281,6 +289,11 @@ VRDeviceManager = function() {
     return VRHandsets[handsetName];
   }
 
+  this.setUserIPDOffset = function(ipdOfs) {
+    this.userIPDOffset = ipdOfs;
+    this.flushToCookie();
+  }
+
   this.setCurrentDevice = function(deviceName) {
     this.currentDeviceName = deviceName;
     this.currentDevice = VRDevices[deviceName];
@@ -303,7 +316,7 @@ VRDeviceManager = function() {
   }
 
   this.getCurrentDevice = function() {
-    this.currentDevice.ipdAdjust = calculateIPDAdjust(this.currentDevice, this.currentHandset);
+    this.currentDevice.ipdAdjust = calculateIPDAdjust(this.currentDevice, this.currentHandset, this.userIPDOffset);
     return this.currentDevice;
   }
 
@@ -311,8 +324,6 @@ VRDeviceManager = function() {
     this.currentDevice.ipdAdjust = 0;
     return this.windowedDevice;
   }
-
-
 }
 
 var VRDeviceManagerFactory = (function () {

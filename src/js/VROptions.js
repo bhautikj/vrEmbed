@@ -36,6 +36,8 @@ function VROptionsCore() {
   this.story = null;
   this.headsetSelector = null;
   this.displaySelector = null;
+  this.ipdSlider = null;
+  this.ipdSliderText = null;
 
   this.init = function() {
     this.dialog = document.createElement('div');
@@ -145,17 +147,45 @@ function VROptionsCore() {
     this.displaySelector = selector;
   }
 
+  this.createUserOffsetSlider = function(objDiv) {
+    // <input type="range" name="hFov" min="0" max="360" id="hfov" class="numberinputwide">
+    var slider = document.createElement("input");
+    slider.type = 'range';
+    slider.min = -25;
+    slider.max = 25;
+    slider.style.width = '100px';
+    var sliderTex = document.createTextNode("0mm");
+
+    this.ipdSlider = slider;
+    this.ipdSliderText = sliderTex;
+
+    this.ipdSlider.onchange = this.userIPDChange;
+
+    objDiv.appendChild(document.createTextNode("Adjust eye center: "));
+    objDiv.appendChild(this.ipdSlider);
+    objDiv.appendChild(this.ipdSliderText);
+  }
+
+  this.userIPDChange = function() {
+    self.ipdSliderText.nodeValue = self.ipdSlider.value + "mm";
+  }
+
   this.syncDeviceButtonsToManager = function() {
     var currentDevice = self.vrDeviceManager.currentDeviceName;
     self.headsetSelector.value = currentDevice;
 
     var currentHandset = self.vrDeviceManager.currentHandsetName;
     self.displaySelector.value = currentHandset;
+
+    var userIPDOffset = self.vrDeviceManager.userIPDOffset;
+    self.ipdSlider.value = userIPDOffset;
+    self.ipdSliderText.nodeValue = userIPDOffset + "mm";
   }
 
   this.syncManagerToDeviceButtons = function() {
     self.vrDeviceManager.setCurrentHandset(self.displaySelector.value);
     self.vrDeviceManager.setCurrentDevice(self.headsetSelector.value);
+    self.vrDeviceManager.setUserIPDOffset(self.ipdSlider.value);
   }
 
   this.setupDialogDevices = function() {
@@ -164,6 +194,7 @@ function VROptionsCore() {
     this.dialogDevices.innerHTML = tex;
     this.createHeadsetSelector(this.dialogDevices);
     this.createDisplaySelector(this.dialogDevices);
+    this.createUserOffsetSlider(this.dialogDevices);
     this.syncDeviceButtonsToManager();
   }
 
