@@ -1,21 +1,48 @@
 var VRRenderModes = require('./VRRenderModes.js');
 var VRIcons = require('./VRIcons.js');
 
-VRScreenWidths = {
-  Nexus5 : 110,
-  Nexus6: 133,
-  GalaxyS6: 114,
-  GalaxyNote4: 125,
-  LGG3: 121,
-  iPhone4: 75,
-  iPhone5: 89,
-  iPhone6: 104,
-  iPhone6p: 112,
+VRHandsets = {
+  Desktop : {
+    width: -1,
+    name: "Desktop browser"
+  },
+  Nexus5 : {
+    width: 110,
+    name: "Nexus 5"
+  },
+  Nexus6: {
+    width: 133,
+    name: "Nexus 6"
+  },
+  GalaxyS6: {
+    width: 114,
+    name: "Samsing Galaxy S6"
+  },
+  GalaxyNote4: {
+    width: 125,
+    name: "Samsung Galaxy Note 4"
+  },
+  LGG3: {
+    width: 121,
+    name: "LG G3"
+  },
+  iPhone4: {
+    width: 75,
+    name: "iPhone 4"
+  },
+  iPhone5: {
+    width: 89,
+    name: "iPhone 5"
+  },
+  iPhone6: {
+    width: 104,
+    name: "iPhone 6"
+  },
+  iPhone6p: {
+    width: 112,
+    name: "iPhone 6 plus"
+  },
 };
-
-var calculateIPDAdjust = function(screenWidth, lensIPD) {
-  return 0.05*(lensIPD*0.5-screenWidth*0.25)/(screenWidth*0.25);
-}
 
 // some params via:
 // https://github.com/googlesamples/cardboard-unity/blob/master/Cardboard/Scripts/CardboardProfile.cs
@@ -30,6 +57,7 @@ VRDevices = {
     icon: VRIcons.logoFullscreen,
     // horizontal field-of-view
     hfov: 120,
+    ipd: -1,
     // % of screen width parallax to introduce in stereo
     // 0: no adjstment
     // 0.5: rotation centre moved to far left/right screen edges
@@ -46,6 +74,7 @@ VRDevices = {
     icon: VRIcons.logoAnaglyph,
     // horizontal field-of-view
     hfov: 60,
+    ipd: -1,
     // % of screen width parallax to introduce in stereo
     // 0: no adjstment
     // 0.5: rotation centre moved to far left/right screen edges
@@ -62,10 +91,11 @@ VRDevices = {
     icon: VRIcons.logoCardboard,
     // horizontal field-of-view
     hfov: 60,
+    ipd: 64,
     // % of screen width parallax to introduce in stereo
     // 0: no adjstment
     // 0.5: rotation centre moved to far left/right screen edges
-    ipdAdjust: calculateIPDAdjust(VRScreenWidths.iPhone6p,64),
+    ipdAdjust: 0,
     // lens distortion params: [k1, k2] in k1*r^2 + k2+r^4
     k: [0.34,0.55]
   },
@@ -78,10 +108,11 @@ VRDevices = {
     icon: VRIcons.logoCardboard,
     // horizontal field-of-view
     hfov: 50,
+    ipd: 64,
     // % of screen width parallax to introduce in stereo
     // 0: no adjstment
     // 0.5: rotation centre moved to far left/right screen edges
-    ipdAdjust: calculateIPDAdjust(VRScreenWidths.iPhone6p,64),
+    ipdAdjust: 0,
     // lens distortion params: [k1, k2] in k1*r^2 + k2+r^4
     k: [0.34,0.55]
   },
@@ -94,10 +125,11 @@ VRDevices = {
     icon: VRIcons.logoCardboard,
     // horizontal field-of-view
     hfov: 90,
+    ipd: 60,
     // % of screen width parallax to introduce in stereo
     // 0: no adjstment
     // 0.5: rotation centre moved to far left/right screen edges
-    ipdAdjust: calculateIPDAdjust(VRScreenWidths.GalaxyS6,60),
+    ipdAdjust: 0,
     // lens distortion params: [k1, k2] in k1*r^2 + k2+r^4
     k: [0.215,0.215]
   },
@@ -110,10 +142,11 @@ VRDevices = {
     icon: VRIcons.logoCardboard,
     // horizontal field-of-view
     hfov: 90,
+    ipd: 60,
     // % of screen width parallax to introduce in stereo
     // 0: no adjstment
     // 0.5: rotation centre moved to far left/right screen edges
-    ipdAdjust: calculateIPDAdjust(VRScreenWidths.iPhone6,60),
+    ipdAdjust: 0,
     // lens distortion params: [k1, k2] in k1*r^2 + k2+r^4
     k: [0.093,0.018]
   },
@@ -126,76 +159,108 @@ VRDevices = {
     icon: VRIcons.logoCardboard,
     // horizontal field-of-view
     hfov: 40,
+    ipd: 64,
     // % of screen width parallax to introduce in stereo
     // 0: no adjstment
     // 0.5: rotation centre moved to far left/right screen edges
-    ipdAdjust: calculateIPDAdjust(VRScreenWidths.iPhone5,64),
+    ipdAdjust: 0,
     // lens distortion params: [k1, k2] in k1*r^2 + k2+r^4
     k: [0.441,0.156]
   },
 };
+
+var calculateIPDAdjust = function(device, handset, useradj) {
+  var lensIPD = device.ipd;
+  var screenWidth = handset.width;
+  if (lensIPD<0 || screenWidth<0)
+    return 0;
+
+  var userOffset = useradj/(screenWidth*0.5);
+  var ipdAdjust = (lensIPD*0.5-screenWidth*0.25)/(screenWidth*0.5) + userOffset;
+  return ipdAdjust;
+}
+
+//via: http://stackoverflow.com/questions/14555347/html5-localstorage-error-with-safari-quota-exceeded-err-dom-exception-22-an
+var isLocalStorageNameSupported = function() {
+  var testKey = 'test', storage = window.localStorage;
+  try {
+    storage.setItem(testKey, '1');
+    storage.removeItem(testKey);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
 
 VRDeviceManager = function() {
   this.version = "0.1";
   this.currentDeviceName = "ANAGLYPH";
   this.currentDevice = VRDevices[this.currentDeviceName];
   this.windowedDevice = VRDevices["FULLSCREEN"];
-  this.useLocalStorage = true;
+  this.currentHandsetName = "Desktop";
+  this.currentHandset = VRHandsets[this.currentHandsetName];
+  this.windowedHandset = VRDevices["Desktop"];
+  this.userIPDOffset = 0;
 
-  this.isLocalStorageNameSupported = function() {
-    var testKey = 'test', storage = window.localStorage;
-    try {
-      storage.setItem(testKey, '1');
-      storage.removeItem(testKey);
-      return true;
-    } catch (error) {
-      return false;
-    }
-  }
+
+  this.useLocalStorage = true;
+  this.localDict = null;
 
   this.init = function() {
-    var deviceCookieName = this.version + "_VRDEVICEMANAGER";
-
-    if (!this.isLocalStorageNameSupported()) {
+    if (isLocalStorageNameSupported() == false) {
       this.useLocalStorage = false;
     }
 
-    var setCookie = this.getCookie(deviceCookieName);
-    if (setCookie!="") {
-      this.currentDeviceName = setCookie;
+    var setCookie = this.getCookie();
+    if (setCookie!=null) {
+      this.currentDeviceName = setCookie.device;
       this.currentDevice = VRDevices[this.currentDeviceName];
+      this.currentHandsetName = setCookie.handset;
+      this.currentHandset = VRHandsets[this.currentHandsetName];
+      this.userIPDOffset = setCookie.userIPDOffset;
     }
   }
 
   this.firstTime = function() {
-    var deviceCookieName = this.version + "_VRDEVICEMANAGER";
-    var setCookie = this.getCookie(deviceCookieName);
-    return setCookie=="";
+    var setCookie = this.getCookie();
+    return setCookie==null;
   }
 
   this.flushToCookie = function() {
-    var deviceCookieName = this.version + "_VRDEVICEMANAGER";
-    this.setCookie(deviceCookieName, this.currentDeviceName);
+    var displayDict = { device: this.currentDeviceName,
+                        handset: this.currentHandsetName,
+                        userIPDOffset: this.userIPDOffset };
+    this.setCookie(displayDict);
   }
 
-
-  this.setCookie = function(cname, cvalue) {
-    if (!this.useLocalStorage)
+  this.setCookie = function(displayDict) {
+    if (!this.useLocalStorage) {
+      this.localDict = displayDict;
       return;
+    }
 
     var storage = window.localStorage;
-    storage.cname = cvalue;
+    storage.vrEmbedDict_device = displayDict.device;
+    storage.vrEmbedDict_handset = displayDict.handset;
+    storage.vrEmbedDict_userIPDOffset = displayDict.userIPDOffset;
   }
 
-  this.getCookie = function(cname) {
-    if (!this.useLocalStorage)
-      return "";
+  this.getCookie = function() {
+    if (!this.useLocalStorage) {
+      return this.localDict;
+    }
 
     var storage = window.localStorage;
-    if (storage.cname == undefined)
-      return "";
-    else
-      return storage.cname;
+    if (storage.vrEmbedDict_device == undefined ||
+        storage.vrEmbedDict_handset == undefined ||
+        storage.vrEmbedDict_userIPDOffset == undefined ){
+      return null;
+    } else {
+      var displayDict = { device: storage.vrEmbedDict_device,
+                          handset: storage.vrEmbedDict_handset,
+                          userIPDOffset: storage.vrEmbedDict_userIPDOffset };
+      return displayDict;
+    }
   }
 
   this.getDeviceList = function() {
@@ -207,8 +272,26 @@ VRDeviceManager = function() {
     return deviceList;
   }
 
+  this.getHandsetList = function() {
+    var handsetList = [];
+    for (var key in VRHandsets) {
+      if (key === 'length' || !VRHandsets.hasOwnProperty(key)) continue;
+      handsetList.push(key);
+    }
+    return handsetList;
+  }
+
   this.getDevice = function(deviceName) {
     return VRDevices[deviceName];
+  }
+
+  this.getHandset = function(handsetName) {
+    return VRHandsets[handsetName];
+  }
+
+  this.setUserIPDOffset = function(ipdOfs) {
+    this.userIPDOffset = ipdOfs;
+    this.flushToCookie();
   }
 
   this.setCurrentDevice = function(deviceName) {
@@ -217,11 +300,28 @@ VRDeviceManager = function() {
     this.flushToCookie();
   }
 
+  this.setCurrentHandset = function(handsetName) {
+    this.currentHandsetName = handsetName;
+    this.currentHandset = VRHandsets[handsetName];
+    this.flushToCookie();
+  }
+
+
+  this.getCurrentHandset = function() {
+    return this.currentHandset;
+  }
+
+  this.getWindowedHandset = function() {
+    return this.windowedHandset;
+  }
+
   this.getCurrentDevice = function() {
+    this.currentDevice.ipdAdjust = calculateIPDAdjust(this.currentDevice, this.currentHandset, this.userIPDOffset);
     return this.currentDevice;
   }
 
   this.getWindowedDevice = function() {
+    this.currentDevice.ipdAdjust = 0;
     return this.windowedDevice;
   }
 }

@@ -107,6 +107,8 @@ VRCreateUI = function() {
   this.existingStory = null;
   this.modeExistingStory = null;
 
+  this.oneImageMode = "single";
+
   this.exportEquirectangularButton = null;
 
   this.getStory = function() {
@@ -599,6 +601,7 @@ VRCreateUI = function() {
     self.accordionStacker.totalHide("preview_dummy", false);
     self.accordionStacker.totalHide("export", false);
     self.accordionStacker.showNamed("setup_scene_object");
+    document.getElementById("preview_box").hidden = false;
   }
 
   this.stackerEditFull = function() {
@@ -609,6 +612,7 @@ VRCreateUI = function() {
     self.accordionStacker.totalHide("preview_dummy", false);
     self.accordionStacker.totalHide("export", false);
     self.accordionStacker.showNamed("manage_scenes");
+    document.getElementById("preview_box").hidden = false;
   }
 
   this.stackerInit = function() {
@@ -617,12 +621,30 @@ VRCreateUI = function() {
     self.accordionStacker.totalHide("setup_scene_object", true);
     self.accordionStacker.totalHide("preview_dummy", true);
     self.accordionStacker.totalHide("export", true);
+    document.getElementById("preview_box").hidden = true;
   }
 
   this.tryModeOneImage = function() {
     if (self.oneImage.value == "") {
       return;
     }
+
+    self.oneImageMode = 'single';
+    var imgURL = self.oneImage.value;
+    // oh no, its a flickr photo id
+    if (imgURL.indexOf('flickr.com/photos')!=-1) {
+      getFlickrImage(imgURL, self.loadModeOneImage)
+    } else {
+      self.loadModeOneImage(imgURL);
+    }
+  }
+
+  this.tryMode360Image = function() {
+    if (self.oneImage.value == "") {
+      return;
+    }
+
+    self.oneImageMode = '360';
 
     var imgURL = self.oneImage.value;
     // oh no, its a flickr photo id
@@ -633,11 +655,33 @@ VRCreateUI = function() {
     }
   }
 
+  this.tryModeStereoImage = function() {
+    if (self.oneImage.value == "") {
+      return;
+    }
+
+    self.oneImageMode = 'stereo';
+
+    var imgURL = self.oneImage.value;
+    // oh no, its a flickr photo id
+    if (imgURL.indexOf('flickr.com/photos')!=-1) {
+      getFlickrImage(imgURL, self.loadModeOneImage)
+    } else {
+      self.loadModeOneImage(imgURL);
+    }
+  }
+
+
   this.loadModeOneImage = function(imgURL) {
     // setup scene with one image
     var scene = self.sceneList.scenes[self.sceneSelect.value];
     scene.addPhoto();
     scene.dict.photoObjects[0].textureDescription.src = imgURL;
+    if(self.oneImageMode=='360') {
+      scene.dict.photoObjects[0].textureDescription.sphereFOV=[360,180];
+    } else if (self.oneImageMode=='stereo'){
+      scene.dict.photoObjects[0].textureDescription.isStereo = true;
+    }
     self.populateGUIFromSceneDict(self.sceneSelect.value);
     self.elementSelect.value = "photo_" + (scene.dict.photoObjects.length - 1);
     self.selectElement();
@@ -842,10 +886,14 @@ VRCreateUI = function() {
 
     this.oneImage = document.getElementById("oneImage");
     this.modeOneImage = document.getElementById("modeOneImage");
+    this.mode360Image = document.getElementById("mode360Image");
+    this.modeStereoImage = document.getElementById("modeStereoImage");
     this.modeNewStory = document.getElementById("modeNewStory");
     this.existingStory = document.getElementById("existingStory");
     this.modeExistingStory = document.getElementById("modeExistingStory");
     modeOneImage.onclick = this.tryModeOneImage;
+    mode360Image.onclick = this.tryMode360Image;
+    modeStereoImage.onclick = this.tryModeStereoImage;
     modeNewStory.onclick = this.tryModeNewStory;
     modeExistingStory.onclick = this.tryModeExistingStory;
     this.oneImage.value = "http://vrembed.org/src/assets/vrEmbedLogo.png";
