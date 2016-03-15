@@ -48,6 +48,18 @@
 
 <body>
 
+<div class="container">
+  <div class="row accordionbar">
+    <div class="one columns">
+      <a href="http://vrEmbed.org" target="_blank"><img src="../src/assets/vrEmbedLogo.png" height=38px/></a>
+    </div>
+    <div class="eleven columns">
+      Create or edit a vrEmbed
+    </div>
+  </div>
+  <div class="row">&nbsp;</div>
+</div>
+
 <div class="container" id="mode_pick_bar">
   <div class="row accordionbar">
     <div class="ten columns">
@@ -57,32 +69,51 @@
 </div>
 <div class="container" id="mode_pick">
   <div class="row">
-    <div class="three columns">
-      <h5>One image quick:</h5>
+    <div class="twelve columns">
+      <h5>Paste image location:</h5>
+      Paste in direct link to JPG/PNG (e.g. http://www.foo.com/blah.jpg) or Flickr photo URL (e.g. https://www.flickr.com/photos/foo/131313). Use '<i>single image</i>' if its a smaller image, '<i>360</i>' if its a wraparound panorama and '<i>stereo 3D</i>' if its a left/right stereo image.
     </div>
-    <div class="five columns">
-      <input class="textBox numberinputwide" id="oneImage" type="text"/>
+  </div>
+  <div class="row">&nbsp;</div>
+  <div class="row">
+    <div class="two columns">
+      <b>Paste URL:</b>
     </div>
     <div class="four columns">
-      <input class="button-primary" type="submit" value="Go" id="modeOneImage">
+      <input class="textBox numberinputwide" id="oneImage" type="text"/>
+    </div>
+    <div class="six columns">
+      <input class="button-primary" type="submit" value="Single image" id="modeOneImage">
+      <input class="button-primary" type="submit" value="360" id="mode360Image">
+      <input class="button-primary" type="submit" value="Stereo 3D" id="modeStereoImage">
     </div>
   </div>
   <div class="row">
     <div class="eight columns">
       <h5>New Story:</h5>
     </div>
-    <div class="four columns">
+  </div>
+  <div class="row">
+    <div class="six columns alignright">
+      Create a new vrEmbed story:
+    </div>
+    <div class="six columns">
       <input class="button-primary" type="submit" value="Go" id="modeNewStory">
     </div>
   </div>
   <div class="row">
-    <div class="three columns">
+    <div class="twelve columns">
       <h5>Edit existing story:</h5>
     </div>
-    <div class="five columns">
-      <input class="textBox numberinputwide" id="existingStory" type="text"/>
+  </div>
+  <div class="row">
+    <div class="six columns alignright">
+      Paste the code for an existing vrEmbed story here to edit it:
     </div>
     <div class="four columns">
+      <input class="textBox numberinputwide" id="existingStory" type="text"/>
+    </div>
+    <div class="two columns">
       <input class="button-primary" type="submit" value="Go" id="modeExistingStory">
     </div>
   </div>
@@ -203,7 +234,7 @@
       <div class="two columns">
         <select id="fontAlign">
           <option value="left">left</option>
-          <option value="left">center</option>
+          <option value="center">center</option>
           <option value="right">right</option>
         </select>
       </div>
@@ -273,18 +304,23 @@
   <span id="options_image_load">
     <div class="row">
       <div class="two columns alignright">
-        Image:
+        Image source:
       </div>
-      <div class="twelve columns">
+      <div class="ten columns">
         <input class="textBox inputnumberwide" id="imageURL" type="text" required/>
         <input class="button-primary" type="submit" value="Load" id="loadImage">
       </div>
+    </div>
+    <div class="row">
       <div class="twelve columns">
         <canvas id="imagePreviewCanvas" style="display:block; position: relative; min-width:200px; width:100%; height:200px"></canvas>
       </div>
     </div>
   </span>
   <span id="options_position">
+    <div class="row">
+      Size of image, in degrees:
+    </div>
     <div class="row">
       <div class="two columns alignright">
         Width:
@@ -304,6 +340,9 @@
       <div class="two columns">
         <input type="number" class="numberinputwide" id="vfov_t">
       </div>
+    </div>
+    <div class="row">
+      Position of image, in degrees:
     </div>
     <div class="row">
       <div class="two columns alignright">
@@ -328,15 +367,17 @@
   </span>
   <span id="options_position_3d">
     <div class="row">
-      <div class="one column alignright">
+      <div class="two columns alignright">
         Is 3D?
       </div>
-      <div class="one column">
+      <div class="two columns">
         <input type="checkbox" id="isStereo">
       </div>
     </div>
     <span id="options_stereo">
-
+      <div class="row">
+        Position of left image:
+      </div>
       <div class="row">
         <div class="three columns alignright">
           Left image top-left (x,y):
@@ -371,7 +412,9 @@
           <input type="number" class="numberinputwide" step="any" id="V_l_y_t">
         </div>
       </div>
-
+      <div class="row">
+        Position of left image:
+      </div>
       <div class="row">
         <div class="three columns alignright">
           Right image top-left (x,y):
@@ -412,8 +455,8 @@
 
   <span id="options_planar">
     <div class="row">
-      <div class="one column alignright">
-        Planar projection?
+      <div class="four columns alignright">
+        Project image to plane?
       </div>
       <div class="one column">
         <input type="checkbox" id="isPlane">
@@ -422,6 +465,7 @@
   </span>
 </div>
 
+<span id="preview_box">
 <div class="container" id="preview_dummy_bar">
   <div class="row accordionbar">
     <div class="ten columns">
@@ -440,6 +484,7 @@
     </div>
   </div>
 </div>
+</span>
 
 <div class="container" id="export_bar">
   <div class="row accordionbar">
