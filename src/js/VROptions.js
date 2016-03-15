@@ -35,6 +35,7 @@ function VROptionsCore() {
   this.vrDeviceManager = VRDeviceManager;
   this.story = null;
   this.headsetSelector = null;
+  this.displaySelector = null;
 
   this.init = function() {
     this.dialog = document.createElement('div');
@@ -114,26 +115,55 @@ function VROptionsCore() {
       opt.appendChild(radioTextNode);
       selector.appendChild(opt);
     }
+
+    objDiv.appendChild(document.createTextNode("Select headset: "));
     objDiv.appendChild(selector);
+    objDiv.appendChild(document.createElement("br"));
 
     selector.onchange = this.syncManagerToDeviceButtons;
     this.headsetSelector = selector;
   }
 
+  this.createDisplaySelector = function(objDiv) {
+    var displays = this.vrDeviceManager.getHandsetList();
+    var selector = document.createElement("select");
+    for(deviceit = 0;deviceit<displays.length; deviceit++) {
+      var displayName = displays[deviceit];
+      var display = this.vrDeviceManager.getHandset(displayName);
+      var opt = document.createElement("option");
+      opt.value = displayName;
+      var radioTextNode = document.createTextNode(display.name);
+      opt.appendChild(radioTextNode);
+      selector.appendChild(opt);
+    }
+
+    objDiv.appendChild(document.createTextNode("Select display: "));
+    objDiv.appendChild(selector);
+    objDiv.appendChild(document.createElement("br"));
+
+    selector.onchange = this.syncManagerToDeviceButtons;
+    this.displaySelector = selector;
+  }
+
   this.syncDeviceButtonsToManager = function() {
     var currentDevice = self.vrDeviceManager.currentDeviceName;
     self.headsetSelector.value = currentDevice;
+
+    var currentHandset = self.vrDeviceManager.currentHandsetName;
+    self.displaySelector.value = currentHandset;
   }
 
   this.syncManagerToDeviceButtons = function() {
+    self.vrDeviceManager.setCurrentHandset(self.displaySelector.value);
     self.vrDeviceManager.setCurrentDevice(self.headsetSelector.value);
   }
 
   this.setupDialogDevices = function() {
     var tex = "";
-    tex += '<span style="font-size:120%">Scroll to browse & select Device:<br/>';
+    tex += '<span style="font-size:120%">Setup headset:<br/>';
     this.dialogDevices.innerHTML = tex;
     this.createHeadsetSelector(this.dialogDevices);
+    this.createDisplaySelector(this.dialogDevices);
     this.syncDeviceButtonsToManager();
   }
 
