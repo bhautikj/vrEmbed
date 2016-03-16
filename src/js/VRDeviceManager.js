@@ -175,9 +175,10 @@ var calculateIPDAdjust = function(device, handset, useradj) {
   if (lensIPD<0 || screenWidth<0)
     return 0;
 
-  var userOffset = useradj/(screenWidth*0.5);
-  var ipdAdjust = (lensIPD*0.5-screenWidth*0.25)/(screenWidth*0.5) + userOffset;
-  return ipdAdjust;
+  if (useradj<0)
+    return (lensIPD*0.5-screenWidth*0.25)/(screenWidth*0.5);
+  else
+    return (useradj*0.5-screenWidth*0.25)/(screenWidth*0.5);
 }
 
 //via: http://stackoverflow.com/questions/14555347/html5-localstorage-error-with-safari-quota-exceeded-err-dom-exception-22-an
@@ -200,7 +201,8 @@ VRDeviceManager = function() {
   this.currentHandsetName = "Desktop";
   this.currentHandset = VRHandsets[this.currentHandsetName];
   this.windowedHandset = VRDevices["Desktop"];
-  this.userIPDOffset = 0;
+  this.userIPDOffset = 64;
+  this.overrideIPD = false;
 
 
   this.useLocalStorage = true;
@@ -218,6 +220,7 @@ VRDeviceManager = function() {
       this.currentHandsetName = setCookie.handset;
       this.currentHandset = VRHandsets[this.currentHandsetName];
       this.userIPDOffset = setCookie.userIPDOffset;
+      this.overrideIPD = setCookie.overrideIPD;
     }
   }
 
@@ -229,7 +232,8 @@ VRDeviceManager = function() {
   this.flushToCookie = function() {
     var displayDict = { device: this.currentDeviceName,
                         handset: this.currentHandsetName,
-                        userIPDOffset: this.userIPDOffset };
+                        userIPDOffset: this.userIPDOffset,
+                        overrideIPD: this.overrideIPD };
     this.setCookie(displayDict);
   }
 
@@ -243,6 +247,7 @@ VRDeviceManager = function() {
     storage.vrEmbedDict_device = displayDict.device;
     storage.vrEmbedDict_handset = displayDict.handset;
     storage.vrEmbedDict_userIPDOffset = displayDict.userIPDOffset;
+    storage.vrEmbedDict_overrideIPD = displayDict.overrideIPD;
   }
 
   this.getCookie = function() {
@@ -253,12 +258,14 @@ VRDeviceManager = function() {
     var storage = window.localStorage;
     if (storage.vrEmbedDict_device == undefined ||
         storage.vrEmbedDict_handset == undefined ||
-        storage.vrEmbedDict_userIPDOffset == undefined ){
+        storage.vrEmbedDict_userIPDOffset == undefined ||
+        storage.vrEmbedDict_overrideIPD == undefined ){
       return null;
     } else {
       var displayDict = { device: storage.vrEmbedDict_device,
                           handset: storage.vrEmbedDict_handset,
-                          userIPDOffset: storage.vrEmbedDict_userIPDOffset };
+                          userIPDOffset: storage.vrEmbedDict_userIPDOffset,
+                          overrideIPD: storage.vrEmbedDict_overrideIPD };
       return displayDict;
     }
   }
@@ -289,6 +296,11 @@ VRDeviceManager = function() {
     return VRHandsets[handsetName];
   }
 
+  this.setOverrideIPD = function(override) {
+    this.overrideIPD = override;
+    this.flushToCookie();
+  }
+
   this.setUserIPDOffset = function(ipdOfs) {
     this.userIPDOffset = ipdOfs;
     this.flushToCookie();
@@ -316,7 +328,11 @@ VRDeviceManager = function() {
   }
 
   this.getCurrentDevice = function() {
-    this.currentDevice.ipdAdjust = calculateIPDAdjust(this.currentDevice, this.currentHandset, this.userIPDOffset);
+    if (this.overrideIPD==0)
+      this.currentDevice.ipdAdjust = calculateIPDAdjust(this.currentDevice, this.currentHandset, -1);
+    else
+      this.currentDevice.ipdAdjust = calculateIPDAdjust(this.currentDevice, this.currentHandset, this.userIPDOffset);
+
     return this.currentDevice;
   }
 
