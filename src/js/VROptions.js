@@ -36,6 +36,7 @@ function VROptionsCore() {
   this.story = null;
   this.headsetSelector = null;
   this.displaySelector = null;
+  this.ipdCheckbox = null;
   this.ipdSlider = null;
   this.ipdSliderText = null;
 
@@ -109,10 +110,6 @@ function VROptionsCore() {
       var device = this.vrDeviceManager.getDevice(deviceName);
       var opt = document.createElement("option");
       opt.value = deviceName;
-      // var radioImgNode = document.createElement("img");
-      // radioImgNode.setAttribute('src', device.icon);
-      // radioImgNode.setAttribute('height', '10px');
-      // opt.appendChild(radioImgNode);
       var radioTextNode = document.createTextNode(device.name);
       opt.appendChild(radioTextNode);
       selector.appendChild(opt);
@@ -148,26 +145,38 @@ function VROptionsCore() {
   }
 
   this.createUserOffsetSlider = function(objDiv) {
-    // <input type="range" name="hFov" min="0" max="360" id="hfov" class="numberinputwide">
+    var checkbox = document.createElement("input");
+    checkbox.type = 'checkbox';
+
     var slider = document.createElement("input");
     slider.type = 'range';
-    slider.min = -25;
-    slider.max = 25;
+    slider.min = 50;
+    slider.max = 80;
     slider.style.width = '100px';
     var sliderTex = document.createTextNode("0mm");
 
+    this.ipdCheckbox = checkbox;
     this.ipdSlider = slider;
     this.ipdSliderText = sliderTex;
 
+    this.ipdCheckbox.onchange = this.userIPDChange;
     this.ipdSlider.onchange = this.userIPDChange;
 
-    objDiv.appendChild(document.createTextNode("Adjust eye center: "));
+    objDiv.appendChild(document.createTextNode("Override IPD: "));
+    objDiv.appendChild(this.ipdCheckbox);
     objDiv.appendChild(this.ipdSlider);
     objDiv.appendChild(this.ipdSliderText);
   }
 
   this.userIPDChange = function() {
+    //TODO
+    if (self.ipdCheckbox.checked) {
+      self.setupIPDOverride(1);
+    } else {
+      self.setupIPDOverride(0);
+    }
     self.ipdSliderText.nodeValue = self.ipdSlider.value + "mm";
+    self.syncManagerToDeviceButtons();
   }
 
   this.syncDeviceButtonsToManager = function() {
@@ -180,12 +189,31 @@ function VROptionsCore() {
     var userIPDOffset = self.vrDeviceManager.userIPDOffset;
     self.ipdSlider.value = userIPDOffset;
     self.ipdSliderText.nodeValue = userIPDOffset + "mm";
+
+    var overrideIPD = self.vrDeviceManager.overrideIPD;
+    self.setupIPDOverride(overrideIPD);
+  }
+
+  this.setupIPDOverride = function(overrideIPD) {
+    if (overrideIPD == 0) {
+      self.ipdCheckbox.checked = false;
+      self.ipdSlider.disabled = true;
+      self.ipdSliderText.nodeValue = "";
+    } else {
+      self.ipdCheckbox.checked = true;
+      self.ipdSlider.disabled = false;
+      self.ipdSliderText.nodeValue = self.vrDeviceManager.userIPDOffset+"mm";
+    }
   }
 
   this.syncManagerToDeviceButtons = function() {
     self.vrDeviceManager.setCurrentHandset(self.displaySelector.value);
     self.vrDeviceManager.setCurrentDevice(self.headsetSelector.value);
     self.vrDeviceManager.setUserIPDOffset(self.ipdSlider.value);
+    if (self.ipdCheckbox.checked)
+      self.vrDeviceManager.setOverrideIPD(1);
+    else
+      self.vrDeviceManager.setOverrideIPD(0);
   }
 
   this.setupDialogDevices = function() {
