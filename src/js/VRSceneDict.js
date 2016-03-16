@@ -73,8 +73,8 @@ VRSceneDict = function() {
     photo.textureDescription.sphereFOV = [60,60];
     photo.textureDescription.sphereCentre = [0,0];
     photo.textureDescription.U_l = [0,0];
-    photo.textureDescription.V_l = [1,0.5];
-    photo.textureDescription.U_r = [0,0.5];
+    photo.textureDescription.V_l = [0.5,1];
+    photo.textureDescription.U_r = [0.5,0];
     photo.textureDescription.V_r = [1,1];
     return photo;
   }
