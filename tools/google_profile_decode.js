@@ -162,12 +162,12 @@ var processParams = function(params){
   intName = intName.toUpperCase();
 
   var vrDict = intName + ' : {' +
-    'name: "' + params["vendor"] + " " + params["model"] + '",'+
-    'renderMode: VRRenderModes.STEREOANAGLYPH,'+
-    'icon: VRIcons.logoAnaglyph,'+
-    'hfov:' + params["left_eye_field_of_view_angles"][0] + ','+
-    'ipd:' + parseInt(params["inter_lens_distance"]*1000) + ','+
-    'ipdAdjust: 0,'+
+    'name: "' + params["vendor"] + " " + params["model"] + '", '+
+    'renderMode: VRRenderModes.STEREOANAGLYPH, '+
+    'icon: VRIcons.logoAnaglyph, '+
+    'hfov:' + params["left_eye_field_of_view_angles"][0] + ', '+
+    'ipd:' + parseInt(params["inter_lens_distance"]*1000) + ', '+
+    'ipdAdjust: 0, '+
     'k: [' + parseInt(params["distortion_coefficients"][0]*1000)/1000.0 + "," +
              parseInt(params["distortion_coefficients"][1]*1000)/1000.0 + "] }";
 
