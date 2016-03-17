@@ -310,7 +310,7 @@ VRStory = function() {
 
     for (objit = 0;objit<recticleList.length; objit++){
       var reticle = recticleList[objit];
-      var actionTransparency = actionPercent*0.6 + 0.4;
+      var actionTransparency = actionPercent*0.9 + 0.1;
       // draw aiming reiticle
       ctx.beginPath();
       ctx.lineWidth = 6;

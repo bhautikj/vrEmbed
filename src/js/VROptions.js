@@ -150,7 +150,7 @@ function VROptionsCore() {
 
     var slider = document.createElement("input");
     slider.type = 'range';
-    slider.min = 50;
+    slider.min = 35;
     slider.max = 80;
     slider.style.width = '100px';
     var sliderTex = document.createTextNode("0mm");
