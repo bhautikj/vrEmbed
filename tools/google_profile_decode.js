@@ -186,7 +186,7 @@ var decodeShortURL = function() {
   unshortenURL(shortURL);
 }
 
-// ex: https://www.google.com/get/cardboard/download/?p=CgZHb29nbGUSEkNhcmRib2FyZC…08gMjAxNR2ZuxY9JbbzfT0qEAAASEIAAEhCAABIQgAASEJYADUpXA89OgiCc4Y-MCqJPlAAYAM
+// ex: https://www.google.com/get/cardboard/download/?p=CgZHb29nbGUSEkNhcmRib2FyZCBJL08gMjAxNR2ZuxY9JbbzfT0qEAAASEIAAEhCAABIQgAASEJYADUpXA89OgiCc4Y-MCqJPlAAYAM
 var decodeLongURL = function() {
   var longURL = document.getElementById('longURL').value;
   paramsFromURI(longURL);
