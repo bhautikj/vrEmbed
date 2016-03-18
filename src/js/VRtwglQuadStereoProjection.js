@@ -135,12 +135,12 @@ var fsRenderDisplay = "precision highp float;\n"+
 "  } else if (renderMode == 2) {\n"+
     // anaglyph render
 "    vec4 colorL, colorR, colorLSphere, colorLGui, colorRSphere, colorRGui;\n"+
-"    colorLSphere = texture2D(textureSource, vec2(lonLat.x, lonLat.y*0.5));\n"+
-"    colorLGui = texture2D(textureGui, vec2(lonLat.x, lonLat.y*0.5));\n"+
+"    colorLSphere = texture2D(textureSource, vec2(lonLat.x, 0.5+lonLat.y*0.5));\n"+
+"    colorLGui = texture2D(textureGui, vec2(lonLat.x, 0.5+lonLat.y*0.5));\n"+
 "    colorLGui.a *= guiMult;\n"+
 "    colorL = colorLGui*colorLGui.a + colorLSphere*(1.-colorLGui.a);\n"+
-"    colorRSphere = texture2D(textureSource, vec2(lonLat.x, 0.5+lonLat.y*0.5));\n"+
-"    colorRGui = texture2D(textureGui, vec2(lonLat.x, 0.5+lonLat.y*0.5));\n"+
+"    colorRSphere = texture2D(textureSource, vec2(lonLat.x, lonLat.y*0.5));\n"+
+"    colorRGui = texture2D(textureGui, vec2(lonLat.x, lonLat.y*0.5));\n"+
 "    colorRGui.a *= guiMult;\n"+
 "    colorR = colorRGui*colorRGui.a + colorRSphere*(1.-colorRGui.a);\n"+
 "    gl_FragColor = vec4( colorL.g * 0.7 + colorL.b * 0.3, colorR.g, colorR.b, colorL.a + colorR.a ) * 1.1;\n"+
@@ -166,10 +166,10 @@ var fsWindowed = "precision highp float;\n"+
 "void main(void) {\n"+
 "  //normalize uv so it is between 0 and 1\n"+
 "  vec2 uv = gl_FragCoord.xy / resolution;\n"+
-"  bool leftImg=false;\n"+
+"  bool leftImg=true;\n"+
 "  if (uv.y<0.5) { \n"+
 "    uv.y *= 2.; \n"+
-"    leftImg=true; }\n"+
+"    leftImg=false; }\n"+
 "  else {\n"+
 "    uv.y = 2.*(uv.y - .5);\n"+
 "  }\n"+
