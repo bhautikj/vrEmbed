@@ -180,6 +180,7 @@ VRDevices = {
   VRBOXNOBUTTON : {name: " VR Box - no button", renderMode: VRRenderModes.STEREOSIDEBYSIDE, icon: VRIcons.logoAnaglyph, hfov:50, ipd:68, ipdAdjust: 0, k: [0.019,0.019] },
   YOURCOMPANYLINGVR : {name: "Your company Ling VR", renderMode: VRRenderModes.STEREOSIDEBYSIDE, icon: VRIcons.logoAnaglyph, hfov:50, ipd:54, ipdAdjust: 0, k: [0.319,-0.019] },
   MERGEVRMERGE360GOGGLES : {name: "Merge VR Merge 360º Goggles", renderMode: VRRenderModes.STEREOSIDEBYSIDE, icon: VRIcons.logoAnaglyph, hfov:50, ipd:59, ipdAdjust: 0, k: [0.07,0.029] },
+  MODECOMVOLCANOBLAZE : {name: "Modecom Volcano Blaze",renderMode: VRRenderModes.STEREOSIDEBYSIDE,icon: VRIcons.logoAnaglyph,hfov:50,ipd:45,ipdAdjust: 0,k: [0.07,0.05] },
   NEXTCORECORPNOONVRGOGGLE : {name: "Nextcore Corp. NOON VR Goggle", renderMode: VRRenderModes.STEREOSIDEBYSIDE, icon: VRIcons.logoAnaglyph, hfov:50, ipd:61, ipdAdjust: 0, k: [0.14,0.14] },
   OWLVRVIEWER : {name: "Owl VR Viewer", renderMode: VRRenderModes.STEREOSIDEBYSIDE, icon: VRIcons.logoAnaglyph, hfov:50, ipd:57, ipdAdjust: 0, k: [0.46,0.23] },
   ONEPLUSCARDBOARDVIEWERV11 : {name: "OnePlus Cardboard Viewer v1.1", renderMode: VRRenderModes.STEREOSIDEBYSIDE, icon: VRIcons.logoAnaglyph, hfov:50, ipd:59, ipdAdjust: 0, k: [0,0] },
