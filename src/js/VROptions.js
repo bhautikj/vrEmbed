@@ -98,7 +98,7 @@ function VROptionsCore() {
   this.setupDialogSetup = function() {
     var tex = "";
     tex += '<img src=' + VRLogos.logoVrEmbed + ' width=60px style="float: right; margin: 0 0 2px 2px;"/>';
-    tex += '<b>Scroll to browse & select device:</b><br/><div style="clear:left;">';
+    tex += '<b>Select headset & display:</b><br/><div style="clear:left;">';
     this.dialogText.innerHTML = tex;
   }
 
