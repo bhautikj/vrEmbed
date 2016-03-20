@@ -425,7 +425,7 @@ VRtwglQuadStereoProjection = function() {
   }
 
   this.render = function() {
-    this.controller.update();
+    this.controller.update(false);
     twgl.m4.copy(this.cameraMatrix, this.uniforms.transform);
     this.uniforms["resolution"] = [self.vrtwglQuad.canvas.width, self.vrtwglQuad.canvas.height];
     var aspect = 2.0*self.vrtwglQuad.canvas.height/self.vrtwglQuad.canvas.width;

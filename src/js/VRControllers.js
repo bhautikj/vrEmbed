@@ -60,7 +60,10 @@ VRIdleSpinner = function() {
 
 VRIdleSpinner.prototype = new VRLookControlBase();
 
-VRIdleSpinner.prototype.update = function(cameraMatrix){
+VRIdleSpinner.prototype.update = function(cameraMatrix, resetHeading){
+  if (resetHeading == true) {
+    this.eulerZ = 0.0;
+  }
   this.setEuler(0, this.eulerZ-0.01, 0);
   this.updateBase(cameraMatrix);
 }
@@ -94,7 +97,10 @@ VRMouseSpinner.prototype.mouseMove = function(dX, dY, pX, pY){
   this.eulerZ = this.eulerZ - (dX * 0.01);
 }
 
-VRMouseSpinner.prototype.update = function(cameraMatrix){
+VRMouseSpinner.prototype.update = function(cameraMatrix, resetHeading){
+  if (resetHeading == true) {
+    this.eulerZ = 0.0;
+  }
 	this.updateBase(cameraMatrix);
 }
 
@@ -139,11 +145,7 @@ VRGyroSpinner.prototype.onScreenOrientationChange_ = function(screenOrientation)
 // };
 
 
-VRGyroSpinner.prototype.setYawOffset = function(yawOffset){
-  this.yawOffset = yawOffset;
-}
-
-VRGyroSpinner.prototype.update = function(cameraMatrix){
+VRGyroSpinner.prototype.update = function(cameraMatrix, resetOffset){
   if (this.deviceOrientation == null)
     return;
 
@@ -156,7 +158,7 @@ VRGyroSpinner.prototype.update = function(cameraMatrix){
     this.deviceOrientation.beta,
     this.deviceOrientation.gamma,
     this.screenOrientation,
-    this.yawOffset);
+    resetOffset);
   twgl.m4.copy(rotMat[0], cameraMatrix);
 
   var eulerAng = vrRotMath.matToEuler(rotMat);
@@ -233,20 +235,20 @@ VRLookController = function() {
       this.mode = VRLookMode.MOUSE;
   };
 
-  this.update = function() {
+  this.update = function(resetHeading) {
     this.checkModes();
 
     switch(this.mode) {
       case VRLookMode.MOUSE:
-        this.vrMouseSpinner.update(this.camera);
+        this.vrMouseSpinner.update(this.camera, resetHeading);
         this.euler = this.vrMouseSpinner.getEuler();
         break;
       case VRLookMode.IDLESPINNER:
-        this.vrIdleSpinner.update(this.camera);
+        this.vrIdleSpinner.update(this.camera, resetHeading);
         this.euler = this.vrIdleSpinner.getEuler();
         break;
       case VRLookMode.GYRO:
-        this.vrGyroSpinner.update(this.camera);
+        this.vrGyroSpinner.update(this.camera, resetHeading);
         this.euler = this.vrGyroSpinner.getEuler();
         break;
     }
@@ -264,13 +266,6 @@ VRLookController = function() {
       return [(-180.0*this.euler[2]/Math.PI),
               -180.0*this.euler[1]/Math.PI,
               180.0*this.euler[0]/Math.PI];
-  }
-
-  this.resetHeading = function(){
-    if (this.mode == VRLookMode.GYRO) {
-      var yawdeg = (180.0*this.euler[0]/Math.PI + 270.0)%360.0 - 180.0
-      this.vrGyroSpinner.setYawOffset (-1.0*Math.PI*yawdeg/180.0); //-1.0*this.heading[0]/Math.PI)
-    }
   }
 };
 

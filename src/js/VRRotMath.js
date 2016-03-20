@@ -69,9 +69,11 @@ var _matToEuler = function(mat) {
 }
 
 VRRotMath = function() {
+  var self = this;
   this.timer = 0.0;
+  this.offset = 0.0;
 
-  this.gyroToMat = function(_alpha, _beta, _gamma, _orientation, _offset) {
+  this.gyroToMat = function(_alpha, _beta, _gamma, _orientation, resetOffset) {
     var degRad = Math.PI / 180;
     var orientation = rotateEuler({
 						yaw: _alpha * degRad,
@@ -81,14 +83,18 @@ VRRotMath = function() {
 
     var mat = twgl.m4.identity();
 
+    if (resetOffset == true) {
+      self.offset = orientation.yaw + Math.PI;
+    }
+
     // pitch
     twgl.m4.rotateY(mat, -orientation.pitch,mat);
     // yaw
-    twgl.m4.rotateZ(mat, Math.PI + -orientation.yaw,mat);
+    twgl.m4.rotateZ(mat, Math.PI + -orientation.yaw + self.offset, mat);
     // disable roll - doesn't make sense in stereo yet
     twgl.m4.rotateX(mat, Math.PI, mat);
 
-    var yaw = (360 + -180*orientation.yaw/Math.PI)%360.0 -180.0; //-180->180
+    var yaw = (360 + -180*(orientation.yaw-self.offset)/Math.PI)%360.0 -180.0; //-180->180
     var pitch = -180.0*orientation.pitch/Math.PI;
     // document.getElementById("log").innerHTML = Math.floor(yaw) + "," + Math.floor(pitch);
     return [mat, yaw, pitch];
