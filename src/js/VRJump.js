@@ -25,11 +25,23 @@ VRJump = function() {
   this.jumpTo = null;
   this.jumpText = null;
 
+  this.parseBoolString = function(str) {
+    if (str==undefined)
+      return false;
+    if (str.toLowerCase()=="true")
+      return true;
+    else
+      return false;
+  }
+
   this.init = function(jumpElm) {
     this.jumpElm = jumpElm;
     this.jumpElm.setAttribute("hidden", true);
     this.textureDescription = new VRTextureDescription();
     this.textureDescription.setSphereParamsFromString(this.jumpElm.getAttribute("sphereParams"));
+    this.textureDescription.plane = this.parseBoolString(this.jumpElm.getAttribute("plane"));
+    this.textureDescription.setPlaneOffsetParamsFromString(this.jumpElm.getAttribute("planeOffset"));
+
     this.jumpTo = this.jumpElm.getAttribute("jumpTo");
     if (this.jumpElm.innerHTML=="")
       this.jumpText = this.jumpTo;
@@ -53,6 +65,13 @@ VRJump = function() {
   this.getJumpElement = function() {
     var elm = document.createElement('jump');
     elm.setAttribute('sphereParams',this.textureDescription.getSphereParamsString());
+    if (this.textureDescription.plane == false){
+      elm.setAttribute('plane', 'false')
+      elm.setAttribute('planeOffset', this.textureDescription.getPlaneOffsetParamsString());
+    } else {
+      elm.setAttribute('plane', 'true')
+    }
+
     elm.setAttribute('jumpTo', this.jumpTo);
     elm.innerHTML = this.jumpText;
     this.textOptions.setElement(elm);

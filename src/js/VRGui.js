@@ -65,10 +65,10 @@ VRGuiTimer = function() {
         this.in = true;
         this.startTime = timestamp;
         this.callbackFired = false;
-        if (navigator.vibrate) {
-        	// vibration API supported
-          navigator.vibrate(100);
-        }
+        // if (navigator.vibrate) {
+        // 	// vibration API supported
+        //   navigator.vibrate(100);
+        // }
 
         return 0;
       } else {
@@ -105,7 +105,6 @@ VRGui = function() {
   this.canvasSet = [];
   this.gl = null;
   this.guiHover = false;
-
 
   this.isHovering = function() {
     return this.guiHover;
@@ -145,10 +144,12 @@ VRGui = function() {
     return rv;
   }
 
-  this.createTextBox = function(hfov, x, y, callback, callbackArgs, message, options) {
+  this.createTextBox = function(hfov, x, y, plane, planeOffset, callback, callbackArgs, message, options) {
     var vrCanvasTextBox = VRCanvasFactory.createCanvasTextBox();
     vrCanvasTextBox.init(this.gl, message, hfov, options);
     vrCanvasTextBox.vrTextureDescription.sphereCentre = [x, y];
+    vrCanvasTextBox.vrTextureDescription.plane = plane;
+    vrCanvasTextBox.vrTextureDescription.planeOffset = planeOffset;
     vrCanvasTextBox.update(self.tick);
     var vrGuiTimer = new VRGuiTimer();
     vrGuiTimer.init(vrCanvasTextBox, callback, callbackArgs);
