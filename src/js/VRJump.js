@@ -67,9 +67,9 @@ VRJump = function() {
     elm.setAttribute('sphereParams',this.textureDescription.getSphereParamsString());
     if (this.textureDescription.plane == false){
       elm.setAttribute('plane', 'false')
-      elm.setAttribute('planeOffset', this.textureDescription.getPlaneOffsetParamsString());
     } else {
       elm.setAttribute('plane', 'true')
+      elm.setAttribute('planeOffset', this.textureDescription.getPlaneOffsetParamsString());
     }
 
     elm.setAttribute('jumpTo', this.jumpTo);

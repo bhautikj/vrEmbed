@@ -449,20 +449,37 @@
           <input type="number" class="numberinputwide" id="V_r_y_t">
         </div>
       </div>
-
     </span>
   </span>
 
+  <div class="row">
+    <div class="two columns alignright">
+      Project to plane?
+    </div>
+    <div class="one column">
+      <input type="checkbox" id="isPlane">
+    </div>
+  </div>
   <span id="options_planar">
     <div class="row">
-      <div class="four columns alignright">
-        Project image to plane?
+      <div class="three columns alignright">
+        Plane offset X:
       </div>
-      <div class="one column">
-        <input type="checkbox" id="isPlane">
+      <div class="two columns">
+        <input type="range" name="planarX" min="-2.0" max="2.0" step="0.01" id="planeOffsetX" class="numberinputwide">
+      </div>
+      <div class="two columns">
+        <input type="number" class="numberinputwide" step="any" id="planeOffsetX_t">
+      </div>
+      <div class="two columns">
+        <input type="range" name="planarY" min="-2.0" max="2.0" step="0.01" id="planeOffsetY" class="numberinputwide">
+      </div>
+      <div class="two columns">
+        <input type="number" class="numberinputwide" step="any" id="planeOffsetY_t">
       </div>
     </div>
   </span>
+
 </div>
 
 <span id="preview_box">

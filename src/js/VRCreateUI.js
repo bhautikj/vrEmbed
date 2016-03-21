@@ -137,7 +137,7 @@ VRCreateUI = function() {
       self.showImageOptions(true);
       self.showOptionsPosition(true);
       self.showOptionsPosition3D(true);
-      self.showOptionsPlanar(true);
+      self.showOptionsPlanar(self.isPlane.checked);
       self.showStereoOptions(self.isStereo.checked);
       self.showOptionsText(false);
       self.showOptionsJump(false);
@@ -146,7 +146,7 @@ VRCreateUI = function() {
       self.showImageOptions(false);
       self.showOptionsPosition(true);
       self.showOptionsPosition3D(false);
-      self.showOptionsPlanar(true);
+      self.showOptionsPlanar(self.isPlane.checked);
       self.showOptionsText(true);
       self.showOptionsJump(false);
       self.showOptionsTextCommon(true);
@@ -154,7 +154,7 @@ VRCreateUI = function() {
       self.showImageOptions(false);
       self.showOptionsPosition(true);
       self.showOptionsPosition3D(false);
-      self.showOptionsPlanar(true);
+      self.showOptionsPlanar(self.isPlane.checked);
       self.showOptionsText(false);
       self.showOptionsJump(true);
       self.showOptionsTextCommon(true);
@@ -215,6 +215,8 @@ VRCreateUI = function() {
       var vfov = parseFloat(self.vfovVRUINumberSlider.get());
       var xpos = parseFloat(self.xposVRUINumberSlider.get());
       var ypos = parseFloat(self.yposVRUINumberSlider.get());
+      var planarOffsetX = parseFloat(self.planarOffsetXSlider.get());
+      var planarOffsetY = parseFloat(self.planarOffsetYSlider.get());
 
       photo.textureDescription.sphereFOV[0] = hfov;
       photo.textureDescription.sphereFOV[1] = vfov;
@@ -223,6 +225,7 @@ VRCreateUI = function() {
       photo.textureDescription.src = self.imageURL.value;
       photo.textureDescription.plane = self.isPlane.checked;
       photo.textureDescription.isStereo = self.isStereo.checked;
+      photo.textureDescription.planeOffset = [planarOffsetX, planarOffsetY];
 
       photo.textureDescription.U_l = [parseFloat(self.U_l_x_slider.get()), parseFloat(self.U_l_y_slider.get())];
       photo.textureDescription.V_l = [parseFloat(self.V_l_x_slider.get()), parseFloat(self.V_l_y_slider.get())];
@@ -235,12 +238,15 @@ VRCreateUI = function() {
       var vfov = parseFloat(self.vfovVRUINumberSlider.get());
       var xpos = parseFloat(self.xposVRUINumberSlider.get());
       var ypos = parseFloat(self.yposVRUINumberSlider.get());
+      var planarOffsetX = parseFloat(self.planarOffsetXSlider.get());
+      var planarOffsetY = parseFloat(self.planarOffsetYSlider.get());
 
       text.textureDescription.sphereFOV[0] = hfov;
       text.textureDescription.sphereFOV[1] = vfov;
       text.textureDescription.sphereCentre[0] = xpos;
       text.textureDescription.sphereCentre[1] = ypos;
       text.textureDescription.plane = self.isPlane.checked;
+      text.textureDescription.planeOffset = [planarOffsetX, planarOffsetY];
 
       text.message = self.textMessage.value;
 
@@ -257,12 +263,16 @@ VRCreateUI = function() {
       var vfov = parseFloat(self.vfovVRUINumberSlider.get());
       var xpos = parseFloat(self.xposVRUINumberSlider.get());
       var ypos = parseFloat(self.yposVRUINumberSlider.get());
+      var planarOffsetX = parseFloat(self.planarOffsetXSlider.get());
+      var planarOffsetY = parseFloat(self.planarOffsetYSlider.get());
 
       jump.textureDescription.sphereFOV[0] = hfov;
       jump.textureDescription.sphereFOV[1] = vfov;
       jump.textureDescription.sphereCentre[0] = xpos;
       jump.textureDescription.sphereCentre[1] = ypos;
       jump.textureDescription.plane = self.isPlane.checked;
+      jump.textureDescription.planeOffset = [planarOffsetX, planarOffsetY];
+
       jump.jumpTo = self.jumpTo.value;
       jump.jumpText = self.jumpText.value;
 
@@ -538,6 +548,8 @@ VRCreateUI = function() {
       self.U_r_y_slider.set(photo.textureDescription.U_r[1]);
       self.V_r_x_slider.set(photo.textureDescription.V_r[0]);
       self.V_r_y_slider.set(photo.textureDescription.V_r[1]);
+      self.planarOffsetXSlider.set(photo.textureDescription.planeOffset[0]);
+      self.planarOffsetYSlider.set(photo.textureDescription.planeOffset[1]);
 
       self.loadImage();
     } else if (type =="text"){
@@ -546,6 +558,9 @@ VRCreateUI = function() {
       self.vfovVRUINumberSlider.set(text.textureDescription.sphereFOV[1]);
       self.xposVRUINumberSlider.set(text.textureDescription.sphereCentre[0]);
       self.yposVRUINumberSlider.set(text.textureDescription.sphereCentre[1]);
+      self.planarOffsetXSlider.set(text.textureDescription.planeOffset[0]);
+      self.planarOffsetYSlider.set(text.textureDescription.planeOffset[1]);
+
       self.isPlane.checked = text.textureDescription.plane;
       self.textMessage.value = text.message;
 
@@ -563,6 +578,9 @@ VRCreateUI = function() {
       self.vfovVRUINumberSlider.set(jump.textureDescription.sphereFOV[1]);
       self.xposVRUINumberSlider.set(jump.textureDescription.sphereCentre[0]);
       self.yposVRUINumberSlider.set(jump.textureDescription.sphereCentre[1]);
+      self.planarOffsetXSlider.set(jump.textureDescription.planeOffset[0]);
+      self.planarOffsetYSlider.set(jump.textureDescription.planeOffset[1]);
+
       self.isPlane.checked = jump.textureDescription.plane;
       self.jumpTo.value = jump.jumpTo;
       self.jumpText.value = jump.jumpText;
@@ -833,6 +851,18 @@ VRCreateUI = function() {
     this.yposVRUINumberSlider = new VRUINumberSlider();
     this.yposVRUINumberSlider.init(document.getElementById("ypos"),
                               document.getElementById("ypos_t"),
+                              0,
+                              this.inputStateChange);
+
+    this.planarOffsetXSlider  = new VRUINumberSlider();
+    this.planarOffsetXSlider.init(document.getElementById("planeOffsetX"),
+                              document.getElementById("planeOffsetX_t"),
+                              0,
+                              this.inputStateChange);
+
+    this.planarOffsetYSlider  = new VRUINumberSlider();
+    this.planarOffsetYSlider.init(document.getElementById("planeOffsetY"),
+                              document.getElementById("planeOffsetY_t"),
                               0,
                               this.inputStateChange);
 
