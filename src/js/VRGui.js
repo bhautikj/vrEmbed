@@ -48,22 +48,24 @@ function pointInPlane(pt, vrTextureDescription) {
   var planeY = -alpha*Math.sin(testPoint[1]);
 
   var xmin = vrTextureDescription.planeOffset[0]*45 - (0.5*vrTextureDescription.sphereFOV[0]);
-  var xmax = vrTextureDescription.planeOffset[0]*45 + (0.5*vrTextureDescription.sphereFOV[0]);
-  var ymin = vrTextureDescription.planeOffset[1]*45 - (0.5*vrTextureDescription.sphereFOV[1]);
-  var ymax = vrTextureDescription.planeOffset[1]*45 + (0.5*vrTextureDescription.sphereFOV[1]);
-  // console.log(xmin, xmax, ymin, ymax, planeX, planeY);
-
   if(planeX<xmin)
     return false;
+
+  var xmax = vrTextureDescription.planeOffset[0]*45 + (0.5*vrTextureDescription.sphereFOV[0]);
   if (planeX>xmax)
     return false;
+
+  var ymin = vrTextureDescription.planeOffset[1]*45 - (0.5*vrTextureDescription.sphereFOV[1]);
   if (planeY<ymin)
     return false;
+
+  var ymax = vrTextureDescription.planeOffset[1]*45 + (0.5*vrTextureDescription.sphereFOV[1]);
   if (planeY>ymax)
     return false;
 
+  // console.log(xmin, xmax, ymin, ymax, planeX, planeY);
+
   return true;
-  // console.log(planeY, planeZ);
 }
 
 navigator.vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate;
