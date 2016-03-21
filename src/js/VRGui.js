@@ -20,6 +20,52 @@ function pointInDomain (testPoint, origin, domainSize, u, uv) {
   // (-190+540)%360 = 350 YASSS
 }
 
+function pointInPlane(pt, vrTextureDescription) {
+  var testPoint = [Math.PI*(pt[0]-vrTextureDescription.sphereCentre[0])/-180, Math.PI*(pt[1]-vrTextureDescription.sphereCentre[1])/-180];
+  var testPointOnSphereX = Math.cos(testPoint[0])*Math.cos(testPoint[1]);
+  // axes:
+  // x: front-back; 1 is front, -1 is back
+  // y: left-right; -1 is left, 1 is right
+  // z: up-down; -1 is top, 1 is bottom
+  // unit cube is inscribed in sphere; side length is sl = 2/sqrt(3)
+  var sl = 90;
+  // our reference point on plane, r0 then is (sl/2,0,0) which is also our normal, n
+  // for a ray, r, intersecing the plane:
+  // n*r0 = n*r
+  // since n.y, n.z = 0
+  // sl*0.5*sl*0.5 = sl*0.25*r.x
+  // r.x = sl*0.5;
+  // r.x is now testPointOnSphereX*alpha (linear mult factor)
+  // alpha*testPointOnSphereX = sl*0.5;
+  // alpha = sl*0.5/testPointOnSphereX;
+  var alpha = sl*0.5/testPointOnSphereX;
+  // if alpha <=0 - forget it, not intersecting!
+  if (alpha<=1e-6)
+    return;
+
+  // calculate plane coords
+  var planeX = -alpha*Math.cos(testPoint[1])*Math.sin(testPoint[0]);
+  var planeY = -alpha*Math.sin(testPoint[1]);
+
+  var xmin = vrTextureDescription.planeOffset[0]*45 - (0.5*vrTextureDescription.sphereFOV[0]);
+  var xmax = vrTextureDescription.planeOffset[0]*45 + (0.5*vrTextureDescription.sphereFOV[0]);
+  var ymin = vrTextureDescription.planeOffset[1]*45 - (0.5*vrTextureDescription.sphereFOV[1]);
+  var ymax = vrTextureDescription.planeOffset[1]*45 + (0.5*vrTextureDescription.sphereFOV[1]);
+  // console.log(xmin, xmax, ymin, ymax, planeX, planeY);
+
+  if(planeX<xmin)
+    return false;
+  if (planeX>xmax)
+    return false;
+  if (planeY<ymin)
+    return false;
+  if (planeY>ymax)
+    return false;
+
+  return true;
+  // console.log(planeY, planeZ);
+}
+
 navigator.vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate;
 
 VRGuiTimer = function() {
@@ -39,13 +85,17 @@ VRGuiTimer = function() {
 
   // operates in degrees
   this.isInBoundingBox = function(pt, vrTextureDescription) {
-    var x = vrTextureDescription.sphereCentre[0] - (0.5*vrTextureDescription.sphereFOV[0]);
-    if (!pointInDomain(pt[0], -180.0, 360.0, x, vrTextureDescription.sphereFOV[0]))
-      return false;
-    var y = vrTextureDescription.sphereCentre[1] - (0.5*vrTextureDescription.sphereFOV[1]);
-    if (!pointInDomain(pt[1], -90, 180.0, y, vrTextureDescription.sphereFOV[1]))
-      return false;
-    return true;
+    if(vrTextureDescription.plane == false) {
+      var x = vrTextureDescription.sphereCentre[0] - (0.5*vrTextureDescription.sphereFOV[0]);
+      if (!pointInDomain(pt[0], -180.0, 360.0, x, vrTextureDescription.sphereFOV[0]))
+        return false;
+      var y = vrTextureDescription.sphereCentre[1] - (0.5*vrTextureDescription.sphereFOV[1]);
+      if (!pointInDomain(pt[1], -90, 180.0, y, vrTextureDescription.sphereFOV[1]))
+        return false;
+      return true;
+    } else {
+      return pointInPlane(pt, vrTextureDescription);
+    }
   }
 
   this.update = function(pt, timestamp) {
