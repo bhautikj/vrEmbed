@@ -170,6 +170,10 @@ VRGyroSpinner.prototype.update = function(cameraMatrix, resetOffset){
 }
 
 VRGyroSpinner.prototype.isMobile = function() {
+  // bail if no gyro
+  if (!window.DeviceOrientationEvent)
+    return false;
+
   return util.isMobile();
 }
 
