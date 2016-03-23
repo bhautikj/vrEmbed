@@ -156,6 +156,7 @@ var fsWindowed = "precision highp float;\n"+
 "uniform vec2 sphYX;\n"+
 "uniform vec4 uvL;\n"+
 "uniform vec4 uvR;\n"+
+"uniform vec2 planeOffset;\n"+
 "uniform float planar;\n"+
 "void uvToSphere(in vec2 uv, out vec4 sphere_pnt) {\n"+
 "  float lon = PI*(2.0*uv.x-1.0);\n"+
@@ -186,6 +187,8 @@ var fsWindowed = "precision highp float;\n"+
 "  } else {\n"+
 // cube projection
 "    lonLat = vec2(0.25*PI*sphere_pnt.y/sphere_pnt.x, 0.25*PI*sphere_pnt.z/sphere_pnt.x);\n"+
+"    vec2 pofs = vec2(planeOffset.x*-0.25*PI,planeOffset.y*0.25*PI);\n"+
+"    lonLat += pofs;\n"+
 "    if (sphere_pnt.x<0. || abs(lonLat.x)>PI || abs(lonLat.y)>0.5*PI){ discard; return;}\n"+
 "  }\n"+
   // map back to 0..1
@@ -278,14 +281,16 @@ VRtwglQuadStereoProjection = function() {
     resolution:[this.fbRes,this.fbRes],
     textureSource:null,
     transform:twgl.m4.identity(),
-    planar:0
+    planar:0,
+    planeOffset:[0,0],
   }
 
   this.uniformsFbGui = {
     resolution:[this.fbRes,this.fbRes],
     textureSource:null,
     transform:twgl.m4.identity(),
-    planar:1
+    planar:1,
+    planeOffset:[0,0],
   }
 
   this.setupFromDevice = function(device) {
@@ -350,10 +355,13 @@ VRtwglQuadStereoProjection = function() {
                                 textureDesc.U_r[1],
                                 textureDesc.V_r[0]-textureDesc.U_r[0],
                                 textureDesc.V_r[1]-textureDesc.U_r[1]];
-      if (textureDesc.plane)
+      if (textureDesc.plane) {
         self.uniformsFbGui["planar"] = 1;
-      else
+        self.uniformsFbGui["planeOffset"] = textureDesc.planeOffset;
+      } else {
         self.uniformsFbGui["planar"] = 0;
+        self.uniformsFbGui["planeOffset"] = [0,0];
+      }
       self.renderFbGui();
     }
 
@@ -425,7 +433,7 @@ VRtwglQuadStereoProjection = function() {
   }
 
   this.render = function() {
-    this.controller.update();
+    this.controller.update(false);
     twgl.m4.copy(this.cameraMatrix, this.uniforms.transform);
     this.uniforms["resolution"] = [self.vrtwglQuad.canvas.width, self.vrtwglQuad.canvas.height];
     var aspect = 2.0*self.vrtwglQuad.canvas.height/self.vrtwglQuad.canvas.width;
@@ -481,10 +489,14 @@ VRtwglQuadStereoProjection = function() {
                                   textureDesc.U_r[1],
                                   textureDesc.V_r[0]-textureDesc.U_r[0],
                                   textureDesc.V_r[1]-textureDesc.U_r[1]];
-        if (textureDesc.plane)
+        if (textureDesc.plane) {
           self.uniformsFb["planar"] = 1;
-        else
+          self.uniformsFb["planeOffset"] = textureDesc.planeOffset;
+        } else {
           self.uniformsFb["planar"] = 0;
+          self.uniformsFb["planeOffset"] = [0,0];
+        }
+
         self.renderFb();
         gl.deleteTexture(self.textures[key]);
       }

@@ -28,6 +28,14 @@ VRTextureDescription = function () {
   this.U_r = [0,0];
   this.V_r = [1,1];
   this.plane = false;
+  this.planeOffset = [0,0];
+
+  this.setPlaneOffsetParamsFromString  = function(str) {
+    if (str == undefined)
+      return;
+    var arr = str.split(",");
+    this.planeOffset = [arr[0].trim(), arr[1].trim()];
+  };
 
   this.setSphereParamsFromString  = function(str) {
     var arr = str.split(",");
@@ -42,6 +50,10 @@ VRTextureDescription = function () {
     this.U_r = [arr[4].trim(), arr[5].trim()];
     this.V_r = [arr[6].trim(), arr[7].trim()];
   };
+
+  this.getPlaneOffsetParamsString = function() {
+    return this.planeOffset[0] + ',' + this.planeOffset[1];
+  }
 
   this.getSphereParamsString = function() {
     return this.sphereFOV[0] + ',' + this.sphereFOV[1] + ',' +
@@ -73,6 +85,7 @@ VRTextureDescription = function () {
     this.plane = dict.plane;
     this.sphereFOV = dict.sphereFOV;
     this.sphereCentre = dict.sphereCentre;
+    this.planeOffset = dict.planeOffset;
     if (this.isStereo) {
       this.U_l = dict.U_l;
       this.V_l = dict.V_l;

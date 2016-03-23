@@ -43,6 +43,7 @@ VRScenePhoto = function() {
     this.textureDescription.isStereo = this.parseBoolString(this.scenePhoto.getAttribute("isStereo"));
     this.textureDescription.plane = this.parseBoolString(this.scenePhoto.getAttribute("plane"));
     this.textureDescription.setSphereParamsFromString(this.scenePhoto.getAttribute("sphereParams"));
+    this.textureDescription.setPlaneOffsetParamsFromString(this.scenePhoto.getAttribute("planeOffset"));
 
     if (this.isStereo())
       this.textureDescription.setTexParamsFromString(this.scenePhoto.getAttribute("texParams"));
@@ -69,6 +70,7 @@ VRScenePhoto = function() {
 
     this.textureDescription.isStereo = this.parseBoolString(urlDict["isStereo"]);
     this.textureDescription.plane = this.parseBoolString(urlDict["plane"]);
+    this.textureDescription.setPlaneOffsetParamsFromString(urlDict["planeOffset"]);
 
     if (urlDict["sphereParams"] != undefined)
       this.textureDescription.setSphereParamsFromString(urlDict["sphereParams"]);
@@ -84,10 +86,13 @@ VRScenePhoto = function() {
   this.populateElementCommon = function(elm) {
     elm.setAttribute('src', this.textureDescription.getAbsoluteTexturePath());
     elm.setAttribute('sphereParams',this.textureDescription.getSphereParamsString());
-    if (this.isPlane() == false)
+    if (this.textureDescription.plane == false){
       elm.setAttribute('plane', 'false')
-    else
+    } else {
       elm.setAttribute('plane', 'true')
+      elm.setAttribute('planeOffset', this.textureDescription.getPlaneOffsetParamsString());
+    }
+
 
     if (this.isStereo() == false) {
       elm.setAttribute('isStereo', 'false');
@@ -100,10 +105,6 @@ VRScenePhoto = function() {
 
   this.isStereo = function() {
     return this.textureDescription.isStereo;
-  }
-
-  this.isPlane = function() {
-    return this.textureDescription.plane;
   }
 
   this.getPhotoElement = function() {
@@ -130,10 +131,11 @@ VRScenePhoto = function() {
       outstr += "&texParams="+this.textureDescription.getTexParamsString();
     }
 
-    if(this.isPlane() == false) {
+    if(this.textureDescription.plane == false) {
       outstr += "&plane=false";
     } else {
       outstr += "&plane=true";
+      outstr += "&planeOffset="+this.textureDescription.getPlaneOffsetParamsString();
     }
     return outstr;
   }

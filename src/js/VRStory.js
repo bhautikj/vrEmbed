@@ -359,6 +359,8 @@ VRStory = function() {
     // set up stereo mode
     this.stateToggler.configureStereo(this.isStereo);
 
+    // reset heading
+    this.quad.controller.update(true);
   }
 
   this.nextScene = function() {
@@ -394,6 +396,8 @@ VRStory = function() {
       this.vrGui.createTextBox(textObject.textureDescription.sphereFOV[0],
                                textObject.textureDescription.sphereCentre[0],
                                textObject.textureDescription.sphereCentre[1],
+                               textObject.textureDescription.plane,
+                               textObject.textureDescription.planeOffset,
                                null,
                                null,
                                textObject.message,
@@ -419,6 +423,8 @@ VRStory = function() {
         this.vrGui.createTextBox(jumpObject.textureDescription.sphereFOV[0],
                                  jumpObject.textureDescription.sphereCentre[0],
                                  jumpObject.textureDescription.sphereCentre[1],
+                                 jumpObject.textureDescription.plane,
+                                 jumpObject.textureDescription.planeOffset,
                                  this.gotoNamedScene,
                                  jumpObject.jumpTo,
                                  jumpObject.jumpText + ' \u27A6',

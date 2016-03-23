@@ -27,11 +27,23 @@ VRText = function() {
     this.message = str;
   };
 
+  this.parseBoolString = function(str) {
+    if (str==undefined)
+      return false;
+    if (str.toLowerCase()=="true")
+      return true;
+    else
+      return false;
+  }
+
   this.init = function(sceneText) {
     this.sceneText = sceneText;
     this.sceneText.setAttribute("hidden", true);
     this.textureDescription = new VRTextureDescription();
     this.textureDescription.setSphereParamsFromString(this.sceneText.getAttribute("sphereParams"));
+    this.textureDescription.plane = this.parseBoolString(this.sceneText.getAttribute("plane"));
+    this.textureDescription.setPlaneOffsetParamsFromString(this.sceneText.getAttribute("planeOffset"));
+
     this.parseMessage(this.sceneText.innerHTML);
 
     this.textOptions = new VRTextOptions();
@@ -46,9 +58,16 @@ VRText = function() {
     this.textOptions.initDict(dict.textOptions);
   }
 
+
   this.getTextElement = function() {
     var elm = document.createElement('text');
     elm.setAttribute('sphereParams',this.textureDescription.getSphereParamsString());
+    if (this.textureDescription.plane == false){
+      elm.setAttribute('plane', 'false')
+    } else {
+      elm.setAttribute('plane', 'true')
+      elm.setAttribute('planeOffset', this.textureDescription.getPlaneOffsetParamsString());
+    }
     elm.innerHTML = this.message;
 
     this.textOptions.setElement(elm);
