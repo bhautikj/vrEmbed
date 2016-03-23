@@ -48,8 +48,10 @@ var getFlickrImage = function(urlf, callbackFunc) {
       var useMe = 0;
       var maxWidth = 0;
       for (i=0; i<sizes.length; i++) {
-        if(sizes[i].width <= 2048 && sizes[i].width>maxWidth){
-          maxWidth = sizes[i].width;
+        //console.log(sizes[i], sizes[i].width, i);
+        var width = parseInt(sizes[i].width);
+        if(width <= 2048 && width>maxWidth){
+          maxWidth = width;
           useMe = i;
         }
       }
