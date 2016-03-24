@@ -393,13 +393,21 @@ VRStory = function() {
     for (g = 0;g<textObjects.length; g++){
       // just assuming text nodes only for now
       var textObject = textObjects[g];
+      var jumpCallback = null;
+      var jumpTo = null;
+
+      if (textObject.jumpTo!="") {
+        jumpCallback = this.gotoNamedScene;
+        jumpTo = textObject.jumpTo;
+      }
+      
       this.vrGui.createTextBox(textObject.textureDescription.sphereFOV[0],
                                textObject.textureDescription.sphereCentre[0],
                                textObject.textureDescription.sphereCentre[1],
                                textObject.textureDescription.plane,
                                textObject.textureDescription.planeOffset,
-                               null,
-                               null,
+                               jumpCallback,
+                               jumpTo,
                                textObject.message,
                                textObject.textOptions);
     }

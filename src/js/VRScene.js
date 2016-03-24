@@ -117,7 +117,15 @@ VRScene = function() {
   }
 
   this.hasJumpNav = function() {
-    return this.jumpObjects.length!=0;
+    if(this.jumpObjects.length!=0)
+      return true;
+
+    for(j=0; j<this.textObjects.length; j++) {
+      if (this.textObjects[j].jumpTo!="")
+        return true;
+    }
+
+    return false;
   }
 };
 

@@ -92,6 +92,7 @@ VRCreateUI = function() {
   this.V_r_y_slider = null;
 
   this.textMessage = null;
+  this.sceneJump = null;
   this.jumpTo = null;
   this.jumpText = null;
   this.fontAlign = null;
@@ -251,6 +252,7 @@ VRCreateUI = function() {
       text.textureDescription.planeOffset = [planarOffsetX, planarOffsetY];
 
       text.message = self.textMessage.value;
+      text.jumpTo = self.sceneJump.value;
 
       text.textOptions.align = self.fontAlign.value;
       text.textOptions.fontface = self.fontFace.value;
@@ -565,6 +567,7 @@ VRCreateUI = function() {
 
       self.isPlane.checked = text.textureDescription.plane;
       self.textMessage.value = text.message;
+      self.sceneJump.value = text.jumpTo;
 
       self.fontAlign.value = text.textOptions.align;
       self.fontFace.value = text.textOptions.fontface;
@@ -870,6 +873,9 @@ VRCreateUI = function() {
 
     this.textMessage = document.getElementById('textMessage');
     this.textMessage.onchange = this.inputStateChange;
+
+    this.sceneJump = document.getElementById('sceneJump');
+    this.sceneJump.onchange = this.inputStateChange;
 
     this.jumpTo = document.getElementById('jumpTo');
     this.jumpTo.onchange = this.inputStateChange;
