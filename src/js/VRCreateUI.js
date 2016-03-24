@@ -93,8 +93,6 @@ VRCreateUI = function() {
 
   this.textMessage = null;
   this.sceneJump = null;
-  this.jumpTo = null;
-  this.jumpText = null;
   this.fontAlign = null;
   this.fontFace = null;
   this.fontSize = null;
@@ -129,7 +127,6 @@ VRCreateUI = function() {
       self.showOptionsPosition3D(false);
       self.showOptionsPlanar(false);
       self.showOptionsText(false);
-      self.showOptionsJump(false);
       self.showOptionsTextCommon(false);
       return;
     }
@@ -143,7 +140,6 @@ VRCreateUI = function() {
       self.showOptionsPlanar(self.isPlane.checked);
       self.showStereoOptions(self.isStereo.checked);
       self.showOptionsText(false);
-      self.showOptionsJump(false);
       self.showOptionsTextCommon(false);
     } else if (type == "text") {
       self.showImageOptions(false);
@@ -151,15 +147,6 @@ VRCreateUI = function() {
       self.showOptionsPosition3D(false);
       self.showOptionsPlanar(self.isPlane.checked);
       self.showOptionsText(true);
-      self.showOptionsJump(false);
-      self.showOptionsTextCommon(true);
-    } else if (type == "jump") {
-      self.showImageOptions(false);
-      self.showOptionsPosition(true);
-      self.showOptionsPosition3D(false);
-      self.showOptionsPlanar(self.isPlane.checked);
-      self.showOptionsText(false);
-      self.showOptionsJump(true);
       self.showOptionsTextCommon(true);
     }
   }
@@ -187,10 +174,6 @@ VRCreateUI = function() {
 
   this.showOptionsTextCommon = function(doit) {
     document.getElementById("options_text_common").hidden = !doit;
-  }
-
-  this.showOptionsJump = function(doit) {
-    document.getElementById("options_jump").hidden = !doit;
   }
 
   this.showStereoOptions = function(doit) {
@@ -261,32 +244,6 @@ VRCreateUI = function() {
       text.textOptions.bordercolor = self.borderColor.value;
       text.textOptions.backgroundcolor = self.backgroundColor.value;
       text.textOptions.textcolor = self.textColor.value;
-    } else if (type == "jump") {
-      var jump = scene.dict.jumpObjects[idx];
-      var hfov = parseFloat(self.hfovVRUINumberSlider.get());
-      var vfov = parseFloat(self.vfovVRUINumberSlider.get());
-      var xpos = parseFloat(self.xposVRUINumberSlider.get());
-      var ypos = parseFloat(self.yposVRUINumberSlider.get());
-      var planarOffsetX = parseFloat(self.planarOffsetXSlider.get());
-      var planarOffsetY = parseFloat(self.planarOffsetYSlider.get());
-
-      jump.textureDescription.sphereFOV[0] = hfov;
-      jump.textureDescription.sphereFOV[1] = vfov;
-      jump.textureDescription.sphereCentre[0] = xpos;
-      jump.textureDescription.sphereCentre[1] = ypos;
-      jump.textureDescription.plane = self.isPlane.checked;
-      jump.textureDescription.planeOffset = [planarOffsetX, planarOffsetY];
-
-      jump.jumpTo = self.jumpTo.value;
-      jump.jumpText = self.jumpText.value;
-
-      jump.textOptions.align = self.fontAlign.value;
-      jump.textOptions.fontface = self.fontFace.value;
-      jump.textOptions.fontsize = self.fontSize.value;
-      jump.textOptions.borderthickness = self.borderThickness.value;
-      jump.textOptions.bordercolor = self.borderColor.value;
-      jump.textOptions.backgroundcolor = self.backgroundColor.value;
-      jump.textOptions.textcolor = self.textColor.value;
     }
 
     self.setPanelVisibility();
@@ -448,12 +405,6 @@ VRCreateUI = function() {
       opt.innerHTML = "Text " + (i+1);
       self.elementSelect.appendChild(opt);
     }
-    for (i = 0; i < scene.dict.jumpObjects.length; i++) {
-      var opt = document.createElement('option');
-      opt.value = "jump_" + i;
-      opt.innerHTML = "Jump " + (i+1);
-      self.elementSelect.appendChild(opt);
-    }
     self.pushFromDictToRender();
   }
 
@@ -482,15 +433,6 @@ VRCreateUI = function() {
     self.accordionStacker.showNamed("setup_scene_object");
   }
 
-  this.addJump = function() {
-    var scene = self.sceneList.scenes[self.sceneSelect.value];
-    scene.addJump();
-    self.populateGUIFromSceneDict(self.sceneSelect.value);
-    self.elementSelect.value = "jump_" + (scene.dict.jumpObjects.length - 1);
-    self.selectElement();
-    self.accordionStacker.showNamed("setup_scene_object");
-  }
-
   this.removeElement = function() {
     if (self.elementSelect.value == "")
       return;
@@ -503,8 +445,6 @@ VRCreateUI = function() {
       scene.removePhoto(idx);
     } else if (type == "text") {
       scene.removeText(idx);
-    } else if (type == "jump") {
-      scene.removeJump(idx);
     }
 
     self.populateGUIFromSceneDict(self.sceneSelect.value);
@@ -577,26 +517,6 @@ VRCreateUI = function() {
       self.backgroundColor.value = text.textOptions.backgroundcolor;
       self.textColor.value = text.textOptions.textcolor;
 
-    } else if (type=="jump"){
-      var jump = scene.dict.jumpObjects[idx];
-      self.hfovVRUINumberSlider.set(jump.textureDescription.sphereFOV[0]);
-      self.vfovVRUINumberSlider.set(jump.textureDescription.sphereFOV[1]);
-      self.xposVRUINumberSlider.set(jump.textureDescription.sphereCentre[0]);
-      self.yposVRUINumberSlider.set(jump.textureDescription.sphereCentre[1]);
-      self.planarOffsetXSlider.set(jump.textureDescription.planeOffset[0]);
-      self.planarOffsetYSlider.set(jump.textureDescription.planeOffset[1]);
-
-      self.isPlane.checked = jump.textureDescription.plane;
-      self.jumpTo.value = jump.jumpTo;
-      self.jumpText.value = jump.jumpText;
-
-      self.fontAlign.value = jump.textOptions.align;
-      self.fontFace.value = jump.textOptions.fontface;
-      self.fontSize.value = jump.textOptions.fontsize;
-      self.borderThickness.value = jump.textOptions.borderthickness;
-      self.borderColor.value = jump.textOptions.bordercolor;
-      self.backgroundColor.value = jump.textOptions.backgroundcolor;
-      self.textColor.value = jump.textOptions.textcolor;
     }
   }
 
@@ -877,11 +797,6 @@ VRCreateUI = function() {
     this.sceneJump = document.getElementById('sceneJump');
     this.sceneJump.onchange = this.inputStateChange;
 
-    this.jumpTo = document.getElementById('jumpTo');
-    this.jumpTo.onchange = this.inputStateChange;
-    this.jumpText = document.getElementById('jumpText');
-    this.jumpText.onchange = this.inputStateChange;
-
     this.fontAlign = document.getElementById('fontAlign');
     this.fontAlign.onchange = this.inputStateChange;
     this.fontFace = document.getElementById('fontFace');
@@ -915,11 +830,9 @@ VRCreateUI = function() {
 
     var addImageButton = document.getElementById("addImage");
     var addTextButton = document.getElementById("addText");
-    var addJumpButton = document.getElementById("addJump");
     var removeElementButton = document.getElementById("removeElement");
     addImageButton.onclick = this.addImage;
     addTextButton.onclick = this.addText;
-    addJumpButton.onclick = this.addJump;
     removeElementButton.onclick = this.removeElement;
 
     this.oneImage = document.getElementById("oneImage");

@@ -400,7 +400,7 @@ VRStory = function() {
         jumpCallback = this.gotoNamedScene;
         jumpTo = textObject.jumpTo;
       }
-      
+
       this.vrGui.createTextBox(textObject.textureDescription.sphereFOV[0],
                                textObject.textureDescription.sphereCentre[0],
                                textObject.textureDescription.sphereCentre[1],
@@ -413,7 +413,7 @@ VRStory = function() {
     }
 
     if (curScene.hasJumpNav() == false) {
-    var numScenes = self.sceneList.length;
+      var numScenes = self.sceneList.length;
       if (self.currentSceneIndex>0) {
         // prev
         this.vrGui.createArrow(15, -30, -40, this.prevScene, null, true);
@@ -422,21 +422,6 @@ VRStory = function() {
       if (self.currentSceneIndex<(numScenes-1)) {
         //next
         this.vrGui.createArrow(15, 30, -40, this.nextScene, null, false);
-      }
-    } else {
-      var jumpObjects = curScene.jumpObjects;
-      for (g = 0;g<jumpObjects.length; g++){
-        // just assuming text nodes only for now
-        var jumpObject = jumpObjects[g];
-        this.vrGui.createTextBox(jumpObject.textureDescription.sphereFOV[0],
-                                 jumpObject.textureDescription.sphereCentre[0],
-                                 jumpObject.textureDescription.sphereCentre[1],
-                                 jumpObject.textureDescription.plane,
-                                 jumpObject.textureDescription.planeOffset,
-                                 this.gotoNamedScene,
-                                 jumpObject.jumpTo,
-                                 jumpObject.jumpText + ' \u27A6',
-                                 jumpObject.textOptions);
       }
     }
     this.quad.renderGui();
