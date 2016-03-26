@@ -43,21 +43,21 @@ VRTextureDescription = function () {
     if (str == undefined)
       return;
     var arr = str.split(",");
-    this.planeOffset = [arr[0].trim(), arr[1].trim()];
+    this.planeOffset = [parseFloat(arr[0].trim()), parseFloat(arr[1].trim())];
   };
 
   this.setSphereParamsFromString  = function(str) {
     var arr = str.split(",");
-    this.sphereFOV = [arr[0].trim(), arr[1].trim()];
-    this.sphereCentre = [arr[2].trim(), arr[3].trim()];
+    this.sphereFOV = [parseFloat(arr[0].trim()), parseFloat(arr[1].trim())];
+    this.sphereCentre = [parseFloat(arr[2].trim()), parseFloat(arr[3].trim())];
   };
 
   this.setTexParamsFromString = function(str) {
     var arr = str.split(",");
-    this.U_l = [arr[0].trim(), arr[1].trim()];
-    this.V_l = [arr[2].trim(), arr[3].trim()];
-    this.U_r = [arr[4].trim(), arr[5].trim()];
-    this.V_r = [arr[6].trim(), arr[7].trim()];
+    this.U_l = [parseFloat(arr[0].trim()), parseFloat(arr[1].trim())];
+    this.V_l = [parseFloat(arr[2].trim()), parseFloat(arr[3].trim())];
+    this.U_r = [parseFloat(arr[4].trim()), parseFloat(arr[5].trim())];
+    this.V_r = [parseFloat(arr[6].trim()), parseFloat(arr[7].trim())];
   };
 
   this.getPlaneOffsetParamsString = function() {

@@ -21,9 +21,10 @@ VRGuiImage = function() {
   this.imgsrc = null;
 
   this.init = function(guiImage) {
+    this.guiImage = guiImage;
     this.textureDescription = new VRTextureDescription();
     this.textureDescription.setSphereParamsFromString(this.guiImage.getAttribute("sphereParams"));
-    this.textureDescription.plane = this.parseBoolString(this.guiImage.getAttribute("plane"));
+    this.textureDescription.plane = this.textureDescription.parseBoolString(this.guiImage.getAttribute("plane"));
     this.textureDescription.setPlaneOffsetParamsFromString(this.guiImage.getAttribute("planeOffset"));
 
     this.imgsrc = this.guiImage.getAttribute("src");

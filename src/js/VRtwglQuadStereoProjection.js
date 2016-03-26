@@ -342,7 +342,6 @@ VRtwglQuadStereoProjection = function() {
     for(texIt = 0;texIt < self.vrGui.canvasSet.length; texIt++) {
       var canvasTex = self.vrGui.canvasSet[texIt][0];
       var textureDesc = canvasTex.vrTextureDescription;
-      canvasTex.update(self.tick);
       self.uniformsFbGui["textureSource"] = canvasTex.glTex;
       self.uniformsFbGui["sphX"] = [0.5-0.5*(textureDesc.sphereFOV[0]/360.0),0.5-0.5*(textureDesc.sphereFOV[1]/180.0)];
       self.uniformsFbGui["sphYX"] = [(textureDesc.sphereFOV[0]/360.0),(textureDesc.sphereFOV[1]/180.0)];

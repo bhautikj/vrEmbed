@@ -187,6 +187,9 @@ VRStory = function() {
     if (self.vrGui == null)
       return;
 
+    // update gui tex if needed
+    this.redrawGui();
+
     var now = Date.now();
     var dir = [];
 
@@ -391,7 +394,6 @@ VRStory = function() {
     var curScene = this.sceneList[this.currentSceneIndex];
     var textObjects = curScene.textObjects;
     for (g = 0;g<textObjects.length; g++){
-      // just assuming text nodes only for now
       var textObject = textObjects[g];
       var jumpCallback = null;
       var jumpTo = null;
@@ -412,6 +414,24 @@ VRStory = function() {
                                textObject.textOptions);
     }
 
+    var guiImageObjects = curScene.guiImageObjects;
+    for (g = 0;g<guiImageObjects.length; g++){
+      var guiImageObject = guiImageObjects[g];
+      var jumpCallback = null;
+      var jumpTo = null;
+
+      if (guiImageObject.jumpTo!="") {
+        jumpCallback = this.gotoNamedScene;
+        jumpTo = guiImageObject.jumpTo;
+      }
+
+      this.vrGui.createGuiImage(jumpCallback,
+                                jumpTo,
+                                guiImageObject.imgsrc,
+                                guiImageObject.textureDescription);
+
+    }
+
     if (curScene.hasJumpNav() == false) {
       var numScenes = self.sceneList.length;
       if (self.currentSceneIndex>0) {
@@ -425,6 +445,12 @@ VRStory = function() {
       }
     }
     this.quad.renderGui();
+  }
+
+  this.redrawGui = function() {
+    if (this.vrGui.guiNeedsRedraw()) {
+      this.quad.renderGui();
+    }
   }
 
   this.init = function(storyElement, storyManager) {
@@ -615,7 +641,10 @@ VRStory = function() {
   }
 
   this.isSinglePhotoStory = function() {
-    if(this.sceneList.length != 1 || this.sceneList[0].photoObjects.length != 1 || this.sceneList[0].textObjects.length != 0)
+    if(this.sceneList.length != 1 ||
+      this.sceneList[0].photoObjects.length != 1 ||
+      this.sceneList[0].textObjects.length != 0 ||
+      this.sceneList[0].guiImageObjects.length != 0)
       return false;
     else
       return true;

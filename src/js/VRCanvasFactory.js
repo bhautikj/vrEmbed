@@ -1,5 +1,6 @@
 VRTextureDescription = require('./VRTextureDescription.js');
 var twgl = require('../js-ext/twgl-full.js');
+var canvasSize = 2048;
 
 function roundRect(ctx, x, y, w, h, r)
 {
@@ -25,15 +26,26 @@ function VRCanvasBase() {
   this.vrTextureDescription = null;
   this.canvas = null;
   this.ctx = null;
+  this.dirty = false;
 }
 
 VRCanvasBase.prototype.initBase = function(gl) {
   this.vrTextureDescription = new VRTextureDescription();
   this.canvas = document.createElement("canvas");
   this.ctx = this.canvas.getContext("2d");
-  this.ctx.canvas.width  = 2048;
-  this.ctx.canvas.height = 2048;
+  this.ctx.canvas.width  = canvasSize;
+  this.ctx.canvas.height = canvasSize;
   this.gl=gl;
+}
+
+VRCanvasBase.prototype.setDirty = function() {
+  this.dirty = true;
+}
+
+VRCanvasBase.prototype.getDirtyAndClear = function() {
+  var rv = this.dirty;
+  this.dirty = false;
+  return rv;
 }
 
 
@@ -50,34 +62,67 @@ VRCanvasBase.prototype.updateBase = function() {
   }
 }
 
-VRCanvasImage = function() {};
-VRCanvasImage.prototype = new VRCanvasBase();
-VRCanvasImage.prototype.imageLoaded = function() {
+VRCanvasGuiImage = function() {};
+VRCanvasGuiImage.prototype = new VRCanvasBase();
+var guiImageLoad = function(img) {
   // image loaded: render to canvas!
-  console.log("IMAGE LOADED");
-  console.log(self.imgsrc);
-  var x=0;
-  var y=0;
-  var w=2048;
-  var h=2048;
-  this.ctx.drawImage(self.imagePreview, x,y,w,h);
+  var desiredFOV = img.guiImageObject.desiredSphereFOV;
+  var iw = img.width;
+  var ih = img.height;
+  var x,y,w,h;
+  var endFOV = [];
+
+  // render image to square canvas
+  if (iw>ih) {
+    //landscape
+    w=canvasSize;
+    h=w*ih/iw;
+    x=0;
+    y=(canvasSize/2)-h/2;
+    endFOV =[desiredFOV[0], desiredFOV[0]*ih/iw];
+  } else {
+    //portrait
+    h=canvasSize;
+    w = h*iw/ih;
+    y=0;
+    x=(canvasSize/2)-w/2;
+    endFOV =[desiredFOV[0], desiredFOV[0]*ih/iw];
+  }
+
+  console.log(endFOV);
+  img.guiImageObject.ctx.drawImage(img, x,y,w,h);
+  img.guiImageObject.vrTextureDescription.sphereFOV = endFOV;
+
+  img.guiImageObject.updateBase();
+  img.guiImageObject.setDirty();
 }
 
-VRCanvasImage.prototype.init = function(gl, imgsrc) {
-  var self = this;
+VRCanvasGuiImage.prototype.init = function(gl, imgsrc, textureDescription) {
   this.initBase(gl);
+  this.vrTextureDescription = textureDescription;
+  this.desiredSphereFOV = textureDescription.sphereFOV;
+  this.vrTextureDescription.sphereFOV = [0,0];
   this.imgsrc = imgsrc;
   this.image = new Image();
-  this.image.onload = this.imageLoaded;
+  this.image.guiImageObject = this;
+  // this.image.onload = this.imageLoaded;
+  this.image.onload = function () {
+    guiImageLoad(this);
+  };
   this.image.src = imgsrc;
 }
 
+VRCanvasGuiImage.prototype.update = function(time) {
+  this.updateBase();
+  this.setDirty();
+}
 
 VRCanvasSpinner = function() {};
 VRCanvasSpinner.prototype = new VRCanvasBase();
 VRCanvasSpinner.prototype.init = function(gl) {
   this.initBase(gl);
 }
+
 VRCanvasSpinner.prototype.update = function(time) {
   this.ctx.fillStyle = "#00f";
   this.ctx.strokeStyle = "#ff0";
@@ -87,6 +132,7 @@ VRCanvasSpinner.prototype.update = function(time) {
   this.ctx.arc(this.ctx.canvas.width / 2, this.ctx.canvas.height / 2, this.ctx.canvas.width / 2.2 * Math.abs(Math.cos(time)), 0, Math.PI * 2);
   this.ctx.stroke();
   this.updateBase();
+  this.setDirty();
 }
 
 VRCanvasArrow = function() {};
@@ -131,6 +177,7 @@ VRCanvasArrow.prototype.update = function(time) {
   this.ctx.stroke();
   this.ctx.fill();
   this.updateBase();
+  this.setDirty();
 }
 
 
@@ -255,6 +302,7 @@ VRCanvasTextBox.prototype.init = function(gl, message, hfov, options) {
 
 VRCanvasTextBox.prototype.update = function(time) {
   this.updateBase();
+  this.setDirty();
 }
 
 VRCanvasFactoryCore = function() {
@@ -267,8 +315,8 @@ VRCanvasFactoryCore = function() {
   this.createCanvasArrow = function() {
     return new VRCanvasArrow();
   }
-  this.createCanvasImage = function() {
-    return new VRCanvasImage();
+  this.createCanvasGuiImage = function() {
+    return new VRCanvasGuiImage();
   }
 }
 

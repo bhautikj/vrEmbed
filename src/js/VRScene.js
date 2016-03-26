@@ -1,10 +1,12 @@
 var VRScenePhoto = require('./VRScenePhoto.js');
 var VRText = require('./VRText.js');
+var VRGuiImage = require('./VRGuiImage.js');
 
 VRScene = function() {
   this.sceneElement = null;
   this.photoObjects = [];
   this.textObjects = [];
+  this.guiImageObjects = [];
   this.oldScroll = null;
   this.isStereo = false;
   this.name = "";
@@ -20,6 +22,10 @@ VRScene = function() {
       var vrText = new VRText();
       vrText.init(elm);
       this.textObjects.push(vrText);
+    } else if (elm.nodeName == "GUIIMAGE") {
+      var vrGuiImage = new VRGuiImage();
+      vrGuiImage.init(elm);
+      this.guiImageObjects.push(vrGuiImage);
     }
 
     var children = elm.childNodes;
@@ -51,6 +57,7 @@ VRScene = function() {
   this.initDict = function(dict) {
     this.photoObjects = [];
     this.textObjects = [];
+    this.guiImageObjects = [];
 
     for (var i = 0, l=dict.photoObjects.length; i<l; ++i) {
       var photoObject = new VRScenePhoto();
@@ -62,6 +69,12 @@ VRScene = function() {
       var textObject = new VRText();
       textObject.initDict(dict.textObjects[i]);
       this.textObjects.push(textObject);
+    }
+
+    for (var i = 0, l=dict.guiImageObjects.length; i<l; ++i) {
+      var vrGuiImage = new VRGuiImage();
+      vrGuiImage.initDict(dict.guiImageObjects[i]);
+      this.guiImageObjects.push(vrGuiImage);
     }
 
     this.name = dict.name;
@@ -96,6 +109,10 @@ VRScene = function() {
       elm.appendChild(this.textObjects[j].getTextElement());
     }
 
+    for(k=0; k<this.guiImageObjects.length; k++) {
+      elm.appendChild(this.guiImageObjects[j].getGuiImageElement());
+    }
+
     return elm;
   }
 
@@ -103,6 +120,11 @@ VRScene = function() {
 
     for(j=0; j<this.textObjects.length; j++) {
       if (this.textObjects[j].jumpTo!="")
+        return true;
+    }
+
+    for(j=0; j<this.guiImageObjects.length; j++) {
+      if (this.guiImageObjects[j].jumpTo!="")
         return true;
     }
 

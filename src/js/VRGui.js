@@ -173,6 +173,16 @@ VRGui = function() {
     this.canvasSet = [];
   }
 
+  this.guiNeedsRedraw = function() {
+    var globalDirty = false;
+    for(texIt = 0;texIt < this.canvasSet.length; texIt++) {
+      var dirty = this.canvasSet[texIt][0].getDirtyAndClear();
+      if (dirty)
+        globalDirty = true;
+    }
+    return globalDirty;
+  }
+
   this.update = function(_pt, timestamp) {
     var pt = [_pt[0],_pt[1]];
     // document.getElementById("log").innerHTML = Math.floor(_pt[0]) + "," + Math.floor(_pt[1]);
@@ -206,6 +216,15 @@ VRGui = function() {
     var vrGuiTimer = new VRGuiTimer();
     vrGuiTimer.init(vrCanvasTextBox, callback, callbackArgs);
     this.canvasSet.push([vrCanvasTextBox, vrGuiTimer]);
+  }
+
+  this.createGuiImage = function(callback, callbackArgs, imgsrc, textureDescription) {
+    var vrGuiImage = VRCanvasFactory.createCanvasGuiImage();
+    vrGuiImage.init(this.gl, imgsrc, textureDescription);
+    vrGuiImage.update(self.tick);
+    var vrGuiTimer = new VRGuiTimer();
+    vrGuiTimer.init(vrGuiImage, callback, callbackArgs);
+    this.canvasSet.push([vrGuiImage, vrGuiTimer]);
   }
 
   this.createArrow = function(hfov, x, y, callback, callbackArgs, isLeft) {
