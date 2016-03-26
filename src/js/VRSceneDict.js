@@ -7,6 +7,7 @@ VRSceneDict = function() {
     this.dict = {};
     this.dict.photoObjects=[];
     this.dict.textObjects=[];
+    this.dict.guiImageObjects=[];
     this.dict.name = "";
   }
 
@@ -16,12 +17,16 @@ VRSceneDict = function() {
     this.dict.name = vrScene.name;
     this.dict.photoObjects=[];
     this.dict.textObjects=[];
+    this.dict.guiImageObjects=[];
 
     for(i = 0;i < vrScene.photoObjects.length; i++) {
       this.dict.photoObjects.push(this.initFromScenePhoto(vrScene.photoObjects[i]));
     }
     for(i = 0;i < vrScene.textObjects.length; i++) {
       this.dict.textObjects.push(this.initFromText(vrScene.textObjects[i]));
+    }
+    for(i = 0;i < vrScene.guiImageObjects.length; i++) {
+      this.dict.guiImageObjects.push(this.initFromGuiImage(vrScene.guiImageObjects[i]));
     }
   }
 
@@ -58,7 +63,6 @@ VRSceneDict = function() {
     photo.textureDescription = this.initFromTextureDescription(scenePhoto.textureDescription);
     return photo;
   }
-
 
   this.initPhoto = function() {
     var photo ={};
@@ -106,6 +110,38 @@ VRSceneDict = function() {
     text.textOptions.textcolor = '#FFFFFF';
     return text;
   }
+
+  this.initFromGuiImage = function(vrGuiImage) {
+    var guiImage = {};
+    guiImage.textureDescription = this.initFromTextureDescription(vrGuiImage.textureDescription);
+    vrGuiImage.imgsrc = vrGuiImage.imgsrc;
+    vrGuiImage.jumpTo = vrGuiImage.jumpTo;
+    return text;
+  }
+
+  this.initGuiImage = function() {
+    var guiImage ={};
+    guiImage.imgsrc="http://vrembed.org/src/assets/vrEmbedLogo.png";
+    guiImage.jumpTo = "";
+    guiImage.textureDescription = {};
+    guiImage.textureDescription.src="";
+    guiImage.textureDescription.isStereo = false;
+    guiImage.textureDescription.plane = false;
+    guiImage.textureDescription.sphereFOV = [60,60];
+    guiImage.textureDescription.sphereCentre = [0,0];
+    guiImage.textureDescription.planeOffset = [0,0];
+    return text;
+  }
+
+  this.addGuiImage = function() {
+    var guiImage = this.initGuiImage();
+    this.dict.photoObjects.push(guiImage);
+  }
+
+  this.removePhoto = function(idx) {
+    this.dict.photoObjects.splice(idx,1);
+  }
+
 
   this.addPhoto = function() {
     var photo = this.initPhoto();

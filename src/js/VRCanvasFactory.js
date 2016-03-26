@@ -50,6 +50,29 @@ VRCanvasBase.prototype.updateBase = function() {
   }
 }
 
+VRCanvasImage = function() {};
+VRCanvasImage.prototype = new VRCanvasBase();
+VRCanvasImage.prototype.imageLoaded = function() {
+  // image loaded: render to canvas!
+  console.log("IMAGE LOADED");
+  console.log(self.imgsrc);
+  var x=0;
+  var y=0;
+  var w=2048;
+  var h=2048;
+  this.ctx.drawImage(self.imagePreview, x,y,w,h);
+}
+
+VRCanvasImage.prototype.init = function(gl, imgsrc) {
+  var self = this;
+  this.initBase(gl);
+  this.imgsrc = imgsrc;
+  this.image = new Image();
+  this.image.onload = this.imageLoaded;
+  this.image.src = imgsrc;
+}
+
+
 VRCanvasSpinner = function() {};
 VRCanvasSpinner.prototype = new VRCanvasBase();
 VRCanvasSpinner.prototype.init = function(gl) {
@@ -243,6 +266,9 @@ VRCanvasFactoryCore = function() {
   }
   this.createCanvasArrow = function() {
     return new VRCanvasArrow();
+  }
+  this.createCanvasImage = function() {
+    return new VRCanvasImage();
   }
 }
 
