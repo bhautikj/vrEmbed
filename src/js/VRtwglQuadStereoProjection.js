@@ -337,6 +337,9 @@ VRtwglQuadStereoProjection = function() {
       return;
     }
 
+    var gl = self.vrtwglQuad.glContext;
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     self.vrtwglQuadFbGui.clearFrameBuffer(0, 0, 0, 0);
 
     for(texIt = 0;texIt < self.vrGui.canvasSet.length; texIt++) {
