@@ -89,7 +89,6 @@ var guiImageLoad = function(img) {
     endFOV =[desiredFOV[0], desiredFOV[0]*ih/iw];
   }
 
-  console.log(endFOV);
   img.guiImageObject.ctx.drawImage(img, x,y,w,h);
   img.guiImageObject.vrTextureDescription.sphereFOV = endFOV;
 
