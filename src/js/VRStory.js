@@ -201,11 +201,10 @@ VRStory = function() {
 
 
     // gui opacity
-
     if (this.vrGui.isHovering()) {
       self.quad.setGuiMult(Math.min(1.0, self.quad.getGuiMult()+0.05));
     } else {
-      self.quad.setGuiMult(Math.max(0.7, self.quad.getGuiMult()-0.05));
+      self.quad.setGuiMult(Math.max(0.0, self.quad.getGuiMult()-0.05));
     }
 
     var actionPercent = 0;
@@ -311,12 +310,21 @@ VRStory = function() {
 
     var recticleList = this.getReticlePositions();
 
+    var actionTransparency;
+    if (this.vrGui.isHovering()){
+      actionTransparency = actionPercent*0.2 + 0.8;
+    } else {
+      actionTransparency = actionPercent*0.8 + 0.2;
+    }
     for (objit = 0;objit<recticleList.length; objit++){
       var reticle = recticleList[objit];
-      var actionTransparency = actionPercent*0.9 + 0.1;
       // draw aiming reiticle
       ctx.beginPath();
-      ctx.lineWidth = 6;
+      ctx.lineWidth = 10;
+      ctx.strokeStyle = "rgba(0,0,0," + actionTransparency +")";
+      ctx.arc(reticle[0],reticle[1],15,0,2*Math.PI);
+      ctx.stroke();
+      ctx.lineWidth = 8;
       ctx.strokeStyle = "rgba(255,255,255," + actionTransparency +")";
       ctx.arc(reticle[0],reticle[1],15,0,2*Math.PI);
       ctx.stroke();
@@ -324,7 +332,7 @@ VRStory = function() {
 
       ctx.beginPath();
       ctx.strokeStyle = "rgba(0,0,0,1.0)";
-      ctx.lineWidth = 5;
+      ctx.lineWidth = 6;
       ctx.arc(reticle[0],reticle[1],15,-0.5*Math.PI,-0.5*Math.PI+actionPercent*2*Math.PI);
       ctx.stroke();
     }

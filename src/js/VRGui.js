@@ -47,19 +47,19 @@ function pointInPlane(pt, vrTextureDescription) {
   var planeX = -alpha*Math.cos(testPoint[1])*Math.sin(testPoint[0]);
   var planeY = -alpha*Math.sin(testPoint[1]);
 
-  var xmin = vrTextureDescription.planeOffset[0]*45 - (0.5*vrTextureDescription.sphereFOV[0]);
+  var xmin = vrTextureDescription.planeOffset[0] - (0.5*vrTextureDescription.sphereFOV[0]);
   if(planeX<xmin)
     return false;
 
-  var xmax = vrTextureDescription.planeOffset[0]*45 + (0.5*vrTextureDescription.sphereFOV[0]);
+  var xmax = vrTextureDescription.planeOffset[0] + (0.5*vrTextureDescription.sphereFOV[0]);
   if (planeX>xmax)
     return false;
 
-  var ymin = vrTextureDescription.planeOffset[1]*45 - (0.5*vrTextureDescription.sphereFOV[1]);
+  var ymin = vrTextureDescription.planeOffset[1] - (0.5*vrTextureDescription.sphereFOV[1]);
   if (planeY<ymin)
     return false;
 
-  var ymax = vrTextureDescription.planeOffset[1]*45 + (0.5*vrTextureDescription.sphereFOV[1]);
+  var ymax = vrTextureDescription.planeOffset[1] + (0.5*vrTextureDescription.sphereFOV[1]);
   if (planeY>ymax)
     return false;
 
