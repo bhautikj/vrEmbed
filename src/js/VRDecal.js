@@ -16,19 +16,19 @@
 
 var VRTextureDescription = require('./VRTextureDescription.js');
 
-VRGuiImage = function() {
+VRDecal = function() {
   this.textureDescription = null;
   this.imgsrc = null;
 
-  this.init = function(guiImage) {
-    this.guiImage = guiImage;
+  this.init = function(decal) {
+    this.decal = decal;
     this.textureDescription = new VRTextureDescription();
-    this.textureDescription.setSphereParamsFromString(this.guiImage.getAttribute("sphereParams"));
-    this.textureDescription.plane = this.textureDescription.parseBoolString(this.guiImage.getAttribute("plane"));
-    this.textureDescription.setPlaneOffsetParamsFromString(this.guiImage.getAttribute("planeOffset"));
+    this.textureDescription.setSphereParamsFromString(this.decal.getAttribute("sphereParams"));
+    this.textureDescription.plane = this.textureDescription.parseBoolString(this.decal.getAttribute("plane"));
+    this.textureDescription.setPlaneOffsetParamsFromString(this.decal.getAttribute("planeOffset"));
 
-    this.imgsrc = this.guiImage.getAttribute("src");
-    this.jumpTo = this.guiImage.getAttribute("jumpTo");
+    this.imgsrc = this.decal.getAttribute("src");
+    this.jumpTo = this.decal.getAttribute("jumpTo");
     if (this.jumpTo == undefined)
       this.jumpTo = "";
   };
@@ -40,8 +40,8 @@ VRGuiImage = function() {
     this.imgsrc = dict.imgsrc;
   }
 
-  this.getGuiImageElement = function(){
-    var elm = document.createElement('guiImage');
+  this.getDecalElement = function(){
+    var elm = document.createElement('decal');
     this.textureDescription.setElement(elm);
     elm.setAttribute('src', this.imgsrc);
     if(this.jumpTo!="")
@@ -51,4 +51,4 @@ VRGuiImage = function() {
 };
 
 
-module.exports = VRGuiImage;
+module.exports = VRDecal;

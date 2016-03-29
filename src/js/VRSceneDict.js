@@ -7,7 +7,7 @@ VRSceneDict = function() {
     this.dict = {};
     this.dict.photoObjects=[];
     this.dict.textObjects=[];
-    this.dict.guiImageObjects=[];
+    this.dict.decalObjects=[];
     this.dict.name = "";
   }
 
@@ -17,7 +17,7 @@ VRSceneDict = function() {
     this.dict.name = vrScene.name;
     this.dict.photoObjects=[];
     this.dict.textObjects=[];
-    this.dict.guiImageObjects=[];
+    this.dict.decalObjects=[];
 
     for(i = 0;i < vrScene.photoObjects.length; i++) {
       this.dict.photoObjects.push(this.initFromScenePhoto(vrScene.photoObjects[i]));
@@ -25,8 +25,8 @@ VRSceneDict = function() {
     for(i = 0;i < vrScene.textObjects.length; i++) {
       this.dict.textObjects.push(this.initFromText(vrScene.textObjects[i]));
     }
-    for(i = 0;i < vrScene.guiImageObjects.length; i++) {
-      this.dict.guiImageObjects.push(this.initFromGuiImage(vrScene.guiImageObjects[i]));
+    for(i = 0;i < vrScene.decalObjects.length; i++) {
+      this.dict.decalObjects.push(this.initFromDecal(vrScene.decalObjects[i]));
     }
   }
 
@@ -111,31 +111,31 @@ VRSceneDict = function() {
     return text;
   }
 
-  this.initFromGuiImage = function(vrGuiImage) {
-    var guiImage = {};
-    guiImage.textureDescription = this.initFromTextureDescription(vrGuiImage.textureDescription);
-    vrGuiImage.imgsrc = vrGuiImage.imgsrc;
-    vrGuiImage.jumpTo = vrGuiImage.jumpTo;
+  this.initFromDecal = function(vrDecal) {
+    var decal = {};
+    decal.textureDescription = this.initFromTextureDescription(vrDecal.textureDescription);
+    vrDecal.imgsrc = vrDecal.imgsrc;
+    vrDecal.jumpTo = vrDecal.jumpTo;
     return text;
   }
 
-  this.initGuiImage = function() {
-    var guiImage ={};
-    guiImage.imgsrc="http://vrembed.org/src/assets/vrEmbedLogo.png";
-    guiImage.jumpTo = "";
-    guiImage.textureDescription = {};
-    guiImage.textureDescription.src="";
-    guiImage.textureDescription.isStereo = false;
-    guiImage.textureDescription.plane = false;
-    guiImage.textureDescription.sphereFOV = [60,60];
-    guiImage.textureDescription.sphereCentre = [0,0];
-    guiImage.textureDescription.planeOffset = [0,0];
+  this.initDecal = function() {
+    var decal ={};
+    decal.imgsrc="http://vrembed.org/src/assets/vrEmbedLogo.png";
+    decal.jumpTo = "";
+    decal.textureDescription = {};
+    decal.textureDescription.src="";
+    decal.textureDescription.isStereo = false;
+    decal.textureDescription.plane = false;
+    decal.textureDescription.sphereFOV = [60,60];
+    decal.textureDescription.sphereCentre = [0,0];
+    decal.textureDescription.planeOffset = [0,0];
     return text;
   }
 
-  this.addGuiImage = function() {
-    var guiImage = this.initGuiImage();
-    this.dict.photoObjects.push(guiImage);
+  this.addDecal = function() {
+    var decal = this.initDecal();
+    this.dict.photoObjects.push(decal);
   }
 
   this.removePhoto = function(idx) {

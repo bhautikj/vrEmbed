@@ -422,21 +422,21 @@ VRStory = function() {
                                textObject.textOptions);
     }
 
-    var guiImageObjects = curScene.guiImageObjects;
-    for (g = 0;g<guiImageObjects.length; g++){
-      var guiImageObject = guiImageObjects[g];
+    var decalObjects = curScene.decalObjects;
+    for (g = 0;g<decalObjects.length; g++){
+      var decalObject = decalObjects[g];
       var jumpCallback = null;
       var jumpTo = null;
 
-      if (guiImageObject.jumpTo!="") {
+      if (decalObject.jumpTo!="") {
         jumpCallback = this.gotoNamedScene;
-        jumpTo = guiImageObject.jumpTo;
+        jumpTo = decalObject.jumpTo;
       }
 
-      this.vrGui.createGuiImage(jumpCallback,
+      this.vrGui.createDecal(jumpCallback,
                                 jumpTo,
-                                guiImageObject.imgsrc,
-                                guiImageObject.textureDescription);
+                                decalObject.imgsrc,
+                                decalObject.textureDescription);
 
     }
 
@@ -652,7 +652,7 @@ VRStory = function() {
     if(this.sceneList.length != 1 ||
       this.sceneList[0].photoObjects.length != 1 ||
       this.sceneList[0].textObjects.length != 0 ||
-      this.sceneList[0].guiImageObjects.length != 0)
+      this.sceneList[0].decalObjects.length != 0)
       return false;
     else
       return true;

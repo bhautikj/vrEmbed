@@ -218,13 +218,13 @@ VRGui = function() {
     this.canvasSet.push([vrCanvasTextBox, vrGuiTimer]);
   }
 
-  this.createGuiImage = function(callback, callbackArgs, imgsrc, textureDescription) {
-    var vrGuiImage = VRCanvasFactory.createCanvasGuiImage();
-    vrGuiImage.init(this.gl, imgsrc, textureDescription);
-    vrGuiImage.update(self.tick);
+  this.createDecal = function(callback, callbackArgs, imgsrc, textureDescription) {
+    var vrDecal = VRCanvasFactory.createCanvasDecal();
+    vrDecal.init(this.gl, imgsrc, textureDescription);
+    vrDecal.update(self.tick);
     var vrGuiTimer = new VRGuiTimer();
-    vrGuiTimer.init(vrGuiImage, callback, callbackArgs);
-    this.canvasSet.push([vrGuiImage, vrGuiTimer]);
+    vrGuiTimer.init(vrDecal, callback, callbackArgs);
+    this.canvasSet.push([vrDecal, vrGuiTimer]);
   }
 
   this.createArrow = function(hfov, x, y, callback, callbackArgs, isLeft) {

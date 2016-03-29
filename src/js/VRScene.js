@@ -1,12 +1,12 @@
 var VRScenePhoto = require('./VRScenePhoto.js');
 var VRText = require('./VRText.js');
-var VRGuiImage = require('./VRGuiImage.js');
+var VRDecal = require('./VRDecal.js');
 
 VRScene = function() {
   this.sceneElement = null;
   this.photoObjects = [];
   this.textObjects = [];
-  this.guiImageObjects = [];
+  this.decalObjects = [];
   this.oldScroll = null;
   this.isStereo = false;
   this.name = "";
@@ -22,10 +22,10 @@ VRScene = function() {
       var vrText = new VRText();
       vrText.init(elm);
       this.textObjects.push(vrText);
-    } else if (elm.nodeName == "GUIIMAGE") {
-      var vrGuiImage = new VRGuiImage();
-      vrGuiImage.init(elm);
-      this.guiImageObjects.push(vrGuiImage);
+    } else if (elm.nodeName == "DECAL") {
+      var vrDecal = new VRDecal();
+      vrDecal.init(elm);
+      this.decalObjects.push(vrDecal);
     }
 
     var children = elm.childNodes;
@@ -57,7 +57,7 @@ VRScene = function() {
   this.initDict = function(dict) {
     this.photoObjects = [];
     this.textObjects = [];
-    this.guiImageObjects = [];
+    this.decalObjects = [];
 
     for (var i = 0, l=dict.photoObjects.length; i<l; ++i) {
       var photoObject = new VRScenePhoto();
@@ -71,10 +71,10 @@ VRScene = function() {
       this.textObjects.push(textObject);
     }
 
-    for (var i = 0, l=dict.guiImageObjects.length; i<l; ++i) {
-      var vrGuiImage = new VRGuiImage();
-      vrGuiImage.initDict(dict.guiImageObjects[i]);
-      this.guiImageObjects.push(vrGuiImage);
+    for (var i = 0, l=dict.decalObjects.length; i<l; ++i) {
+      var vrDecal = new VRDecal();
+      vrDecal.initDict(dict.decalObjects[i]);
+      this.decalObjects.push(vrDecal);
     }
 
     this.name = dict.name;
@@ -109,8 +109,8 @@ VRScene = function() {
       elm.appendChild(this.textObjects[j].getTextElement());
     }
 
-    for(k=0; k<this.guiImageObjects.length; k++) {
-      elm.appendChild(this.guiImageObjects[j].getGuiImageElement());
+    for(k=0; k<this.decalObjects.length; k++) {
+      elm.appendChild(this.decalObjects[j].getDecalElement());
     }
 
     return elm;
@@ -123,8 +123,8 @@ VRScene = function() {
         return true;
     }
 
-    for(j=0; j<this.guiImageObjects.length; j++) {
-      if (this.guiImageObjects[j].jumpTo!="")
+    for(j=0; j<this.decalObjects.length; j++) {
+      if (this.decalObjects[j].jumpTo!="")
         return true;
     }
 

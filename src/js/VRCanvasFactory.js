@@ -62,11 +62,11 @@ VRCanvasBase.prototype.updateBase = function() {
   }
 }
 
-VRCanvasGuiImage = function() {};
-VRCanvasGuiImage.prototype = new VRCanvasBase();
-var guiImageLoad = function(img) {
+VRCanvasDecal = function() {};
+VRCanvasDecal.prototype = new VRCanvasBase();
+var decalLoad = function(img) {
   // image loaded: render to canvas!
-  var desiredFOV = img.guiImageObject.desiredSphereFOV;
+  var desiredFOV = img.decalObject.desiredSphereFOV;
   var iw = img.width;
   var ih = img.height;
   var x,y,w,h;
@@ -89,29 +89,29 @@ var guiImageLoad = function(img) {
     endFOV =[desiredFOV[0], desiredFOV[0]*ih/iw];
   }
 
-  img.guiImageObject.ctx.drawImage(img, x,y,w,h);
-  img.guiImageObject.vrTextureDescription.sphereFOV = endFOV;
+  img.decalObject.ctx.drawImage(img, x,y,w,h);
+  img.decalObject.vrTextureDescription.sphereFOV = endFOV;
 
-  img.guiImageObject.updateBase();
-  img.guiImageObject.setDirty();
+  img.decalObject.updateBase();
+  img.decalObject.setDirty();
 }
 
-VRCanvasGuiImage.prototype.init = function(gl, imgsrc, textureDescription) {
+VRCanvasDecal.prototype.init = function(gl, imgsrc, textureDescription) {
   this.initBase(gl);
   this.vrTextureDescription = textureDescription;
   this.desiredSphereFOV = textureDescription.sphereFOV;
   this.vrTextureDescription.sphereFOV = [0,0];
   this.imgsrc = imgsrc;
   this.image = new Image();
-  this.image.guiImageObject = this;
+  this.image.decalObject = this;
   // this.image.onload = this.imageLoaded;
   this.image.onload = function () {
-    guiImageLoad(this);
+    decalLoad(this);
   };
   this.image.src = imgsrc;
 }
 
-VRCanvasGuiImage.prototype.update = function(time) {
+VRCanvasDecal.prototype.update = function(time) {
   this.updateBase();
   this.setDirty();
 }
@@ -314,8 +314,8 @@ VRCanvasFactoryCore = function() {
   this.createCanvasArrow = function() {
     return new VRCanvasArrow();
   }
-  this.createCanvasGuiImage = function() {
-    return new VRCanvasGuiImage();
+  this.createCanvasDecal = function() {
+    return new VRCanvasDecal();
   }
 }
 
