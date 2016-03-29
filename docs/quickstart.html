@@ -77,7 +77,72 @@
 </div>
 
 <!-- BEGIN CONTENT HERE -->
+<div class="container">
+  <div class="row"><div class="twelve columns">
+  <h2>From a single image</h2>
+  <a name="creating_single_image"></a>
+  </div></div>
+  <div class="row">
+    <div class="one-half column">
+      If you have a single image, there are two quick methods for creating a vrEmbed. Lets just work with this image - http://vrembed.org/src/assets/ferry_building.jpg - as an example:
+    </div>
+    <div class="one-half column">
+      <div class="figure"><img src="../src/assets/ferry_building.jpg" width=100%/><br/></div>
+    </div>
+  </div>
+</div>
 
+<div class="container">
+  <div class="row"><div class="twelve columns">
+  <a name="creating_single_image_url"></a>
+  <h3>Passing it directly to vrEmbed.org</h3>
+  </div></div>
+  <div class="row">
+    <div class="one-half column">
+      You can take your image URL and pass it directly to vrEmbed (the specific meanings for the parameters used can be found in the <a href="#vrembed_parameters">vrEmbed parameters</a> section below):
+    </div>
+    <div class="one-half column">
+      <div class="code">https://vrEmbed.org/?src=//vrembed.org/src/assets/ferry_building.jpg&amp;isStereo=false&amp;sphereParams=360,180,0,0</div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="twelve columns">
+      Visit the link: <a href="http://vrembed.org/?src=//vrembed.org/src/assets/ferry_building.jpg&isStereo=false&sphereParams=360,180,0,0" target="_blank">http://vrembed.org/?src=//vrembed.org/src/assets/ferry_building.jpg&isStereo=false&sphereParams=360,180,0,0</a>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row"><div class="twelve columns">
+  <a name="creating_single_image_embed"></a>
+  <h3>Creating an embed code</h3>
+  </div></div>
+  <div class="row">
+    <div class="one-half column">
+      You can also create an embed code to do the same, and use this fragment of HTML code wherever you like to embed the html (barring pages that don't support HTML snippets, such as facebook or twitter). <a href="single_image_embed.html" target="_blank">See the result here</a>.
+    </div>
+    <div class="one-half column">
+      <div class="code">&lt;a class=&quot;vrEmbedPhoto&quot; src=&quot;http://vrembed.org/src/assets/ferry_building.jpg&quot; isStereo=&quot;false&quot; sphereParams=&quot;360,180,0,0&quot;&gt;&lt;/a&gt;&lt;script async src=&quot;//vrEmbed.org/vrEmbed.min.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row"><div class="twelve columns">
+  <a name="creating_stereo_image"></a>
+  <h2>Working with 3D images</h2>
+  </div></div>
+  <div class="row">
+    <div class="one-half column">
+      If you have a left and right image combined into a single image, you can easily turn it into a vrEmbed:
+      <div class="code">&lt;a class=&quot;vrEmbedPhoto&quot; src=&quot;http://vrembed.org/src/assets/anchor_stereo.jpg&quot; isStereo=&quot;true&quot; sphereParams=&quot;100,66,0,0&quot; texParams=&quot;0,0,0.5,1.0,0.5,0,1,1&quot;&gt;&lt;/a&gt;&lt;script async src=&quot;//vrEmbed.org/vrEmbed.min.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;</div>
+      <a href="stereo_image_embed.html" target="_blank">See the result here</a> - hit the 'fullscreen' button and use a 3D image mode (e.g. with a headset or with red-blue glasses) to see the effect. Go <a href="#optional_parameters">here</a> for a detailed look at the parameters you need to set.
+    </div>
+    <div class="one-half column">
+      <div class="figure"><img src="../src/assets/anchor_stereo.jpg" width=100%/><br/></div>
+    </div>
+  </div>
+</div>
 <!-- END CONTENT HERE -->
 
 <div class="section values">
