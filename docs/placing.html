@@ -78,22 +78,46 @@
 
 <!-- BEGIN CONTENT HERE -->
 <div class="container">
-  <div class="row"><div class="twelve columns">
-  <a name="vrembed_parameters"></a>
-  <h1>vrEmbed parameters</h1>
-  </div></div>
   <div class="row">
     <div class="twelve columns">
-      The above examples used special parameters to set up the images inside the scenes.
+      <h2>Scene objects</h2>
     </div>
   </div>
-
   <div class="row">
     <div class="twelve columns">
-      <h2>Required parameters</h2>
+      There are three types of objects that can be placed into a vrEmbed scene. All of the objects have controls for placement in the scene; the <i>text</i> and <i>decal</i> objects also have options for interaction.</br>
     </div>
   </div>
+  <div class="row">
+    <div class="twelve columns">&nbsp;</div>
+  </div>
+  <div class="row">
+    <div class="one-third column alignright">
+      <h3>photo</h3>
+    </div>
+    <div class="two-thirds column">
+      In a vrEmbed, a <i>photo</i> is the main object for showing content inside of the scene. It takes an image as an input and displays it inside of a VR sphere or mapped to a plane. It is not interactive - you can view the photo object but it doesn't respond to user gestures.
+    </div>
+  </div>
+  <div class="row">
+    <div class="one-third column alignright">
+      <h3>text</h3>
+    </div>
+    <div class="two-thirds column">
+      A <i>text</i> object can be used to place arbitrary, user-generated text inside the VR sphere. Options are provided for styling the text, altering such things as colors, borders and size. The object can also respond to user gestures; it comes out of its resting state and becomes opaque when a user looks at it, and a gesture can be added so that it can be used to jump to another scene. Typically this would be used as a caption box for a <i>photo</i> object.
+    </div>
+  </div>
+  <div class="row">
+    <div class="one-third column alignright">
+      <h3>decal</h3>
+    </div>
+    <div class="two-thirds column">
+      The <i>decal</i> object is simimar to the <i>photo</i> object but provides fewer options. It's function, like the text object, is to respond to user gestures. Typically this would be used as a user-stylable object that the user can interact with to jump from one scene to another.
+    </div>
+  </div>
+</div>
 
+<div class="container">
   <div class="row">
     <div class="one-third column">
       <h3>sphereParams</h3>
