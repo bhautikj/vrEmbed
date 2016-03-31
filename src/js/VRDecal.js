@@ -46,6 +46,7 @@ VRDecal = function() {
     elm.setAttribute('src', this.imgsrc);
     if(this.jumpTo!="")
       elm.setAttribute('jumpTo', this.jumpTo);
+    return elm;
   }
 
 };

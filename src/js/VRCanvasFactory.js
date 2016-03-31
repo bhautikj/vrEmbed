@@ -104,6 +104,7 @@ VRCanvasDecal.prototype.init = function(gl, imgsrc, textureDescription) {
   this.imgsrc = imgsrc;
   this.image = new Image();
   this.image.decalObject = this;
+  this.image.crossOrigin = "Anonymous";
   // this.image.onload = this.imageLoaded;
   this.image.onload = function () {
     decalLoad(this);

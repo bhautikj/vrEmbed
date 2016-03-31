@@ -127,6 +127,7 @@ VRCreateUI = function() {
       self.showOptionsPosition3D(false);
       self.showOptionsPlanar(false);
       self.showOptionsText(false);
+      self.showOptionsJump(false);
       self.showOptionsTextCommon(false);
       return;
     }
@@ -140,6 +141,7 @@ VRCreateUI = function() {
       self.showOptionsPlanar(self.isPlane.checked);
       self.showStereoOptions(self.isStereo.checked);
       self.showOptionsText(false);
+      self.showOptionsJump(false);
       self.showOptionsTextCommon(false);
     } else if (type == "text") {
       self.showImageOptions(false);
@@ -147,7 +149,17 @@ VRCreateUI = function() {
       self.showOptionsPosition3D(false);
       self.showOptionsPlanar(self.isPlane.checked);
       self.showOptionsText(true);
+      self.showOptionsJump(true);
       self.showOptionsTextCommon(true);
+    } else if (type == "decal") {
+      self.showImageOptions(true);
+      self.showOptionsPosition(true);
+      self.showOptionsPosition3D(false);
+      self.showOptionsPlanar(self.isPlane.checked);
+      self.showStereoOptions(false);
+      self.showOptionsText(false);
+      self.showOptionsJump(true);
+      self.showOptionsTextCommon(false);
     }
   }
 
@@ -170,6 +182,10 @@ VRCreateUI = function() {
 
   this.showOptionsText = function(doit) {
     document.getElementById("options_text").hidden = !doit;
+  }
+
+  this.showOptionsJump = function(doit) {
+    document.getElementById("options_jump").hidden = !doit;
   }
 
   this.showOptionsTextCommon = function(doit) {
@@ -244,6 +260,24 @@ VRCreateUI = function() {
       text.textOptions.bordercolor = self.borderColor.value;
       text.textOptions.backgroundcolor = self.backgroundColor.value;
       text.textOptions.textcolor = self.textColor.value;
+    } else if (type == "decal") {
+      var decal = scene.dict.decalObjects[idx];
+      var hfov = parseFloat(self.hfovVRUINumberSlider.get());
+      var vfov = parseFloat(self.vfovVRUINumberSlider.get());
+      var xpos = parseFloat(self.xposVRUINumberSlider.get());
+      var ypos = parseFloat(self.yposVRUINumberSlider.get());
+      var planarOffsetX = parseFloat(self.planarOffsetXSlider.get());
+      var planarOffsetY = parseFloat(self.planarOffsetYSlider.get());
+
+      decal.textureDescription.sphereFOV[0] = hfov;
+      decal.textureDescription.sphereFOV[1] = vfov;
+      decal.textureDescription.sphereCentre[0] = xpos;
+      decal.textureDescription.sphereCentre[1] = ypos;
+      decal.textureDescription.plane = self.isPlane.checked;
+      decal.textureDescription.planeOffset = [planarOffsetX, planarOffsetY];
+
+      decal.imgsrc = self.imageURL.value;
+      decal.jumpTo = self.sceneJump.value;
     }
 
     self.setPanelVisibility();
@@ -405,6 +439,12 @@ VRCreateUI = function() {
       opt.innerHTML = "Text " + (i+1);
       self.elementSelect.appendChild(opt);
     }
+    for (i = 0; i < scene.dict.decalObjects.length; i++) {
+      var opt = document.createElement('option');
+      opt.value = "decal_" + i;
+      opt.innerHTML = "Decal " + (i+1);
+      self.elementSelect.appendChild(opt);
+    }
     self.pushFromDictToRender();
   }
 
@@ -433,6 +473,15 @@ VRCreateUI = function() {
     self.accordionStacker.showNamed("setup_scene_object");
   }
 
+  this.addDecal = function() {
+    var scene = self.sceneList.scenes[self.sceneSelect.value];
+    scene.addDecal();
+    self.populateGUIFromSceneDict(self.sceneSelect.value);
+    self.elementSelect.value = "decal_" + (scene.dict.decalObjects.length - 1);
+    self.selectElement();
+    self.accordionStacker.showNamed("setup_scene_object");
+  }
+
   this.removeElement = function() {
     if (self.elementSelect.value == "")
       return;
@@ -445,7 +494,10 @@ VRCreateUI = function() {
       scene.removePhoto(idx);
     } else if (type == "text") {
       scene.removeText(idx);
+    } else if (type == "decal") {
+      scene.removeDecal(idx);
     }
+
 
     self.populateGUIFromSceneDict(self.sceneSelect.value);
   }
@@ -516,7 +568,18 @@ VRCreateUI = function() {
       self.borderColor.value = text.textOptions.bordercolor;
       self.backgroundColor.value = text.textOptions.backgroundcolor;
       self.textColor.value = text.textOptions.textcolor;
+    } else if (type == "decal") {
+      var decal = scene.dict.decalObjects[idx];
+      self.hfovVRUINumberSlider.set(decal.textureDescription.sphereFOV[0]);
+      self.vfovVRUINumberSlider.set(decal.textureDescription.sphereFOV[1]);
+      self.xposVRUINumberSlider.set(decal.textureDescription.sphereCentre[0]);
+      self.yposVRUINumberSlider.set(decal.textureDescription.sphereCentre[1]);
+      self.isPlane.checked = decal.textureDescription.plane;
+      self.planarOffsetXSlider.set(decal.textureDescription.planeOffset[0]);
+      self.planarOffsetYSlider.set(decal.textureDescription.planeOffset[1]);
 
+      self.imageURL.value = decal.imgsrc;
+      self.sceneJump.value = decal.jumpTo;
     }
   }
 
@@ -703,6 +766,7 @@ VRCreateUI = function() {
     ctx.canvas.width  = 1024;
     ctx.canvas.height = 1024;
     this.imagePreview = new Image();
+    this.imagePreview.crossOrigin = "Anonymous";
     this.imageURL.onchange = this.loadImage;
     this.imageURL.value = "";
 
@@ -830,9 +894,11 @@ VRCreateUI = function() {
 
     var addImageButton = document.getElementById("addImage");
     var addTextButton = document.getElementById("addText");
+    var addDecalButton = document.getElementById("addDecal");
     var removeElementButton = document.getElementById("removeElement");
     addImageButton.onclick = this.addImage;
     addTextButton.onclick = this.addText;
+    addDecalButton.onclick = this.addDecal;
     removeElementButton.onclick = this.removeElement;
 
     this.oneImage = document.getElementById("oneImage");

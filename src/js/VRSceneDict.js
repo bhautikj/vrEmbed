@@ -130,16 +130,16 @@ VRSceneDict = function() {
     decal.textureDescription.sphereFOV = [60,60];
     decal.textureDescription.sphereCentre = [0,0];
     decal.textureDescription.planeOffset = [0,0];
-    return text;
+    return decal;
   }
 
   this.addDecal = function() {
     var decal = this.initDecal();
-    this.dict.photoObjects.push(decal);
+    this.dict.decalObjects.push(decal);
   }
 
-  this.removePhoto = function(idx) {
-    this.dict.photoObjects.splice(idx,1);
+  this.removeDecal = function(idx) {
+    this.dict.decalObjects.splice(idx,1);
   }
 
 

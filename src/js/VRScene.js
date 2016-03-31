@@ -110,7 +110,7 @@ VRScene = function() {
     }
 
     for(k=0; k<this.decalObjects.length; k++) {
-      elm.appendChild(this.decalObjects[j].getDecalElement());
+      elm.appendChild(this.decalObjects[k].getDecalElement());
     }
 
     return elm;
