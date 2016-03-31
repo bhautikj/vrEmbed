@@ -126,8 +126,8 @@ VRSceneDict = function() {
     decal.textureDescription = {};
     decal.textureDescription.src="";
     decal.textureDescription.isStereo = false;
-    decal.textureDescription.plane = false;
-    decal.textureDescription.sphereFOV = [60,60];
+    decal.textureDescription.plane = true;
+    decal.textureDescription.sphereFOV = [30,30];
     decal.textureDescription.sphereCentre = [0,0];
     decal.textureDescription.planeOffset = [0,0];
     return decal;
