@@ -119,10 +119,32 @@
 
 <div class="container">
   <div class="row">
+    <div class="twelve columns">
+      <h2>Setting parameters</h2>
+    </div>
+  </div>
+  <div class="row">
+    <div class="two-thirds column">
+      Scene object parmeters are either automatically set by the <a href=">http://vrEmbed.org/create" target="_blank">create tool</a>, or set by hand on the object tag itself. Any tag that can be used for the <i>photo</i> object can also be used in constructing a vrEmbed link too. <br/><br/>
+      For example, to set the image source on a photo tag set it as quoted attribute:
+    </div>
     <div class="one-third column">
-      <h3>sphereParams</h3>
+      <div class="code">&lt;photo src=&quot;foo.jpg&quot;&gt;</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="twelve columns">
+      <h2>Parameter list</h2>
+    </div>
+  </div>
+  <div class="row">
+    <div class="one-third column">
+      <h4>sphereParams (photo, text, decal)</h4>
       <div class="code">sphereParams=&quot;w,h,x,y&quot;</div>
-      This parameters are used in most tags that are in a scene, and specify where in space the object will appear and how large it will be.
+      This parameters are used in all objects that are in a scene, and specify where in space the object will appear and how large it will be.
     </div>
     <div class="one-third column">
       <div class="figure"><img src="../src/assets/image_size.png" width=100%/></div>
@@ -133,65 +155,72 @@
       <b>x</b> and <b>y</b> refer to where on the sphere the <i>centre</i> of your image is. <b>x</b> goes from left to right from -180 to 180; 0 is stright ahead of the viewer, -90 is directly to the left and 90 is directly to the right. <b>y</b> goes from top to bottom -90 to 90; 0 is straight ahead of the viewer, -90 is directly above and 90 is directly below.
     </div>
   </div>
+
   <div class="row">
     <div class="one-half column">
-      <h3>src</h3>
-      <div class="code">src=&quot;foo.jpg&quot;</div>
-      Specific to the photo tag or if using vrEmbed URL mode - simply point the code at where your image lives online.
+      <h4>src (photo, decal)</h4>
+      The URL of the image the load for this object.
     </div>
     <div class="one-half column">
-      <h3>isStereo</h3>
-      <div class="code">isStereo=&quot;false&quot;</div>
-      Also specific to the photo tag or if using vrEmbed URL mode - if your image is a composite of left and right images, set this to <b>true</b> otherwise just leave it as <b>false</b>.
+      <div class="code">src=&quot;foo.jpg&quot;</div>
     </div>
   </div>
 
-  <a name="optional_parameters"></a>
-  <div class="row">
-    <div class="twelve columns">
-      <h2>Optional parameters</h2>
-    </div>
-  </div>
   <div class="row">
     <div class="one-half column">
-      <h3>texParams</h3>
+      <h4>isStereo (photo)</h4>
+      If your image is a composite of left and right images, set this to <b>true</b> otherwise just leave it as <b>false</b>. <i>decal</i> does not currently support stereo images.
+    </div>
+    <div class="one-half column">
+      <div class="code">isStereo=&quot;false&quot;</div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="one-half column">
+      <h4>texParams (photo)</h4>
       <div class="code">texParams=&quot;LTx,LTy,LBx,LBy,RTx,RTy,RBx,RBy&quot;</div><br/>
-      More advanced users can set up their embed with a 3D (i.e. stereo) image. For vrEmbed we currently assume that the left and right images combined together into the <i>same</i> image, typically side-by-side or top-and-bottom. We need to tell vrEmbed where the left and right images are. We measure the x-coordinate from left to right going from 0.0 to 1.0, amd the y-coordinate from top to bottom also going from 0.0 to 1.0. Note that at the moment we <i>do not</i> support pixel coordinates - these are floating-point values (this may change depending on need).<br/>
-      We define <b>(LTx,LTy)</b> as the top-left coordinate of the left image, <b>(LBx,LBy)</b> as the bottom-right coordinate of the left image.  <b>(RTx,RTy)</b> and <b>(RBx,RBy)</b> correspondingly match the right image.
+      More advanced users can set up their embed with a 3D (i.e. stereo) image. For vrEmbed we currently assume that the left and right images combined together into the <i>same</i> image, typically side-by-side or top-and-bottom. <br/><br/>
+      We need to tell vrEmbed where the left and right images are. We measure the x-coordinate from left to right going from 0.0 to 1.0, amd the y-coordinate from top to bottom also going from 0.0 to 1.0. Note that at the moment we <i>do not</i> support pixel coordinates - these are floating-point values (this may change depending on need).<br/><br/>
+      We define <b>(LTx,LTy)</b> as the top-left coordinate of the left image, <b>(LBx,LBy)</b> as the bottom-right coordinate of the left image.  <b>(RTx,RTy)</b> and <b>(RBx,RBy)</b> correspondingly match the right image.<br/><br/>
+      Easy setup of these parameters is available in the <a href=">http://vrEmbed.org/create" target="_blank">create tool</a>.
     </div>
     <div class="one-half column">
       <div class="figure"><img src="../src/assets/stereo_image_coords.png" width=100%/></div>
     </div>
   </div>
-  <div class="row"><br/></div>
+
   <div class="row">
     <div class="one-half column">
-      <h3>width and height</h3>
-      <div class="code">width=640px, height=480px</div><br/>
+      <h3>plane (photo, text, decal)</h3>
+      Project your object on to a plane instead of a sphere. This has the effect of creating a virtual flat plane for the object to be projected on to instead of the curved surface of a sphere. This is useful if, for example you want to assemble images from a cubemap.<br/><br/>
+      The plane is centered at the <i>x</i> and <i>y</i> coordinates of <i>sphereParams</i>.<br/><br/>
     </div>
     <div class="one-half column">
-      You can set the width and height of the embed using width and height parameters, which both need to be set (e.g. width=640px height=480px); otherwise the embed defaults to creating a 16:9 ratio embed that takes up the width of the container.
+      <div class="code">plane=&quot;true&quot;</div>
     </div>
   </div>
-  <div class="row"><br/></div>
+
   <div class="row">
     <div class="one-half column">
-      <h3>plane</h3>
-      <div class="code">plane=&quot;false&quot;</div>
+      <h3>planeOffset (photo, text, decal)</h3>
+      Once an object has been projected to a plane, it can be offset along the plane. This can be useful for placing a text or a decal object as a caption above or below a photo.<br/><br/>
+      <i>ox</i> and <i>oy</i> are the offset parameters; although there is no practical limit on how large these values can be, we recommend keeping them in the range of -360 to 360. A decal with a horizontal field of view of, say, 60, can have another 60 degree decal placed direcly next to it by specifying a plane offset of 60.<br/><br/>
     </div>
     <div class="one-half column">
-      Advanced: project your object on to a plane instead of a sphere. This has the effect of creating a virtual flat plane for the object to be projected on to instead of the curved surface of a sphere. This is useful if you want to assemble images from a cubemap.
+      <div class="code">planeOffset=&quot;ox,oy&quot;</div>
     </div>
   </div>
+
   <a name="styling_text"></a>
   <div class="row">
     <div class="twelve columns">
-      <h2>Styling text and jump boxes</h2>
+      <h4>Various text styling options (text)</h4>
     </div>
   </div>
   <div class="row">
     <div class="one-third column">
-      The text and jump tags can be easily styled. The options are:
+      The text object can be easily styled. The options are:
     </div>
     <div class="two-thirds column">
       <b>align:</b> <i>left, center or right</i> - specifies how the text will be aligned in the text box.<br/>
@@ -203,6 +232,18 @@
       <b>textcolor:</b> defaults to <i>#FFFFFF</i> (white) - specifies the color of the text<br/>
     </div>
   </div>
+
+  <!-- <div class="row"><br/></div>
+  <div class="row">
+    <div class="one-half column">
+      <h3>width and height</h3>
+      <div class="code">width=640px, height=480px</div><br/>
+    </div>
+    <div class="one-half column">
+      You can set the width and height of the embed using width and height parameters, which both need to be set (e.g. width=640px height=480px); otherwise the embed defaults to creating a 16:9 ratio embed that takes up the width of the container.
+    </div>
+  </div>
+  <div class="row"><br/></div> -->
 
 </div>
 <!-- END CONTENT HERE -->
