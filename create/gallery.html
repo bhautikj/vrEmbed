@@ -1,0 +1,187 @@
+
+<!--
+  Copyright 2015 Bhautik J Joshi
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ -->
+
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+
+   <!-- Basic Page Needs
+   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+   <meta charset="utf-8">
+   <title>vrEmbed by Bhautik Joshi</title>
+   <meta name="description" content="vrEmbed.org">
+   <meta name="author" content="Bhautik Joshi">
+   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, shrink-to-fit=no">
+   <meta name="mobile-web-app-capable" content="yes">
+   <meta name="apple-mobile-web-app-capable" content="yes" />
+   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+   <!-- FONT
+   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+   <link href='//fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
+
+   <!-- CSS
+   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+   <link rel="stylesheet" href="../css/normalize.css">
+   <link rel="stylesheet" href="../css/skeleton.css">
+   <link rel="stylesheet" href="../css/custom.css">
+
+   <!-- Favicon
+   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+   <link rel="icon" type="image/png" href="../src/assets/vrEmbedLogo_32.png">
+
+ </head>
+
+<body>
+
+
+<!-- <script src="../bin/vrEmbed.js"></script> -->
+
+<script>
+
+function endsWith(str, suffix) {
+    return str.indexOf(suffix, str.length - suffix.length) !== -1;
+}
+
+var flickrImageCache = {};
+var imgurImageCache = {};
+
+var getImgurImagePart = function(imgurURL) {
+  var part = null;
+  var spl = imgurURL.split('/');
+  for (i=0; l=spl.length,i<l; i++) {
+    if (spl[i].endsWith("imgur.com")){
+      if (i<l-1) {
+        part = spl[i+1];
+        if (part=="") {
+          part == null;
+        }
+        break;
+      }
+    }
+  }
+
+  if (part == null)
+    return null;
+
+  partspl = part.split('.');
+
+  if (partspl[0]=="")
+    return null;
+
+  return partspl[0];
+}
+
+var getImgurImage = function(imagePart, callbackFunc) {
+  var imgurAPI = "";
+  imgurAPI += "https://api.imgur.com/3/image/";
+  imgurAPI += imagePart;
+  imgurAPI += "?client_id=fe596e6329962dd";
+
+  if (imagePart in imgurImageCache) {
+    if (callbackFunc!=null)
+      callbackFunc(imgurImageCache[imagePart]);
+    return;
+  }
+
+  var xhr= new XMLHttpRequest();
+  xhr.open("GET",imgurAPI,true);
+  xhr.setRequestHeader("Authorization", "Client-ID fe596e6329962dd");
+  xhr.setRequestHeader("Accept", "application/json");
+  xhr.send();
+  xhr.onreadystatechange=function(){
+    if(xhr.readyState==4 && xhr.status==200) {
+      var dataArray = JSON.parse(xhr.responseText);
+      var imgURL = dataArray.data.link;
+      imgurImageCache[imagePart] = imgURL;
+      //TODO: reject too-big images
+      if (callbackFunc!=null)
+        callbackFunc(imgURL);
+    }
+  };
+};
+
+var getFlickrPhotoID = function(flickrURL) {
+  var photo_id=null;
+
+  var spl = flickrURL.split('/');
+  for (i=0;i<spl.length;i++) {
+    if (spl[i]=="photos") {
+      if ((i+2)<spl.length) {
+        photo_id = spl[i+2];
+        break;
+      }
+    }
+  }
+  return photo_id;
+}
+
+var getFlickrImage = function(photo_id, callbackFunc) {
+  if (photo_id==null) {
+    return false;
+  }
+
+  if (photo_id in flickrImageCache) {
+    callbackFunc(flickrImageCache[photo_id]);
+    return;
+  }
+
+  var flickrAPI = "";
+  flickrAPI += "https://api.flickr.com/services/rest/?";
+  flickrAPI += "&method=flickr.photos.getSizes";
+  flickrAPI += "&api_key=c074e17f92ea52a8d9422928352b0053";
+  flickrAPI += "&photo_id=" + photo_id;
+  flickrAPI += "&format=json";
+  flickrAPI += "&nojsoncallback=1";
+
+  var xhr= new XMLHttpRequest();
+  xhr.open("GET",flickrAPI,true);   //
+  xhr.send();
+  xhr.onreadystatechange=function(){
+    if(xhr.readyState==4 && xhr.status==200) {
+      var myArray = JSON.parse(xhr.responseText);
+      var sizes = myArray.sizes.size;
+      var useMe = 0;
+      var maxWidth = 0;
+      for (i=0; i<sizes.length; i++) {
+        var width = parseInt(sizes[i].width);
+        if(width <= 2048 && width>maxWidth){
+          maxWidth = width;
+          useMe = i;
+        }
+      }
+      flickrImageCache[photo_id] = sizes[useMe].source;
+      callbackFunc(flickrImageCache[photo_id]);
+    }
+  };
+}
+
+// console.log(getImgurImagePart("http://imgur.com/bAiBLy6.jpg"));
+// console.log(getImgurImagePart("http://i.imgur.com/bAiBLy6.jpg"));
+// console.log(getImgurImagePart("imgur.com/bAiBLy6"));
+// console.log(getImgurImagePart("imgur.com/"));
+// console.log(getImgurImagePart("imgur.com"));
+// console.log(getImgurImagePart("http://imgur.com/bAiBLy"));
+// console.log(getImgurImagePart("foo.com"));
+// getImgurImage("bAiBLy6", null);
+// test gallery
+// https://imgur.com/a/eRPvE
+
+</script>
+
+</body>
+</html>

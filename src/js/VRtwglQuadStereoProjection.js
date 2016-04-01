@@ -525,7 +525,7 @@ VRtwglQuadStereoProjection = function() {
         min: gl.LINEAR,
         mag: gl.LINEAR,
         src: textureDescriptions[texIt].textureSource,
-        crossOrigin: "", // either this or use twgl.setDefaults
+        crossOrigin: "Anonymous", // either this or use twgl.setDefaults
       };
       texArray[texIt] = texSpec;
       this.textureDescriptions[texIt] = textureDescriptions[texIt];

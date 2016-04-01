@@ -482,7 +482,7 @@ define("node_modules/almond/almond.js", function(){});
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 define('twgl/typedarrays',[], function () {
-  
+
 
   // make sure we don't see a global gl
   var gl = undefined;  // eslint-disable-line
@@ -582,7 +582,7 @@ define('twgl/attributes',[
     './typedarrays',
   ], function (
     typedArrays) {
-  
+
 
   // make sure we don't see a global gl
   var gl = undefined;  // eslint-disable-line
@@ -1173,7 +1173,7 @@ define('twgl/attributes',[
  */
 
 define('twgl/programs',[], function () {
-  
+
 
   var error =
       (    window.console
@@ -1934,7 +1934,7 @@ define('twgl/draw',[
     './programs',
   ], function (
     programs) {
-  
+
 
   /**
    * Calls `gl.drawElements` or `gl.drawArrays`, whichever is appropriate
@@ -2076,7 +2076,7 @@ define('twgl/draw',[
  */
 
 define('twgl/utils',[], function () {
-  
+
 
   /**
    * Copy an object 1 level deep
@@ -2134,7 +2134,7 @@ define('twgl/textures',[
   ], function (
     typedArrays,
     utils) {
-  
+
 
   // make sure we don't see a global gl
   var gl = undefined;  // eslint-disable-line
@@ -3155,7 +3155,7 @@ define('twgl/framebuffers',[
   ], function (
     textures,
     utils) {
-  
+
 
   // make sure we don't see a global gl
   var gl = undefined;  // eslint-disable-line
@@ -3493,7 +3493,7 @@ define('twgl/twgl',[
     programs,
     textures,
     typedArrays) {
-  
+
 
   /**
    * The main TWGL module.
