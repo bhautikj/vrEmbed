@@ -59,8 +59,9 @@ function endsWith(str, suffix) {
 
 var flickrImageCache = {};
 var imgurImageCache = {};
+var imgurAlbumCache = {};
 
-var getImgurImagePart = function(imgurURL) {
+var parseImgurURL = function(imgurURL) {
   var part = null;
   var spl = imgurURL.split('/');
   for (i=0; l=spl.length,i<l; i++) {
@@ -68,35 +69,40 @@ var getImgurImagePart = function(imgurURL) {
       if (i<l-1) {
         part = spl[i+1];
         if (part=="") {
-          part == null;
+          return null;
         }
-        break;
+        if (part=="a") {
+          if (i<l-2) {
+            part=spl[i+2]
+            return [part,'album'];
+          } else {
+            return null;
+          }
+        } else if (part == "gallery") {
+          if (i<l-2) {
+            part=spl[i+2]
+            return [part,'gallery'];
+          } else {
+            return null;
+          }
+        } else {
+          partspl = part.split('.');
+
+          if (partspl[0]=="")
+            return null;
+
+          return [partspl[0],'image'];
+        }
       }
     }
   }
-
-  if (part == null)
-    return null;
-
-  partspl = part.split('.');
-
-  if (partspl[0]=="")
-    return null;
-
-  return partspl[0];
 }
 
-var getImgurImage = function(imagePart, callbackFunc) {
+var doImgurCall = function(dataPart, apiBase, postFunc, callbackFunc) {
   var imgurAPI = "";
-  imgurAPI += "https://api.imgur.com/3/image/";
-  imgurAPI += imagePart;
+  imgurAPI += apiBase;
+  imgurAPI += dataPart;
   imgurAPI += "?client_id=fe596e6329962dd";
-
-  if (imagePart in imgurImageCache) {
-    if (callbackFunc!=null)
-      callbackFunc(imgurImageCache[imagePart]);
-    return;
-  }
 
   var xhr= new XMLHttpRequest();
   xhr.open("GET",imgurAPI,true);
@@ -106,14 +112,47 @@ var getImgurImage = function(imagePart, callbackFunc) {
   xhr.onreadystatechange=function(){
     if(xhr.readyState==4 && xhr.status==200) {
       var dataArray = JSON.parse(xhr.responseText);
-      var imgURL = dataArray.data.link;
-      imgurImageCache[imagePart] = imgURL;
-      //TODO: reject too-big images
-      if (callbackFunc!=null)
-        callbackFunc(imgURL);
+      postFunc(dataPart, dataArray, callbackFunc);
     }
   };
+}
+
+var gotImgurImage = function(imagePart, dataArray, callbackFunc) {
+  imgurImageCache[imagePart] = dataArray;
+  var imgURL = dataArray.data.link;
+  console.log(imgURL);
+  //TODO: reject too-big images
+  if (callbackFunc!=null)
+    callbackFunc(imgURL);
+}
+
+var getImgurImage = function(imagePart, callbackFunc) {
+  if (imagePart in imgurImageCache) {
+    if (callbackFunc!=null)
+      gotImgurImage(imgurImageCache[imagePart]);
+    return;
+  }
+  doImgurCall(imagePart, "https://api.imgur.com/3/image/", gotImgurImage, callbackFunc);
 };
+
+var gotImgurAlbum = function(albumPart, dataArray, callbackFunc) {
+  imgurAlbumCache[albumPart] = dataArray;
+  var images = dataArray.data.images;
+  console.log(images);
+  if (callbackFunc!=null) {
+    callbackFunc(images);
+  }
+}
+
+var getImgurAlbum = function(albumPart, callbackFunc) {
+  if (albumPart in imgurAlbumCache) {
+    if (callbackFunc!=null)
+      gotImgurAlbum(imgurAlbumCache[albumPart]);
+    return;
+  }
+
+  doImgurCall(albumPart, "https://api.imgur.com/3/album/", gotImgurAlbum, callbackFunc);
+}
 
 var getFlickrPhotoID = function(flickrURL) {
   var photo_id=null;
@@ -170,18 +209,18 @@ var getFlickrImage = function(photo_id, callbackFunc) {
   };
 }
 
-// console.log(getImgurImagePart("http://imgur.com/bAiBLy6.jpg"));
-// console.log(getImgurImagePart("http://i.imgur.com/bAiBLy6.jpg"));
-// console.log(getImgurImagePart("imgur.com/bAiBLy6"));
-// console.log(getImgurImagePart("imgur.com/"));
-// console.log(getImgurImagePart("imgur.com"));
-// console.log(getImgurImagePart("http://imgur.com/bAiBLy"));
-// console.log(getImgurImagePart("foo.com"));
-// getImgurImage("bAiBLy6", null);
+console.log(parseImgurURL("https://imgur.com/a/eRPvE"));
+console.log(parseImgurURL("http://imgur.com/gallery/eRPvE"));
+console.log(parseImgurURL("imgur.com/bAiBLy6"));
+console.log(parseImgurURL("http://i.imgur.com/bAiBLy6.jpg"));
+
 // test album
 // https://imgur.com/a/eRPvE
 // test gallery
 // http://imgur.com/gallery/eRPvE
+
+// getImgurImage("bAiBLy6", null);
+// getImgurAlbum("eRPvE", null);
 
 </script>
 
