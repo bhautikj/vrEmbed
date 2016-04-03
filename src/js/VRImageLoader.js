@@ -86,15 +86,24 @@ var parseImgurImageDict = function(data) {
   dict.description = data.description;
   dict.width = data.width;
   dict.height = data.height;
+  dict.attribution = "";
+  dict.misc = data.views + " views";
   return dict;
 }
 
 var gotImgurImage = function(imagePart, dataArray, callbackFunc) {
   imgurImageCache[imagePart] = dataArray;
   var imgURL = dataArray.data.link;
-  var dt = parseImgurImageDict(dataArray.data);
+  var img = parseImgurImageDict(dataArray.data);
+  var dt = {};
+  dt.images = [img];
+  dt.galleryTitle = null;
+  dt.galleryDescription = null;
+  dt.galleryAttribution = null;
+  dt.galleryMisc = null;
+
   if (callbackFunc!=null && dt!=null){
-    callbackFunc([dt]);
+    callbackFunc(dt);
   }
 }
 
@@ -110,12 +119,23 @@ var getImgurImage = function(imagePart, callbackFunc) {
 var gotImgurAlbum = function(albumPart, dataArray, callbackFunc) {
   imgurAlbumCache[albumPart] = dataArray;
   var images = dataArray.data.images;
-  var dt = [];
+  var galleryTitle = dataArray.data.title;
+  var galleryDescription = dataArray.data.description;
+  var galleryAttribution = dataArray.data.account_url;
+  var galleryMisc = dataArray.data.views + " views";
+
+  var dt = {};
+  dt.galleryTitle = galleryTitle;
+  dt.galleryDescription = galleryDescription;
+  dt.galleryAttribution = galleryAttribution;
+  dt.galleryMisc = galleryMisc;
+
+  dt.images = [];
   for (i=0; l=images.length, i<l; i++) {
     var img = images[i];
     var id = parseImgurImageDict(img);
     if (id!=null) {
-      dt.push(id);
+      dt.images.push(id);
     }
   }
   if (callbackFunc!=null && dt!=[]) {
@@ -188,6 +208,9 @@ var getFlickrImage = function(photo_id, callbackFunc) {
   };
 }
 
+var galleryDictToSceneDict = function(galleryDict) {
+  
+}
 
 VRImageLoader = function() {
   var self = this;
@@ -203,8 +226,9 @@ VRImageLoader = function() {
     }
   }
 
-  this.buildFromImageList = function(imageList) {
+  this.buildFromImageList = function(galleryDict) {
     // construct a vrEmbed scene dict
+    console.log(galleryDict);
   }
 }
 
