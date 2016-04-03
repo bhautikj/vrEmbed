@@ -1,4 +1,4 @@
-//TODO: chack out https://github.com/mauricesvay/ImageResolver
+var VRSceneDict = require('./VRSceneDict.js');
 
 function endsWith(str, suffix) {
     return str.indexOf(suffix, str.length - suffix.length) !== -1;
@@ -8,6 +8,7 @@ var flickrImageCache = {};
 var imgurImageCache = {};
 var imgurAlbumCache = {};
 
+//TODO: chack out https://github.com/mauricesvay/ImageResolver
 var parseImgurURL = function(imgurURL) {
   var part = null;
   var spl = imgurURL.split('/');
@@ -208,12 +209,108 @@ var getFlickrImage = function(photo_id, callbackFunc) {
   };
 }
 
-var galleryDictToSceneDict = function(galleryDict) {
-  
+var imgWidth = 60;
+
+var galleryDictToSceneDicts = function(galleryDict) {
+  var sceneList = [];
+  for (i=0; l=galleryDict.images.length, i<l; i++){
+    var vrSceneDict = new VRSceneDict();
+    vrSceneDict.init();
+    vrSceneDict.dict.name = "image_" + i;
+    var img = galleryDict.images[i];
+    var mainPhoto = vrSceneDict.initPhoto();
+    // dict.src = data.link;
+    // dict.width = data.width;
+    // dict.height = data.height;
+    mainPhoto.textureDescription.src = img.src;
+    mainPhoto.textureDescription.sphereFOV = [imgWidth, imgWidth*img.height/img.width];
+    mainPhoto.plane = true;
+    vrSceneDict.dict.photoObjects.push(mainPhoto);
+
+    //title, desc, misc
+    // dict.title = data.title;
+    // dict.description = data.description;
+    // dict.attribution = "";
+    // dict.misc = data.views + " views";
+    if (img.title!=null) {
+      var title = vrSceneDict.initText();
+      title.message = img.title;
+      title.borderthickness = 1;
+      title.textureDescription.sphereFOV = [imgWidth/8,20];
+      title.textureDescription.sphereCentre = [imgWidth,0];
+      title.plane = true;
+      title.planeOffset = [0,45];
+      vrSceneDict.dict.textObjects.push(title);
+    }
+
+    if (img.description!=null) {
+      var description = vrSceneDict.initText();
+      description.message = img.description;
+      description.borderthickness = 1;
+      description.textureDescription.sphereFOV = [imgWidth/2,20];
+      description.textureDescription.sphereCentre = [imgWidth,0];
+      description.plane = true;
+      description.planeOffset = [0,20];
+      vrSceneDict.dict.textObjects.push(description);
+    }
+
+    if (img.misc!="" || image.attribution!="") {
+      var msg = "";
+      if (img.misc!="")
+        msg+=img.misc;
+      if (img.attribution!="")
+        msg+= " " + img.attribution;
+      var misc = vrSceneDict.initText();
+      misc.message = msg;
+      misc.borderthickness = 1;
+      misc.textureDescription.sphereFOV = [imgWidth/2,20];
+      misc.textureDescription.sphereCentre = [imgWidth,0];
+      misc.plane = true;
+      misc.planeOffset = [0,10];
+      vrSceneDict.dict.textObjects.push(misc);
+    }
+
+    // prev thumb
+    if (i>0) {
+      var thumb = vrSceneDict.initDecal();
+      var otherImg = galleryDict.images[i-1];
+      thumb.jumpTo = "image_" + (i-1);
+      //console.log('ADDING PREV: '+i+" "+thumb.jumpTo);
+      thumb.imgsrc = otherImg.thumb;
+      thumb.textureDescription.sphereFOV = [imgWidth*0.5, 0.5*imgWidth*otherImg.height/otherImg.width];
+      thumb.textureDescription.sphereCentre = [imgWidth*-1, 0];
+      thumb.textureDescription.plane = true;
+      thumb.textureDescription.planeOffset = [0,-20];
+      vrSceneDict.dict.decalObjects.push(thumb);
+    }
+    //next thumb
+    if (i<galleryDict.images.length-1) {
+      var thumb = vrSceneDict.initDecal();
+      var otherImg = galleryDict.images[i+1];
+      thumb.jumpTo = "image_" + (i+1);
+      //console.log('ADDING NEXT: '+thumb.jumpTo);
+      thumb.imgsrc = otherImg.thumb;
+      thumb.textureDescription.sphereFOV = [imgWidth*0.5, 0.5*imgWidth*otherImg.height/otherImg.width];
+      thumb.textureDescription.sphereCentre = [imgWidth, 0];
+      thumb.textureDescription.plane = true;
+      thumb.textureDescription.planeOffset = [0,-20];
+      vrSceneDict.dict.decalObjects.push(thumb);
+    }
+
+    sceneList.push(vrSceneDict);
+  }
+  return sceneList;
 }
 
 VRImageLoader = function() {
   var self = this;
+  this.sceneList = [];
+  this.storyManager = null;
+
+  this.init = function(vrStoryManager) {
+    this.storyManager = vrStoryManager;
+  }
+
   this.getImages = function(url) {
     var imageList = [];
     var imgurTest = parseImgurURL(url);
@@ -228,7 +325,34 @@ VRImageLoader = function() {
 
   this.buildFromImageList = function(galleryDict) {
     // construct a vrEmbed scene dict
-    console.log(galleryDict);
+    var sceneList = galleryDictToSceneDicts(galleryDict);
+    console.log(sceneList);
+    self.pushFromDictToRender(sceneList);
+    // console.log(galleryDict);
+  }
+
+  this.getStory = function() {
+    if (self.storyManager.storyList != [])
+      return self.storyManager.storyList[0];
+    else
+      return null;
+  }
+
+  this.pushFromDictToRender = function(sceneList) {
+    if (self.getStory()==null)
+      return;
+    self.getStory().sceneList = [];
+    self.getStory().namedSceneMap = {};
+
+    for (i = 0; i < sceneList.length; i++) {
+      var scene = sceneList[i];
+      scene.vrScene.initDict(sceneList[i].dict);
+      self.getStory().sceneList.push(scene.vrScene);
+      self.getStory().namedSceneMap[scene.vrScene.name] = i;
+      // self.getStory().sceneList[i].initDict(sceneList[i].dict);
+    }
+
+    self.getStory().setupScene(0);
   }
 }
 

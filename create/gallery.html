@@ -46,16 +46,24 @@
 
  </head>
 
+
+ <div class="stretchy-wrapper greybg"><div>
+     <story>
+     </story>
+ </div></div>
+
+
 <body>
 
-
+<script src="../bin/vrEmbed.js"></script>
 <script src="../bin/vrLoader.js"></script>
 
 <script>
 
 var vrImageLoader = new VRImageLoader();
+vrImageLoader.init(vrEmbed);
 
-vrImageLoader.getImages("http://imgur.com/rFod7kI");
+// vrImageLoader.getImages("http://imgur.com/rFod7kI");
 vrImageLoader.getImages("https://imgur.com/a/eRPvE");
 
 //
