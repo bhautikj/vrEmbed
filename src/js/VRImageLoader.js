@@ -1,3 +1,5 @@
+//TODO: chack out https://github.com/mauricesvay/ImageResolver
+
 function endsWith(str, suffix) {
     return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }
@@ -62,6 +64,13 @@ var doImgurCall = function(dataPart, apiBase, postFunc, callbackFunc) {
   };
 }
 
+var generateImgurThumb = function(imgurl) {
+  var urlSplit = imgurl.split('/');
+  var filename = urlSplit.pop();
+  var spl = filename.split('.');
+  return urlSplit.join("/") + "/" + spl[0] + "m." + spl[1];
+}
+
 var parseImgurImageDict = function(data) {
   var dict = {};
   //failout points
@@ -71,8 +80,8 @@ var parseImgurImageDict = function(data) {
   if (data.height > 4096 || data.width > 4096)
     return null;
 
-
   dict.src = data.link;
+  dict.thumb = generateImgurThumb(dict.src);
   dict.title = data.title;
   dict.description = data.description;
   dict.width = data.width;
@@ -195,7 +204,7 @@ VRImageLoader = function() {
   }
 
   this.buildFromImageList = function(imageList) {
-    console.log(imageList);
+    // construct a vrEmbed scene dict
   }
 }
 
