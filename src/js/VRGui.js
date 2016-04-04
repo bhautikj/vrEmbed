@@ -77,7 +77,7 @@ VRGuiTimer = function() {
   this.in = false;
   this.startTime = Number.MAX_VALUE;
   this.callbackFired = false;
-  this.timeout = 1000; // in ms - for all gui events
+  this.timeout = 2500; // in ms - for all gui events
 
   this.init = function(canvas, callback, callbackArgs) {
     this.canvas = canvas;

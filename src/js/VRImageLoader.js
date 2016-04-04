@@ -20,6 +20,7 @@ var minWidthString = function(st, w) {
 var flickrImageCache = {};
 var imgurImageCache = {};
 var imgurAlbumCache = {};
+var imgurGalleryCache = {};
 
 //TODO: chack out https://github.com/mauricesvay/ImageResolver
 var parseImgurURL = function(imgurURL) {
@@ -135,7 +136,7 @@ var gotImgurAlbum = function(albumPart, dataArray, callbackFunc) {
   var images = dataArray.data.images;
   var galleryTitle = dataArray.data.title;
   var galleryDescription = dataArray.data.description;
-  var galleryAttribution = dataArray.data.account_url;
+  var galleryAttribution = dataArray.data.account_id;
   var galleryMisc = dataArray.data.views + " views";
 
   var dt = {};
@@ -165,6 +166,43 @@ var getImgurAlbum = function(albumPart, callbackFunc) {
   }
 
   doImgurCall(albumPart, "https://api.imgur.com/3/album/", gotImgurAlbum, callbackFunc);
+}
+
+var gotImgurGallery = function(galleryPart, dataArray, callbackFunc) {
+  imgurGalleryCache[galleryPart] = dataArray;
+  var images = dataArray.data.images;
+  var galleryTitle = dataArray.data.title;
+  var galleryDescription = dataArray.data.description;
+  var galleryAttribution = dataArray.data.account_id;
+  var galleryMisc = dataArray.data.views + " views";
+
+  var dt = {};
+  dt.galleryTitle = galleryTitle;
+  dt.galleryDescription = galleryDescription;
+  dt.galleryAttribution = galleryAttribution;
+  dt.galleryMisc = galleryMisc;
+
+  dt.images = [];
+  for (i=0; l=images.length, i<l; i++) {
+    var img = images[i];
+    var id = parseImgurImageDict(img);
+    if (id!=null) {
+      dt.images.push(id);
+    }
+  }
+  if (callbackFunc!=null && dt!=[]) {
+    callbackFunc(dt);
+  }
+}
+
+var getImgurGallery = function(galleryPart, callbackFunc) {
+  if (galleryPart in imgurGalleryCache) {
+    if (callbackFunc!=null)
+      gotImgurGallery(imgurGalleryCache[galleryPart]);
+    return;
+  }
+
+  doImgurCall(galleryPart, "https://api.imgur.com/3/gallery/album/", gotImgurGallery, callbackFunc);
 }
 
 var getFlickrPhotoID = function(flickrURL) {
@@ -320,6 +358,8 @@ VRImageLoader = function() {
         getImgurImage(imgurTest[0], this.buildFromImageList);
       } else if (imgurTest[1]=="album") {
         getImgurAlbum(imgurTest[0],this.buildFromImageList);
+      } else if (imgurTest[1]=="gallery") {
+        getImgurGallery(imgurTest[0],this.buildFromImageList);
       }
     }
   }

@@ -370,8 +370,8 @@ VRStory = function() {
     // set up stereo mode
     this.stateToggler.configureStereo(this.isStereo);
 
-    // reset heading
-    this.quad.controller.update(true);
+    // [do not] reset heading
+    this.quad.controller.update(false);//true);
   }
 
   this.nextScene = function() {
