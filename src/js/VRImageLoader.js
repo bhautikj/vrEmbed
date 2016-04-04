@@ -260,11 +260,13 @@ var getFlickrImage = function(photo_id, callbackFunc) {
   };
 }
 
-var imgWidth = 60;
+var imgWidth = 70;
 
 var galleryDictToSceneDicts = function(galleryDict) {
   var sceneList = [];
+  var numPerIndex = 16;
   for (i=0; l=galleryDict.images.length, i<l; i++){
+    var indexPage = Math.floor((i/numPerIndex));
     var vrSceneDict = new VRSceneDict();
     vrSceneDict.init();
     vrSceneDict.dict.name = "image_" + i;
@@ -293,7 +295,7 @@ var galleryDictToSceneDicts = function(galleryDict) {
       msg+= " " + img.attribution;
 
     desc += minWidthString(msg, padSize) + ' \n';
-    var thumbFac = 0.15;
+    var thumbFac = 0.20;
 
     if (desc != "") {
       var title = vrSceneDict.initText();
@@ -336,8 +338,102 @@ var galleryDictToSceneDicts = function(galleryDict) {
       vrSceneDict.dict.decalObjects.push(thumb);
     }
 
+    var indexLink = vrSceneDict.initText();
+    indexLink.message = "Index Page";
+    indexLink.jumpTo = "index_" + indexPage;
+    indexLink.textOptions.borderthickness = 2;
+    indexLink.textOptions.backgroundcolor = '#FFFFFF';
+    indexLink.textOptions.textcolor = '#000000';
+    indexLink.textOptions.align = 'center';
+    indexLink.textOptions.fontface = 'Courier';
+    indexLink.textOptions.fontsize = 36;
+    indexLink.textureDescription.sphereFOV = [imgWidth*thumbFac, 20];
+    indexLink.textureDescription.sphereCentre = [imgWidth, 0];
+    indexLink.textureDescription.plane = true;
+    indexLink.textureDescription.planeOffset = [-imgWidth*thumbFac,-10];
+    vrSceneDict.dict.textObjects.push(indexLink);
+
     sceneList.push(vrSceneDict);
   }
+
+  // now build index scenes. going to go with a square grid of 16 per page
+  // 90/4=15deg for each thumb
+  var numImages = galleryDict.images.length;
+  var i,j,temparray,chunk = numPerIndex;
+  var numIndexes = Math.ceil(numImages/numPerIndex);
+  var indexScnIdx = 0;
+  var imgIdx = 0;
+
+  for (i=0,j=numImages; i<j; i+=chunk) {
+    temparray = galleryDict.images.slice(i,i+chunk);
+    var tmpIdx = 0;
+    // console.log(i, i+chunk, numImages);
+    var vrSceneDict = new VRSceneDict();
+    vrSceneDict.init();
+    vrSceneDict.dict.name = "index_" + indexScnIdx;
+    var vLoc = 20;
+    for (v=0; v<4; v++) {
+      var uLoc = -20;
+      for (u=0; u<4; u++) {
+        if (imgIdx>=numImages)
+          break;
+        var thumb = vrSceneDict.initDecal();
+        var otherImg = temparray[tmpIdx];
+        thumb.jumpTo = "image_" + (imgIdx);
+        thumb.imgsrc = otherImg.thumb;
+        thumb.textureDescription.sphereFOV = [18, 18];
+        thumb.textureDescription.sphereCentre = [0, 0];
+        thumb.textureDescription.plane = true;
+        thumb.textureDescription.planeOffset = [uLoc,vLoc];
+        vrSceneDict.dict.decalObjects.push(thumb);
+        tmpIdx += 1;
+        imgIdx += 1;
+        uLoc += 20;
+      }
+      vLoc += -20;
+    }
+
+    // prev
+    if (indexScnIdx>0) {
+      var indexLink = vrSceneDict.initText();
+      indexLink.message = "Page " + (indexScnIdx);
+      indexLink.jumpTo = "index_" + (indexScnIdx-1);
+      indexLink.textOptions.borderthickness = 2;
+      indexLink.textOptions.backgroundcolor = '#FFFFFF';
+      indexLink.textOptions.textcolor = '#000000';
+      indexLink.textOptions.align = 'center';
+      indexLink.textOptions.fontface = 'Courier';
+      indexLink.textOptions.fontsize = 36;
+      indexLink.textureDescription.sphereFOV = [15, 20];
+      indexLink.textureDescription.sphereCentre = [0, 0];
+      indexLink.textureDescription.plane = true;
+      indexLink.textureDescription.planeOffset = [-37.5,40];
+      vrSceneDict.dict.textObjects.push(indexLink);
+    }
+
+    // next
+    if (indexScnIdx<numIndexes-1) {
+      var indexLink = vrSceneDict.initText();
+      indexLink.message = "Page " + (indexScnIdx+2);
+      indexLink.jumpTo = "index_" + (indexScnIdx+1);
+      indexLink.textOptions.borderthickness = 2;
+      indexLink.textOptions.backgroundcolor = '#FFFFFF';
+      indexLink.textOptions.textcolor = '#000000';
+      indexLink.textOptions.align = 'center';
+      indexLink.textOptions.fontface = 'Courier';
+      indexLink.textOptions.fontsize = 36;
+      indexLink.textureDescription.sphereFOV = [15, 20];
+      indexLink.textureDescription.sphereCentre = [0, 0];
+      indexLink.textureDescription.plane = true;
+      indexLink.textureDescription.planeOffset = [37.5,40];
+      vrSceneDict.dict.textObjects.push(indexLink);
+    }
+
+    sceneList.push(vrSceneDict);
+
+    indexScnIdx += 1;
+  }
+
   return sceneList;
 }
 
