@@ -394,8 +394,6 @@ VRStory = function() {
   }
 
   this.gotoNamedScene = function(name) {
-    console.log("JUMPING TO:" + name + " and scene is: " + self.namedSceneMap[name]);
-    console.log(self.namedSceneMap);
     self.setupScene(self.namedSceneMap[name]);
   }
 
