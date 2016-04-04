@@ -6,13 +6,15 @@ function endsWith(str, suffix) {
 
 String.prototype.padRight = function(l,c) {return this+Array(l-this.length+1).join(c||" ")}
 
-var minWidthString = function(str, w) {
-  var diff = w-str.length;
+var minWidthString = function(st, w) {
+  var diff = w-st.length;
+  var rs = (' ' + st).slice(1);
+
   if (diff>0) {
-    return str.padRight(diff, ' ');
-  } else {
-    return str;
+    rs = rs.padRight(diff, " ");
   }
+
+  return rs;
 }
 
 var flickrImageCache = {};
@@ -80,7 +82,7 @@ var generateImgurThumb = function(imgurl) {
   var urlSplit = imgurl.split('/');
   var filename = urlSplit.pop();
   var spl = filename.split('.');
-  return urlSplit.join("/") + "/" + spl[0] + "m." + spl[1];
+  return urlSplit.join("/") + "/" + spl[0] + "b." + spl[1];
 }
 
 var parseImgurImageDict = function(data) {
@@ -239,19 +241,21 @@ var galleryDictToSceneDicts = function(galleryDict) {
     vrSceneDict.dict.photoObjects.push(mainPhoto);
 
     var desc ="";
+    var padSize = 45;
     if (img.title!=null) {
-      desc += minWidthString('Title: ' + img.title, 60) + '\n';
+      desc += 'Title: ' + img.title  + ' \n';
     }
     if (img.description!=null) {
-      desc += minWidthString('Description: ' + img.description, 60) + '\n';
+      desc += 'Description: ' + img.description + ' \n';
     }
     var msg = "";
     if (img.misc!="")
       msg+=img.misc;
     if (img.attribution!="")
       msg+= " " + img.attribution;
-    if (msg!="")
-      desc += minWidthString(msg, 45) + '\n';
+
+    desc += minWidthString(msg, padSize) + ' \n';
+    var thumbFac = 0.15;
 
     if (desc != "") {
       var title = vrSceneDict.initText();
@@ -259,11 +263,11 @@ var galleryDictToSceneDicts = function(galleryDict) {
       title.textOptions.borderthickness = 0;
       title.textOptions.align = 'left';
       title.textOptions.fontface = 'Courier';
-      title.textOptions.fontsize = 24;
+      title.textOptions.fontsize = 36;
       title.textureDescription.sphereFOV = [imgWidth/2,20];
       title.textureDescription.sphereCentre = [imgWidth,0];
       title.textureDescription.plane = true;
-      title.textureDescription.planeOffset = [0,0];
+      title.textureDescription.planeOffset = [imgWidth*(2*thumbFac),0];
       vrSceneDict.dict.textObjects.push(title);
     }
 
@@ -274,10 +278,10 @@ var galleryDictToSceneDicts = function(galleryDict) {
       thumb.jumpTo = "image_" + (i-1);
       //console.log('ADDING PREV: '+i+" "+thumb.jumpTo);
       thumb.imgsrc = otherImg.thumb;
-      thumb.textureDescription.sphereFOV = [imgWidth*0.5, 0.5*imgWidth*otherImg.height/otherImg.width];
+      thumb.textureDescription.sphereFOV = [imgWidth*thumbFac, thumbFac*imgWidth*otherImg.height/otherImg.width];
       thumb.textureDescription.sphereCentre = [imgWidth*-1, 0];
       thumb.textureDescription.plane = true;
-      thumb.textureDescription.planeOffset = [0,-20];
+      thumb.textureDescription.planeOffset = [imgWidth*thumbFac,0];
       vrSceneDict.dict.decalObjects.push(thumb);
     }
     //next thumb
@@ -287,10 +291,10 @@ var galleryDictToSceneDicts = function(galleryDict) {
       thumb.jumpTo = "image_" + (i+1);
       //console.log('ADDING NEXT: '+thumb.jumpTo);
       thumb.imgsrc = otherImg.thumb;
-      thumb.textureDescription.sphereFOV = [imgWidth*0.5, 0.5*imgWidth*otherImg.height/otherImg.width];
+      thumb.textureDescription.sphereFOV = [imgWidth*thumbFac, thumbFac*imgWidth*otherImg.height/otherImg.width];
       thumb.textureDescription.sphereCentre = [imgWidth, 0];
       thumb.textureDescription.plane = true;
-      thumb.textureDescription.planeOffset = [0,-20];
+      thumb.textureDescription.planeOffset = [-imgWidth*thumbFac,0];
       vrSceneDict.dict.decalObjects.push(thumb);
     }
 

@@ -100,7 +100,7 @@ VRCanvasDecal.prototype.init = function(gl, imgsrc, textureDescription) {
   this.initBase(gl);
   this.vrTextureDescription = textureDescription;
   this.desiredSphereFOV = textureDescription.sphereFOV;
-  this.vrTextureDescription.sphereFOV = [0,0];
+  // this.vrTextureDescription.sphereFOV = [0,0];
   this.imgsrc = imgsrc;
   this.image = new Image();
   this.image.decalObject = this;
