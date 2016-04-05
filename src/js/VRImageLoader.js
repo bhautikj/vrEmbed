@@ -1,5 +1,6 @@
 var VRSceneDict = require('./VRSceneDict.js');
 var VRURLParser = require('./VRURLParser.js');
+var VRLoaderIcons = require('./VRLoaderIcons.js');
 
 function endsWith(str, suffix) {
     return str.indexOf(suffix, str.length - suffix.length) !== -1;
@@ -339,20 +340,15 @@ var galleryDictToSceneDicts = function(galleryDict) {
       vrSceneDict.dict.decalObjects.push(thumb);
     }
 
-    var indexLink = vrSceneDict.initText();
-    indexLink.message = "Index Page";
-    indexLink.jumpTo = "index_" + indexPage;
-    indexLink.textOptions.borderthickness = 2;
-    indexLink.textOptions.backgroundcolor = '#FFFFFF';
-    indexLink.textOptions.textcolor = '#000000';
-    indexLink.textOptions.align = 'center';
-    indexLink.textOptions.fontface = 'Courier';
-    indexLink.textOptions.fontsize = 36;
-    indexLink.textureDescription.sphereFOV = [imgWidth*thumbFac, 20];
-    indexLink.textureDescription.sphereCentre = [imgWidth, 0];
-    indexLink.textureDescription.plane = true;
-    indexLink.textureDescription.planeOffset = [-imgWidth*thumbFac,-10];
-    vrSceneDict.dict.textObjects.push(indexLink);
+    var galleryIdx = vrSceneDict.initDecal();
+    galleryIdx.jumpTo = "index_" + indexPage;
+    //console.log('ADDING NEXT: '+thumb.jumpTo);
+    galleryIdx.imgsrc = VRLoaderIcons.gallery;
+    galleryIdx.textureDescription.sphereFOV = [imgWidth*thumbFac, imgWidth*thumbFac];
+    galleryIdx.textureDescription.sphereCentre = [0, 0];
+    galleryIdx.textureDescription.plane = true;
+    galleryIdx.textureDescription.planeOffset = [0,-0.5*imgWidth*img.height/img.width + -0.75*imgWidth*thumbFac];
+    vrSceneDict.dict.decalObjects.push(galleryIdx);
 
     sceneList.push(vrSceneDict);
   }
@@ -372,9 +368,9 @@ var galleryDictToSceneDicts = function(galleryDict) {
     var vrSceneDict = new VRSceneDict();
     vrSceneDict.init();
     vrSceneDict.dict.name = "index_" + indexScnIdx;
-    var vLoc = 20;
+    var vLoc = 30;
     for (v=0; v<4; v++) {
-      var uLoc = -20;
+      var uLoc = -30;
       for (u=0; u<4; u++) {
         if (imgIdx>=numImages)
           break;
@@ -396,38 +392,26 @@ var galleryDictToSceneDicts = function(galleryDict) {
 
     // prev
     if (indexScnIdx>0) {
-      var indexLink = vrSceneDict.initText();
-      indexLink.message = "Page " + (indexScnIdx);
-      indexLink.jumpTo = "index_" + (indexScnIdx-1);
-      indexLink.textOptions.borderthickness = 2;
-      indexLink.textOptions.backgroundcolor = '#FFFFFF';
-      indexLink.textOptions.textcolor = '#000000';
-      indexLink.textOptions.align = 'center';
-      indexLink.textOptions.fontface = 'Courier';
-      indexLink.textOptions.fontsize = 36;
-      indexLink.textureDescription.sphereFOV = [15, 20];
-      indexLink.textureDescription.sphereCentre = [0, 0];
-      indexLink.textureDescription.plane = true;
-      indexLink.textureDescription.planeOffset = [-37.5,40];
-      vrSceneDict.dict.textObjects.push(indexLink);
+      var prevDecal = vrSceneDict.initDecal();
+      prevDecal.jumpTo = "index_" + (indexScnIdx-1);
+      prevDecal.imgsrc = VRLoaderIcons.prevArrow;
+      prevDecal.textureDescription.sphereFOV = [15,15];
+      prevDecal.textureDescription.sphereCentre = [0, 0];
+      prevDecal.textureDescription.plane = true;
+      prevDecal.textureDescription.planeOffset = [-20,-60];
+      vrSceneDict.dict.decalObjects.push(prevDecal);
     }
 
     // next
     if (indexScnIdx<numIndexes-1) {
-      var indexLink = vrSceneDict.initText();
-      indexLink.message = "Page " + (indexScnIdx+2);
-      indexLink.jumpTo = "index_" + (indexScnIdx+1);
-      indexLink.textOptions.borderthickness = 2;
-      indexLink.textOptions.backgroundcolor = '#FFFFFF';
-      indexLink.textOptions.textcolor = '#000000';
-      indexLink.textOptions.align = 'center';
-      indexLink.textOptions.fontface = 'Courier';
-      indexLink.textOptions.fontsize = 36;
-      indexLink.textureDescription.sphereFOV = [15, 20];
-      indexLink.textureDescription.sphereCentre = [0, 0];
-      indexLink.textureDescription.plane = true;
-      indexLink.textureDescription.planeOffset = [37.5,40];
-      vrSceneDict.dict.textObjects.push(indexLink);
+      var nextDecal = vrSceneDict.initDecal();
+      nextDecal.jumpTo = "index_" + (indexScnIdx+1);
+      nextDecal.imgsrc = VRLoaderIcons.nextArrow;
+      nextDecal.textureDescription.sphereFOV = [15,15];
+      nextDecal.textureDescription.sphereCentre = [0, 0];
+      nextDecal.textureDescription.plane = true;
+      nextDecal.textureDescription.planeOffset = [20,-60];
+      vrSceneDict.dict.decalObjects.push(nextDecal);
     }
 
     sceneList.push(vrSceneDict);
