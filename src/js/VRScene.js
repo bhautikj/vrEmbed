@@ -89,12 +89,6 @@ VRScene = function() {
     this.photoObjects.push(vrEmbedPhotoElm);
   }
 
-  this.initFromURLSource = function(scenePhoto) {
-    if (scenePhoto.isStereo() == true)
-      this.isStereo = true;
-    this.photoObjects.push(scenePhoto);
-  }
-
   this.getSceneElement = function() {
     var elm = document.createElement('scene');
     if (this.name != "") {

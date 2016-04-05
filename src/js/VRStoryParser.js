@@ -41,12 +41,6 @@ StoryParser = function () {
     }
   };
 
-  this.initFromURLSource  = function(scenePhoto){
-    var vrStory = new VRStory();
-    vrStory.initFromURLSource(scenePhoto, this.storyManager);
-    this.storyManager.addStory(vrStory);
-  }
-
   this.onResize = function() {
     this.storyManager.onResize();
   };

@@ -602,18 +602,6 @@ VRStory = function() {
     this.init(innerMost, storyManager);
   }
 
-  this.initFromURLSource = function(scenePhoto, storyManager) {
-    var innerMost = this.createFullPageDiv();
-
-    var vrScene = new VRScene();
-    vrScene.initFromURLSource(scenePhoto);
-
-    if (vrScene.isStereo)
-      this.isStereo = true;
-    this.sceneList.push(vrScene);
-
-    this.init(innerMost, storyManager);
-  }
 
   this.initStory = function(storyElement, storyManager) {
     var noGui = storyElement.getAttribute("noGui");

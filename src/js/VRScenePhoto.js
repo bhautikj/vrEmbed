@@ -31,35 +31,6 @@ VRScenePhoto = function() {
     this.textureDescription.initDict(dict.textureDescription);
   }
 
-  this.initFromURL = function(urlDict) {
-    this.textureDescription = new VRTextureDescription();
-    this.textureDescription.textureSource = urlDict["src"];
-    if (this.textureDescription.textureSource  == undefined){
-      //TODO: throw exception
-      this.textureDescription = null;
-      return;
-    }
-
-    if (urlDict["metaSrc"] != undefined)
-      this.textureDescription.metaSource = urlDict["metaSrc"];
-    else
-      this.textureDescription.metaSource = "";
-
-    this.textureDescription.isStereo = this.textureDescription.parseBoolString(urlDict["isStereo"]);
-    this.textureDescription.plane = this.textureDescription.parseBoolString(urlDict["plane"]);
-    this.textureDescription.setPlaneOffsetParamsFromString(urlDict["planeOffset"]);
-
-    if (urlDict["sphereParams"] != undefined)
-      this.textureDescription.setSphereParamsFromString(urlDict["sphereParams"]);
-    else
-      this.textureDescription.setSphereParamsFromString("360,180,0,0");
-
-    if (urlDict["texParams"] != undefined)
-      this.textureDescription.setTexParamsFromString(urlDict["texParams"]);
-    else
-      this.textureDescription.setTexParamsFromString("0,0,1,1,0,0,1,1");
-  };
-
   this.populateElementCommon = function(elm) {
     this.textureDescription.setElement(elm);
   }
