@@ -37,6 +37,8 @@ VRStory = function() {
   this.sceneList = [];
   this.namedSceneMap = [];
 
+  this.gallerySrc = null;
+
 
   this.enterFullscreen = function(){
     if (this.vrDeviceManager.firstTime()){
@@ -661,11 +663,18 @@ VRStory = function() {
       return true;
   }
 
+  this.setGallerySrc = function(gallerySrc) {
+    this.gallerySrc = gallerySrc;
+  }
+
   this.getShareCodes = function() {
     var urlCode = "";
     var embedCode = "";
     var scriptInc = '<script async src="//vrEmbed.org/vrEmbed.min.js" charset="utf-8"></script>';
-    if (this.isSinglePhotoStory()==true){
+    if (this.gallerySrc != null) {
+      urlCode = encodeURIComponent("http://vrembed.org/?gallery=" + this.gallerySrc);
+      embedCode = "";
+    } else if (this.isSinglePhotoStory()==true){
       urlCode = encodeURIComponent("http://vrembed.org/" + this.sceneList[0].photoObjects[0].getSinglePhotoURLParams());
       embedCode = this.sceneList[0].photoObjects[0].getSinglePhotoVrEmbedElement().outerHTML+scriptInc;
     } else {

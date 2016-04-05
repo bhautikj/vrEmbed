@@ -467,6 +467,7 @@ VRImageLoader = function() {
 
 
   this.getImages = function(url) {
+    self.getStory().setGallerySrc(url);
     var imageList = [];
     var imgurTest = parseImgurURL(url);
     if (imgurTest!=null) {
