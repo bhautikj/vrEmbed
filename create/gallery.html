@@ -30,6 +30,10 @@
    <meta name="apple-mobile-web-app-capable" content="yes" />
    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
+   <!-- Stop page loading and launch editor first if URL params are specified
+   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+   <vrEditor></vrEditor>
+
    <!-- FONT
    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
    <link href='//fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
@@ -47,11 +51,6 @@
  </head>
 
 
- <!-- <div class="stretchy-wrapper greybg"><div>
-     <story>
-     </story>
- </div></div> -->
-
 
 <body>
 
@@ -60,27 +59,29 @@
 
 <script>
 
-var onResize = function() {
-  vrEmbed.onResize();
-};
-
-window.addEventListener('resize', onResize, false);
-
-vrEmbed.clearPage();
-vrEmbed.initFullpage();
 
 var vrImageLoader = new VRImageLoader();
 vrImageLoader.init(vrEmbed);
 
+if(vrImageLoader.hasURLParams()) {
+  if (vrImageLoader.isGalleryURL()) {
+    vrEmbed.clearPage();
+    vrEmbed.initFullpage();
+    vrImageLoader.getImages(vrImageLoader.getURLParameters()["gallery"]);
+  } else if (vrImageLoader.isImageURL()) {
+    vrEmbed.clearPage();
+    vrEmbed.initFullpage();
+    vrImageLoader.buildFromImageURLParams(vrImageLoader.getURLParameters());
+  }
+}
+
 // vrImageLoader.getImages("http://imgur.com/rFod7kI");
 // vrImageLoader.getImages("https://imgur.com/a/eRPvE");
 //deadpool comic
-vrImageLoader.getImages("https://imgur.com/a/RuysT");
+//"https://imgur.com/a/RuysT"
 // civ5 stuff?
 // vrImageLoader.getImages("https://imgur.com/a/PHBVx");
 // vrImageLoader.getImages("http://imgur.com/gallery/eRPvE")
-
-
 //
 // console.log(parseImgurURL("https://imgur.com/a/eRPvE"));
 // console.log(parseImgurURL("http://imgur.com/gallery/eRPvE"));

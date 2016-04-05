@@ -1,4 +1,5 @@
 var VRSceneDict = require('./VRSceneDict.js');
+var VRURLParser = require('./VRURLParser.js');
 
 function endsWith(str, suffix) {
     return str.indexOf(suffix, str.length - suffix.length) !== -1;
@@ -441,10 +442,29 @@ VRImageLoader = function() {
   var self = this;
   this.sceneList = [];
   this.storyManager = null;
+  this.vrURLParser = new VRURLParser();
+  this.vrURLParser.init();
 
   this.init = function(vrStoryManager) {
     this.storyManager = vrStoryManager;
   }
+
+  this.hasURLParams = function(){
+    return this.vrURLParser.isEditor;
+  }
+
+  this.getURLParameters = function() {
+    return this.vrURLParser.params;
+  }
+
+  this.isGalleryURL = function() {
+    return "gallery" in this.getURLParameters();
+  }
+
+  this.isImageURL = function(){
+    return "src" in this.getURLParameters();
+  }
+
 
   this.getImages = function(url) {
     var imageList = [];
@@ -460,11 +480,88 @@ VRImageLoader = function() {
     }
   }
 
+  this.parseBoolString = function(str) {
+    if (str==undefined)
+      return false;
+    if (str.toLowerCase()=="true")
+      return true;
+    else
+      return false;
+  }
+
+  this.parsePlaneOffsetParamsFromString  = function(str) {
+    if (str == undefined)
+      return;
+    var arr = str.split(",");
+    return [parseFloat(arr[0].trim()), parseFloat(arr[1].trim())];
+  };
+
+  this.getSphereParamsFromString  = function(str) {
+    var arr = str.split(",");
+    return [[parseFloat(arr[0].trim()), parseFloat(arr[1].trim())],
+           [parseFloat(arr[2].trim()), parseFloat(arr[3].trim())]];
+  };
+
+  this.getTexParamsFromString = function(str) {
+    var arr = str.split(",");
+    return [[parseFloat(arr[0].trim()), parseFloat(arr[1].trim())],
+            [parseFloat(arr[2].trim()), parseFloat(arr[3].trim())],
+            [parseFloat(arr[4].trim()), parseFloat(arr[5].trim())],
+            [parseFloat(arr[6].trim()), parseFloat(arr[7].trim())]];
+  };
+
+  this.buildFromImageURLParams = function(urlDict) {
+    var img = new Image();
+    img.onload = this.buildSingle;
+    img.src = urlDict.src;
+  }
+
+  this.buildSingle = function() {
+    var urlDict = self.getURLParameters();
+    var vrSceneDict = new VRSceneDict();
+    vrSceneDict.init();
+
+
+    var photo = vrSceneDict.initPhoto();
+    photo.name = "unit";
+    photo.textureDescription.src = urlDict.src;
+
+    if (urlDict["metaSrc"] != undefined)
+      photo.textureDescription.metaSource = urlDict["metaSrc"];
+    else
+      photo.textureDescription.metaSource = "";
+
+    photo.textureDescription.isStereo = self.parseBoolString(urlDict["isStereo"]);
+    photo.textureDescription.plane = self.parseBoolString(urlDict["plane"]);
+    photo.textureDescription.planeOffset = self.parsePlaneOffsetParamsFromString(urlDict["planeOffset"]);
+
+    if (urlDict["sphereParams"] != undefined) {
+      var sparams = self.getSphereParamsFromString(urlDict["sphereParams"]);
+      photo.textureDescription.sphereFOV = sparams[0];
+      photo.textureDescription.sphereCentre = sparams[1];
+    }
+
+
+    if (urlDict["texParams"] != undefined) {
+      var tparams = self.getTexParamsFromString(urlDict["texParams"]);
+      photo.textureDescription.U_l = tparams[0];
+      photo.textureDescription.V_l = tparams[1];
+      photo.textureDescription.U_r = tparams[2];
+      photo.textureDescription.V_r = tparams[3];
+    }
+
+    vrSceneDict.dict.photoObjects.push(photo);
+
+    var sceneList = [];
+    sceneList.push(vrSceneDict);
+    console.log(sceneList);
+    self.pushFromDictToRender(sceneList);
+  }
+
   this.buildFromImageList = function(galleryDict) {
     // construct a vrEmbed scene dict
     var sceneList = galleryDictToSceneDicts(galleryDict);
     self.pushFromDictToRender(sceneList);
-    // console.log(galleryDict);
   }
 
   this.getStory = function() {
