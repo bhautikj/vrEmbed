@@ -468,8 +468,9 @@ VRImageLoader = function() {
   }
 
   this.getStory = function() {
-    if (self.storyManager.storyList != [])
+    if (self.storyManager.storyList != []){
       return self.storyManager.storyList[0];
+    }
     else
       return null;
   }

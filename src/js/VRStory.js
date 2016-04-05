@@ -85,7 +85,6 @@ VRStory = function() {
   this.onResize = function() {
     var containerWidth = this.parentElement.clientWidth;
     var containerHeight = this.parentElement.clientHeight;
-
     if (this.quad != null) {
       // check to see if we should drop back to windowed mode
       if (this.manager.fallbackFullscreen == true){
@@ -577,7 +576,7 @@ VRStory = function() {
     this.init(innerMost, storyManager);
   };
 
-  this.initFromURLSource = function(scenePhoto, storyManager) {
+  this.createFullPageDiv = function() {
     var innerMost = document.createElement('div');
     var s = innerMost.style;
     s.position = 'absolute';
@@ -591,6 +590,20 @@ VRStory = function() {
     document.body.appendChild(innerMost);
     document.body.style.margin = '0px';
     document.body.style.padding = '0px';
+
+    return innerMost;
+  }
+
+  this.createFullPageStoryDiv = function(storyManager) {
+    this.storyManager = storyManager;
+    var innerMost = this.createFullPageDiv();
+    // var storyElement = document.createElement('story');
+    // innerMost.appendChild(storyElement);
+    this.init(innerMost, storyManager);
+  }
+
+  this.initFromURLSource = function(scenePhoto, storyManager) {
+    var innerMost = this.createFullPageDiv();
 
     var vrScene = new VRScene();
     vrScene.initFromURLSource(scenePhoto);
@@ -632,18 +645,20 @@ VRStory = function() {
   };
 
   this.showOptions = function() {
-    this.storyManager.showOptions();
-  };
+    this.vrOptions.options.showDialogOptions();
+  }
 
   this.hideOptions = function() {
-    this.storyManager.hideOptions();
-  };
+    this.vrOptions.options.hideDialog();
+  }
 
   this.getStoryElement = function() {
     var elm = document.createElement('story');
-    for(i=0; i<this.sceneList.length; i++) {
+    var i=0;
+    while (i<this.sceneList.length) {
       var scene = this.sceneList[i];
       elm.appendChild(scene.getSceneElement());
+      i++;
     }
     return elm;
   }

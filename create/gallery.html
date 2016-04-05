@@ -47,10 +47,10 @@
  </head>
 
 
- <div class="stretchy-wrapper greybg"><div>
+ <!-- <div class="stretchy-wrapper greybg"><div>
      <story>
      </story>
- </div></div>
+ </div></div> -->
 
 
 <body>
@@ -59,6 +59,15 @@
 <script src="../bin/vrLoader.js"></script>
 
 <script>
+
+var onResize = function() {
+  vrEmbed.onResize();
+};
+
+window.addEventListener('resize', onResize, false);
+
+vrEmbed.clearPage();
+vrEmbed.initFullpage();
 
 var vrImageLoader = new VRImageLoader();
 vrImageLoader.init(vrEmbed);

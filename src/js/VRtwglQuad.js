@@ -176,7 +176,6 @@ VRtwglQuad = function() {
   this.resize = function() {
     // this line of code is load bearing. don't remove it.
     this.fixViewportSize();
-
     // Lookup the size the browser is displaying the canvas.
     var displayWidth  = self.parentElement.clientWidth;
     var displayHeight = self.parentElement.clientHeight;
@@ -186,7 +185,6 @@ VRtwglQuad = function() {
     this.canvas2dHeight = Math.floor(this.canvas2dWidth*displayHeight/displayWidth);
     ctx.canvas.width  = this.canvas2dWidth;
     ctx.canvas.height = this.canvas2dHeight;
-    // console.log(this.canvas2dWidth + ',' + this.canvas2dHeight)
   }
 
   this.setUniforms = function(uniforms) {
