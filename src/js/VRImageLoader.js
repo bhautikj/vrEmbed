@@ -2,12 +2,14 @@ var VRSceneDict = require('./VRSceneDict.js');
 var VRURLParser = require('./VRURLParser.js');
 var VRLoaderIcons = require('./VRLoaderIcons.js');
 var VRIcons = require('./VRIcons.js');
+var VRMacroStrings = require('./VRMacroStrings.js');
 
 function endsWith(str, suffix) {
-    return str.indexOf(suffix, str.length - suffix.length) !== -1;
+  return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }
 
 String.prototype.padRight = function(l,c) {return this+Array(l-this.length+1).join(c||" ")}
+String.prototype.contains = function(it) { return this.indexOf(it) != -1; };
 
 var minWidthString = function(st, w) {
   var diff = w-st.length;
@@ -89,6 +91,15 @@ var generateImgurThumb = function(imgurl) {
   return urlSplit.join("/") + "/" + spl[0] + "b." + spl[1];
 }
 
+var getMacroMode = function(txt) {
+  for (var key in VRMacroStrings) {
+    if (txt.contains(key))
+      return key;
+  }
+
+  return null;
+}
+
 var parseImgurImageDict = function(data) {
   var dict = {};
   //failout points
@@ -106,6 +117,7 @@ var parseImgurImageDict = function(data) {
   dict.height = data.height;
   dict.attribution = "";
   dict.misc = data.views + " views";
+  dict.macro = getMacroMode(data.description);
   return dict;
 }
 
@@ -269,6 +281,41 @@ var getFlickrImage = function(photo_id, callbackFunc) {
 
 var imgWidth = 70;
 
+var adjustFromMacro = function(photo, img, macro) {
+  if (macro == null)
+    return [photo,img];
+
+  if (macro == "vrEmbed:macro=360") {
+    photo.textureDescription.sphereFOV=[360,180];
+    photo.textureDescription.plane=false;
+  } else if (macro == "vrEmbed:macro=3dparallel") {
+    img.width = 0.5*img.width;
+    photo.textureDescription.sphereFOV = [imgWidth, imgWidth*img.height/img.width];
+    photo.textureDescription.isStereo = true;
+    photo.textureDescription.U_l = [0,0];
+    photo.textureDescription.V_l = [0.5,1];
+    photo.textureDescription.U_r = [0.5,0];
+    photo.textureDescription.V_r = [1,1];
+  } else if (macro == "vrEmbed:macro=3dcrosseye") {
+    img.width = 0.5*img.width;
+    photo.textureDescription.sphereFOV = [imgWidth, imgWidth*img.height/img.width];
+    photo.textureDescription.isStereo = true;
+    photo.textureDescription.U_l = [0.5,0];
+    photo.textureDescription.V_l = [1,1];
+    photo.textureDescription.U_r = [0,0];
+    photo.textureDescription.V_r = [0.5,1];
+  } else if (macro == "vrEmbed:macro=3d360") {
+    photo.textureDescription.sphereFOV=[360,180];
+    photo.textureDescription.plane=false;
+    photo.textureDescription.isStereo = true;
+    photo.textureDescription.U_l = [0,0];
+    photo.textureDescription.V_l = [1,0.5];
+    photo.textureDescription.U_r = [0,0.5];
+    photo.textureDescription.V_r = [1,1];
+  }
+  return [photo,img];
+}
+
 var galleryDictToSceneDicts = function(galleryDict) {
   var sceneList = [];
   var numPerIndex = 16;
@@ -277,14 +324,19 @@ var galleryDictToSceneDicts = function(galleryDict) {
     var vrSceneDict = new VRSceneDict();
     vrSceneDict.init();
     vrSceneDict.dict.name = "image_" + i;
-    var img = galleryDict.images[i];
-    var mainPhoto = vrSceneDict.initPhoto();
+    var _img = galleryDict.images[i];
+    var _mainPhoto = vrSceneDict.initPhoto();
     // dict.src = data.link;
     // dict.width = data.width;
     // dict.height = data.height;
-    mainPhoto.textureDescription.src = img.src;
-    mainPhoto.textureDescription.sphereFOV = [imgWidth, imgWidth*img.height/img.width];
-    mainPhoto.textureDescription.plane = true;
+    _mainPhoto.textureDescription.src = _img.src;
+    _mainPhoto.textureDescription.sphereFOV = [imgWidth, imgWidth*_img.height/_img.width];
+    _mainPhoto.textureDescription.plane = true;
+
+    var macroExec = adjustFromMacro(_mainPhoto, _img, _img.macro);
+    var mainPhoto = macroExec[0];
+    var img = macroExec[1];
+
     vrSceneDict.dict.photoObjects.push(mainPhoto);
 
     var desc ="";
