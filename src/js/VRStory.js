@@ -304,6 +304,9 @@ VRStory = function() {
   }
 
   this.drawReticle = function(actionPercent) {
+    if (this.noGui == true)
+      return;
+
     var _ctx = this.quad.vrtwglQuad.get2dContext();
     if (_ctx == null)
       return;
@@ -656,7 +659,7 @@ VRStory = function() {
   this.isSinglePhotoStory = function() {
     if (this.gallerySrc!=null)
       return true;
-      
+
     if(this.sceneList.length != 1 ||
       this.sceneList[0].photoObjects.length != 1 ||
       this.sceneList[0].textObjects.length != 0 ||
