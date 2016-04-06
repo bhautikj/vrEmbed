@@ -1,6 +1,7 @@
 var VRSceneDict = require('./VRSceneDict.js');
 var VRURLParser = require('./VRURLParser.js');
 var VRLoaderIcons = require('./VRLoaderIcons.js');
+var VRIcons = require('./VRIcons.js');
 
 function endsWith(str, suffix) {
     return str.indexOf(suffix, str.length - suffix.length) !== -1;
@@ -306,13 +307,22 @@ var galleryDictToSceneDicts = function(galleryDict) {
       title.textOptions.align = 'left';
       title.textOptions.fontface = 'Courier';
       title.textOptions.fontsize = 36;
-      title.textureDescription.sphereFOV = [imgWidth/2,20];
+      title.textureDescription.sphereFOV = [imgWidth/1.5,20];
       title.textureDescription.sphereCentre = [imgWidth,0];
       title.textureDescription.plane = true;
-      title.textureDescription.planeOffset = [imgWidth*(2*thumbFac),0];
+      title.textureDescription.planeOffset = [0,0];
       vrSceneDict.dict.textObjects.push(title);
     }
 
+    var vrEmbedLogo = vrSceneDict.initDecal();
+    vrEmbedLogo.imgsrc = VRIcons.logoVrEmbed;
+    vrEmbedLogo.textureDescription.sphereFOV = [2*imgWidth*thumbFac, 2*imgWidth*thumbFac];
+    vrEmbedLogo.textureDescription.sphereCentre = [0, -90];
+    vrEmbedLogo.textureDescription.plane = false;
+    vrEmbedLogo.textureDescription.planeOffset = [0,0];
+    vrSceneDict.dict.decalObjects.push(vrEmbedLogo);
+
+    var lowerbarOffset = -(0.5+thumbFac)*(imgWidth*img.height/img.width);
     // prev thumb
     if (i>0) {
       var thumb = vrSceneDict.initDecal();
@@ -321,9 +331,9 @@ var galleryDictToSceneDicts = function(galleryDict) {
       //console.log('ADDING PREV: '+i+" "+thumb.jumpTo);
       thumb.imgsrc = otherImg.thumb;
       thumb.textureDescription.sphereFOV = [imgWidth*thumbFac, thumbFac*imgWidth*otherImg.height/otherImg.width];
-      thumb.textureDescription.sphereCentre = [imgWidth*-1, 0];
+      thumb.textureDescription.sphereCentre = [0,0];
       thumb.textureDescription.plane = true;
-      thumb.textureDescription.planeOffset = [imgWidth*thumbFac,0];
+      thumb.textureDescription.planeOffset = [-(0.5-0.5*thumbFac)*imgWidth, lowerbarOffset];;
       vrSceneDict.dict.decalObjects.push(thumb);
     }
     //next thumb
@@ -334,9 +344,10 @@ var galleryDictToSceneDicts = function(galleryDict) {
       //console.log('ADDING NEXT: '+thumb.jumpTo);
       thumb.imgsrc = otherImg.thumb;
       thumb.textureDescription.sphereFOV = [imgWidth*thumbFac, thumbFac*imgWidth*otherImg.height/otherImg.width];
-      thumb.textureDescription.sphereCentre = [imgWidth, 0];
+      //thumb.textureDescription.sphereCentre = [imgWidth, 0];
+      thumb.textureDescription.sphereCentre = [0, 0];
       thumb.textureDescription.plane = true;
-      thumb.textureDescription.planeOffset = [-imgWidth*thumbFac,0];
+      thumb.textureDescription.planeOffset = [(0.5-0.5*thumbFac)*imgWidth, lowerbarOffset];;
       vrSceneDict.dict.decalObjects.push(thumb);
     }
 
@@ -347,7 +358,8 @@ var galleryDictToSceneDicts = function(galleryDict) {
     galleryIdx.textureDescription.sphereFOV = [imgWidth*thumbFac, imgWidth*thumbFac];
     galleryIdx.textureDescription.sphereCentre = [0, 0];
     galleryIdx.textureDescription.plane = true;
-    galleryIdx.textureDescription.planeOffset = [0,-0.5*imgWidth*img.height/img.width + -0.75*imgWidth*thumbFac];
+    // galleryIdx.textureDescription.planeOffset = [0,-0.5*imgWidth*img.height/img.width + -0.75*imgWidth*thumbFac];
+    galleryIdx.textureDescription.planeOffset = [0,lowerbarOffset];
     vrSceneDict.dict.decalObjects.push(galleryIdx);
 
     sceneList.push(vrSceneDict);
@@ -413,6 +425,14 @@ var galleryDictToSceneDicts = function(galleryDict) {
       nextDecal.textureDescription.planeOffset = [20,-60];
       vrSceneDict.dict.decalObjects.push(nextDecal);
     }
+
+    var vrEmbedLogo = vrSceneDict.initDecal();
+    vrEmbedLogo.imgsrc = VRIcons.logoVrEmbed;
+    vrEmbedLogo.textureDescription.sphereFOV = [2*imgWidth*thumbFac, 2*imgWidth*thumbFac];
+    vrEmbedLogo.textureDescription.sphereCentre = [0, -90];
+    vrEmbedLogo.textureDescription.plane = false;
+    vrEmbedLogo.textureDescription.planeOffset = [0,0];
+    vrSceneDict.dict.decalObjects.push(vrEmbedLogo);
 
     sceneList.push(vrSceneDict);
 

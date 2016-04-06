@@ -671,12 +671,15 @@ VRStory = function() {
     var urlCode = "";
     var embedCode = "";
     var scriptInc = '<script async src="//vrEmbed.org/vrEmbed.min.js" charset="utf-8"></script>';
+    var iframePrefix = "<iframe width='640' height='360' src='";
+    var iframeSuffix = "' frameborder='0' webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>";
     if (this.gallerySrc != null) {
       urlCode = encodeURIComponent("http://vrembed.org/?gallery=" + this.gallerySrc);
-      embedCode = "";
+      embedCode = iframePrefix + "http://vrembed.org/?gallery=" + this.gallerySrc + iframeSuffix;
     } else if (this.isSinglePhotoStory()==true){
       urlCode = encodeURIComponent("http://vrembed.org/" + this.sceneList[0].photoObjects[0].getSinglePhotoURLParams());
-      embedCode = this.sceneList[0].photoObjects[0].getSinglePhotoVrEmbedElement().outerHTML+scriptInc;
+      //embedCode = this.sceneList[0].photoObjects[0].getSinglePhotoVrEmbedElement().outerHTML+scriptInc;
+      embedCode = iframePrefix + "http://vrembed.org/" + this.sceneList[0].photoObjects[0].getSinglePhotoURLParams() + iframeSuffix;
     } else {
       urlCode = encodeURIComponent(window.location.href);
       embedCode = "<div>"+this.getStoryElement().outerHTML + scriptInc +"</div>";

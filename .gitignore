@@ -2,3 +2,4 @@ bin/
 node_modules/
 vrEmbed.min.js
 vrCreate.min.js
+vrLoader.min.js
