@@ -47,19 +47,19 @@ function pointInPlane(pt, vrTextureDescription) {
   var planeX = -alpha*Math.cos(testPoint[1])*Math.sin(testPoint[0]);
   var planeY = -alpha*Math.sin(testPoint[1]);
 
-  var xmin = vrTextureDescription.planeOffset[0]*45 - (0.5*vrTextureDescription.sphereFOV[0]);
+  var xmin = vrTextureDescription.planeOffset[0] - (0.5*vrTextureDescription.sphereFOV[0]);
   if(planeX<xmin)
     return false;
 
-  var xmax = vrTextureDescription.planeOffset[0]*45 + (0.5*vrTextureDescription.sphereFOV[0]);
+  var xmax = vrTextureDescription.planeOffset[0] + (0.5*vrTextureDescription.sphereFOV[0]);
   if (planeX>xmax)
     return false;
 
-  var ymin = vrTextureDescription.planeOffset[1]*45 - (0.5*vrTextureDescription.sphereFOV[1]);
+  var ymin = vrTextureDescription.planeOffset[1] - (0.5*vrTextureDescription.sphereFOV[1]);
   if (planeY<ymin)
     return false;
 
-  var ymax = vrTextureDescription.planeOffset[1]*45 + (0.5*vrTextureDescription.sphereFOV[1]);
+  var ymax = vrTextureDescription.planeOffset[1] + (0.5*vrTextureDescription.sphereFOV[1]);
   if (planeY>ymax)
     return false;
 
@@ -77,7 +77,7 @@ VRGuiTimer = function() {
   this.in = false;
   this.startTime = Number.MAX_VALUE;
   this.callbackFired = false;
-  this.timeout = 1000; // in ms - for all gui events
+  this.timeout = 2500; // in ms - for all gui events
 
   this.init = function(canvas, callback, callbackArgs) {
     this.canvas = canvas;
@@ -173,6 +173,16 @@ VRGui = function() {
     this.canvasSet = [];
   }
 
+  this.guiNeedsRedraw = function() {
+    var globalDirty = false;
+    for(texIt = 0;texIt < this.canvasSet.length; texIt++) {
+      var dirty = this.canvasSet[texIt][0].getDirtyAndClear();
+      if (dirty)
+        globalDirty = true;
+    }
+    return globalDirty;
+  }
+
   this.update = function(_pt, timestamp) {
     var pt = [_pt[0],_pt[1]];
     // document.getElementById("log").innerHTML = Math.floor(_pt[0]) + "," + Math.floor(_pt[1]);
@@ -206,6 +216,15 @@ VRGui = function() {
     var vrGuiTimer = new VRGuiTimer();
     vrGuiTimer.init(vrCanvasTextBox, callback, callbackArgs);
     this.canvasSet.push([vrCanvasTextBox, vrGuiTimer]);
+  }
+
+  this.createDecal = function(callback, callbackArgs, imgsrc, textureDescription) {
+    var vrDecal = VRCanvasFactory.createCanvasDecal();
+    vrDecal.init(this.gl, imgsrc, textureDescription);
+    vrDecal.update(self.tick);
+    var vrGuiTimer = new VRGuiTimer();
+    vrGuiTimer.init(vrDecal, callback, callbackArgs);
+    this.canvasSet.push([vrDecal, vrGuiTimer]);
   }
 
   this.createArrow = function(hfov, x, y, callback, callbackArgs, isLeft) {

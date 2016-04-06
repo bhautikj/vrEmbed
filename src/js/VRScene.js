@@ -1,12 +1,12 @@
 var VRScenePhoto = require('./VRScenePhoto.js');
 var VRText = require('./VRText.js');
-var VRJump = require('./VRJump.js');
+var VRDecal = require('./VRDecal.js');
 
 VRScene = function() {
   this.sceneElement = null;
   this.photoObjects = [];
   this.textObjects = [];
-  this.jumpObjects = [];
+  this.decalObjects = [];
   this.oldScroll = null;
   this.isStereo = false;
   this.name = "";
@@ -22,10 +22,10 @@ VRScene = function() {
       var vrText = new VRText();
       vrText.init(elm);
       this.textObjects.push(vrText);
-    } else if (elm.nodeName == "JUMP") {
-      var vrJump = new VRJump();
-      vrJump.init(elm);
-      this.jumpObjects.push(vrJump);
+    } else if (elm.nodeName == "DECAL") {
+      var vrDecal = new VRDecal();
+      vrDecal.init(elm);
+      this.decalObjects.push(vrDecal);
     }
 
     var children = elm.childNodes;
@@ -57,7 +57,7 @@ VRScene = function() {
   this.initDict = function(dict) {
     this.photoObjects = [];
     this.textObjects = [];
-    this.jumpObjects = [];
+    this.decalObjects = [];
 
     for (var i = 0, l=dict.photoObjects.length; i<l; ++i) {
       var photoObject = new VRScenePhoto();
@@ -71,10 +71,10 @@ VRScene = function() {
       this.textObjects.push(textObject);
     }
 
-    for (var i = 0, l=dict.jumpObjects.length; i<l; ++i) {
-      var jumpObject = new VRJump();
-      jumpObject.initDict(dict.jumpObjects[i]);
-      this.jumpObjects.push(jumpObject);
+    for (var i = 0, l=dict.decalObjects.length; i<l; ++i) {
+      var vrDecal = new VRDecal();
+      vrDecal.initDict(dict.decalObjects[i]);
+      this.decalObjects.push(vrDecal);
     }
 
     this.name = dict.name;
@@ -87,12 +87,6 @@ VRScene = function() {
     if (vrEmbedPhotoElm.isStereo() == true)
       this.isStereo = true;
     this.photoObjects.push(vrEmbedPhotoElm);
-  }
-
-  this.initFromURLSource = function(scenePhoto) {
-    if (scenePhoto.isStereo() == true)
-      this.isStereo = true;
-    this.photoObjects.push(scenePhoto);
   }
 
   this.getSceneElement = function() {
@@ -109,15 +103,26 @@ VRScene = function() {
       elm.appendChild(this.textObjects[j].getTextElement());
     }
 
-    for(k=0; k<this.jumpObjects.length; k++) {
-      elm.appendChild(this.jumpObjects[k].getJumpElement());
+    for(k=0; k<this.decalObjects.length; k++) {
+      elm.appendChild(this.decalObjects[k].getDecalElement());
     }
 
     return elm;
   }
 
   this.hasJumpNav = function() {
-    return this.jumpObjects.length!=0;
+
+    for(j=0; j<this.textObjects.length; j++) {
+      if (this.textObjects[j].jumpTo!="")
+        return true;
+    }
+
+    for(j=0; j<this.decalObjects.length; j++) {
+      if (this.decalObjects[j].jumpTo!="")
+        return true;
+    }
+
+    return false;
   }
 };
 

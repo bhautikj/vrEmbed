@@ -26,9 +26,17 @@ VRHandsets = {
     width: 121,
     name: "LG G3"
   },
+  iPhoneSE: {
+    width: 89,
+    name: "iPhone SE"
+  },
   iPhone4: {
     width: 75,
     name: "iPhone 4"
+  },
+  iPhone5s: {
+    width: 89,
+    name: "iPhone 5s"
   },
   iPhone5: {
     width: 89,

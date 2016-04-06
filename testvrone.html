@@ -63,14 +63,30 @@ div.stretchy-wrapper > div {
 
 <div class="stretchy-wrapper"><div>
   <story>
-    <scene name="intro">
-      <text sphereparams="30,10,0,0" plane="true" planeOffset="1,1" align="center" fontface="Arial" fontsize="72" borderthickness="12" bordercolor="#FFFFFF" backgroundcolor="#000000" textcolor="#FFFFFF">X</text>
-      <text sphereparams="30,10,-90,45" plane="false" align="center" fontface="Arial" fontsize="72" borderthickness="12" bordercolor="#FFFFFF" backgroundcolor="#000000" textcolor="#FFFFFF">Y</text>
+    <scene name="sceneA">
+      <!-- <text sphereparams="30,10,0,0" plane="true" planeOffset="1,1" align="center" fontface="Arial" fontsize="72" borderthickness="12" bordercolor="#FFFFFF" backgroundcolor="#000000" textcolor="#FFFFFF">X</text> -->
+      <!-- <text sphereparams="30,10,-90,45" plane="false" align="center" fontface="Arial" fontsize="72" borderthickness="12" bordercolor="#FFFFFF" backgroundcolor="#000000" textcolor="#FFFFFF">Y</text> -->
       <!-- <photo src="src/assets/rheingauer_dom_crv.jpg" isStereo="false" sphereParams="360,180,0,0"/> -->
       <!-- <photo src="src/assets/cuber.jpg" isStereo="false" sphereParams="360,180,0,0"/> -->
+      <!-- <decal sphereParams="30,50,0,0" src="src/assets/vrEmbedLogo.png" plane="true" planeOffset=".5,.5" jumpTo="sceneB"></decal> -->
+
+      <!-- <text sphereParams="30,10,-20,0" jumpTo="sceneB">Scene B Jump</text>
+      <text sphereParams="30,10,20,0">Scene B No Jump</text>
+      <decal sphereParams="10,10,0,0" src="src/assets/vrEmbedLogo.png" plane="true" planeOffset="0,20"></decal>
+      <decal sphereParams="10,10,0,0" src="src/assets/vrEmbedLogo.png" plane="true" planeOffset="10,20"></decal>
+      <decal sphereParams="10,10,0,0" src="src/assets/vrEmbedLogo.png" plane="true" planeOffset="20,20"></decal>
+      <decal sphereParams="10,10,0,0" src="src/assets/vrEmbedLogo.png" plane="true" planeOffset="30,20"></decal>
+      <decal sphereParams="10,10,0,0" src="src/assets/vrEmbedLogo.png" plane="true" planeOffset="40,20"></decal>
       <photo src="src/assets/rhode_island_stereo.jpg" plane="true" isStereo="true" sphereParams="90,90,0,0" texParams="0,0,0.5,1.0,0.5,0,1,1"/>
       <photo src="src/assets/rhode_island_stereo.jpg" plane="true" isStereo="true" sphereParams="90,90,90,0" texParams="0,0,0.5,1.0,0.5,0,1,1"/>
       <photo src="src/assets/rhode_island_stereo.jpg" plane="true" isStereo="true" sphereParams="90,90,0,90" texParams="0,0,0.5,1.0,0.5,0,1,1"/>
+      <photo src="src/assets/vrEmbedLogo.png" plane="true" isStereo="false" sphereParams="60,60,90,0"/> -->
+
+      <photo src="http://i.imgur.com/rFod7kI.jpg" isStereo="false" sphereParams="360,180,0,0"/>
+    </scene>
+    <scene name="sceneB">
+      <text sphereParams="30,10,-20,0" jumpTo="sceneA">Scene A Jump</text>
+      <text sphereParams="30,10,20,0">Scene A No Jump</text>
     </scene>
   </story>
 </div></div>

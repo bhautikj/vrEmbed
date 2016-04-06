@@ -22,6 +22,7 @@ VRText = function() {
   this.textureDescription = null;
   this.textOptions = null;
   this.message = "";
+  this.jumpTo = "";
 
   this.parseMessage = function(str) {
     this.message = str;
@@ -39,12 +40,14 @@ VRText = function() {
   this.init = function(sceneText) {
     this.sceneText = sceneText;
     this.sceneText.setAttribute("hidden", true);
-    this.textureDescription = new VRTextureDescription();
-    this.textureDescription.setSphereParamsFromString(this.sceneText.getAttribute("sphereParams"));
-    this.textureDescription.plane = this.parseBoolString(this.sceneText.getAttribute("plane"));
-    this.textureDescription.setPlaneOffsetParamsFromString(this.sceneText.getAttribute("planeOffset"));
 
     this.parseMessage(this.sceneText.innerHTML);
+    this.jumpTo = this.sceneText.getAttribute("jumpTo");
+    if (this.jumpTo == undefined)
+      this.jumpTo = "";
+
+    this.textureDescription = new VRTextureDescription();
+    this.textureDescription.init(this.sceneText);
 
     this.textOptions = new VRTextOptions();
     this.textOptions.init(this.sceneText);
@@ -54,6 +57,7 @@ VRText = function() {
     this.textureDescription = new VRTextureDescription();
     this.textureDescription.initDict(dict.textureDescription);
     this.parseMessage(dict.message);
+    this.jumpTo = dict.jumpTo;
     this.textOptions = new VRTextOptions();
     this.textOptions.initDict(dict.textOptions);
   }
@@ -61,14 +65,11 @@ VRText = function() {
 
   this.getTextElement = function() {
     var elm = document.createElement('text');
-    elm.setAttribute('sphereParams',this.textureDescription.getSphereParamsString());
-    if (this.textureDescription.plane == false){
-      elm.setAttribute('plane', 'false')
-    } else {
-      elm.setAttribute('plane', 'true')
-      elm.setAttribute('planeOffset', this.textureDescription.getPlaneOffsetParamsString());
-    }
+    this.textureDescription.setElement(elm);
+    
     elm.innerHTML = this.message;
+    if(this.jumpTo!="")
+      elm.setAttribute('jumpTo', this.jumpTo);
 
     this.textOptions.setElement(elm);
     return elm;

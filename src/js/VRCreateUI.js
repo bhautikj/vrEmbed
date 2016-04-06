@@ -4,7 +4,7 @@ var VRUIAccordionStacker = require('./VRUIAccordionStacker.js');
 var VRSceneDict = require('./VRSceneDict.js');
 var VRUISceneList = require('./VRUISceneList.js');
 var VRStoryDict = require('./VRStoryDict.js');
-
+var VRImageLoader = require('./VRImageLoader.js');
 
 var flickrImageCache = {};
 
@@ -92,8 +92,7 @@ VRCreateUI = function() {
   this.V_r_y_slider = null;
 
   this.textMessage = null;
-  this.jumpTo = null;
-  this.jumpText = null;
+  this.sceneJump = null;
   this.fontAlign = null;
   this.fontFace = null;
   this.fontSize = null;
@@ -150,16 +149,17 @@ VRCreateUI = function() {
       self.showOptionsPosition3D(false);
       self.showOptionsPlanar(self.isPlane.checked);
       self.showOptionsText(true);
-      self.showOptionsJump(false);
+      self.showOptionsJump(true);
       self.showOptionsTextCommon(true);
-    } else if (type == "jump") {
-      self.showImageOptions(false);
+    } else if (type == "decal") {
+      self.showImageOptions(true);
       self.showOptionsPosition(true);
       self.showOptionsPosition3D(false);
       self.showOptionsPlanar(self.isPlane.checked);
+      self.showStereoOptions(false);
       self.showOptionsText(false);
       self.showOptionsJump(true);
-      self.showOptionsTextCommon(true);
+      self.showOptionsTextCommon(false);
     }
   }
 
@@ -184,12 +184,12 @@ VRCreateUI = function() {
     document.getElementById("options_text").hidden = !doit;
   }
 
-  this.showOptionsTextCommon = function(doit) {
-    document.getElementById("options_text_common").hidden = !doit;
-  }
-
   this.showOptionsJump = function(doit) {
     document.getElementById("options_jump").hidden = !doit;
+  }
+
+  this.showOptionsTextCommon = function(doit) {
+    document.getElementById("options_text_common").hidden = !doit;
   }
 
   this.showStereoOptions = function(doit) {
@@ -251,6 +251,7 @@ VRCreateUI = function() {
       text.textureDescription.planeOffset = [planarOffsetX, planarOffsetY];
 
       text.message = self.textMessage.value;
+      text.jumpTo = self.sceneJump.value;
 
       text.textOptions.align = self.fontAlign.value;
       text.textOptions.fontface = self.fontFace.value;
@@ -259,8 +260,8 @@ VRCreateUI = function() {
       text.textOptions.bordercolor = self.borderColor.value;
       text.textOptions.backgroundcolor = self.backgroundColor.value;
       text.textOptions.textcolor = self.textColor.value;
-    } else if (type == "jump") {
-      var jump = scene.dict.jumpObjects[idx];
+    } else if (type == "decal") {
+      var decal = scene.dict.decalObjects[idx];
       var hfov = parseFloat(self.hfovVRUINumberSlider.get());
       var vfov = parseFloat(self.vfovVRUINumberSlider.get());
       var xpos = parseFloat(self.xposVRUINumberSlider.get());
@@ -268,23 +269,15 @@ VRCreateUI = function() {
       var planarOffsetX = parseFloat(self.planarOffsetXSlider.get());
       var planarOffsetY = parseFloat(self.planarOffsetYSlider.get());
 
-      jump.textureDescription.sphereFOV[0] = hfov;
-      jump.textureDescription.sphereFOV[1] = vfov;
-      jump.textureDescription.sphereCentre[0] = xpos;
-      jump.textureDescription.sphereCentre[1] = ypos;
-      jump.textureDescription.plane = self.isPlane.checked;
-      jump.textureDescription.planeOffset = [planarOffsetX, planarOffsetY];
+      decal.textureDescription.sphereFOV[0] = hfov;
+      decal.textureDescription.sphereFOV[1] = vfov;
+      decal.textureDescription.sphereCentre[0] = xpos;
+      decal.textureDescription.sphereCentre[1] = ypos;
+      decal.textureDescription.plane = self.isPlane.checked;
+      decal.textureDescription.planeOffset = [planarOffsetX, planarOffsetY];
 
-      jump.jumpTo = self.jumpTo.value;
-      jump.jumpText = self.jumpText.value;
-
-      jump.textOptions.align = self.fontAlign.value;
-      jump.textOptions.fontface = self.fontFace.value;
-      jump.textOptions.fontsize = self.fontSize.value;
-      jump.textOptions.borderthickness = self.borderThickness.value;
-      jump.textOptions.bordercolor = self.borderColor.value;
-      jump.textOptions.backgroundcolor = self.backgroundColor.value;
-      jump.textOptions.textcolor = self.textColor.value;
+      decal.imgsrc = self.imageURL.value;
+      decal.jumpTo = self.sceneJump.value;
     }
 
     self.setPanelVisibility();
@@ -446,10 +439,10 @@ VRCreateUI = function() {
       opt.innerHTML = "Text " + (i+1);
       self.elementSelect.appendChild(opt);
     }
-    for (i = 0; i < scene.dict.jumpObjects.length; i++) {
+    for (i = 0; i < scene.dict.decalObjects.length; i++) {
       var opt = document.createElement('option');
-      opt.value = "jump_" + i;
-      opt.innerHTML = "Jump " + (i+1);
+      opt.value = "decal_" + i;
+      opt.innerHTML = "Decal " + (i+1);
       self.elementSelect.appendChild(opt);
     }
     self.pushFromDictToRender();
@@ -480,11 +473,11 @@ VRCreateUI = function() {
     self.accordionStacker.showNamed("setup_scene_object");
   }
 
-  this.addJump = function() {
+  this.addDecal = function() {
     var scene = self.sceneList.scenes[self.sceneSelect.value];
-    scene.addJump();
+    scene.addDecal();
     self.populateGUIFromSceneDict(self.sceneSelect.value);
-    self.elementSelect.value = "jump_" + (scene.dict.jumpObjects.length - 1);
+    self.elementSelect.value = "decal_" + (scene.dict.decalObjects.length - 1);
     self.selectElement();
     self.accordionStacker.showNamed("setup_scene_object");
   }
@@ -501,9 +494,10 @@ VRCreateUI = function() {
       scene.removePhoto(idx);
     } else if (type == "text") {
       scene.removeText(idx);
-    } else if (type == "jump") {
-      scene.removeJump(idx);
+    } else if (type == "decal") {
+      scene.removeDecal(idx);
     }
+
 
     self.populateGUIFromSceneDict(self.sceneSelect.value);
   }
@@ -565,6 +559,7 @@ VRCreateUI = function() {
 
       self.isPlane.checked = text.textureDescription.plane;
       self.textMessage.value = text.message;
+      self.sceneJump.value = text.jumpTo;
 
       self.fontAlign.value = text.textOptions.align;
       self.fontFace.value = text.textOptions.fontface;
@@ -573,27 +568,18 @@ VRCreateUI = function() {
       self.borderColor.value = text.textOptions.bordercolor;
       self.backgroundColor.value = text.textOptions.backgroundcolor;
       self.textColor.value = text.textOptions.textcolor;
+    } else if (type == "decal") {
+      var decal = scene.dict.decalObjects[idx];
+      self.hfovVRUINumberSlider.set(decal.textureDescription.sphereFOV[0]);
+      self.vfovVRUINumberSlider.set(decal.textureDescription.sphereFOV[1]);
+      self.xposVRUINumberSlider.set(decal.textureDescription.sphereCentre[0]);
+      self.yposVRUINumberSlider.set(decal.textureDescription.sphereCentre[1]);
+      self.isPlane.checked = decal.textureDescription.plane;
+      self.planarOffsetXSlider.set(decal.textureDescription.planeOffset[0]);
+      self.planarOffsetYSlider.set(decal.textureDescription.planeOffset[1]);
 
-    } else if (type=="jump"){
-      var jump = scene.dict.jumpObjects[idx];
-      self.hfovVRUINumberSlider.set(jump.textureDescription.sphereFOV[0]);
-      self.vfovVRUINumberSlider.set(jump.textureDescription.sphereFOV[1]);
-      self.xposVRUINumberSlider.set(jump.textureDescription.sphereCentre[0]);
-      self.yposVRUINumberSlider.set(jump.textureDescription.sphereCentre[1]);
-      self.planarOffsetXSlider.set(jump.textureDescription.planeOffset[0]);
-      self.planarOffsetYSlider.set(jump.textureDescription.planeOffset[1]);
-
-      self.isPlane.checked = jump.textureDescription.plane;
-      self.jumpTo.value = jump.jumpTo;
-      self.jumpText.value = jump.jumpText;
-
-      self.fontAlign.value = jump.textOptions.align;
-      self.fontFace.value = jump.textOptions.fontface;
-      self.fontSize.value = jump.textOptions.fontsize;
-      self.borderThickness.value = jump.textOptions.borderthickness;
-      self.borderColor.value = jump.textOptions.bordercolor;
-      self.backgroundColor.value = jump.textOptions.backgroundcolor;
-      self.textColor.value = jump.textOptions.textcolor;
+      self.imageURL.value = decal.imgsrc;
+      self.sceneJump.value = decal.jumpTo;
     }
   }
 
@@ -611,6 +597,17 @@ VRCreateUI = function() {
   this.removeScene = function() {
     self.sceneList.removeScene();
     self.updateSceneListDropdown();
+  }
+
+  this.stackerEditGallery = function() {
+    self.accordionStacker.totalHide("mode_pick", true);
+    self.accordionStacker.totalHide("manage_scenes", true);
+    self.accordionStacker.totalHide("manage_scene_objects", true);
+    self.accordionStacker.totalHide("setup_scene_object", true);
+    self.accordionStacker.totalHide("preview_dummy", true);
+    self.accordionStacker.totalHide("export", false);
+    self.accordionStacker.showNamed("export");
+    document.getElementById("preview_box").hidden = true;
   }
 
   this.stackerEditQuick = function() {
@@ -691,6 +688,22 @@ VRCreateUI = function() {
     }
   }
 
+  this.tryModeGallery = function() {
+    if (self.oneImage.value == "") {
+      return;
+    }
+    var galleryURL = self.oneImage.value;
+    VRImageLoader.getImagesCallback(galleryURL, self.loadGallery);
+    self.getStory().setGallerySrc(galleryURL);
+  }
+
+  this.loadGallery = function(sceneList) {
+    self.sceneSelect.value = 0;
+    self.sceneList.scenes = sceneList;
+    self.populateGUIFromSceneDict(self.sceneSelect.value);
+    self.selectElement();
+    self.stackerEditGallery();
+  }
 
   this.loadModeOneImage = function(imgURL) {
     // setup scene with one image
@@ -780,6 +793,7 @@ VRCreateUI = function() {
     ctx.canvas.width  = 1024;
     ctx.canvas.height = 1024;
     this.imagePreview = new Image();
+    this.imagePreview.crossOrigin = "Anonymous";
     this.imageURL.onchange = this.loadImage;
     this.imageURL.value = "";
 
@@ -871,10 +885,8 @@ VRCreateUI = function() {
     this.textMessage = document.getElementById('textMessage');
     this.textMessage.onchange = this.inputStateChange;
 
-    this.jumpTo = document.getElementById('jumpTo');
-    this.jumpTo.onchange = this.inputStateChange;
-    this.jumpText = document.getElementById('jumpText');
-    this.jumpText.onchange = this.inputStateChange;
+    this.sceneJump = document.getElementById('sceneJump');
+    this.sceneJump.onchange = this.inputStateChange;
 
     this.fontAlign = document.getElementById('fontAlign');
     this.fontAlign.onchange = this.inputStateChange;
@@ -909,23 +921,25 @@ VRCreateUI = function() {
 
     var addImageButton = document.getElementById("addImage");
     var addTextButton = document.getElementById("addText");
-    var addJumpButton = document.getElementById("addJump");
+    var addDecalButton = document.getElementById("addDecal");
     var removeElementButton = document.getElementById("removeElement");
     addImageButton.onclick = this.addImage;
     addTextButton.onclick = this.addText;
-    addJumpButton.onclick = this.addJump;
+    addDecalButton.onclick = this.addDecal;
     removeElementButton.onclick = this.removeElement;
 
     this.oneImage = document.getElementById("oneImage");
     this.modeOneImage = document.getElementById("modeOneImage");
     this.mode360Image = document.getElementById("mode360Image");
     this.modeStereoImage = document.getElementById("modeStereoImage");
+    this.modeGallery = document.getElementById("modeGallery");
     this.modeNewStory = document.getElementById("modeNewStory");
     this.existingStory = document.getElementById("existingStory");
     this.modeExistingStory = document.getElementById("modeExistingStory");
     modeOneImage.onclick = this.tryModeOneImage;
     mode360Image.onclick = this.tryMode360Image;
     modeStereoImage.onclick = this.tryModeStereoImage;
+    modeGallery.onclick = this.tryModeGallery;
     modeNewStory.onclick = this.tryModeNewStory;
     modeExistingStory.onclick = this.tryModeExistingStory;
     this.oneImage.value = "http://vrembed.org/src/assets/vrEmbedLogo.png";

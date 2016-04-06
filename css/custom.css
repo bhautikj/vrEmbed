@@ -28,6 +28,10 @@ input[type="submit"].button-primary:focus  {
   border-color: #666;
 }
 
+.button-toggle {
+  font-size: 30px;
+}
+
 .headerbar {
   background-color: #f90;
   color: #fff;

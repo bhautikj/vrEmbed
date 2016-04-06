@@ -22,7 +22,7 @@
    <!-- Basic Page Needs
    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
    <meta charset="utf-8">
-   <title>vrEmbed Documentation</title>
+   <title>Captions Embed</title>
    <meta name="description" content="vrEmbed.org">
    <meta name="author" content="Bhautik Joshi">
    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, shrink-to-fit=no">
@@ -47,79 +47,32 @@
  </head>
 
 <body>
-
-<div class="container">
-  <div class="row">
-    <div class="eleven columns alignright">
-      <h1>vrEmbed Documentation</h1>
-    </div>
-    <div class="one column">
-      <a href="http://vrEmbed.org" target="_blank"><img src="../src/assets/vrEmbedLogo.png" height=56px/></a>
-    </div>
-  </div>
-</div>
-
-<div class="container">
-  <div class="row headerbar">
-    <div class="twelve columns">
-      <a href="index.html" target="_blank">Documentation home</a>
-      | <a href="using.html">Using vrEmbed</a>
-      | <a href="quickstart.html">Quickstart</a>
-      | <a href="placing.html">Placing images and text</a>
-      | <a href="stories.html">Creating stories</a>
-    </div>
-  </div>
-  <div class="row">
-    <div class="twelve columns">
-      &nbsp;
-    </div>
-  </div>
-</div>
-
-<div class="container">
-  <div class="row">
-    <div class="eight columns alignright">
-      <h2><a href="using.html">Using vrEmbed</a></h2>
-    </div>
-    <div class="four columns">
-      <a href="using.html">A visual guide to using the controls and interface in a vrEmbed.</a>
+  <div class="container">
+    <div class="row">
+      <div class="one-half column">
+        <div class="stretchy-wrapper greybg"><div>
+            <story>
+              <scene>
+                <photo src="../src/assets/byobw_2014_a.jpg" isStereo="false" sphereParams="100,66,0,0" plane="true"/>
+                <decal sphereParams="60,60,0,0" plane="true" planeOffset="-50,33" src="../src/assets/vrEmbedLogo.png"/></decal>
+              </scene>
+            </story><script async src="../vrEmbed.min.js" charset="utf-8"></script>
+        </div></div>
+      </div>
+      <div class="one-half column">
+        <div class="code">
+          &lt;div&gt;
+          <br/>&nbsp;&lt;story&gt;
+          <br/>&nbsp;&nbsp;&lt;scene&gt;
+          <br/>&nbsp;&nbsp;&nbsp;&lt;photo src=&quot;../src/assets/byobw_2014_a.jpg&quot; isStereo=&quot;false&quot; sphereParams=&quot;100,66,0,0&quot; plane=&quot;true&quot;/&gt;
+          <br/>&nbsp;&nbsp;&nbsp;&lt;decal sphereParams=&quot;60,60,0,0&quot; plane=&quot;true&quot; planeOffset=&quot;-50,33&quot; src=&quot;../src/assets/vrEmbedLogo.png&quot;/&gt;&lt;/decal&gt;
+          <br/>&nbsp;&nbsp;&lt;/scene&gt;
+          <br/>&nbsp;&lt;/story&gt;&lt;script async src=&quot;../vrEmbed.min.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
+          <br/>&lt;/div&gt;
+        </div>
+      </div>
     </div>
   </div>
-  <div class="row">
-    <div class="eight columns alignright">
-      <h2><a href="quickstart.html">Quickstart</a></h2>
-    </div>
-    <div class="four columns">
-      <a href="quickstart.html">A fast-start guide to taking images and putting them in a vrEmbed.</a>
-    </div>
-  </div>
-  <div class="row">
-    <div class="eight columns alignright">
-      <h2><a href="placing.html">Placing images and text</a></h2>
-    </div>
-    <div class="four columns">
-      <a href="placing.html">How to place images, text and controls.</a>
-    </div>
-  </div>
-  <div class="row">
-    <div class="eight columns alignright">
-      <h2><a href="stories.html">Creating stories</a></h2>
-    </div>
-    <div class="four columns">
-      <a href="stories.html">How to create more complex scenes and stories.</a>
-    </div>
-  </div>
-</div>
-
-<div class="section values">
-  <div class="row">
-    <div class="twelve columns">
-      vrEmbed is (c) Bhautik Joshi 2015-16 and available under the <a href="http://www.apache.org/licenses/LICENSE-2.0" target="_blank">Apache 2.0</a> Open Source license.
-    </div>
-  </div>
-</div>
-
 </body>
-
 
 </html>

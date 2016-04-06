@@ -74,7 +74,8 @@ var fsRenderDisplay = "precision highp float;\n"+
 "uniform vec2 fovParams;\n"+
 "uniform vec2 k;\n"+
 "uniform float ipdAdjust;\n"+
-"uniform float guiMult;\n"+
+"uniform vec2 guiMult;\n"+
+
 "void main(void) {\n"+
    //normalize uv so it is between 0 and 1
 "  vec2 uv = gl_FragCoord.xy / resolution;\n"+
@@ -105,11 +106,11 @@ var fsRenderDisplay = "precision highp float;\n"+
    //map uv.x 0..1 to -PI..PI and uv.y 0..1 to -PI/2..PI/2
 "  float lat = 0.5*PI*(2.*uv.y-1.0);\n"+
 "  float lon = PI*(2.0*uv.x-1.0);\n"+
-   // map lat/lon to point on unit sphere
+  // map lat/lon to point on unit sphere
 "  float r = cos(lat);\n"+
 "  vec4 sphere_pnt = vec4(r*cos(lon), r*sin(lon), sin(lat), 1.0);\n"+
 "  sphere_pnt *= transform;\n"+
-   // now map point in sphere back to lat/lon coords
+  // now map point in sphere back to lat/lon coords
 "  float sphere_pnt_len = length(sphere_pnt);\n"+
   // disabling this seems to fix the scaling wonkiness??
   // "  sphere_pnt /= sphere_pnt_len;\n"+
@@ -130,18 +131,18 @@ var fsRenderDisplay = "precision highp float;\n"+
 "    }\n"+
 "    vec4 spherePx = texture2D(textureSource, lonLat);\n"+
 "    vec4 guiPx = texture2D(textureGui, lonLat);\n"+
-"    guiPx.a *= guiMult;\n"+
+"    guiPx.a *= guiMult.x + (1.-guiMult.x)*guiMult.y;\n"+
 "    gl_FragColor = guiPx*guiPx.a + spherePx*(1.-guiPx.a);\n"+
 "  } else if (renderMode == 2) {\n"+
     // anaglyph render
 "    vec4 colorL, colorR, colorLSphere, colorLGui, colorRSphere, colorRGui;\n"+
 "    colorLSphere = texture2D(textureSource, vec2(lonLat.x, 0.5+lonLat.y*0.5));\n"+
 "    colorLGui = texture2D(textureGui, vec2(lonLat.x, 0.5+lonLat.y*0.5));\n"+
-"    colorLGui.a *= guiMult;\n"+
+"    colorLGui.a *= guiMult.x + (1.-guiMult.x)*guiMult.y;\n"+
 "    colorL = colorLGui*colorLGui.a + colorLSphere*(1.-colorLGui.a);\n"+
 "    colorRSphere = texture2D(textureSource, vec2(lonLat.x, lonLat.y*0.5));\n"+
 "    colorRGui = texture2D(textureGui, vec2(lonLat.x, lonLat.y*0.5));\n"+
-"    colorRGui.a *= guiMult;\n"+
+"    colorRGui.a *= guiMult.x + (1.-guiMult.x)*guiMult.y;\n"+
 "    colorR = colorRGui*colorRGui.a + colorRSphere*(1.-colorRGui.a);\n"+
 "    gl_FragColor = vec4( colorL.g * 0.7 + colorL.b * 0.3, colorR.g, colorR.b, colorL.a + colorR.a ) * 1.1;\n"+
 "  }\n"+
@@ -187,7 +188,7 @@ var fsWindowed = "precision highp float;\n"+
 "  } else {\n"+
 // cube projection
 "    lonLat = vec2(0.25*PI*sphere_pnt.y/sphere_pnt.x, 0.25*PI*sphere_pnt.z/sphere_pnt.x);\n"+
-"    vec2 pofs = vec2(planeOffset.x*-0.25*PI,planeOffset.y*0.25*PI);\n"+
+"    vec2 pofs = vec2(planeOffset.x*-1.0,planeOffset.y);\n"+
 "    lonLat += pofs;\n"+
 "    if (sphere_pnt.x<0. || abs(lonLat.x)>PI || abs(lonLat.y)>0.5*PI){ discard; return;}\n"+
 "  }\n"+
@@ -274,7 +275,7 @@ VRtwglQuadStereoProjection = function() {
     renderMode:VRRenderModes.STEREOSIDEBYSIDE,
     k:[0,0],
     ipdAdjust:0,
-    guiMult:0.6
+    guiMult:[0.7, 0.0],
   }
 
   this.uniformsFb = {
@@ -337,12 +338,14 @@ VRtwglQuadStereoProjection = function() {
       return;
     }
 
+    var gl = self.vrtwglQuad.glContext;
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     self.vrtwglQuadFbGui.clearFrameBuffer(0, 0, 0, 0);
 
     for(texIt = 0;texIt < self.vrGui.canvasSet.length; texIt++) {
       var canvasTex = self.vrGui.canvasSet[texIt][0];
       var textureDesc = canvasTex.vrTextureDescription;
-      canvasTex.update(self.tick);
       self.uniformsFbGui["textureSource"] = canvasTex.glTex;
       self.uniformsFbGui["sphX"] = [0.5-0.5*(textureDesc.sphereFOV[0]/360.0),0.5-0.5*(textureDesc.sphereFOV[1]/180.0)];
       self.uniformsFbGui["sphYX"] = [(textureDesc.sphereFOV[0]/360.0),(textureDesc.sphereFOV[1]/180.0)];
@@ -357,7 +360,8 @@ VRtwglQuadStereoProjection = function() {
                                 textureDesc.V_r[1]-textureDesc.U_r[1]];
       if (textureDesc.plane) {
         self.uniformsFbGui["planar"] = 1;
-        self.uniformsFbGui["planeOffset"] = textureDesc.planeOffset;
+        self.uniformsFbGui["planeOffset"][0] = Math.PI*textureDesc.planeOffset[0]/180.0;
+        self.uniformsFbGui["planeOffset"][1] = Math.PI*textureDesc.planeOffset[1]/180.0;
       } else {
         self.uniformsFbGui["planar"] = 0;
         self.uniformsFbGui["planeOffset"] = [0,0];
@@ -425,16 +429,17 @@ VRtwglQuadStereoProjection = function() {
   }
 
   this.getGuiMult = function() {
-    return this.uniforms.guiMult;
+    return this.uniforms.guiMult[1];
   }
 
   this.setGuiMult = function(mv) {
-    this.uniforms.guiMult = mv;
+    this.uniforms.guiMult = [0.7,mv];
   }
 
   this.render = function() {
     this.controller.update(false);
     twgl.m4.copy(this.cameraMatrix, this.uniforms.transform);
+
     this.uniforms["resolution"] = [self.vrtwglQuad.canvas.width, self.vrtwglQuad.canvas.height];
     var aspect = 2.0*self.vrtwglQuad.canvas.height/self.vrtwglQuad.canvas.width;
     this.uniforms["fovParams"] = [this.fovX/360.0, aspect*this.fovX/360.0];
@@ -491,7 +496,9 @@ VRtwglQuadStereoProjection = function() {
                                   textureDesc.V_r[1]-textureDesc.U_r[1]];
         if (textureDesc.plane) {
           self.uniformsFb["planar"] = 1;
-          self.uniformsFb["planeOffset"] = textureDesc.planeOffset;
+          self.uniformsFb["planeOffset"][0] = Math.PI*textureDesc.planeOffset[0]/180.0;
+          self.uniformsFb["planeOffset"][1] = Math.PI*textureDesc.planeOffset[1]/180.0;
+
         } else {
           self.uniformsFb["planar"] = 0;
           self.uniformsFb["planeOffset"] = [0,0];
@@ -518,7 +525,7 @@ VRtwglQuadStereoProjection = function() {
         min: gl.LINEAR,
         mag: gl.LINEAR,
         src: textureDescriptions[texIt].textureSource,
-        crossOrigin: "", // either this or use twgl.setDefaults
+        crossOrigin: "Anonymous", // either this or use twgl.setDefaults
       };
       texArray[texIt] = texSpec;
       this.textureDescriptions[texIt] = textureDescriptions[texIt];

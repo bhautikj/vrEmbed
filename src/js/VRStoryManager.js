@@ -1,7 +1,8 @@
 var VROptions = require('./VROptions.js');
+var VRStory = require('./VRStory.js');
 
 VRStoryManager = function() {
-  var self= this;
+  var self = this;
   this.storyList = [];
   this.activeStory = -1;
   this.vrOptions = new VROptions();
@@ -56,12 +57,15 @@ VRStoryManager = function() {
     //document.appendChild(this.options.dialog);
   };
 
-  this.showOptions = function() {
-    this.vrOptions.options.showDialogOptions();
+  this.clearPage = function() {
+    window.stop();
+    document.body.innerHTML = "";
   }
 
-  this.hideOptions = function() {
-    this.vrOptions.options.hideDialog();
+  this.initFullpage = function() {
+    var vrStory = new VRStory();
+    vrStory.createFullPageStoryDiv();
+    self.addStory(vrStory);
   }
 
   this.animate();

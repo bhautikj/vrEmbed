@@ -30,25 +30,34 @@ VRTextureDescription = function () {
   this.plane = false;
   this.planeOffset = [0,0];
 
+  this.parseBoolString = function(str) {
+    if (str==undefined)
+      return false;
+    if (str.toLowerCase()=="true")
+      return true;
+    else
+      return false;
+  }
+
   this.setPlaneOffsetParamsFromString  = function(str) {
     if (str == undefined)
       return;
     var arr = str.split(",");
-    this.planeOffset = [arr[0].trim(), arr[1].trim()];
+    this.planeOffset = [parseFloat(arr[0].trim()), parseFloat(arr[1].trim())];
   };
 
   this.setSphereParamsFromString  = function(str) {
     var arr = str.split(",");
-    this.sphereFOV = [arr[0].trim(), arr[1].trim()];
-    this.sphereCentre = [arr[2].trim(), arr[3].trim()];
+    this.sphereFOV = [parseFloat(arr[0].trim()), parseFloat(arr[1].trim())];
+    this.sphereCentre = [parseFloat(arr[2].trim()), parseFloat(arr[3].trim())];
   };
 
   this.setTexParamsFromString = function(str) {
     var arr = str.split(",");
-    this.U_l = [arr[0].trim(), arr[1].trim()];
-    this.V_l = [arr[2].trim(), arr[3].trim()];
-    this.U_r = [arr[4].trim(), arr[5].trim()];
-    this.V_r = [arr[6].trim(), arr[7].trim()];
+    this.U_l = [parseFloat(arr[0].trim()), parseFloat(arr[1].trim())];
+    this.V_l = [parseFloat(arr[2].trim()), parseFloat(arr[3].trim())];
+    this.U_r = [parseFloat(arr[4].trim()), parseFloat(arr[5].trim())];
+    this.V_r = [parseFloat(arr[6].trim()), parseFloat(arr[7].trim())];
   };
 
   this.getPlaneOffsetParamsString = function() {
@@ -73,6 +82,26 @@ VRTextureDescription = function () {
     return (link.protocol+"//"+link.host+link.pathname+link.search+link.hash);
   }
 
+  this.init = function(elm) {
+    this.setSphereParamsFromString(elm.getAttribute("sphereParams"));
+    this.plane = this.parseBoolString(elm.getAttribute("plane"));
+    this.setPlaneOffsetParamsFromString(elm.getAttribute("planeOffset"));
+
+    this.textureSource = elm.getAttribute("src");
+    if (this.textureSource  == undefined)
+      this.textureSource = "";
+
+    this.metaSource = "";
+
+    this.isStereo = this.parseBoolString(elm.getAttribute("isStereo"));
+    if (this.isStereo == undefined)
+      this.isStereo = false;
+
+    if (this.isStereo == true)
+      this.setTexParamsFromString(elm.getAttribute("texParams"));
+
+  }
+
   this.initDict = function(dict) {
     this.textureSource = dict.src;
     if (this.textureSource  == null) {
@@ -91,6 +120,27 @@ VRTextureDescription = function () {
       this.V_l = dict.V_l;
       this.U_r = dict.U_r;
       this.V_r = dict.V_r;
+    }
+  }
+
+  this.setElement = function(elm) {
+    if (this.textureSource!="")
+      elm.setAttribute('src', this.getAbsoluteTexturePath());
+
+    elm.setAttribute('sphereParams',this.getSphereParamsString());
+
+    if (this.plane == false){
+      elm.setAttribute('plane', 'false')
+    } else {
+      elm.setAttribute('plane', 'true')
+      elm.setAttribute('planeOffset', this.getPlaneOffsetParamsString());
+    }
+
+    if (this.isStereo == false) {
+      elm.setAttribute('isStereo', 'false');
+    } else {
+      elm.setAttribute('isStereo', 'true');
+      elm.setAttribute('texParams', this.getTexParamsString());
     }
   }
 

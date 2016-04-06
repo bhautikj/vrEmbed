@@ -88,6 +88,10 @@ var VRIdleSpinnerFactory = (function () {
 
 
 VRMouseSpinner = function() {
+  this.decayMode = false;
+  this.decayMult = 0.9;
+  this.dX = 0;
+  this.dY = 0;
 }
 
 VRMouseSpinner.prototype = new VRLookControlBase();
@@ -95,12 +99,28 @@ VRMouseSpinner.prototype = new VRLookControlBase();
 VRMouseSpinner.prototype.mouseMove = function(dX, dY, pX, pY){
   this.eulerY = this.eulerY + (dY * 0.01);
   this.eulerZ = this.eulerZ - (dX * 0.01);
+  this.dX = dX;
+  this.dY = dY;
+}
+
+VRMouseSpinner.prototype.startDecay = function() {
+  this.decayMode = true;
+  this.dX = parseFloat(this.dX);
+  this.dY = parseFloat(this.dY);
 }
 
 VRMouseSpinner.prototype.update = function(cameraMatrix, resetHeading){
   if (resetHeading == true) {
     this.eulerZ = 0.0;
   }
+
+  if (this.decayMode == true) {
+    this.mouseMove(this.dX*this.decayMult, this.dY*this.decayMult, 0, 0);
+    if (Math.abs(this.dX)<1e-6 && Math.abs(this.dY)<1e-6) {
+      this.decayMode = false;
+    }
+  }
+
 	this.updateBase(cameraMatrix);
 }
 
@@ -229,6 +249,7 @@ VRLookController = function() {
 
   this.mouseStop = function() {
     this.pointer = null;
+    self.vrMouseSpinner.startDecay();
   };
 
   this.checkModes = function() {

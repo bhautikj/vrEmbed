@@ -63,7 +63,7 @@
 <div class="container" id="mode_pick_bar">
   <div class="row accordionbar">
     <div class="ten columns">
-      <a class="button button-primary" id="mode_pick_button">-</a>&nbsp;Choose mode
+      <a class="button button-primary button-toggle" id="mode_pick_button">-</a>&nbsp;Choose mode
     </div>
   </div>
 </div>
@@ -86,6 +86,7 @@
       <input class="button-primary" type="submit" value="Single image" id="modeOneImage">
       <input class="button-primary" type="submit" value="360" id="mode360Image">
       <input class="button-primary" type="submit" value="Stereo 3D" id="modeStereoImage">
+      <input class="button-primary" type="submit" value="Gallery" id="modeGallery">
     </div>
   </div>
   <div class="row">
@@ -122,7 +123,7 @@
 <div class="container" id="manage_scenes_bar">
   <div class="row accordionbar">
     <div class="ten columns">
-      <a class="button button-primary" id="manage_scenes_button">-</a>&nbsp;Add/remove scenes
+      <a class="button button-primary button-toggle" id="manage_scenes_button">-</a>&nbsp;Add/remove scenes
     </div>
   </div>
 </div>
@@ -161,7 +162,7 @@
 <div class="container" id="manage_scene_objects_bar">
   <div class="row accordionbar">
     <div class="ten columns">
-      <a class="button button-primary" id="manage_scene_objects_button">-</a>&nbsp;Add/select scene objects
+      <a class="button button-primary button-toggle" id="manage_scene_objects_button">-</a>&nbsp;Add/select scene objects
     </div>
   </div>
 </div>
@@ -179,7 +180,7 @@
       <input class="button-primary" type="submit" value="Add Text" id="addText">
     </div>
     <div class="four columns">
-      <input class="button-primary" type="submit" value="Add Jump" id="addJump">
+      <input class="button-primary" type="submit" value="Add Decal" id="addDecal">
     </div>
   </div>
   <div class="row">
@@ -195,7 +196,7 @@
 <div class="container" id="setup_scene_object_bar">
   <div class="row accordionbar">
     <div class="ten columns">
-      <a class="button button-primary" id="setup_scene_object_button">-</a>&nbsp;Setup scene objects
+      <a class="button button-primary button-toggle" id="setup_scene_object_button">-</a>&nbsp;Setup scene objects
     </div>
   </div>
 </div>
@@ -205,7 +206,7 @@
       <div class="two columns alignright">
         Text:
       </div>
-      <div class="ten columns">
+      <div class="four columns">
         <input class="textBox inputnumberwide" id="textMessage" type="text"/>
       </div>
     </div>
@@ -213,20 +214,13 @@
   <span id="options_jump">
     <div class="row">
       <div class="two columns alignright">
-        Jump to:
+        Jump to Scene:
       </div>
       <div class="four columns">
-        <input class="textBox inputnumberwide" id="jumpTo" type="text"/>
-      </div>
-      <div class="two columns alignright">
-        Jump text:
-      </div>
-      <div class="four columns">
-        <input class="textBox inputnumberwide" id="jumpText" type="text"/>
+        <input class="textBox inputnumberwide" id="sceneJump" type="text"/>
       </div>
     </div>
-  </span>
-  <span id="options_text_common">
+  </span>  <span id="options_text_common">
     <div class="row">
       <div class="one column alignright">
         Font align:
@@ -466,13 +460,13 @@
         Plane offset X:
       </div>
       <div class="two columns">
-        <input type="range" name="planarX" min="-2.0" max="2.0" step="0.01" id="planeOffsetX" class="numberinputwide">
+        <input type="range" name="planarX" min="-180.0" max="180.0" step="0.01" id="planeOffsetX" class="numberinputwide">
       </div>
       <div class="two columns">
         <input type="number" class="numberinputwide" step="any" id="planeOffsetX_t">
       </div>
       <div class="two columns">
-        <input type="range" name="planarY" min="-2.0" max="2.0" step="0.01" id="planeOffsetY" class="numberinputwide">
+        <input type="range" name="planarY" min="-180.0" max="180.0" step="0.01" id="planeOffsetY" class="numberinputwide">
       </div>
       <div class="two columns">
         <input type="number" class="numberinputwide" step="any" id="planeOffsetY_t">
@@ -486,7 +480,7 @@
 <div class="container" id="preview_dummy_bar">
   <div class="row accordionbar">
     <div class="ten columns">
-      <a class="button button-primary" id="preview_dummy_button">-</a>&nbsp;Preview
+      <a class="button button-primary button-toggle" id="preview_dummy_button">-</a>&nbsp;Preview
     </div>
   </div>
 </div>
@@ -506,7 +500,7 @@
 <div class="container" id="export_bar">
   <div class="row accordionbar">
     <div class="ten columns">
-      <a class="button button-primary" id="export_button">-</a>&nbsp;Export/share
+      <a class="button button-primary button-toggle" id="export_button">-</a>&nbsp;Export/share
     </div>
   </div>
 </div>
@@ -536,9 +530,11 @@
 
 </div>
 
+<script src="../bin/vrEmbed.js"></script>
+<script src="../bin/vrCreate.js"></script>
+<!-- <script src="../vrEmbed.min.js"></script>
+<script src="../vrCreate.min.js"></script> -->
 
-<script src="../vrEmbed.min.js"></script>
-<script src="../vrCreate.min.js"></script>
 <script>
 var vrCreateUI = new VRCreateUI();
 vrCreateUI.init(vrEmbed);

@@ -1,0 +1,262 @@
+
+<!--
+  Copyright 2015 Bhautik J Joshi
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ -->
+
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+
+   <!-- Basic Page Needs
+   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+   <meta charset="utf-8">
+   <title>Placing images and text</title>
+   <meta name="description" content="vrEmbed.org">
+   <meta name="author" content="Bhautik Joshi">
+   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, shrink-to-fit=no">
+   <meta name="mobile-web-app-capable" content="yes">
+   <meta name="apple-mobile-web-app-capable" content="yes" />
+   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+   <!-- FONT
+   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+   <link href='//fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
+
+   <!-- CSS
+   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+   <link rel="stylesheet" href="../css/normalize.css">
+   <link rel="stylesheet" href="../css/skeleton.css">
+   <link rel="stylesheet" href="../css/custom.css">
+
+   <!-- Favicon
+   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+   <link rel="icon" type="image/png" href="../src/assets/vrEmbedLogo_32.png">
+
+ </head>
+
+<body>
+
+<div class="container">
+  <div class="row">
+    <div class="eleven columns alignright">
+      <h1>Placing images and text</h1>
+    </div>
+    <div class="one column">
+      <a href="http://vrEmbed.org" target="_blank"><img src="../src/assets/vrEmbedLogo.png" height=56px/></a>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row headerbar">
+    <div class="twelve columns">
+      <a href="index.html" target="_blank">Documentation home</a>
+      | <a href="using.html">Using vrEmbed</a>
+      | <a href="quickstart.html">Quickstart</a>
+      | <a href="placing.html">Placing images and text</a>
+      | <a href="stories.html">Creating stories</a>
+    </div>
+  </div>
+  <div class="row">
+    <div class="twelve columns">
+      &nbsp;
+    </div>
+  </div>
+</div>
+
+<!-- BEGIN CONTENT HERE -->
+<div class="container">
+  <div class="row">
+    <div class="twelve columns">
+      <h2>Scene objects</h2>
+    </div>
+  </div>
+  <div class="row">
+    <div class="twelve columns">
+      There are three types of objects that can be placed into a vrEmbed scene. All of the objects have controls for placement in the scene; the <i>text</i> and <i>decal</i> objects also have options for interaction.</br>
+    </div>
+  </div>
+  <div class="row">
+    <div class="twelve columns">&nbsp;</div>
+  </div>
+  <div class="row">
+    <div class="one-third column alignright">
+      <h3>photo</h3>
+    </div>
+    <div class="two-thirds column">
+      In a vrEmbed, a <i>photo</i> is the main object for showing content inside of the scene. It takes an image as an input and displays it inside of a VR sphere or mapped to a plane. It is not interactive - you can view the photo object but it doesn't respond to user gestures.
+    </div>
+  </div>
+  <div class="row">
+    <div class="one-third column alignright">
+      <h3>text</h3>
+    </div>
+    <div class="two-thirds column">
+      A <i>text</i> object can be used to place arbitrary, user-generated text inside the VR sphere. Options are provided for styling the text, altering such things as colors, borders and size. The object can also respond to user gestures; it comes out of its resting state and becomes opaque when a user looks at it, and a gesture can be added so that it can be used to jump to another scene. Typically this would be used as a caption box for a <i>photo</i> object.
+    </div>
+  </div>
+  <div class="row">
+    <div class="one-third column alignright">
+      <h3>decal</h3>
+    </div>
+    <div class="two-thirds column">
+      The <i>decal</i> object is simimar to the <i>photo</i> object but provides fewer options. It's function, like the text object, is to respond to user gestures. Typically this would be used as a user-stylable object that the user can interact with to jump from one scene to another.
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="twelve columns">
+      <h2>Setting parameters</h2>
+    </div>
+  </div>
+  <div class="row">
+    <div class="two-thirds column">
+      Scene object parmeters are either automatically set by the <a href=">http://vrEmbed.org/create" target="_blank">create tool</a>, or set by hand on the object tag itself. Any tag that can be used for the <i>photo</i> object can also be used in constructing a vrEmbed link too. <br/><br/>
+      For example, to set the image source on a photo tag set it as quoted attribute:
+    </div>
+    <div class="one-third column">
+      <div class="code">&lt;photo src=&quot;foo.jpg&quot;&gt;</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="twelve columns">
+      <h2>Parameter list</h2>
+    </div>
+  </div>
+  <div class="row">
+    <div class="one-third column">
+      <h4>sphereParams (photo, text, decal)</h4>
+      <div class="code">sphereParams=&quot;w,h,x,y&quot;</div>
+      This parameters are used in all objects that are in a scene, and specify where in space the object will appear and how large it will be.
+    </div>
+    <div class="one-third column">
+      <div class="figure"><img src="../src/assets/image_size.png" width=100%/></div>
+      <b>h</b> and <b>w</b> refer to the vertical height and horizontal width of your image on the sphere, in degrees. If you have a full, 360 by 180 panorama then <b>w=360</b> and <b>h=180</b>.
+    </div>
+    <div class="one-third column">
+      <div class="figure"><img src="../src/assets/image_location.png" width=100%/></div>
+      <b>x</b> and <b>y</b> refer to where on the sphere the <i>centre</i> of your image is. <b>x</b> goes from left to right from -180 to 180; 0 is stright ahead of the viewer, -90 is directly to the left and 90 is directly to the right. <b>y</b> goes from top to bottom -90 to 90; 0 is straight ahead of the viewer, -90 is directly above and 90 is directly below.
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="one-half column">
+      <h4>src (photo, decal)</h4>
+      The URL of the image the load for this object.
+    </div>
+    <div class="one-half column">
+      <div class="code">src=&quot;foo.jpg&quot;</div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="one-half column">
+      <h4>isStereo (photo)</h4>
+      If your image is a composite of left and right images, set this to <b>true</b> otherwise just leave it as <b>false</b>. <i>decal</i> does not currently support stereo images.
+    </div>
+    <div class="one-half column">
+      <div class="code">isStereo=&quot;false&quot;</div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="one-half column">
+      <h4>texParams (photo)</h4>
+      <div class="code">texParams=&quot;LTx,LTy,LBx,LBy,RTx,RTy,RBx,RBy&quot;</div><br/>
+      More advanced users can set up their embed with a 3D (i.e. stereo) image. For vrEmbed we currently assume that the left and right images combined together into the <i>same</i> image, typically side-by-side or top-and-bottom. <br/><br/>
+      We need to tell vrEmbed where the left and right images are. We measure the x-coordinate from left to right going from 0.0 to 1.0, amd the y-coordinate from top to bottom also going from 0.0 to 1.0. Note that at the moment we <i>do not</i> support pixel coordinates - these are floating-point values (this may change depending on need).<br/><br/>
+      We define <b>(LTx,LTy)</b> as the top-left coordinate of the left image, <b>(LBx,LBy)</b> as the bottom-right coordinate of the left image.  <b>(RTx,RTy)</b> and <b>(RBx,RBy)</b> correspondingly match the right image.<br/><br/>
+      Easy setup of these parameters is available in the <a href=">http://vrEmbed.org/create" target="_blank">create tool</a>.
+    </div>
+    <div class="one-half column">
+      <div class="figure"><img src="../src/assets/stereo_image_coords.png" width=100%/></div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="one-half column">
+      <h3>plane (photo, text, decal)</h3>
+      Project your object on to a plane instead of a sphere. This has the effect of creating a virtual flat plane for the object to be projected on to instead of the curved surface of a sphere. This is useful if, for example you want to assemble images from a cubemap.<br/><br/>
+      The plane is centered at the <i>x</i> and <i>y</i> coordinates of <i>sphereParams</i>.<br/><br/>
+    </div>
+    <div class="one-half column">
+      <div class="code">plane=&quot;true&quot;</div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="one-half column">
+      <h3>planeOffset (photo, text, decal)</h3>
+      Once an object has been projected to a plane, it can be offset along the plane. This can be useful for placing a text or a decal object as a caption above or below a photo.<br/><br/>
+      <i>ox</i> and <i>oy</i> are the offset parameters; although there is no practical limit on how large these values can be, we recommend keeping them in the range of -360 to 360. A decal with a horizontal field of view of, say, 60, can have another 60 degree decal placed direcly next to it by specifying a plane offset of 60.<br/><br/>
+    </div>
+    <div class="one-half column">
+      <div class="code">planeOffset=&quot;ox,oy&quot;</div>
+    </div>
+  </div>
+
+  <a name="styling_text"></a>
+  <div class="row">
+    <div class="twelve columns">
+      <h4>Various text styling options (text)</h4>
+    </div>
+  </div>
+  <div class="row">
+    <div class="one-third column">
+      The text object can be easily styled. The options are:
+    </div>
+    <div class="two-thirds column">
+      <b>align:</b> <i>left, center or right</i> - specifies how the text will be aligned in the text box.<br/>
+      <b>fontface:</b> defaults to <i>Arial</i> - specify the font used<br/>
+      <b>fontsize:</b> defaults to <i>72</i> - specifies the size of the font used<br/>
+      <b>borderthickness:</b> defaults to <i>12</i> - specifies the width of the border around the text<br/>
+      <b>bordercolor:</b> defaults to <i>#FFFFFF</i> (white) - specifies the color of the border<br/>
+      <b>backgroundcolor:</b> defaults to <i>#000000</i> (black) - specifies the color of the background<br/>
+      <b>textcolor:</b> defaults to <i>#FFFFFF</i> (white) - specifies the color of the text<br/>
+    </div>
+  </div>
+
+  <!-- <div class="row"><br/></div>
+  <div class="row">
+    <div class="one-half column">
+      <h3>width and height</h3>
+      <div class="code">width=640px, height=480px</div><br/>
+    </div>
+    <div class="one-half column">
+      You can set the width and height of the embed using width and height parameters, which both need to be set (e.g. width=640px height=480px); otherwise the embed defaults to creating a 16:9 ratio embed that takes up the width of the container.
+    </div>
+  </div>
+  <div class="row"><br/></div> -->
+
+</div>
+<!-- END CONTENT HERE -->
+
+<div class="section values">
+  <div class="row">
+    <div class="twelve columns">
+      vrEmbed is (c) Bhautik Joshi 2015-16 and available under the <a href="http://www.apache.org/licenses/LICENSE-2.0" target="_blank">Apache 2.0</a> Open Source license.
+    </div>
+  </div>
+</div>
+
+</body>
+
+
+</html>

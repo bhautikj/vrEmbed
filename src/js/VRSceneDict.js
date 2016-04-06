@@ -7,7 +7,7 @@ VRSceneDict = function() {
     this.dict = {};
     this.dict.photoObjects=[];
     this.dict.textObjects=[];
-    this.dict.jumpObjects=[];
+    this.dict.decalObjects=[];
     this.dict.name = "";
   }
 
@@ -17,7 +17,7 @@ VRSceneDict = function() {
     this.dict.name = vrScene.name;
     this.dict.photoObjects=[];
     this.dict.textObjects=[];
-    this.dict.jumpObjects=[];
+    this.dict.decalObjects=[];
 
     for(i = 0;i < vrScene.photoObjects.length; i++) {
       this.dict.photoObjects.push(this.initFromScenePhoto(vrScene.photoObjects[i]));
@@ -25,8 +25,8 @@ VRSceneDict = function() {
     for(i = 0;i < vrScene.textObjects.length; i++) {
       this.dict.textObjects.push(this.initFromText(vrScene.textObjects[i]));
     }
-    for(i = 0;i < vrScene.jumpObjects.length; i++) {
-      this.dict.jumpObjects.push(this.initFromJump(vrScene.jumpObjects[i]));
+    for(i = 0;i < vrScene.decalObjects.length; i++) {
+      this.dict.decalObjects.push(this.initFromDecal(vrScene.decalObjects[i]));
     }
   }
 
@@ -64,7 +64,6 @@ VRSceneDict = function() {
     return photo;
   }
 
-
   this.initPhoto = function() {
     var photo ={};
     photo.textureDescription = {};
@@ -86,12 +85,14 @@ VRSceneDict = function() {
     text.textureDescription = this.initFromTextureDescription(vrText.textureDescription);
     text.textOptions = this.initFromTextOptions(vrText.textOptions);
     text.message = vrText.message;
+    text.jumpTo = vrText.jumpTo;
     return text;
   }
 
   this.initText = function() {
     var text ={};
     text.message = "Placeholder text";
+    text.jumpTo = "";
     text.textureDescription = {};
     text.textureDescription.src="";
     text.textureDescription.isStereo = false;
@@ -110,36 +111,37 @@ VRSceneDict = function() {
     return text;
   }
 
-  this.initFromJump = function(vrJump) {
-    var jump = {};
-    jump.textureDescription = this.initFromTextureDescription(vrJump.textureDescription);
-    jump.textOptions = this.initFromTextOptions(vrJump.textOptions);
-    jump.jumpTo = vrJump.jumpTo;
-    jump.jumpText = vrJump.jumpText;
-    return jump;
+  this.initFromDecal = function(vrDecal) {
+    var decal = {};
+    decal.textureDescription = this.initFromTextureDescription(vrDecal.textureDescription);
+    vrDecal.imgsrc = vrDecal.imgsrc;
+    vrDecal.jumpTo = vrDecal.jumpTo;
+    return text;
   }
 
-  this.initJump = function() {
-    var jump ={};
-    jump.jumpTo = "";
-    jump.jumpText = "Jump text";
-    jump.textureDescription = {};
-    jump.textureDescription.src="";
-    jump.textureDescription.isStereo = false;
-    jump.textureDescription.plane = false;
-    jump.textureDescription.sphereFOV = [60,40];
-    jump.textureDescription.sphereCentre = [30,-30];
-    jump.textureDescription.planeOffset = [0,0];    
-    jump.textOptions = {};
-    jump.textOptions.align = 'center';
-    jump.textOptions.fontface = 'Arial';
-    jump.textOptions.fontsize = '72';
-    jump.textOptions.borderthickness = '12';
-    jump.textOptions.bordercolor = '#FFFFFF';
-    jump.textOptions.backgroundcolor = '#000000';
-    jump.textOptions.textcolor = '#FFFFFF';
-    return jump;
+  this.initDecal = function() {
+    var decal ={};
+    decal.imgsrc="http://vrembed.org/src/assets/vrEmbedLogo.png";
+    decal.jumpTo = "";
+    decal.textureDescription = {};
+    decal.textureDescription.src="";
+    decal.textureDescription.isStereo = false;
+    decal.textureDescription.plane = true;
+    decal.textureDescription.sphereFOV = [30,30];
+    decal.textureDescription.sphereCentre = [0,0];
+    decal.textureDescription.planeOffset = [0,0];
+    return decal;
   }
+
+  this.addDecal = function() {
+    var decal = this.initDecal();
+    this.dict.decalObjects.push(decal);
+  }
+
+  this.removeDecal = function(idx) {
+    this.dict.decalObjects.splice(idx,1);
+  }
+
 
   this.addPhoto = function() {
     var photo = this.initPhoto();
@@ -157,15 +159,6 @@ VRSceneDict = function() {
 
   this.removeText = function(idx) {
     this.dict.textObjects.splice(idx,1);
-  }
-
-  this.addJump = function() {
-    var jump = this.initJump();
-    this.dict.jumpObjects.push(jump);
-  }
-
-  this.removeJump = function(idx) {
-    this.dict.jumpObjects.splice(idx,1);
   }
 
 }

@@ -37,6 +37,8 @@ VRStory = function() {
   this.sceneList = [];
   this.namedSceneMap = [];
 
+  this.gallerySrc = null;
+
 
   this.enterFullscreen = function(){
     if (this.vrDeviceManager.firstTime()){
@@ -85,7 +87,6 @@ VRStory = function() {
   this.onResize = function() {
     var containerWidth = this.parentElement.clientWidth;
     var containerHeight = this.parentElement.clientHeight;
-
     if (this.quad != null) {
       // check to see if we should drop back to windowed mode
       if (this.manager.fallbackFullscreen == true){
@@ -187,6 +188,9 @@ VRStory = function() {
     if (self.vrGui == null)
       return;
 
+    // update gui tex if needed
+    this.redrawGui();
+
     var now = Date.now();
     var dir = [];
 
@@ -198,11 +202,10 @@ VRStory = function() {
 
 
     // gui opacity
-
     if (this.vrGui.isHovering()) {
       self.quad.setGuiMult(Math.min(1.0, self.quad.getGuiMult()+0.05));
     } else {
-      self.quad.setGuiMult(Math.max(0.7, self.quad.getGuiMult()-0.05));
+      self.quad.setGuiMult(Math.max(0.0, self.quad.getGuiMult()-0.05));
     }
 
     var actionPercent = 0;
@@ -301,6 +304,9 @@ VRStory = function() {
   }
 
   this.drawReticle = function(actionPercent) {
+    if (this.noGui == true)
+      return;
+
     var _ctx = this.quad.vrtwglQuad.get2dContext();
     if (_ctx == null)
       return;
@@ -308,12 +314,21 @@ VRStory = function() {
 
     var recticleList = this.getReticlePositions();
 
+    var actionTransparency;
+    if (this.vrGui.isHovering()){
+      actionTransparency = actionPercent*0.2 + 0.8;
+    } else {
+      actionTransparency = actionPercent*0.8 + 0.2;
+    }
     for (objit = 0;objit<recticleList.length; objit++){
       var reticle = recticleList[objit];
-      var actionTransparency = actionPercent*0.9 + 0.1;
       // draw aiming reiticle
       ctx.beginPath();
-      ctx.lineWidth = 6;
+      ctx.lineWidth = 10;
+      ctx.strokeStyle = "rgba(0,0,0," + actionTransparency +")";
+      ctx.arc(reticle[0],reticle[1],15,0,2*Math.PI);
+      ctx.stroke();
+      ctx.lineWidth = 8;
       ctx.strokeStyle = "rgba(255,255,255," + actionTransparency +")";
       ctx.arc(reticle[0],reticle[1],15,0,2*Math.PI);
       ctx.stroke();
@@ -321,7 +336,7 @@ VRStory = function() {
 
       ctx.beginPath();
       ctx.strokeStyle = "rgba(0,0,0,1.0)";
-      ctx.lineWidth = 5;
+      ctx.lineWidth = 6;
       ctx.arc(reticle[0],reticle[1],15,-0.5*Math.PI,-0.5*Math.PI+actionPercent*2*Math.PI);
       ctx.stroke();
     }
@@ -359,8 +374,8 @@ VRStory = function() {
     // set up stereo mode
     this.stateToggler.configureStereo(this.isStereo);
 
-    // reset heading
-    this.quad.controller.update(true);
+    // [do not] reset heading
+    this.quad.controller.update(false);//true);
   }
 
   this.nextScene = function() {
@@ -391,21 +406,46 @@ VRStory = function() {
     var curScene = this.sceneList[this.currentSceneIndex];
     var textObjects = curScene.textObjects;
     for (g = 0;g<textObjects.length; g++){
-      // just assuming text nodes only for now
       var textObject = textObjects[g];
+      var jumpCallback = null;
+      var jumpTo = null;
+
+      if (textObject.jumpTo!="") {
+        jumpCallback = this.gotoNamedScene;
+        jumpTo = textObject.jumpTo;
+      }
+
       this.vrGui.createTextBox(textObject.textureDescription.sphereFOV[0],
                                textObject.textureDescription.sphereCentre[0],
                                textObject.textureDescription.sphereCentre[1],
                                textObject.textureDescription.plane,
                                textObject.textureDescription.planeOffset,
-                               null,
-                               null,
+                               jumpCallback,
+                               jumpTo,
                                textObject.message,
                                textObject.textOptions);
     }
 
+    var decalObjects = curScene.decalObjects;
+    for (g = 0;g<decalObjects.length; g++){
+      var decalObject = decalObjects[g];
+      var jumpCallback = null;
+      var jumpTo = null;
+
+      if (decalObject.jumpTo!="") {
+        jumpCallback = this.gotoNamedScene;
+        jumpTo = decalObject.jumpTo;
+      }
+
+      this.vrGui.createDecal(jumpCallback,
+                                jumpTo,
+                                decalObject.imgsrc,
+                                decalObject.textureDescription);
+
+    }
+
     if (curScene.hasJumpNav() == false) {
-    var numScenes = self.sceneList.length;
+      var numScenes = self.sceneList.length;
       if (self.currentSceneIndex>0) {
         // prev
         this.vrGui.createArrow(15, -30, -40, this.prevScene, null, true);
@@ -415,23 +455,14 @@ VRStory = function() {
         //next
         this.vrGui.createArrow(15, 30, -40, this.nextScene, null, false);
       }
-    } else {
-      var jumpObjects = curScene.jumpObjects;
-      for (g = 0;g<jumpObjects.length; g++){
-        // just assuming text nodes only for now
-        var jumpObject = jumpObjects[g];
-        this.vrGui.createTextBox(jumpObject.textureDescription.sphereFOV[0],
-                                 jumpObject.textureDescription.sphereCentre[0],
-                                 jumpObject.textureDescription.sphereCentre[1],
-                                 jumpObject.textureDescription.plane,
-                                 jumpObject.textureDescription.planeOffset,
-                                 this.gotoNamedScene,
-                                 jumpObject.jumpTo,
-                                 jumpObject.jumpText + ' \u27A6',
-                                 jumpObject.textOptions);
-      }
     }
     this.quad.renderGui();
+  }
+
+  this.redrawGui = function() {
+    if (this.vrGui.guiNeedsRedraw()) {
+      this.quad.renderGui();
+    }
   }
 
   this.init = function(storyElement, storyManager) {
@@ -550,7 +581,7 @@ VRStory = function() {
     this.init(innerMost, storyManager);
   };
 
-  this.initFromURLSource = function(scenePhoto, storyManager) {
+  this.createFullPageDiv = function() {
     var innerMost = document.createElement('div');
     var s = innerMost.style;
     s.position = 'absolute';
@@ -565,15 +596,17 @@ VRStory = function() {
     document.body.style.margin = '0px';
     document.body.style.padding = '0px';
 
-    var vrScene = new VRScene();
-    vrScene.initFromURLSource(scenePhoto);
+    return innerMost;
+  }
 
-    if (vrScene.isStereo)
-      this.isStereo = true;
-    this.sceneList.push(vrScene);
-
+  this.createFullPageStoryDiv = function(storyManager) {
+    this.storyManager = storyManager;
+    var innerMost = this.createFullPageDiv();
+    // var storyElement = document.createElement('story');
+    // innerMost.appendChild(storyElement);
     this.init(innerMost, storyManager);
   }
+
 
   this.initStory = function(storyElement, storyManager) {
     var noGui = storyElement.getAttribute("noGui");
@@ -605,36 +638,54 @@ VRStory = function() {
   };
 
   this.showOptions = function() {
-    this.storyManager.showOptions();
-  };
+    this.vrOptions.options.showDialogOptions();
+  }
 
   this.hideOptions = function() {
-    this.storyManager.hideOptions();
-  };
+    this.vrOptions.options.hideDialog();
+  }
 
   this.getStoryElement = function() {
     var elm = document.createElement('story');
-    for(i=0; i<this.sceneList.length; i++) {
+    var i=0;
+    while (i<this.sceneList.length) {
       var scene = this.sceneList[i];
       elm.appendChild(scene.getSceneElement());
+      i++;
     }
     return elm;
   }
 
   this.isSinglePhotoStory = function() {
-    if(this.sceneList.length != 1 || this.sceneList[0].photoObjects.length != 1 || this.sceneList[0].textObjects.length != 0)
+    if (this.gallerySrc!=null)
+      return true;
+
+    if(this.sceneList.length != 1 ||
+      this.sceneList[0].photoObjects.length != 1 ||
+      this.sceneList[0].textObjects.length != 0 ||
+      this.sceneList[0].decalObjects.length != 0)
       return false;
     else
       return true;
+  }
+
+  this.setGallerySrc = function(gallerySrc) {
+    this.gallerySrc = gallerySrc;
   }
 
   this.getShareCodes = function() {
     var urlCode = "";
     var embedCode = "";
     var scriptInc = '<script async src="//vrEmbed.org/vrEmbed.min.js" charset="utf-8"></script>';
-    if (this.isSinglePhotoStory()==true){
+    var iframePrefix = "<iframe width='640' height='360' src='";
+    var iframeSuffix = "' frameborder='0' webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>";
+    if (this.gallerySrc != null) {
+      urlCode = encodeURIComponent("http://vrembed.org/?gallery=" + this.gallerySrc);
+      embedCode = iframePrefix + "http://vrembed.org/?gallery=" + this.gallerySrc + iframeSuffix;
+    } else if (this.isSinglePhotoStory()==true){
       urlCode = encodeURIComponent("http://vrembed.org/" + this.sceneList[0].photoObjects[0].getSinglePhotoURLParams());
-      embedCode = this.sceneList[0].photoObjects[0].getSinglePhotoVrEmbedElement().outerHTML+scriptInc;
+      //embedCode = this.sceneList[0].photoObjects[0].getSinglePhotoVrEmbedElement().outerHTML+scriptInc;
+      embedCode = iframePrefix + "http://vrembed.org/" + this.sceneList[0].photoObjects[0].getSinglePhotoURLParams() + iframeSuffix;
     } else {
       urlCode = encodeURIComponent(window.location.href);
       embedCode = "<div>"+this.getStoryElement().outerHTML + scriptInc +"</div>";
