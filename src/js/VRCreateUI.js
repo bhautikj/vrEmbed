@@ -4,7 +4,7 @@ var VRUIAccordionStacker = require('./VRUIAccordionStacker.js');
 var VRSceneDict = require('./VRSceneDict.js');
 var VRUISceneList = require('./VRUISceneList.js');
 var VRStoryDict = require('./VRStoryDict.js');
-
+var VRImageLoader = require('./VRImageLoader.js');
 
 var flickrImageCache = {};
 
@@ -599,6 +599,17 @@ VRCreateUI = function() {
     self.updateSceneListDropdown();
   }
 
+  this.stackerEditGallery = function() {
+    self.accordionStacker.totalHide("mode_pick", true);
+    self.accordionStacker.totalHide("manage_scenes", true);
+    self.accordionStacker.totalHide("manage_scene_objects", true);
+    self.accordionStacker.totalHide("setup_scene_object", true);
+    self.accordionStacker.totalHide("preview_dummy", true);
+    self.accordionStacker.totalHide("export", false);
+    self.accordionStacker.showNamed("export");
+    document.getElementById("preview_box").hidden = true;
+  }
+
   this.stackerEditQuick = function() {
     self.accordionStacker.totalHide("mode_pick", true);
     self.accordionStacker.totalHide("manage_scenes", true);
@@ -677,6 +688,22 @@ VRCreateUI = function() {
     }
   }
 
+  this.tryModeGallery = function() {
+    if (self.oneImage.value == "") {
+      return;
+    }
+    var galleryURL = self.oneImage.value;
+    VRImageLoader.getImagesCallback(galleryURL, self.loadGallery);
+    self.getStory().setGallerySrc(galleryURL);
+  }
+
+  this.loadGallery = function(sceneList) {
+    self.sceneSelect.value = 0;
+    self.sceneList.scenes = sceneList;
+    self.populateGUIFromSceneDict(self.sceneSelect.value);
+    self.selectElement();
+    self.stackerEditGallery();
+  }
 
   this.loadModeOneImage = function(imgURL) {
     // setup scene with one image
@@ -905,12 +932,14 @@ VRCreateUI = function() {
     this.modeOneImage = document.getElementById("modeOneImage");
     this.mode360Image = document.getElementById("mode360Image");
     this.modeStereoImage = document.getElementById("modeStereoImage");
+    this.modeGallery = document.getElementById("modeGallery");
     this.modeNewStory = document.getElementById("modeNewStory");
     this.existingStory = document.getElementById("existingStory");
     this.modeExistingStory = document.getElementById("modeExistingStory");
     modeOneImage.onclick = this.tryModeOneImage;
     mode360Image.onclick = this.tryMode360Image;
     modeStereoImage.onclick = this.tryModeStereoImage;
+    modeGallery.onclick = this.tryModeGallery;
     modeNewStory.onclick = this.tryModeNewStory;
     modeExistingStory.onclick = this.tryModeExistingStory;
     this.oneImage.value = "http://vrembed.org/src/assets/vrEmbedLogo.png";

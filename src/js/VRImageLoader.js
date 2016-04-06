@@ -121,7 +121,8 @@ var gotImgurImage = function(imagePart, dataArray, callbackFunc) {
   dt.galleryMisc = null;
 
   if (callbackFunc!=null && dt!=null){
-    callbackFunc(dt);
+    var sceneList = galleryDictToSceneDicts(dt);
+    callbackFunc(sceneList);
   }
 }
 
@@ -157,7 +158,8 @@ var gotImgurAlbum = function(albumPart, dataArray, callbackFunc) {
     }
   }
   if (callbackFunc!=null && dt!=[]) {
-    callbackFunc(dt);
+    var sceneList = galleryDictToSceneDicts(dt);
+    callbackFunc(sceneList);
   }
 }
 
@@ -185,6 +187,7 @@ var gotImgurGallery = function(galleryPart, dataArray, callbackFunc) {
   dt.galleryAttribution = galleryAttribution;
   dt.galleryMisc = galleryMisc;
 
+
   dt.images = [];
   for (i=0; l=images.length, i<l; i++) {
     var img = images[i];
@@ -194,7 +197,8 @@ var gotImgurGallery = function(galleryPart, dataArray, callbackFunc) {
     }
   }
   if (callbackFunc!=null && dt!=[]) {
-    callbackFunc(dt);
+    var sceneList = galleryDictToSceneDicts(dt);
+    callbackFunc(sceneList);
   }
 }
 
@@ -471,16 +475,22 @@ VRImageLoader = function() {
 
 
   this.getImages = function(url) {
-    self.getStory().setGallerySrc(url);
+    self.getImagesCallback(url, this.buildFromImageList);
+  }
+
+  this.getImagesCallback = function(url, callbackFunc) {
+    if (self.getStory()!=null)
+      self.getStory().setGallerySrc(url);
+
     var imageList = [];
     var imgurTest = parseImgurURL(url);
     if (imgurTest!=null) {
       if (imgurTest[1]=="image"){
-        getImgurImage(imgurTest[0], this.buildFromImageList);
+        getImgurImage(imgurTest[0], callbackFunc);
       } else if (imgurTest[1]=="album") {
-        getImgurAlbum(imgurTest[0],this.buildFromImageList);
+        getImgurAlbum(imgurTest[0], callbackFunc);
       } else if (imgurTest[1]=="gallery") {
-        getImgurGallery(imgurTest[0],this.buildFromImageList);
+        getImgurGallery(imgurTest[0], callbackFunc);
       }
     }
   }
@@ -563,13 +573,15 @@ VRImageLoader = function() {
     self.pushFromDictToRender(sceneList);
   }
 
-  this.buildFromImageList = function(galleryDict) {
-    // construct a vrEmbed scene dict
-    var sceneList = galleryDictToSceneDicts(galleryDict);
+  this.buildFromImageList = function(sceneList) {
     self.pushFromDictToRender(sceneList);
   }
 
   this.getStory = function() {
+    if (self.storyManager == null) {
+      return null;
+    }
+
     if (self.storyManager.storyList != []){
       return self.storyManager.storyList[0];
     }

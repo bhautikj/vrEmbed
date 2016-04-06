@@ -654,6 +654,9 @@ VRStory = function() {
   }
 
   this.isSinglePhotoStory = function() {
+    if (this.gallerySrc!=null)
+      return true;
+      
     if(this.sceneList.length != 1 ||
       this.sceneList[0].photoObjects.length != 1 ||
       this.sceneList[0].textObjects.length != 0 ||
