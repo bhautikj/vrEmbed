@@ -92,6 +92,9 @@ var generateImgurThumb = function(imgurl) {
 }
 
 var getMacroMode = function(txt) {
+  if (txt==null)
+    return null;
+
   for (var key in VRMacroStrings) {
     if (txt.contains(key))
       return key;
