@@ -6,6 +6,12 @@ function endsWith(str, suffix) {
   return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }
 
+function strip(html) {
+   var tmp = document.createElement("DIV");
+   tmp.innerHTML = html;
+   return tmp.textContent || tmp.innerText || "";
+}
+
 String.prototype.padRight = function(l,c) {return this+Array(l-this.length+1).join(c||" ")}
 String.prototype.contains = function(it) { return this.indexOf(it) != -1; };
 
@@ -20,7 +26,9 @@ var minWidthString = function(st, w) {
   return rs;
 }
 
-var flickrImageCache = {};
+var flickrImageURLCache = {};
+var flickrImageInfoCache = {};
+var flickrAlbumCache = {};
 var imgurImageCache = {};
 var imgurAlbumCache = {};
 var imgurGalleryCache = {};
@@ -225,6 +233,43 @@ var getImgurGallery = function(galleryPart, callbackFunc) {
   doImgurCall(galleryPart, "https://api.imgur.com/3/gallery/album/", gotImgurGallery, callbackFunc);
 }
 
+var doFlickrCall = function(dataPart, apiArgs, postFunc, callbackFunc) {
+  var flickrAPI = "";
+  flickrAPI += "https://api.flickr.com/services/rest/?";
+  flickrAPI += "&api_key=c074e17f92ea52a8d9422928352b0053";
+  flickrAPI += "&format=json";
+  flickrAPI += "&nojsoncallback=1";
+  flickrAPI += apiArgs;
+
+  var xhr= new XMLHttpRequest();
+  xhr.open("GET",flickrAPI,true);   //
+  xhr.send();
+  xhr.onreadystatechange=function(){
+    if(xhr.readyState==4 && xhr.status==200) {
+      var data = JSON.parse(xhr.responseText);
+      postFunc(dataPart, data, callbackFunc);
+    }
+  };
+}
+
+var getFlickrAlbumID = function(flickrURL) {
+  var spl = flickrURL.split("/");
+  var l = spl.length;
+  for (i=0; i<l; i++) {
+    if (!spl[0].contains("flickr.com")){
+      spl.shift();
+    } else {
+      break;
+    }
+  }
+
+  if (spl == [] || (spl[3]!="sets" && spl[3]!="albums"))
+    return null;
+
+  return spl[4];
+}
+
+
 var getFlickrPhotoID = function(flickrURL) {
   var photo_id=null;
 
@@ -240,45 +285,206 @@ var getFlickrPhotoID = function(flickrURL) {
   return photo_id;
 }
 
-var getFlickrImage = function(photo_id, callbackFunc) {
-  if (photo_id==null) {
-    return false;
+var gotFlickrImageURL = function(photo_id, data, callbackFunc) {
+  var sizes = data.sizes.size;
+  var useMe = 0;
+  var maxWidth = 0;
+  var thumbUrl = "";
+  for (i=0; i<sizes.length; i++) {
+    var width = parseInt(sizes[i].width);
+    if(width <= 2048 && width>maxWidth){
+      maxWidth = width;
+      useMe = i;
+    }
+    if (sizes[i].source.endsWith("_m.jpg")) {
+      thumbUrl = sizes[i].source;
+    }
   }
 
-  if (photo_id in flickrImageCache) {
-    callbackFunc(flickrImageCache[photo_id]);
+  if (thumbUrl=="")
+    thumbUrl = sizes[useMe].source;
+
+  var dt = {};
+  dt.photo_id = photo_id;
+  dt.thumb = thumbUrl;
+  dt.img = sizes[useMe].source;
+  dt.width = parseInt(sizes[useMe].width);
+  dt.height = parseInt(sizes[useMe].height);
+
+  flickrImageURLCache[photo_id] = dt;
+  callbackFunc(flickrImageURLCache[photo_id]);
+}
+
+var getFlickrImageURL = function(photo_id, callbackFunc) {
+  if (photo_id==null)
+    return false;
+
+  if (photo_id in flickrImageURLCache) {
+    callbackFunc(flickrImageURLCache[photo_id]);
     return;
   }
 
-  var flickrAPI = "";
-  flickrAPI += "https://api.flickr.com/services/rest/?";
-  flickrAPI += "&method=flickr.photos.getSizes";
-  flickrAPI += "&api_key=c074e17f92ea52a8d9422928352b0053";
-  flickrAPI += "&photo_id=" + photo_id;
-  flickrAPI += "&format=json";
-  flickrAPI += "&nojsoncallback=1";
-
-  var xhr= new XMLHttpRequest();
-  xhr.open("GET",flickrAPI,true);   //
-  xhr.send();
-  xhr.onreadystatechange=function(){
-    if(xhr.readyState==4 && xhr.status==200) {
-      var myArray = JSON.parse(xhr.responseText);
-      var sizes = myArray.sizes.size;
-      var useMe = 0;
-      var maxWidth = 0;
-      for (i=0; i<sizes.length; i++) {
-        var width = parseInt(sizes[i].width);
-        if(width <= 2048 && width>maxWidth){
-          maxWidth = width;
-          useMe = i;
-        }
-      }
-      flickrImageCache[photo_id] = sizes[useMe].source;
-      callbackFunc(flickrImageCache[photo_id]);
-    }
-  };
+  doFlickrCall(photo_id, "&method=flickr.photos.getSizes"+"&photo_id=" + photo_id, gotFlickrImageURL, callbackFunc);
 }
+
+
+var gotFlickrImageInfo = function(photo_id, data, callbackFunc) {
+  var title = data.photo.title._content;
+  var description = data.photo.description._content;
+  var tags = data.photo.tags.tag;
+  var macro = null;
+  for (i=0; i<tags.length;i++) {
+    var macroTest = getMacroMode(tags[i].raw);
+    if (macroTest!=null)
+      macro = macroTest;
+  }
+
+  var dt = {};
+  dt.photo_id = photo_id;
+  dt.title = title;
+  dt.description = strip(description);
+  dt.macro = macro;
+
+  flickrImageInfoCache[photo_id] = dt;
+  callbackFunc(flickrImageInfoCache[photo_id]);
+}
+
+var getFlickrImageInfo = function(photo_id, callbackFunc) {
+  if (photo_id==null)
+    return false;
+
+  if (photo_id in flickrImageInfoCache) {
+    callbackFunc(flickrImageInfoCache[photo_id]);
+    return;
+  }
+
+  doFlickrCall(photo_id, "&method=flickr.photos.getInfo"+"&photo_id=" + photo_id, gotFlickrImageInfo, callbackFunc);
+}
+
+var gotFlickrAlbum = function(album_id, dataArray, callbackFunc) {
+  var images = dataArray.photoset.photo;
+
+  var dt = {};
+  dt.galleryTitle = "";
+  if (dataArray.photoset.title!=undefined)
+    dt.galleryTitle = dataArray.photoset.title;
+  dt.galleryDescription = "";
+  if (dataArray.photoset.ownername!=undefined)
+    dt.galleryAttribution = dataArray.photoset.ownername;
+  dt.galleryMisc = "";
+
+  var imageIds = [];
+  for (i=0; l=images.length,i<l;i++) {
+    imageIds.push(images[i].id);
+  }
+
+  flickrAlbumCache[album_id] = [dt, imageIds];
+  callbackFunc([dt, imageIds]);
+}
+
+var getFlickrAlbum = function(album_id, callbackFunc) {
+  if (album_id == null)
+    return false;
+
+  if (album_id in flickrAlbumCache) {
+    callbackFunc(flickrAlbumCache[album_id]);
+    return;
+  }
+
+  doFlickrCall(album_id, "&method=flickr.photosets.getPhotos"+"&photoset_id=" + album_id, gotFlickrAlbum, callbackFunc);
+}
+
+var flickrAlbumStruct = {};
+var flickrAlbumCallbackFunc = null;
+
+var parseFlickrImageDict = function(photo_id, urls, infos) {
+  var dict = {};
+  var url = null;
+  var info = null;
+  for (i=0; i<urls.length; i++) {
+    if (urls[i].photo_id == photo_id)
+      url = urls[i];
+  }
+  for (i=0; i<infos.length; i++) {
+    if (infos[i].photo_id == photo_id)
+      info = infos[i];
+  }
+
+  if (url==null || info== null)
+    return null;
+
+  dict.src = url.img;
+  dict.thumb = url.thumb;
+  dict.title = info.title;
+  dict.description = info.description;
+  dict.width = url.width;
+  dict.height = url.height;
+  dict.attribution = "";
+  dict.misc = "";
+  dict.macro = info.macro;
+  return dict;
+}
+
+var buildFlickrAlbumGalleryDict = function() {
+  var dt = flickrAlbumStruct.dt;
+
+  var numPhotos = flickrAlbumStruct.photoIds.length;
+  dt.images = [];
+
+  for (z=0; z<numPhotos; z++) {
+    var photo_id = flickrAlbumStruct.photoIds[z];
+    var id = parseFlickrImageDict(photo_id, flickrAlbumStruct.imageURLs, flickrAlbumStruct.imageInfos);
+    if (id!=null) {
+      dt.images.push(id);
+    }
+  }
+
+  var sceneList = galleryDictToSceneDicts(dt);
+
+  if (flickrAlbumCallbackFunc!=null) {
+    flickrAlbumCallbackFunc(sceneList);
+  }
+}
+
+var flickrAlbumGotImageURL = function(url){
+  flickrAlbumStruct.imageURLs.push(url);
+  if (flickrAlbumStruct.imageURLs.length == flickrAlbumStruct.targetSize &&
+      flickrAlbumStruct.imageInfos.length == flickrAlbumStruct.targetSize){
+    buildFlickrAlbumGalleryDict();
+  }
+}
+
+var flickrAlbumGotImageInfo = function(info){
+  flickrAlbumStruct.imageInfos.push(info);
+  if (flickrAlbumStruct.imageURLs.length == flickrAlbumStruct.targetSize &&
+      flickrAlbumStruct.imageInfos.length == flickrAlbumStruct.targetSize){
+    buildFlickrAlbumGalleryDict();
+  }
+}
+
+var buildFlickrAlbum = function(data) {
+  var dt = data[0];
+  var imageIds = data[1];
+  flickrAlbumStruct = {};
+  flickrAlbumStruct.targetSize = imageIds.length;
+  flickrAlbumStruct.dt = dt;
+  flickrAlbumStruct.photoIds = imageIds;
+  flickrAlbumStruct.imageURLs = [];
+  flickrAlbumStruct.imageInfos = [];
+  for (i=0; i<imageIds.length; i++) {
+    getFlickrImageURL(imageIds[i], flickrAlbumGotImageURL);
+    getFlickrImageInfo(imageIds[i], flickrAlbumGotImageInfo);
+  }
+}
+
+// getFlickrAlbum(getFlickrAlbumID("https://www.flickr.com/photos/captin_nod/albums/72157659678214895"), buildFlickrAlbum);
+//
+// getFlickrAlbumID("https://www.flickr.com/photos/captin_nod/albums/72157659678214895");
+// getFlickrAlbumID("flickr.com/photos/captin_nod/sets/72157659678214895");
+// getFlickrAlbumID("flickr.com/photos/captin_nod/fools/72157659678214895");
+//
+// getFlickrAlbumID("meh.com/photos/captin_nod/albums/72157659678214895");
+
 
 var imgWidth = 70;
 
@@ -546,6 +752,15 @@ VRImageLoader = function() {
         getImgurGallery(imgurTest[0], callbackFunc);
       }
     }
+
+    var flickrAlbumID = getFlickrAlbumID(url);
+    if (flickrAlbumID!=null) {
+      getFlickrAlbum(flickrAlbumID, buildFlickrAlbum);
+      flickrAlbumCallbackFunc = this.buildFromImageList;
+    }
+
+    // trigger loading animation
+    self.getStory().setLoading(true);
   }
 
   this.parseBoolString = function(str) {
@@ -622,12 +837,14 @@ VRImageLoader = function() {
 
     var sceneList = [];
     sceneList.push(vrSceneDict);
-    console.log(sceneList);
     self.pushFromDictToRender(sceneList);
+    self.getStory().setLoading(false);
+
   }
 
   this.buildFromImageList = function(sceneList) {
     self.pushFromDictToRender(sceneList);
+    self.getStory().setLoading(false);
   }
 
   this.getStory = function() {
