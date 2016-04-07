@@ -697,6 +697,23 @@ var galleryDictToSceneDicts = function(galleryDict) {
     vrEmbedLogo.textureDescription.planeOffset = [0,0];
     vrSceneDict.dict.decalObjects.push(vrEmbedLogo);
 
+    var galleryText  = galleryDict.galleryTitle + " \n";
+        galleryText += galleryDict.galleryDescription + " \n";
+        galleryText += "by " + galleryDict.galleryAttribution + " \n";
+        galleryText += galleryDict.galleryMisc + " \n";
+
+    var title = vrSceneDict.initText();
+    title.message = galleryText;
+    title.textOptions.borderthickness = 0;
+    title.textOptions.align = 'left';
+    title.textOptions.fontface = 'Courier';
+    title.textOptions.fontsize = 36;
+    title.textureDescription.sphereFOV = [imgWidth/1.5,20];
+    title.textureDescription.sphereCentre = [imgWidth,0];
+    title.textureDescription.plane = true;
+    title.textureDescription.planeOffset = [0,0];
+    vrSceneDict.dict.textObjects.push(title);
+
     sceneList.push(vrSceneDict);
 
     indexScnIdx += 1;
