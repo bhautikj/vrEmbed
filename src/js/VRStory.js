@@ -33,6 +33,7 @@ VRStory = function() {
   this.currentSceneIndex = 0;
 
   this.isFullScreen = false;
+  this.isLoading = false;
 
   this.sceneList = [];
   this.namedSceneMap = [];
@@ -176,6 +177,10 @@ VRStory = function() {
     return 2.*(Math.pow(2.,val)/2. - 0.5);
   }
 
+  this.setLoading = function(isLoading) {
+    self.isLoading = isLoading;
+  }
+
   // Request animation frame loop function
   this.animate = function(timestamp) {
     this.checkVisible();
@@ -217,7 +222,7 @@ VRStory = function() {
     self.clearCtx();
     self.drawReticle(actionPercent);
 
-    if (self.quad.texReady == false) {
+    if (self.quad.texReady == false || self.isLoading) {
       var pc = Math.min((now-self.quad.textureLoadStartAnim)/(self.quad.textureLoadEndAnim-self.quad.textureLoadStartAnim),1.0);
       if (pc>=0.01) {
         self.drawLoader(now, this.animPow(pc));
