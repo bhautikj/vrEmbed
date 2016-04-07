@@ -1,7 +1,5 @@
 var VRSceneDict = require('./VRSceneDict.js');
 var VRURLParser = require('./VRURLParser.js');
-var VRLoaderIcons = require('./VRLoaderIcons.js');
-var VRIcons = require('./VRIcons.js');
 var VRMacroStrings = require('./VRMacroStrings.js');
 
 function endsWith(str, suffix) {
@@ -374,7 +372,7 @@ var galleryDictToSceneDicts = function(galleryDict) {
     }
 
     var vrEmbedLogo = vrSceneDict.initDecal();
-    vrEmbedLogo.imgsrc = VRIcons.logoVrEmbed;
+    vrEmbedLogo.imgsrc = "http://vrembed.org/src/assets/vrEmbedLogo.png";
     vrEmbedLogo.textureDescription.sphereFOV = [2*imgWidth*thumbFac, 2*imgWidth*thumbFac];
     vrEmbedLogo.textureDescription.sphereCentre = [0, -90];
     vrEmbedLogo.textureDescription.plane = false;
@@ -413,7 +411,7 @@ var galleryDictToSceneDicts = function(galleryDict) {
     var galleryIdx = vrSceneDict.initDecal();
     galleryIdx.jumpTo = "index_" + indexPage;
     //console.log('ADDING NEXT: '+thumb.jumpTo);
-    galleryIdx.imgsrc = VRLoaderIcons.gallery;
+    galleryIdx.imgsrc = "http://vrembed.org/src/assets/gallery.png";
     galleryIdx.textureDescription.sphereFOV = [imgWidth*thumbFac, imgWidth*thumbFac];
     galleryIdx.textureDescription.sphereCentre = [0, 0];
     galleryIdx.textureDescription.plane = true;
@@ -465,7 +463,7 @@ var galleryDictToSceneDicts = function(galleryDict) {
     if (indexScnIdx>0) {
       var prevDecal = vrSceneDict.initDecal();
       prevDecal.jumpTo = "index_" + (indexScnIdx-1);
-      prevDecal.imgsrc = VRLoaderIcons.prevArrow;
+      prevDecal.imgsrc = "http://vrembed.org/src/assets/prevArrow.png";;
       prevDecal.textureDescription.sphereFOV = [15,15];
       prevDecal.textureDescription.sphereCentre = [0, 0];
       prevDecal.textureDescription.plane = true;
@@ -477,7 +475,7 @@ var galleryDictToSceneDicts = function(galleryDict) {
     if (indexScnIdx<numIndexes-1) {
       var nextDecal = vrSceneDict.initDecal();
       nextDecal.jumpTo = "index_" + (indexScnIdx+1);
-      nextDecal.imgsrc = VRLoaderIcons.nextArrow;
+      nextDecal.imgsrc = "http://vrembed.org/src/assets/nextArrow.png";;
       nextDecal.textureDescription.sphereFOV = [15,15];
       nextDecal.textureDescription.sphereCentre = [0, 0];
       nextDecal.textureDescription.plane = true;
@@ -486,7 +484,7 @@ var galleryDictToSceneDicts = function(galleryDict) {
     }
 
     var vrEmbedLogo = vrSceneDict.initDecal();
-    vrEmbedLogo.imgsrc = VRIcons.logoVrEmbed;
+    vrEmbedLogo.imgsrc = "http://vrembed.org/src/assets/vrEmbedLogo.png";
     vrEmbedLogo.textureDescription.sphereFOV = [2*imgWidth*thumbFac, 2*imgWidth*thumbFac];
     vrEmbedLogo.textureDescription.sphereCentre = [0, -90];
     vrEmbedLogo.textureDescription.plane = false;
