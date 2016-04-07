@@ -20,7 +20,8 @@ var minWidthString = function(st, w) {
   return rs;
 }
 
-var flickrImageCache = {};
+var flickrImageURLCache = {};
+var flickrImageInfoCache = {};
 var flickrAlbumCache = {};
 var imgurImageCache = {};
 var imgurAlbumCache = {};
@@ -278,7 +279,7 @@ var getFlickrPhotoID = function(flickrURL) {
   return photo_id;
 }
 
-var gotFlickrImage = function(photo_id, data, callbackFunc) {
+var gotFlickrImageURL = function(photo_id, data, callbackFunc) {
   var sizes = data.sizes.size;
   var useMe = 0;
   var maxWidth = 0;
@@ -297,20 +298,61 @@ var gotFlickrImage = function(photo_id, data, callbackFunc) {
   if (thumbUrl=="")
     thumbUrl = sizes[useMe].source;
 
-  flickrImageCache[photo_id] = [photo_id, thumbUrl, sizes[useMe].source];
-  callbackFunc(flickrImageCache[photo_id]);
+  var dt = {};
+  dt.photo_id = photo_id;
+  dt.thumb = thumbUrl;
+  dt.img = sizes[useMe].source;
+  dt.width = parseInt(sizes[useMe].width);
+  dt.height = parseInt(sizes[useMe].height);
+
+  flickrImageURLCache[photo_id] = dt;
+  callbackFunc(flickrImageURLCache[photo_id]);
 }
 
-var getFlickrImage = function(photo_id, callbackFunc) {
+var getFlickrImageURL = function(photo_id, callbackFunc) {
   if (photo_id==null)
     return false;
 
-  if (photo_id in flickrImageCache) {
-    callbackFunc(flickrImageCache[photo_id]);
+  if (photo_id in flickrImageURLCache) {
+    callbackFunc(flickrImageURLCache[photo_id]);
     return;
   }
 
-  doFlickrCall(photo_id, "&method=flickr.photos.getSizes"+"&photo_id=" + photo_id, gotFlickrImage, callbackFunc);
+  doFlickrCall(photo_id, "&method=flickr.photos.getSizes"+"&photo_id=" + photo_id, gotFlickrImageURL, callbackFunc);
+}
+
+
+var gotFlickrImageInfo = function(photo_id, data, callbackFunc) {
+  var title = data.photo.title._content;
+  var description = data.photo.description._content;
+  var tags = data.photo.tags.tag;
+  var macro = null;
+  for (i=0; i<tags.length;i++) {
+    var macroTest = getMacroMode(tags[i].raw);
+    if (macroTest!=null)
+      macro = macroTest;
+  }
+
+  var dt = {};
+  dt.photo_id = photo_id;
+  dt.title = title;
+  dt.description = description;
+  dt.macro = macro;
+
+  flickrImageInfoCache[photo_id] = dt;
+  callbackFunc(flickrImageInfoCache[photo_id]);
+}
+
+var getFlickrImageInfo = function(photo_id, callbackFunc) {
+  if (photo_id==null)
+    return false;
+
+  if (photo_id in flickrImageInfoCache) {
+    callbackFunc(flickrImageInfoCache[photo_id]);
+    return;
+  }
+
+  doFlickrCall(photo_id, "&method=flickr.photos.getInfo"+"&photo_id=" + photo_id, gotFlickrImageInfo, callbackFunc);
 }
 
 var gotFlickrAlbum = function(album_id, dataArray, callbackFunc) {
@@ -347,11 +389,70 @@ var getFlickrAlbum = function(album_id, callbackFunc) {
 }
 
 var flickrAlbumStruct = {};
+var flickrAlbumCallbackFunc = null;
 
-var flickrAlbumGotImage = function(url){
-  flickrAlbumStruct.imageSizes.push(url);
-  if (flickrAlbumStruct.imageSizes.length == flickrAlbumStruct.targetSize){
-    console.log(flickrAlbumStruct);
+var parseFlickrImageDict = function(photo_id, urls, infos) {
+  var dict = {};
+  var url = null;
+  var info = null;
+  for (i=0; i<urls.length; i++) {
+    if (urls[i].photo_id == photo_id)
+      url = urls[i];
+  }
+  for (i=0; i<infos.length; i++) {
+    if (infos[i].photo_id == photo_id)
+      info = infos[i];
+  }
+
+  if (url==null || info== null)
+    return null;
+
+  dict.src = url.img;
+  dict.thumb = url.thumb;
+  dict.title = info.title;
+  dict.description = info.description;
+  dict.width = url.width;
+  dict.height = url.height;
+  dict.attribution = "";
+  dict.misc = "";
+  dict.macro = info.macro;
+  return dict;
+}
+
+var buildFlickrAlbumGalleryDict = function() {
+  var dt = flickrAlbumStruct.dt;
+
+  var numPhotos = flickrAlbumStruct.photoIds.length;
+  dt.images = [];
+
+  for (z=0; z<numPhotos; z++) {
+    var photo_id = flickrAlbumStruct.photoIds[z];
+    var id = parseFlickrImageDict(photo_id, flickrAlbumStruct.imageURLs, flickrAlbumStruct.imageInfos);
+    if (id!=null) {
+      dt.images.push(id);
+    }
+  }
+
+  var sceneList = galleryDictToSceneDicts(dt);
+
+  if (flickrAlbumCallbackFunc!=null) {
+    callbackFunc(sceneList);
+  }
+}
+
+var flickrAlbumGotImageURL = function(url){
+  flickrAlbumStruct.imageURLs.push(url);
+  if (flickrAlbumStruct.imageURLs.length == flickrAlbumStruct.targetSize &&
+      flickrAlbumStruct.imageInfos.length == flickrAlbumStruct.targetSize){
+    buildFlickrAlbumGalleryDict();
+  }
+}
+
+var flickrAlbumGotImageInfo = function(info){
+  flickrAlbumStruct.imageInfos.push(info);
+  if (flickrAlbumStruct.imageURLs.length == flickrAlbumStruct.targetSize &&
+      flickrAlbumStruct.imageInfos.length == flickrAlbumStruct.targetSize){
+    buildFlickrAlbumGalleryDict();
   }
 }
 
@@ -361,13 +462,16 @@ var buildFlickrAlbum = function(data) {
   flickrAlbumStruct = {};
   flickrAlbumStruct.targetSize = imageIds.length;
   flickrAlbumStruct.dt = dt;
-  flickrAlbumStruct.imageSizes = [];
+  flickrAlbumStruct.photoIds = imageIds;
+  flickrAlbumStruct.imageURLs = [];
+  flickrAlbumStruct.imageInfos = [];
   for (i=0; i<imageIds.length; i++) {
-    getFlickrImage(imageIds[i], flickrAlbumGotImage);
+    getFlickrImageURL(imageIds[i], flickrAlbumGotImageURL);
+    getFlickrImageInfo(imageIds[i], flickrAlbumGotImageInfo);
   }
 }
 
-getFlickrAlbum(getFlickrAlbumID("https://www.flickr.com/photos/captin_nod/albums/72157659678214895"), buildFlickrAlbum);
+// getFlickrAlbum(getFlickrAlbumID("https://www.flickr.com/photos/captin_nod/albums/72157659678214895"), buildFlickrAlbum);
 //
 // getFlickrAlbumID("https://www.flickr.com/photos/captin_nod/albums/72157659678214895");
 // getFlickrAlbumID("flickr.com/photos/captin_nod/sets/72157659678214895");
@@ -642,6 +746,7 @@ VRImageLoader = function() {
         getImgurGallery(imgurTest[0], callbackFunc);
       }
     }
+
   }
 
   this.parseBoolString = function(str) {
