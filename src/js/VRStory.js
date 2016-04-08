@@ -17,6 +17,9 @@ VRStory = function() {
   this.vrOptions = new VROptions();
   this.direction = [0,0,0];
   this.mousePosLast = [-1,-1];
+  this.guiDirty = false;
+  this.guiDirtyTimeout = false;
+  this.firstRun = true;
 
   //--
   this.quad = null;
@@ -194,7 +197,10 @@ VRStory = function() {
       return;
 
     // update gui tex if needed
-    this.redrawGui();
+    if (!this.firstRun)
+      this.redrawGui();
+    else
+      this.firstRun = false;
 
     var now = Date.now();
     var dir = [];
@@ -352,6 +358,8 @@ VRStory = function() {
     // clear out exising sphere tex
     this.vrGui.teardown();
     this.quad.teardown();
+    if (!this.guiDirtyTimeout)
+      this.guiDirty = true;
 
     // update index
     this.currentSceneIndex = sceneIdx;
@@ -461,13 +469,24 @@ VRStory = function() {
         this.vrGui.createArrow(15, 30, -40, this.nextScene, null, false);
       }
     }
-    this.quad.renderGui();
+    //this.quad.renderGui();
+  }
+
+  this.refreshGui = function() {
+    self.quad.renderGui();
+    self.guiDirtyTimeout = false;
+    console.log("rendering gui");
   }
 
   this.redrawGui = function() {
-    if (this.vrGui.guiNeedsRedraw()) {
-      this.quad.renderGui();
+    if (this.guiDirty == true && this.vrGui.isGuiDirty() == false) {
+      self.guiDirty = false;
+      self.guiDirtyTimeout = true;
+      setTimeout(this.refreshGui, 1000);
     }
+    //} else if (this.vrGui.isGuiDirty() == true) {
+    //  this.guiDirty = true;
+    //}
   }
 
   this.init = function(storyElement, storyManager) {

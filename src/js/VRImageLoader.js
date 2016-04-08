@@ -525,7 +525,7 @@ var adjustFromMacro = function(photo, img, macro) {
 
 var galleryDictToSceneDicts = function(galleryDict) {
   var sceneList = [];
-  var numPerIndex = 16;
+  var numPerIndex = 9;
   for (i=0; l=galleryDict.images.length, i<l; i++){
     var indexPage = Math.floor((i/numPerIndex));
     var vrSceneDict = new VRSceneDict();
@@ -628,8 +628,8 @@ var galleryDictToSceneDicts = function(galleryDict) {
     sceneList.push(vrSceneDict);
   }
 
-  // now build index scenes. going to go with a square grid of 16 per page
-  // 90/4=15deg for each thumb
+  // now build index scenes. going to go with a square grid of 9 per page
+  // 90/3=30deg for each thumb
   var numImages = galleryDict.images.length;
   var i,j,temparray,chunk = numPerIndex;
   var numIndexes = Math.ceil(numImages/numPerIndex);
@@ -644,25 +644,25 @@ var galleryDictToSceneDicts = function(galleryDict) {
     vrSceneDict.init();
     vrSceneDict.dict.name = "index_" + indexScnIdx;
     var vLoc = 30;
-    for (v=0; v<4; v++) {
+    for (v=0; v<3; v++) {
       var uLoc = -30;
-      for (u=0; u<4; u++) {
+      for (u=0; u<3; u++) {
         if (imgIdx>=numImages)
           break;
         var thumb = vrSceneDict.initDecal();
         var otherImg = temparray[tmpIdx];
         thumb.jumpTo = "image_" + (imgIdx);
         thumb.imgsrc = otherImg.thumb;
-        thumb.textureDescription.sphereFOV = [18, 18];
+        thumb.textureDescription.sphereFOV = [25, 25];
         thumb.textureDescription.sphereCentre = [0, 0];
         thumb.textureDescription.plane = true;
         thumb.textureDescription.planeOffset = [uLoc,vLoc];
         vrSceneDict.dict.decalObjects.push(thumb);
         tmpIdx += 1;
         imgIdx += 1;
-        uLoc += 20;
+        uLoc += 30;
       }
-      vLoc += -20;
+      vLoc += -30;
     }
 
     // prev
@@ -708,8 +708,8 @@ var galleryDictToSceneDicts = function(galleryDict) {
     title.textOptions.align = 'left';
     title.textOptions.fontface = 'Courier';
     title.textOptions.fontsize = 36;
-    title.textureDescription.sphereFOV = [imgWidth/1.5,20];
-    title.textureDescription.sphereCentre = [imgWidth,0];
+    title.textureDescription.sphereFOV = [75,20];
+    title.textureDescription.sphereCentre = [90,0];
     title.textureDescription.plane = true;
     title.textureDescription.planeOffset = [0,0];
     vrSceneDict.dict.textObjects.push(title);

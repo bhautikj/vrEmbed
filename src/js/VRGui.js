@@ -173,15 +173,16 @@ VRGui = function() {
     this.canvasSet = [];
   }
 
-  this.guiNeedsRedraw = function() {
+  this.isGuiDirty = function() {
     var globalDirty = false;
     for(texIt = 0;texIt < this.canvasSet.length; texIt++) {
-      var dirty = this.canvasSet[texIt][0].getDirtyAndClear();
-      if (dirty)
-        globalDirty = true;
+      var dirty = this.canvasSet[texIt][0].getDirty();
+      if (dirty) {
+        return true;
+      }
     }
-    return globalDirty;
-  }
+    return false; 
+  } 
 
   this.update = function(_pt, timestamp) {
     var pt = [_pt[0],_pt[1]];

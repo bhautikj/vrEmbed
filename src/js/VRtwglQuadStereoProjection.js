@@ -367,6 +367,7 @@ VRtwglQuadStereoProjection = function() {
         self.uniformsFbGui["planeOffset"] = [0,0];
       }
       self.renderFbGui();
+      gl.deleteTexture(canvasTex.glTex);
     }
 
     self.vrtwglQuad.resetViewport();

@@ -1,6 +1,6 @@
 VRTextureDescription = require('./VRTextureDescription.js');
 var twgl = require('../js-ext/twgl-full.js');
-var canvasSize = 2048;
+var canvasSize = 1024;
 
 function roundRect(ctx, x, y, w, h, r)
 {
@@ -40,6 +40,14 @@ VRCanvasBase.prototype.initBase = function(gl) {
 
 VRCanvasBase.prototype.setDirty = function() {
   this.dirty = true;
+}
+
+VRCanvasBase.prototype.clearDirty = function() {
+  this.dirty = false;
+}
+
+VRCanvasBase.prototype.getDirty = function() {
+  return this.dirty;
 }
 
 VRCanvasBase.prototype.getDirtyAndClear = function() {
@@ -91,9 +99,8 @@ var decalLoad = function(img) {
 
   img.decalObject.ctx.drawImage(img, x,y,w,h);
   img.decalObject.vrTextureDescription.sphereFOV = endFOV;
-
   img.decalObject.updateBase();
-  img.decalObject.setDirty();
+  img.decalObject.clearDirty();
 }
 
 VRCanvasDecal.prototype.init = function(gl, imgsrc, textureDescription) {
@@ -110,11 +117,11 @@ VRCanvasDecal.prototype.init = function(gl, imgsrc, textureDescription) {
     decalLoad(this);
   };
   this.image.src = imgsrc;
+  this.setDirty();
 }
 
 VRCanvasDecal.prototype.update = function(time) {
   this.updateBase();
-  this.setDirty();
 }
 
 VRCanvasSpinner = function() {};
@@ -132,7 +139,6 @@ VRCanvasSpinner.prototype.update = function(time) {
   this.ctx.arc(this.ctx.canvas.width / 2, this.ctx.canvas.height / 2, this.ctx.canvas.width / 2.2 * Math.abs(Math.cos(time)), 0, Math.PI * 2);
   this.ctx.stroke();
   this.updateBase();
-  this.setDirty();
 }
 
 VRCanvasArrow = function() {};
@@ -177,7 +183,6 @@ VRCanvasArrow.prototype.update = function(time) {
   this.ctx.stroke();
   this.ctx.fill();
   this.updateBase();
-  this.setDirty();
 }
 
 
@@ -308,7 +313,6 @@ VRCanvasTextBox.prototype.init = function(gl, message, hfov, options) {
 
 VRCanvasTextBox.prototype.update = function(time) {
   this.updateBase();
-  this.setDirty();
 }
 
 VRCanvasFactoryCore = function() {
