@@ -779,7 +779,6 @@ VRCreateUI = function() {
   this.exportEquirectangular = function() {
     var imgData = self.getStory().createImageFromSphereTexture();
     self.downloadURI(imgData, "exportEquirectangularTex.png");
-
     // var img = new Image();
     // img.src = canvas.toDataURL();
     // return img;
