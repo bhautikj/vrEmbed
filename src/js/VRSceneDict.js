@@ -116,7 +116,7 @@ VRSceneDict = function() {
     decal.textureDescription = this.initFromTextureDescription(vrDecal.textureDescription);
     decal.imgsrc = vrDecal.imgsrc;
     decal.jumpTo = vrDecal.jumpTo;
-    return text;
+    return decal;
   }
 
   this.initDecal = function() {
