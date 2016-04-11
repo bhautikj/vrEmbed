@@ -197,6 +197,9 @@ function wrapText(context, text, maxWidth) {
 
   var testWidth = 0;
   for(var n = 0; n < words.length; n++) {
+    if (words[n].length > 25) {
+      words[n] = words[n].substring(0,20) + "[...]";
+    }
     var testLine = line + words[n] + ' ';
     var metrics = context.measureText(testLine);
     testWidth = metrics.width;
@@ -227,7 +230,6 @@ function wrapText(context, text, maxWidth) {
   return [lineSet, maxw*1.1];
 }
 
-
 VRCanvasTextBox = function() {};
 VRCanvasTextBox.prototype = new VRCanvasBase();
 VRCanvasTextBox.prototype.init = function(gl, message, hfov, options) {
@@ -247,6 +249,8 @@ VRCanvasTextBox.prototype.init = function(gl, message, hfov, options) {
   var fontsize = 48;
   if (options.fontsize != null)
     fontsize = options.fontsize;
+
+ fontsize *= 0.5;
 
   var align = "center";
   if (options.align != null)

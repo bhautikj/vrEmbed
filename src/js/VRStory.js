@@ -484,9 +484,6 @@ VRStory = function() {
       self.guiDirtyTimeout = true;
       setTimeout(this.refreshGui, 1000);
     }
-    //} else if (this.vrGui.isGuiDirty() == true) {
-    //  this.guiDirty = true;
-    //}
   }
 
   this.init = function(storyElement, storyManager) {
