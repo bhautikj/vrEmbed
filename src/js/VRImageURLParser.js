@@ -25,6 +25,7 @@ var getImgurImageId = function(imgurURL) {
       }
     }
   }
+  return null;
 }
 
 var doImgurCall = function(dataPart, apiBase, postFunc, callbackFunc) {
@@ -64,3 +65,12 @@ var getImgurImage = function(imagePart, callbackFunc) {
   }
   doImgurCall(imagePart, "https://api.imgur.com/3/image/", gotImgurImageSrc, callbackFunc);
 };
+
+var fetchImageURL = function(url, callbackFunc) {
+  var imgurTest = getImgurImageId(url);
+  if (imgurTest!=null) {
+    getImgurImage(imgurTest, callbackFunc);
+  } else {
+    callbackFunc(url);
+  }
+}
