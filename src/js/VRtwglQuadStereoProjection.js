@@ -4,6 +4,7 @@ VRLookController = require('./VRControllers.js');
 VRDeviceManager = require('./VRDeviceManager.js');
 VRCanvasFactory = require('./VRCanvasFactory.js');
 VRRotMath = require('./VRRotMath.js');
+VRImageURLParser = require('./VRImageURLParser.js');
 Util = require('./VRUtil.js');
 
 twgl = require('../js-ext/twgl-full.js');
@@ -523,24 +524,33 @@ VRtwglQuadStereoProjection = function() {
   }
 
   this.loadTextures = function (textureDescriptions) {
+    var texURLS = [];
+    var vp = new VRImageURLParser();
+    for(texIt = 0;texIt < textureDescriptions.length; texIt++) {
+      texURLS.push(textureDescriptions[texIt].textureSource);
+      this.textureDescriptions[texIt] = textureDescriptions[texIt];
+    }
+    vp.init(texURLS, this.loadTexturesPost);
+  }
+
+  this.loadTexturesPost = function (texURLS) {
     var gl = self.vrtwglQuad.glContext;
     var texArray = [];
-    for(texIt = 0;texIt < textureDescriptions.length; texIt++) {
+    for(texIt = 0;texIt < texURLS.length; texIt++) {
       var texSpec = {
         min: gl.LINEAR,
         mag: gl.LINEAR,
-        src: textureDescriptions[texIt].textureSource,
+        src: texURLS[texIt],
         crossOrigin: "Anonymous", // either this or use twgl.setDefaults
       };
       texArray[texIt] = texSpec;
-      this.textureDescriptions[texIt] = textureDescriptions[texIt];
     }
 
-    this.texReady = false;
-    this.textureLoadStartAnim = Date.now();
-    this.textureLoadEndAnim = this.textureLoadStartAnim + 1000;
+    self.texReady = false;
+    self.textureLoadStartAnim = Date.now();
+    self.textureLoadEndAnim = self.textureLoadStartAnim + 1000;
     var gl = self.vrtwglQuad.glContext;
-    this.textures = twgl.createTextures(gl, texArray, this.texturesLoaded);
+    self.textures = twgl.createTextures(gl, texArray, self.texturesLoaded);
   }
 
   this.teardown = function() {

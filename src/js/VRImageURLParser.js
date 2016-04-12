@@ -51,8 +51,7 @@ var gotImgurImageSrc = function(imagePart, dataArray, callbackFunc) {
   imgurImageCache[imagePart] = dataArray;
   var imgURL = dataArray.data.link;
 
-  if (callbackFunc!=null && dt!=null){
-    var sceneList = galleryDictToSceneDicts(dt);
+  if (callbackFunc!=null){
     callbackFunc(imgURL);
   }
 }
@@ -74,3 +73,33 @@ var fetchImageURL = function(url, callbackFunc) {
     callbackFunc(url);
   }
 }
+
+VRImageURLParser = function() {
+  var self = this;
+  this.urlList = [];
+  this.callback = null;
+
+
+  this.gotURLIdx = function(idx, url) {
+    self.urlList[idx] = url;
+    for (il=0;il<self.urlList.length;il++) {
+      if (self.urlList[il] == null){
+        return;
+      }
+    }
+    self.callback(self.urlList);
+  }
+
+  this.init = function(imageList, callback) {
+    this.callback = callback;
+    for (im=0; im<imageList.length; im++) {
+      this.urlList[im] = null;
+    }
+    for (im=0; im<imageList.length; im++) {
+      fetchImageURL(imageList[im], this.gotURLIdx.bind(null, im));
+    }
+  }
+};
+
+
+module.exports = VRImageURLParser;
