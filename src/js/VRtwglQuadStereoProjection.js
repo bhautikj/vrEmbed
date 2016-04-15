@@ -476,6 +476,8 @@ VRtwglQuadStereoProjection = function() {
     return this.rotMath.rotateZX(pitch, yaw);
   }
 
+
+
   this.texturesLoaded = function(err, textures, sources) {
     if (err != undefined) {
       alert(err);
@@ -524,32 +526,36 @@ VRtwglQuadStereoProjection = function() {
   }
 
   this.loadTextures = function (textureDescriptions) {
+    if (textureDescriptions.length == 0) {
+      self.texReady = true;
+      self.textures = [];
+      self.texturesLoaded(undefined, [],[]);
+      return;
+    }
+
     var texURLS = [];
     var vp = new VRImageURLParser();
     for(texIt = 0;texIt < textureDescriptions.length; texIt++) {
       texURLS.push(textureDescriptions[texIt].textureSource);
       this.textureDescriptions[texIt] = textureDescriptions[texIt];
     }
-    vp.init(texURLS, this.loadTexturesPost);
-  }
-
-  this.loadTexturesPost = function (texURLS) {
-    var gl = self.vrtwglQuad.glContext;
-    var texArray = [];
-    for(texIt = 0;texIt < texURLS.length; texIt++) {
-      var texSpec = {
-        min: gl.LINEAR,
-        mag: gl.LINEAR,
-        src: texURLS[texIt],
-        crossOrigin: "Anonymous", // either this or use twgl.setDefaults
-      };
-      texArray[texIt] = texSpec;
-    }
-
+    vp.init(texURLS, this.loadTexturesCanvas);
     self.texReady = false;
     self.textureLoadStartAnim = Date.now();
     self.textureLoadEndAnim = self.textureLoadStartAnim + 1000;
+  }
+
+  this.loadTexturesCanvas = function(canvasSet) {
     var gl = self.vrtwglQuad.glContext;
+    var texArray = [];
+    for(cIt = 0;cIt < canvasSet.length; cIt++) {
+      var texSpec = {
+        min: gl.LINEAR,
+        mag: gl.LINEAR,
+        src: canvasSet[cIt].ctx.canvas,
+      };
+      texArray[cIt] = texSpec;
+    }
     self.textures = twgl.createTextures(gl, texArray, self.texturesLoaded);
   }
 

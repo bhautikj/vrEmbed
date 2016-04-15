@@ -1,6 +1,8 @@
 var imgurImageCache = {};
 var imgurGalleryCache = {};
 
+var maxTex = 4096.0;
+
 function endsWith(str, suffix) {
   return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }
@@ -28,6 +30,43 @@ var getImgurImageId = function(imgurURL) {
   return null;
 }
 
+var loadImageToCanvas = function(image, callbackFunc) {
+  var canvas = document.createElement("canvas");
+  var ctx = canvas.getContext("2d");
+
+  var iw = parseFloat(image.width);
+  var ih = parseFloat(image.height);
+  var cw=iw, ch=ih;
+
+  if (iw > maxTex) {
+    ch = maxTex*ih/iw;
+    cw = maxTex;
+  }
+
+  if (ih > maxTex) {
+    cw = maxTex*iw/ih;
+    ch = maxTex;
+  }
+
+  ctx.canvas.width  = cw;
+  ctx.canvas.height = ch;
+  ctx.drawImage(image, 0, 0, cw, ch);
+
+  //callbackFunc(image.imgsrc);
+  callbackFunc({'canvas':canvas, 'ctx':ctx, 'image': image});
+}
+
+var loadImageInit = function(imgsrc, callbackFunc) {
+  var image = new Image();
+  image.imgsrc = imgsrc;
+  image.crossOrigin = "Anonymous";
+  // this.image.onload = this.imageLoaded;
+  image.onload = function () {
+    loadImageToCanvas(image, callbackFunc);
+  };
+  image.src = imgsrc;
+}
+
 var doImgurCall = function(dataPart, apiBase, postFunc, callbackFunc) {
   var imgurAPI = "";
   imgurAPI += apiBase;
@@ -52,14 +91,14 @@ var gotImgurImageSrc = function(imagePart, dataArray, callbackFunc) {
   var imgURL = dataArray.data.link;
 
   if (callbackFunc!=null){
-    callbackFunc(imgURL);
+    loadImageInit(imgURL, callbackFunc);
   }
 }
 
 var getImgurImage = function(imagePart, callbackFunc) {
   if (imagePart in imgurImageCache) {
     if (callbackFunc!=null)
-      gotImgurImage(imgurImageCache[imagePart]);
+      gotImgurImageSrc(imagePart, imgurImageCache[imagePart], callbackFunc);
     return;
   }
   doImgurCall(imagePart, "https://api.imgur.com/3/image/", gotImgurImageSrc, callbackFunc);
@@ -70,7 +109,7 @@ var fetchImageURL = function(url, callbackFunc) {
   if (imgurTest!=null) {
     getImgurImage(imgurTest, callbackFunc);
   } else {
-    callbackFunc(url);
+    loadImageInit(url, callbackFunc);
   }
 }
 
@@ -78,6 +117,8 @@ VRImageURLParser = function() {
   var self = this;
   this.urlList = [];
   this.callback = null;
+
+
 
 
   this.gotURLIdx = function(idx, url) {
