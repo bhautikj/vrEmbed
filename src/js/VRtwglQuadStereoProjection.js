@@ -4,6 +4,7 @@ VRLookController = require('./VRControllers.js');
 VRDeviceManager = require('./VRDeviceManager.js');
 VRCanvasFactory = require('./VRCanvasFactory.js');
 VRRotMath = require('./VRRotMath.js');
+VRImageURLParser = require('./VRImageURLParser.js');
 Util = require('./VRUtil.js');
 
 twgl = require('../js-ext/twgl-full.js');
@@ -475,6 +476,8 @@ VRtwglQuadStereoProjection = function() {
     return this.rotMath.rotateZX(pitch, yaw);
   }
 
+
+
   this.texturesLoaded = function(err, textures, sources) {
     if (err != undefined) {
       alert(err);
@@ -523,24 +526,37 @@ VRtwglQuadStereoProjection = function() {
   }
 
   this.loadTextures = function (textureDescriptions) {
+    if (textureDescriptions.length == 0) {
+      self.texReady = true;
+      self.textures = [];
+      self.texturesLoaded(undefined, [],[]);
+      return;
+    }
+
+    var texURLS = [];
+    var vp = new VRImageURLParser();
+    for(texIt = 0;texIt < textureDescriptions.length; texIt++) {
+      texURLS.push(textureDescriptions[texIt].textureSource);
+      this.textureDescriptions[texIt] = textureDescriptions[texIt];
+    }
+    vp.init(texURLS, this.loadTexturesCanvas);
+    self.texReady = false;
+    self.textureLoadStartAnim = Date.now();
+    self.textureLoadEndAnim = self.textureLoadStartAnim + 1000;
+  }
+
+  this.loadTexturesCanvas = function(canvasSet) {
     var gl = self.vrtwglQuad.glContext;
     var texArray = [];
-    for(texIt = 0;texIt < textureDescriptions.length; texIt++) {
+    for(cIt = 0;cIt < canvasSet.length; cIt++) {
       var texSpec = {
         min: gl.LINEAR,
         mag: gl.LINEAR,
-        src: textureDescriptions[texIt].textureSource,
-        crossOrigin: "Anonymous", // either this or use twgl.setDefaults
+        src: canvasSet[cIt].ctx.canvas,
       };
-      texArray[texIt] = texSpec;
-      this.textureDescriptions[texIt] = textureDescriptions[texIt];
+      texArray[cIt] = texSpec;
     }
-
-    this.texReady = false;
-    this.textureLoadStartAnim = Date.now();
-    this.textureLoadEndAnim = this.textureLoadStartAnim + 1000;
-    var gl = self.vrtwglQuad.glContext;
-    this.textures = twgl.createTextures(gl, texArray, this.texturesLoaded);
+    self.textures = twgl.createTextures(gl, texArray, self.texturesLoaded);
   }
 
   this.teardown = function() {

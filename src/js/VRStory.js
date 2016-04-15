@@ -221,7 +221,7 @@ VRStory = function() {
 
     var actionPercent = 0;
 
-    if (this.direction[0]!=null) {
+    if (this.direction[0]!=null && !self.isLoading) {
       actionPercent = self.vrGui.update([this.direction[0], this.direction[1]],now);
     }
 
@@ -482,7 +482,7 @@ VRStory = function() {
     if (this.guiDirty == true && this.vrGui.isGuiDirty() == false) {
       self.guiDirty = false;
       self.guiDirtyTimeout = true;
-      setTimeout(this.refreshGui, 1000);
+      setTimeout(this.refreshGui, 500);
     }
   }
 
