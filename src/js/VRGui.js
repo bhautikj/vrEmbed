@@ -174,15 +174,14 @@ VRGui = function() {
   }
 
   this.isGuiDirty = function() {
-    var globalDirty = false;
     for(texIt = 0;texIt < this.canvasSet.length; texIt++) {
       var dirty = this.canvasSet[texIt][0].getDirty();
       if (dirty) {
         return true;
       }
     }
-    return false; 
-  } 
+    return false;
+  }
 
   this.update = function(_pt, timestamp) {
     var pt = [_pt[0],_pt[1]];

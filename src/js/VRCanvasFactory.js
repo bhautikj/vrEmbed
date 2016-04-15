@@ -105,6 +105,7 @@ var decalLoad = function(img) {
 
 VRCanvasDecal.prototype.init = function(gl, imgsrc, textureDescription) {
   this.initBase(gl);
+  this.setDirty();
   this.vrTextureDescription = textureDescription;
   this.desiredSphereFOV = textureDescription.sphereFOV;
   // this.vrTextureDescription.sphereFOV = [0,0];
@@ -117,7 +118,6 @@ VRCanvasDecal.prototype.init = function(gl, imgsrc, textureDescription) {
     decalLoad(this);
   };
   this.image.src = imgsrc;
-  this.setDirty();
 }
 
 VRCanvasDecal.prototype.update = function(time) {
