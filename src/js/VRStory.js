@@ -17,6 +17,7 @@ VRStory = function() {
   this.vrOptions = new VROptions();
   this.direction = [0,0,0];
   this.mousePosLast = [-1,-1];
+  this.mouseClickPosDeg = null;
   this.guiDirty = false;
   this.guiDirtyTimeout = false;
   this.firstRun = true;
@@ -222,7 +223,13 @@ VRStory = function() {
     var actionPercent = 0;
 
     if (this.direction[0]!=null && !self.isLoading) {
-      actionPercent = self.vrGui.update([this.direction[0], this.direction[1]],now);
+      if (self.mouseClickPosDeg != null) {
+        actionPercent = self.vrGui.update([this.direction[0] + self.mouseClickPosDeg[0],
+                                           this.direction[1] + self.mouseClickPosDeg[1]],
+                                           now);
+      } else {
+        actionPercent = self.vrGui.update([this.direction[0], this.direction[1]],now);
+      }
     }
 
     self.clearCtx();
@@ -509,12 +516,6 @@ VRStory = function() {
           offsetX = ev.clientX - rect.left,
           offsetY = ev.clientY - rect.top;
 
-
-      if (self.mousePosLast[0]<0) {
-        self.mousePosLast = [ev.clientX, ev.clientY];
-        return;
-      }
-
       if (mx==0 && my==0) {
         var cmx = ev.clientX - self.mousePosLast[0];
         var cmy = ev.clientY - self.mousePosLast[1];
@@ -523,8 +524,17 @@ VRStory = function() {
       }
 
       self.mousePosLast = [ev.clientX, ev.clientY];
+      self.mouseClickPosDeg = [(offsetX/rect.width - 0.5)*(self.quad.uniforms["fovParams"][0]*360.0),
+                               (offsetY/rect.height - 0.5)*(-0.5*self.quad.uniforms["fovParams"][1]*360.0)];
+
+      if (self.mousePosLast[0]<0) {
+        self.mousePosLast = [ev.clientX, ev.clientY];
+        mx = 0;
+        my = 0;
+      }
 
       self.quad.controller.mouseMove(mx, my, offsetX/rect.width, offsetY/rect.height);
+
     };
 
     this.parentElement.addEventListener("mousedown", function (ev) {
@@ -536,6 +546,7 @@ VRStory = function() {
         self.quad.controller.mouseStop();
         this.parentElement.removeEventListener("mousemove", self.mouseMove, false);
         self.mousePosLast=[-1,-1];
+        self.mouseClickPosDeg = null;
     }, false);
 
     if (this.noGui == false) {
