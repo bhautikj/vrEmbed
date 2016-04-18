@@ -614,7 +614,7 @@ var galleryDictToSceneDicts = function(galleryDict) {
 
     var vrEmbedLogo = vrSceneDict.initDecal();
     vrEmbedLogo.imgsrc = "http://vrembed.org/src/assets/vrEmbedLogo.png";
-    vrEmbedLogo.textureDescription.sphereFOV = [2*imgWidth*thumbFac, 2*imgWidth*thumbFac];
+    vrEmbedLogo.textureDescription.sphereFOV = [imgWidth*thumbFac, imgWidth*thumbFac];
     vrEmbedLogo.textureDescription.sphereCentre = [0, -90];
     vrEmbedLogo.textureDescription.plane = false;
     vrEmbedLogo.textureDescription.planeOffset = [0,0];
