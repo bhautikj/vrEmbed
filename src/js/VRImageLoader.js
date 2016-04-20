@@ -144,6 +144,22 @@ var getMacroMode = function(txt) {
   return null;
 }
 
+var getTexParams = function(txt) {
+  if (txt==null)
+    return null;
+
+  var texParamString = "vrEmbed:texParams=";
+  var idx = txt.indexOf(texParamString);
+  if(idx<0)
+    return null;
+
+  var pos = idx + texParamString.length;
+  var txtTrimmed = txt.slice(pos+1);
+  var endpos = txtTrimmed.indexOf('"');
+  var txtTrimmedFinal = txtTrimmed.slice(0, endpos);
+  return txtTrimmedFinal;
+}
+
 var parseImgurImageDict = function(data) {
   var dict = {};
   //failout points
@@ -162,6 +178,8 @@ var parseImgurImageDict = function(data) {
   dict.attribution = "";
   dict.misc = data.views + " views";
   dict.macro = getMacroMode(data.description);
+  dict.texParams = getTexParams(data.description);
+
   return dict;
 }
 
@@ -368,10 +386,15 @@ var gotFlickrImageInfo = function(photo_id, data, callbackFunc) {
   var description = data.photo.description._content;
   var tags = data.photo.tags.tag;
   var macro = null;
+  var texParams = null;
   for (i=0; i<tags.length;i++) {
     var macroTest = getMacroMode(tags[i].raw);
     if (macroTest!=null)
       macro = macroTest;
+
+    var texParamsTest = getTexParams(tags[i].raw);
+    if (texParamsTest!=null)
+      texParams = texParamsTest;
   }
 
   var dt = {};
@@ -379,6 +402,8 @@ var gotFlickrImageInfo = function(photo_id, data, callbackFunc) {
   dt.title = title;
   dt.description = strip(description);
   dt.macro = macro;
+  dt.texParams = texParams;
+
 
   flickrImageInfoCache[photo_id] = dt;
   callbackFunc(flickrImageInfoCache[photo_id]);
@@ -558,6 +583,15 @@ var adjustFromMacro = function(photo, img, macro) {
   return [photo,img];
 }
 
+var getTexParamsFromString = function(str) {
+  var arr = str.split(",");
+  //console.log(arr);
+  return [[parseFloat(arr[0].trim()), parseFloat(arr[1].trim())],
+          [parseFloat(arr[2].trim()), parseFloat(arr[3].trim())],
+          [parseFloat(arr[4].trim()), parseFloat(arr[5].trim())],
+          [parseFloat(arr[6].trim()), parseFloat(arr[7].trim())]];
+};
+
 var galleryDictToSceneDicts = function(galleryDict) {
   var sceneList = [];
   var numPerIndex = 9;
@@ -578,6 +612,14 @@ var galleryDictToSceneDicts = function(galleryDict) {
     var macroExec = adjustFromMacro(_mainPhoto, _img, _img.macro);
     var mainPhoto = macroExec[0];
     var img = macroExec[1];
+
+    if (_img.texParams != null) {
+      var tparams = getTexParamsFromString(_img.texParams);
+      mainPhoto.textureDescription.U_l = tparams[0];
+      mainPhoto.textureDescription.V_l = tparams[1];
+      mainPhoto.textureDescription.U_r = tparams[2];
+      mainPhoto.textureDescription.V_r = tparams[3];
+    }
 
     vrSceneDict.dict.photoObjects.push(mainPhoto);
 
