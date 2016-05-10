@@ -1,0 +1,93 @@
+Fast, high-quality analytical rendering of textures on a sphere for VR
+====
+
+The typical approach to rendering textures on the inside of a spherical surface is to use an actual piece of approximately spherical geometry with texture coordinates and to apply the texture to be displayed as a material on this object. This approach is intuitive, only appears to have a few moving parts, has good support for stereo cameras and is ideal for beginners in VR. However, errors introduced by approximating the surface with a discrete sphere can lead to noticeable rendering artifacts, especially at the poles. This technique is also slow because of the multiple rendering passes required - a separate pass for each eye, and another pass per-eye is required to render lens distortions.
+
+In this post I'm going to present a single-pass, high-quality shader-based approach for rendering a texture on a sphere. Aside from a simple, flat rectangle (a quad) to render to, there is no discrete geometry involved; the final shader renders both eyes in a single pass and can render with both lens distortions and with support for red-blue anaglyph glasses.
+
+I'm going to use GLSL running within a webGL harness as a demonstration of this technique; however, there should be enough information here to port this technique to any language or toolkit that has support for per-pixel image manipulation and basic vector/matrix operations.
+
+Overview
+==
+
+We operate on each pixel independently (which lends itself well to per-pixel renderers such as fragment shaders in GLSL). At it's core, the algorithm works like this:
+
+* Start with a pixel coordinate (x,y) in the output image
+* Work out what coordinate that maps to in the input texture, (tx, ty)
+* Map (tx, ty) to latitude & longitude and then map it to a point on a unit sphere, (sx, sy, sz)
+* If there are any rotations to be applied - e.g. from the viewer looking around - put them in a transformation matrix M and come up with an updated point on the sphere, (sx', sy', sz') = M*(sx, sy, sz)
+* Map (sx', sy', sz') back to new latitude & longitude coordinates and map these bak to texture coordinates to look up the actual pixel to be used for rendering
+
+I'll start by sketching out a basic loader & renderer and then build up a per-pixel algorithm to execute the steps above.
+
+Loading & rendering a full equirectangular texture to a quad
+==
+
+For the purposes of this tutorial, we're just going to work with a full 360x180, monocular (i.e not stereographic) image. Subsequent tutorials are going to touch on rendering images that don't cover the full sphere and stereo imagery. I'm going to use a simple GLSL shader here, which is made of three pieces - a render target, which is a simple rectangle (a quad in openGL terms), a vertex shader which tells the graphics card to sweep over the surface of the quad and generate a list of pixel coordinates which are passed to the fragment shader, which does all the meaningful work.
+
+Here is a minimal set of shaders that load our example equirectangular texture and render it so that it fills up the entire quad:
+
+*** TODO: INSERT TEST HARNESS HERE ***
+
+Lets have a look at the fragment shader in detail:
+
+*** TODO: BREAKDOWN OF FRAGMENT SHADER ***
+
+Creating a VR viewport
+==
+
+In the simplest case, a VR display has a few basic parameters - it has the direction the viewer is looking in, and the field-of-view (FOV) of the display - how much of the scene the viewer can see in one go. We're going to focus on FOV at this stage (other parameters include lens distortions & inter-lens distance, but we'll get to those in a future tutorial).
+
+For this tutorial, we're going to assume that we're only given one parameter - the horizontal FOV. We need both the horizontal and vertical FOV (hFOV and vFOV respectively); if the viewport is w pixels wide and h pixels tall, then:
+
+h/w = vFOV/hFOV
+vFOV = hFOV*h/w
+
+We can now update our shader to only render the part of the texture that fits into the visible viewport, currently defined by a window that is hFOV degrees wide and vFOV degrees and centered around the middle of the texture:
+
+*** TODO: INSERT CENTERED VIEWPORT CODE, NO TRANSFORM ***
+
+Looking at the new lines we added to the fragment shader:
+
+*** TODO: BREAKDOWN OF FRAGMENT SHADER ***
+
+??? side-by-side ???
+
+Mapping to lon-lat and to the unit sphere
+==
+
+We take the new texture lookup coordinates we generated in the previous step and map these to longitude-latitude (lon-lat) coordinates, very much like what is used for exact geographic coordinates on Earth (used for GPS etc):
+
+*** TODO: CREATE LAT-LON ***
+
+We then can use these lat-lon coords and transform them using a function to a point on the unit sphere:
+
+*** TODO: CREATE POINT ON UNIT SPHERE ***
+
+Apply rotations
+==
+
+As mentioned in the viewport discussion point above, the other parameter we are going to examine for the viewer is what direction they are looking in. The most compatible and easiest way of doing this is encode this as a 4x4 rotation matrix, M. For arguments sake, we're just going to create a very simple M that represents turning around the North-South pole of the sphere; if you have more complete information about the view direction (e.g. euler angles from a gyroscope) you'll need to encode these in M.
+
+Lets apply the rotation matrix to the point on the unit sphere. This is the critical step needed to make sure that that a central point in the viewport will always point in the direction the viewer is facing as defined my M:
+
+*** TODO: APPLY ROTATION MATRIX ***
+
+Transform rotated points back to texture coordinates
+==
+
+Now that we have a transformed point on the unit sphere, we use a function to transform that point back to lon-lat coordinates:
+
+*** TODO: SPHERE POINT TO LON-LAT ***
+
+And now that we have these, we can use the new lon-lat coordinates to look up a point in the source texture:
+
+*** TODO: RENDER FINAL ***
+
+
+Next tutorials
+=====
+* texture patches
+* stereo textures
+* lens distortions
+* anaglyph support
